@@ -1,0 +1,15 @@
+targets:
+  $default:
+    builders:
+      eliud_generator|eliud_annotation:
+        enabled: true
+
+builders:
+  eliud_annotation:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["eliud"]
+    build_extensions: {".dart": [".eliud.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]
