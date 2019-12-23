@@ -3,13 +3,23 @@ targets:
     builders:
       eliud_generator|eliud_annotation:
         enabled: true
+      eliud_generator|simple:
+        enabled: true
 
 builders:
   eliud_annotation:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
-    builder_factories: ["eliud"]
-    build_extensions: {".dart": [".eliud.g.part"]}
+    builder_factories: ["model"]
+    build_extensions: {".dart": [".g.dart"]}
     auto_apply: dependents
     build_to: cache
     applies_builders: ["source_gen|combining_builder"]
+
+  simple:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["simple"]
+    build_extensions: {'.spec':['.g.dart']}
+    build_to: source
+    auto_apply: all_packages
