@@ -8,9 +8,6 @@ import 'package:json_schema/vm.dart';
 
 void main() {
   test('?', ()  async {
-    configureJsonSchemaForVm();
-    File file = File('test/test.spec');
-    String contents = await file.readAsString();
     List<Field> fields = List();
     fields.add(Field(fieldName: "id", array: false, fieldType: "String"));
     fields.add(Field(fieldName: "menuItems", array: true, fieldType: "MenuItem"));

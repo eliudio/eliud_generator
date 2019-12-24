@@ -45,7 +45,7 @@ class ModelCodeGenerator extends CodeGenerator {
     // Field definitions
     modelSpecifications.fields.forEach((field) {
       codeBuffer.writeln(
-          "  final " + field.dartType() + " " + field.fieldName);
+          "  final " + field.dartType() + " " + field.fieldName + ";");
     });
     codeBuffer.writeln();
 
