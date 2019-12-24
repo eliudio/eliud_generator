@@ -11,11 +11,13 @@ dependencies:
     path: ../eliud_annotations
   build: "1.2.2"
   source_gen: "0.9.4+6"
+  json_schema: 2.2.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: "1.7.2"
+  json_schema: 2.2.1
 
 flutter:
   uses-material-design: true

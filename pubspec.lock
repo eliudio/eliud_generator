@@ -113,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  cli_repl:
+    dependency: transitive
+    description:
+      name: cli_repl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0+1"
   code_builder:
     dependency: transitive
     description:
@@ -127,6 +134,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.14.11"
+  colorize:
+    dependency: transitive
+    description:
+      name: colorize
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   convert:
     dependency: transitive
     description:
@@ -148,6 +162,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+  dart2_constant:
+    dependency: transitive
+    description:
+      name: dart2_constant
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2+dart2"
   dart_style:
     dependency: transitive
     description:
@@ -169,6 +190,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.10.11"
+  fluri:
+    dependency: transitive
+    description:
+      name: fluri
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.8"
   flutter:
     dependency: transitive
     description: flutter
@@ -228,6 +256,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.4"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.15.8"
   io:
     dependency: transitive
     description:
@@ -249,6 +284,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  json_schema:
+    dependency: "direct main"
+    description:
+      name: json_schema
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.1"
   logging:
     dependency: transitive
     description:
@@ -354,6 +396,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  sass:
+    dependency: transitive
+    description:
+      name: sass
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.24.0"
   shelf:
     dependency: transitive
     description:
@@ -373,6 +422,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sockjs_client:
+    dependency: transitive
+    description:
+      path: "."
+      ref: "0.3.5"
+      resolved-ref: "2e8dc8d2fe8486d31b6e220277c94d746ced1691"
+      url: "git://github.com/Workiva/sockjs-dart-client.git"
+    source: git
+    version: "0.3.5"
+  sockjs_client_wrapper:
+    dependency: transitive
+    description:
+      name: sockjs_client_wrapper
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.14"
   source_gen:
     dependency: "direct main"
     description:
@@ -380,6 +445,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.4+6"
+  source_maps:
+    dependency: transitive
+    description:
+      name: source_maps
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.8"
   source_span:
     dependency: transitive
     description:
@@ -436,6 +508,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1+2"
+  tuple:
+    dependency: transitive
+    description:
+      name: tuple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   typed_data:
     dependency: transitive
     description:
@@ -443,6 +522,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.6"
+  uri:
+    dependency: transitive
+    description:
+      name: uri
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.11.3+1"
+  utf:
+    dependency: transitive
+    description:
+      name: utf
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.0+5"
   vector_math:
     dependency: transitive
     description:
@@ -450,6 +543,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+  w_common:
+    dependency: transitive
+    description:
+      name: w_common
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.20.1"
+  w_transport:
+    dependency: transitive
+    description:
+      name: w_transport
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.8"
   watcher:
     dependency: transitive
     description:
