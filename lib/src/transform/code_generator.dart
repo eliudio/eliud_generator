@@ -1,6 +1,11 @@
+import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:json_schema/json_schema.dart';
 
 abstract class CodeGenerator {
+  final ModelSpecification modelSpecifications;
+
+  CodeGenerator({ this.modelSpecifications });
+
   String theFileName();
 
   String getHeader() {
@@ -14,4 +19,13 @@ abstract class CodeGenerator {
   }
 
   String getCode();
+
+  bool hasArray() {
+    bool returnMe = false;
+    modelSpecifications.fields.forEach((field) {
+      if (field.array) returnMe = true;
+    });
+    return returnMe;
+  }
+
 }

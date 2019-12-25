@@ -32,7 +32,7 @@ class Field extends Equatable {
   }
 
   String dartType() {
-    if (array) return "List<$fieldType>";
+    if (array) return "List<" + fieldType + "Model>";
     else return fieldType;
   }
 

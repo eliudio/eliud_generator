@@ -4,20 +4,10 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 class ModelCodeGenerator extends CodeGenerator {
-  final ModelSpecification modelSpecifications;
-
-  ModelCodeGenerator({this.modelSpecifications});
+  ModelCodeGenerator({ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
 
   String theFileName() {
-    return fileName(modelSpecifications.modelClassName());
-  }
-
-  bool hasArray() {
-    bool returnMe = false;
-    modelSpecifications.fields.forEach((field) {
-      if (field.array) returnMe = true;
-    });
-    return returnMe;
+    return modelSpecifications.modelFileName();
   }
 
   String getCommonImports() {
@@ -25,10 +15,10 @@ class ModelCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:meta/meta.dart';");
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + fileName(modelSpecifications.entityClassName()) + "'");
+    headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
     modelSpecifications.fields.forEach((field) {
       if (!field.isNativeType()) {
-        headerBuffer.writeln("import '" + fileName(field.fieldType) + "';");
+        headerBuffer.writeln("import '" + camelcaseToUnderscore(field.fieldType) + ".model.dart" + "';");
       }
     });
     headerBuffer.writeln();
