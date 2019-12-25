@@ -13,4 +13,5 @@ abstract class CodeGenerator {
     return headerBuffer.toString();
   }
 
+  String getCode();
 }

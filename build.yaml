@@ -1,14 +1,24 @@
 targets:
   $default:
     builders:
-      eliud_generator|simple:
+      eliud_generator|model:
+        enabled: true
+      eliud_generator|entity:
         enabled: true
 
 builders:
-  simple:
+  model:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
-    builder_factories: ["simple"]
-    build_extensions: {'.spec':['.g.dart']}
+    builder_factories: ["model"]
+    build_extensions: {".spec": [".model.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  entity:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["entity"]
+    build_extensions: {".spec": [".entity.dart"]}
     build_to: source
     auto_apply: all_packages

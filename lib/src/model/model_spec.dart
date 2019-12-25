@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'package:equatable/equatable.dart';
+import 'package:eliud_generator/src/model/spec.dart';
 
 import 'field.dart';
 
-class ModelSpecification extends Equatable {
-  final String id;
+class ModelSpecification extends Specification {
   final List<Field> fields;
 
-  ModelSpecification({ this.id, this.fields });
+  ModelSpecification({ String id, this.fields }) : super(id: id);
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -33,14 +32,6 @@ class ModelSpecification extends Equatable {
   @override
   String toString() {
     return 'ModelSpecificationEntity { id: $id }';
-  }
-
-  String modelClassName() {
-    return id;
-  }
-
-  String entityClassName() {
-    return id + "Entity";
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
