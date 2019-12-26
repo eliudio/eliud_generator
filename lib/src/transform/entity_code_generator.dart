@@ -1,3 +1,4 @@
+import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
@@ -7,8 +8,18 @@ class EntityCodeGenerator extends DataCodeGenerator {
   EntityCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
+  String fieldName(Field field) {
+    if (field.association) return field.fieldName + "Id";
+    return field.fieldName;
+  }
+
   String theFileName() {
     return modelSpecifications.entityFileName();
+  }
+
+  String dartEntityType(Field field) {
+    if (field.association) return "String";
+    return field.dartEntityType();
   }
 
   String _commonImports() {
@@ -32,7 +43,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
       codeBuffer.writeln(
-          "  final " + field.dartEntityType() + " " + field.fieldName + ";");
+          "  final " + dartEntityType(field) + " " + fieldName(field) + ";");
     });
     return codeBuffer.toString();
   }
@@ -41,7 +52,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(spaces(2) + "List<Object> get props => [");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(field.fieldName + ", ");
+      codeBuffer.write(fieldName(field) + ", ");
     });
     codeBuffer.writeln("];");
     return codeBuffer.toString();
@@ -55,14 +66,14 @@ class EntityCodeGenerator extends DataCodeGenerator {
         " fromMap(Map map) {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if (!field.isNativeType()) {
+      if ((!field.association) && (!field.isNativeType())) {
         extraLine = true;
         if (field.array) {
           codeBuffer.writeln(spaces(4) +
               "final " +
-              field.fieldName +
+              fieldName(field) +
               "List = (map['" +
-              field.fieldName +
+              fieldName(field) +
               "'] as List<dynamic>)");
           codeBuffer.writeln(spaces(8) + ".map((dynamic item) =>");
           codeBuffer.writeln(spaces(8) +
@@ -72,11 +83,11 @@ class EntityCodeGenerator extends DataCodeGenerator {
         } else {
           codeBuffer.writeln(spaces(4) +
               "final " +
-              field.fieldName +
+              fieldName(field) +
               "FromMap = " +
               field.fieldType +
               "Entity.fromMap(map['" +
-              field.fieldName +
+              fieldName(field) +
               "']);");
         }
       }
@@ -85,18 +96,22 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(spaces(6) + field.fieldName + ": ");
-      if (!field.isNativeType()) {
-        if (field.array) {
-          codeBuffer.writeln(field.fieldName + "List, ");
-        } else {
-          codeBuffer.writeln(field.fieldName + "FromMap, ");
-        }
+      codeBuffer.write(spaces(6) + fieldName(field) + ": ");
+      if (field.association) {
+        codeBuffer.writeln("map['" + fieldName(field) + "'], ");
       } else {
-        if (field.array) {
-          codeBuffer.writeln("List.from(map['" + field.fieldName + "']), ");
+        if (!field.isNativeType()) {
+          if (field.array) {
+            codeBuffer.writeln(fieldName(field) + "List, ");
+          } else {
+            codeBuffer.writeln(fieldName(field) + "FromMap, ");
+          }
         } else {
-          codeBuffer.writeln("map['" + field.fieldName + "'], ");
+          if (field.array) {
+            codeBuffer.writeln("List.from(map['" + fieldName(field) + "']), ");
+          } else {
+            codeBuffer.writeln("map['" + fieldName(field) + "'], ");
+          }
         }
       }
     });
@@ -110,31 +125,31 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + "Map<String, Object> toDocument() {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if (!field.isNativeType()) {
+      if ((!field.association) && (!field.isNativeType())) {
         extraLine = true;
         if (field.array) {
           codeBuffer.writeln(spaces(4) +
               "final List<Map<String, dynamic>> " +
-              field.fieldName +
+              fieldName(field) +
               "ListMap" +
               " = " +
-              field.fieldName +
+              fieldName(field) +
               " != null ");
           codeBuffer.writeln(spaces(8) +
               "? " +
-              field.fieldName +
+              fieldName(field) +
               ".map((item) => item.toDocument()).toList()");
           codeBuffer.writeln(spaces(8) + ": null;");
         } else {
           codeBuffer.writeln(spaces(4) +
               "final Map<String, dynamic> " +
-              field.fieldName +
+              fieldName(field) +
               "Map"
                   " = " +
-              field.fieldName +
+              fieldName(field) +
               " != null ");
           codeBuffer
-              .writeln(spaces(8) + "? " + field.fieldName + ".toDocument()");
+              .writeln(spaces(8) + "? " + fieldName(field) + ".toDocument()");
           codeBuffer.writeln(spaces(8) + ": null;");
         }
       }
@@ -142,18 +157,22 @@ class EntityCodeGenerator extends DataCodeGenerator {
     if (extraLine) codeBuffer.writeln();
     codeBuffer.writeln(spaces(4) + "return {");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(spaces(6) + "\"" + field.fieldName + "\": ");
-      if (!field.isNativeType()) {
-        if (field.array) {
-          codeBuffer.writeln(field.fieldName + "ListMap, ");
-        } else {
-          codeBuffer.writeln(field.fieldName + "Map, ");
-        }
+      codeBuffer.write(spaces(6) + "\"" + fieldName(field) + "\": ");
+      if (field.association) {
+        codeBuffer.writeln(fieldName(field) + ", ");
       } else {
-        if (field.array) {
-          codeBuffer.writeln(field.fieldName + ".toList(), ");
+        if (!field.isNativeType()) {
+          if (field.array) {
+            codeBuffer.writeln(fieldName(field) + "ListMap, ");
+          } else {
+            codeBuffer.writeln(fieldName(field) + "Map, ");
+          }
         } else {
-          codeBuffer.writeln(field.fieldName + ", ");
+          if (field.array) {
+            codeBuffer.writeln(fieldName(field) + ".toList(), ");
+          } else {
+            codeBuffer.writeln(fieldName(field) + ", ");
+          }
         }
       }
     });

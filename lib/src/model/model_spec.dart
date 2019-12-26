@@ -51,4 +51,17 @@ class ModelSpecification extends Specification {
     return fromJson(modelSpecificationMap);
   }
 
+  List<String> uniqueAssociationTypes() {
+    List<String> uniqueAssociationTypes = List();
+    fields.forEach((field) {
+      if (field.association) {
+        String typeName = field.fieldType;
+        if (!uniqueAssociationTypes.contains(typeName)) {
+          uniqueAssociationTypes.add(typeName);
+        }
+      }
+    });
+    return uniqueAssociationTypes;
+  }
+
 }

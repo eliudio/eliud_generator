@@ -5,3 +5,5 @@ String camelcaseToUnderscore(String value) {
   String result = value.replaceAllMapped(exp, (Match m) => ('_' + m.group(0))).toLowerCase();
   return result;
 }
+
+String firstLowerCase(String s) => s[0].toLowerCase() + s.substring(1);

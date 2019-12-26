@@ -1,3 +1,6 @@
+import 'dart:collection';
+
+import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
@@ -6,6 +9,10 @@ import 'data_code_generator.dart';
 
 class ModelCodeGenerator extends DataCodeGenerator {
   ModelCodeGenerator({ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
+
+  String fieldName(Field field) {
+    return field.fieldName;
+  }
 
   String theFileName() {
     return modelSpecifications.modelFileName();
@@ -22,6 +29,12 @@ class ModelCodeGenerator extends DataCodeGenerator {
         headerBuffer.writeln("import '" + camelcaseToUnderscore(field.fieldType) + ".model.dart" + "';");
       }
     });
+
+    List<String> uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
+    uniqueAssociationTypes.forEach((type) {
+      headerBuffer.writeln("import '" + camelcaseToUnderscore(type) + ".repository.dart" + "';");
+    });
+
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -29,7 +42,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _fieldDefinitions() {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(spaces(2) + "final " + field.dartModelType() + " " + field.fieldName + ";");
+      codeBuffer.write(spaces(2));
+      if (!field.association)
+        codeBuffer.write("final ");
+      codeBuffer.writeln(field.dartModelType() + " " + field.fieldName + ";");
     });
     codeBuffer.writeln();
 
@@ -94,14 +110,20 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + modelSpecifications.entityClassName() + " toEntity() {");
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(spaces(10) + field.fieldName + ": " + field.fieldName);
-      if (!field.isNativeType()) {
-        if (field.array) {
-          codeBuffer.writeln();
-          codeBuffer.writeln(spaces(12) + ".map((item) => item.toEntity())");
-          codeBuffer.write(spaces(12) + ".toList()");
-        } else {
-          codeBuffer.write(".toEntity()");
+      codeBuffer.write(spaces(10) + field.fieldName);
+      if (field.association) codeBuffer.write("Id");
+      codeBuffer.write(": " + field.fieldName);
+      if (field.association) {
+        codeBuffer.write(".id");
+      } else {
+        if (!field.isNativeType()) {
+          if (field.array) {
+            codeBuffer.writeln();
+            codeBuffer.writeln(spaces(12) + ".map((item) => item.toEntity())");
+            codeBuffer.write(spaces(12) + ".toList()");
+          } else {
+            codeBuffer.write(".toEntity()");
+          }
         }
       }
       codeBuffer.writeln(", ");
@@ -116,22 +138,74 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + "static " + modelSpecifications.modelClassName() + " fromEntity(" + modelSpecifications.entityClassName() + " entity) {");
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(spaces(10) + field.fieldName + ": ");
-      if (!field.isNativeType()) {
-        if (field.array) {
-          codeBuffer.writeln();
-          codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
-          codeBuffer.writeln(spaces(12) + ".map((item) => " + field.fieldType +
-                  "Model.fromEntity(item))");
-          codeBuffer.write(spaces(12) + ".toList()");
+      if (!field.association) {
+        codeBuffer.write(spaces(10) + field.fieldName + ": ");
+        if (!field.isNativeType()) {
+          if (field.array) {
+            codeBuffer.writeln();
+            codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
+            codeBuffer.writeln(
+                spaces(12) + ".map((item) => " + field.fieldType +
+                    "Model.fromEntity(item))");
+            codeBuffer.write(spaces(12) + ".toList()");
+          } else {
+            codeBuffer.writeln();
+            codeBuffer.write(
+                spaces(12) + field.fieldType + "Model.fromEntity(entity." +
+                    field.fieldName + ")");
+          }
         } else {
-          codeBuffer.writeln();
-          codeBuffer.write(
-              spaces(12) + field.fieldType + "Model.fromEntity(entity." +
-                  field.fieldName + ")");
+          codeBuffer.write("entity." + field.fieldName);
         }
+        codeBuffer.writeln(", ");
+      }
+    });
+    codeBuffer.writeln(spaces(4) + ");");
+    codeBuffer.writeln(spaces(2) + "}");
+    return codeBuffer.toString();
+  }
+
+  String _fromEntityPlus() {
+    List<String> uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
+    if (uniqueAssociationTypes.isEmpty) return "";
+
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.write(spaces(2) + "static Future<" + modelSpecifications.modelClassName() + "> fromEntityPlus(" + modelSpecifications.entityClassName() + " entity");
+    uniqueAssociationTypes.forEach((field) {
+      codeBuffer.write(", " + field + "Repository " + firstLowerCase(field) + "Repository");
+    });
+    codeBuffer.writeln(") async {");
+    modelSpecifications.fields.forEach((field) {
+      if (field.association) {
+        codeBuffer.writeln(spaces(4) + field.fieldType + "Model " + field.fieldName + "Holder;");
+        codeBuffer.writeln(spaces(4) + "await " + firstLowerCase(field.fieldType) + "Repository.get" + field.fieldType + "(entity." + field.fieldName + "Id" + ").then((val) {");
+        codeBuffer.writeln(spaces(6) + field.fieldName + "Holder" + " = val;");
+        codeBuffer.writeln(spaces(4) + "});");
+      }
+    });
+    codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
+    modelSpecifications.fields.forEach((field) {
+      codeBuffer.write(spaces(10) + field.fieldName + ": ");
+      if (field.association) {
+        codeBuffer.write(field.fieldName + "Holder");
       } else {
-        codeBuffer.write("entity." + field.fieldName);
+        if (!field.isNativeType()) {
+          if (field.array) {
+            codeBuffer.writeln();
+            codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
+            codeBuffer.writeln(
+                spaces(12) + ".map((item) => " + field.fieldType +
+                    "Model.fromEntity(item))");
+            codeBuffer.write(spaces(12) + ".toList()");
+          } else {
+            codeBuffer.writeln();
+            codeBuffer.write(
+                spaces(12) + field.fieldType + "Model.fromEntity(entity." +
+                    field.fieldName + ")");
+          }
+        } else {
+          codeBuffer.write("entity." + field.fieldName);
+        }
       }
       codeBuffer.writeln(", ");
     });
@@ -143,7 +217,6 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _body() {
     StringBuffer codeBuffer = StringBuffer();
 
-    codeBuffer.writeln("@immutable");
     String className = modelSpecifications.modelClassName();
     codeBuffer.writeln("class $className {");
 
@@ -153,6 +226,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(toStringCode(modelSpecifications.modelClassName()));
     codeBuffer.writeln(_toEntity());
     codeBuffer.writeln(_fromEntity());
+    codeBuffer.writeln(_fromEntityPlus());
 
     codeBuffer.writeln("}");
     codeBuffer.writeln();

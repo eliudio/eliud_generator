@@ -4,23 +4,25 @@ class Field extends Equatable {
   final String fieldName;
   final String fieldType;
   final bool array;
+  final bool association;
 
-  const Field({this.fieldName, this.fieldType, this.array});
+  const Field({this.fieldName, this.fieldType, this.array, this.association});
 
   Map<String, Object> toJson() {
     return {
       "fieldName": fieldName,
       "fieldType": fieldType,
-      "array": array
+      "array": array,
+      "association": association,
     };
   }
 
   @override
-  List<Object> get props => [fieldName, fieldType, array];
+  List<Object> get props => [fieldName, fieldType, array, association];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, fieldType: $fieldType, array: $array }';
+    return 'Field { fieldName: $fieldName, fieldType: $fieldType, array: $array, association: $association }';
   }
 
   static Field fromJson(Map<String, Object> json) {
@@ -28,6 +30,7 @@ class Field extends Equatable {
       fieldName: json["fieldName"] as String,
       fieldType: json["fieldType"] as String,
       array:  json["array"] as bool,
+      association: json["association"] as bool,
     );
   }
 
