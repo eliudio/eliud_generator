@@ -8,13 +8,20 @@ abstract class CodeGenerator {
 
   String theFileName();
 
-  String getHeader() {
+  String header() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("///////////////////////////////////////////////////////////");
-    headerBuffer.writeln("// " + theFileName());
-    headerBuffer.writeln("// This code is generated. This is read only. Don't touch!");
-    headerBuffer.writeln("///////////////////////////////////////////////////////////");
+    headerBuffer.writeln("/*");
+    headerBuffer.writeln("                 _ _           _");
+    headerBuffer.writeln("                | (_)         | |");
+    headerBuffer.writeln("             ___| |_ _   _  __| |");
+    headerBuffer.writeln("            / _ \\ | | | | |/ _` |");
+    headerBuffer.writeln("           |  __/ | | |_| | (_| |");
+    headerBuffer.writeln("            \\___|_|_|\\__,_|\\__,_|");
     headerBuffer.writeln();
+    headerBuffer.writeln("           " + theFileName());
+    headerBuffer.writeln();
+    headerBuffer.writeln("This code is generated. This is read only. Don't touch!");
+    headerBuffer.writeln("*/");
     return headerBuffer.toString();
   }
 
@@ -26,6 +33,12 @@ abstract class CodeGenerator {
       if (field.array) returnMe = true;
     });
     return returnMe;
+  }
+
+  static final ALL_SPACES = "                                                                                         ";
+
+  String spaces(int amount) {
+    return ALL_SPACES.substring(0, amount);
   }
 
 }

@@ -2,15 +2,16 @@ import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
+import 'data_code_generator.dart';
 
-class ModelCodeGenerator extends CodeGenerator {
+class ModelCodeGenerator extends DataCodeGenerator {
   ModelCodeGenerator({ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
 
   String theFileName() {
     return modelSpecifications.modelFileName();
   }
 
-  String getCommonImports() {
+  String _commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:meta/meta.dart';");
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
@@ -25,47 +26,36 @@ class ModelCodeGenerator extends CodeGenerator {
     return headerBuffer.toString();
   }
 
-  String getBody() {
+  String _fieldDefinitions() {
     StringBuffer codeBuffer = StringBuffer();
-
-    codeBuffer.writeln("@immutable");
-    String className = modelSpecifications.modelClassName();
-    codeBuffer.writeln("class $className {");
-
-    // Field definitions
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(
-          "  final " + field.dartType() + " " + field.fieldName + ";");
+      codeBuffer.writeln(spaces(2) + "final " + field.dartModelType() + " " + field.fieldName + ";");
     });
     codeBuffer.writeln();
 
     // Constructor
-    codeBuffer.write("  " + modelSpecifications.modelClassName() + "({");
-    modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(
-          "this." + field.fieldName + ", ");
-    });
-    codeBuffer.writeln("});");
-    codeBuffer.writeln();
+    codeBuffer.write(getConstructor(modelSpecifications.modelClassName()));
 
     // copyWith
-    codeBuffer.write("  " + modelSpecifications.modelClassName() + " copyWith({");
+    codeBuffer.write(spaces(2) + modelSpecifications.modelClassName() + " copyWith({");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(
-          field.dartType() + " " + field.fieldName + ", ");
+          field.dartModelType() + " " + field.fieldName + ", ");
     });
     codeBuffer.writeln("}) {");
-    codeBuffer.write("    return " + modelSpecifications.modelClassName() + "(");
+    codeBuffer.write(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(field.fieldName + ": " + field.fieldName + " ?? this." + field.fieldName + ", ");
     });
     codeBuffer.writeln(");");
-    codeBuffer.writeln("  }");
-    codeBuffer.writeln();
+    codeBuffer.writeln(spaces(2) + "}");
+    return codeBuffer.toString();
+  }
 
-    // hashCode
-    codeBuffer.writeln("  @override");
-    codeBuffer.write("  int get hashCode => ");
+  String _hashCode() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) + "@override");
+    codeBuffer.write(spaces(2) + "int get hashCode => ");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(field.fieldName + ".hashCode");
       if (modelSpecifications.fields.last != field) {
@@ -73,89 +63,96 @@ class ModelCodeGenerator extends CodeGenerator {
       }
     });
     codeBuffer.writeln(";");
-    codeBuffer.writeln();
+    return codeBuffer.toString();
+  }
 
-    // operator ==
-    codeBuffer.writeln("  @override");
-    codeBuffer.writeln("  bool operator ==(Object other) =>");
-    codeBuffer.writeln("      identical(this, other) ||");
-    codeBuffer.writeln("      other is " + modelSpecifications.modelClassName() + " &&");
-    codeBuffer.writeln("          runtimeType == other.runtimeType && ");
+  String _equalsOperator() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) + "@override");
+    codeBuffer.writeln(spaces(2) + "bool operator ==(Object other) =>");
+    codeBuffer.writeln(spaces(10) + "identical(this, other) ||");
+    codeBuffer.writeln(spaces(10) + "other is " + modelSpecifications.modelClassName() + " &&");
+    codeBuffer.writeln(spaces(10) + "runtimeType == other.runtimeType && ");
     modelSpecifications.fields.forEach((field) {
       if (field.array) {
         codeBuffer.write(
-            "          ListEquality().equals(" + field.fieldName + ", other." + field.fieldName + ")");
+            spaces(10) + "ListEquality().equals(" + field.fieldName + ", other." + field.fieldName + ")");
       } else {
         codeBuffer.write(
-            "          " + field.fieldName + " == other." + field.fieldName);
+            spaces(10) + field.fieldName + " == other." + field.fieldName);
       }
       if (modelSpecifications.fields.last != field) {
         codeBuffer.writeln(" &&");
       }
     });
     codeBuffer.writeln(";");
-    codeBuffer.writeln();
+    return codeBuffer.toString();
+  }
 
-    // toString
-    codeBuffer.writeln("  @override");
-    codeBuffer.writeln("  String toString() {");
+  String _toEntity() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) + modelSpecifications.entityClassName() + " toEntity() {");
+    codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      if (field.array) {
-        codeBuffer.write(
-            "    String " + field.fieldName + "Csv = " + field.fieldName + ".join(', ');");
+      codeBuffer.write(spaces(10) + field.fieldName + ": " + field.fieldName);
+      if (!field.isNativeType()) {
+        if (field.array) {
+          codeBuffer.writeln();
+          codeBuffer.writeln(spaces(12) + ".map((item) => item.toEntity())");
+          codeBuffer.write(spaces(12) + ".toList()");
+        } else {
+          codeBuffer.write(".toEntity()");
+        }
       }
+      codeBuffer.writeln(", ");
     });
-    codeBuffer.writeln();
-    codeBuffer.write("    return '" + modelSpecifications.modelClassName() + "{");
+    codeBuffer.writeln(spaces(4) + ");");
+    codeBuffer.writeln(spaces(2) + "}");
+    return codeBuffer.toString();
+  }
+
+  String _fromEntity() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) + "static " + modelSpecifications.modelClassName() + " fromEntity(" + modelSpecifications.entityClassName() + " entity) {");
+    codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(field.fieldName + ": ");
-      if (field.array) {
-        codeBuffer.write(field.fieldType + "[] { \$" + field.fieldName + "Csv }");
+      codeBuffer.write(spaces(10) + field.fieldName + ": ");
+      if (!field.isNativeType()) {
+        if (field.array) {
+          codeBuffer.writeln();
+          codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
+          codeBuffer.writeln(spaces(12) + ".map((item) => " + field.fieldType +
+                  "Model.fromEntity(item))");
+          codeBuffer.write(spaces(12) + ".toList()");
+        } else {
+          codeBuffer.writeln();
+          codeBuffer.write(
+              spaces(12) + field.fieldType + "Model.fromEntity(entity." +
+                  field.fieldName + ")");
+        }
       } else {
-        codeBuffer.write("\$" + field.fieldName);
+        codeBuffer.write("entity." + field.fieldName);
       }
-      if (modelSpecifications.fields.last != field) {
-        codeBuffer.write(", ");
-      }
+      codeBuffer.writeln(", ");
     });
-    codeBuffer.writeln("}';");
-    codeBuffer.writeln("  }");
-    codeBuffer.writeln();
+    codeBuffer.writeln(spaces(4) + ");");
+    codeBuffer.writeln(spaces(2) + "}");
+    return codeBuffer.toString();
+  }
 
-    // toEntity
-    codeBuffer.writeln("  " + modelSpecifications.entityClassName() + " toEntity() {");
-    codeBuffer.writeln("    return " + modelSpecifications.entityClassName() + "(");
-    modelSpecifications.fields.forEach((field) {
-      codeBuffer.write("          " + field.fieldName + ": " + field.fieldName);
-      if (field.array) {
-        codeBuffer.writeln();
-        codeBuffer.writeln("            .map((item) => item.toEntity())");
-        codeBuffer.write("            .toList()");
-      }
-      if (modelSpecifications.fields.last != field) {
-        codeBuffer.writeln(", ");
-      }
-    });
-    codeBuffer.writeln(");");
-    codeBuffer.writeln("  }");
-    codeBuffer.writeln();
+  String _body() {
+    StringBuffer codeBuffer = StringBuffer();
 
-    // fromEntity
-    codeBuffer.writeln("  static " + modelSpecifications.modelClassName() + " fromEntity(" + modelSpecifications.entityClassName() + " entity) {");
-    codeBuffer.writeln("    return " + modelSpecifications.modelClassName() + "(");
-    modelSpecifications.fields.forEach((field) {
-      codeBuffer.write("          " + field.fieldName + ": entity." + field.fieldName);
-      if (field.array) {
-        codeBuffer.writeln();
-        codeBuffer.writeln("            .map((item) => " + field.fieldType + ".fromEntity(item))");
-        codeBuffer.write("            .toList()");
-      }
-      if (modelSpecifications.fields.last != field) {
-        codeBuffer.writeln(", ");
-      }
-    });
-    codeBuffer.writeln(");");
-    codeBuffer.writeln("  }");
+    codeBuffer.writeln("@immutable");
+    String className = modelSpecifications.modelClassName();
+    codeBuffer.writeln("class $className {");
+
+    codeBuffer.writeln(_fieldDefinitions());
+    codeBuffer.writeln(_hashCode());
+    codeBuffer.writeln(_equalsOperator());
+    codeBuffer.writeln(toStringCode(modelSpecifications.modelClassName()));
+    codeBuffer.writeln(_toEntity());
+    codeBuffer.writeln(_fromEntity());
 
     codeBuffer.writeln("}");
     codeBuffer.writeln();
@@ -164,9 +161,9 @@ class ModelCodeGenerator extends CodeGenerator {
 
   String getCode() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(getHeader());
-    codeBuffer.write(getCommonImports());
-    codeBuffer.write(getBody());
+    codeBuffer.write(header());
+    codeBuffer.write(_commonImports());
+    codeBuffer.write(_body());
     return codeBuffer.toString();
   }
 }

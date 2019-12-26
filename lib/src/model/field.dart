@@ -31,9 +31,22 @@ class Field extends Equatable {
     );
   }
 
-  String dartType() {
-    if (array) return "List<" + fieldType + "Model>";
-    else return fieldType;
+  String dataType(String suffix) {
+    if (array) {
+      if (isNativeType()) return "List<" + fieldType + ">";
+      if (array) return "List<" + fieldType + suffix + ">";
+    } else {
+      if (isNativeType()) return fieldType;
+      return fieldType + suffix;
+    }
+  }
+
+  String dartModelType() {
+    return dataType("Model");
+  }
+
+  String dartEntityType() {
+    return dataType("Entity");
   }
 
   bool isNativeType() {
