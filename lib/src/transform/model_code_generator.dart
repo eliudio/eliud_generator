@@ -73,6 +73,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _fieldDefinitions() {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
+      if ((field.remark != null) && (field.remark.length > 0)) {
+        codeBuffer.writeln();
+        codeBuffer.writeln(spaces(2) + "// " + field.remark);
+      }
       codeBuffer.write(spaces(2));
       if (!field.association)
         codeBuffer.write("final ");

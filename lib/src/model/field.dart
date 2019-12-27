@@ -7,8 +7,9 @@ class Field extends Equatable {
   final List<String> enumValues;
   final bool array;
   final bool association;
+  final String remark;
 
-  const Field({this.fieldName, this.fieldType, this.array = false, this.association = false, this.enumName, this.enumValues});
+  const Field({this.fieldName, this.fieldType, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark});
 
   Map<String, Object> toJson() {
     return {
@@ -18,15 +19,16 @@ class Field extends Equatable {
       "enumValues": enumValues,
       "array": array,
       "association": association,
+      "remark": remark
     };
   }
 
   @override
-  List<Object> get props => [fieldName, fieldType, array, association];
+  List<Object> get props => [fieldName, fieldType, array, association, enumName, enumValues, remark];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, fieldType: $fieldType, array: $array, association: $association }';
+    return 'Field { fieldName: $fieldName, fieldType: $fieldType, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark }';
   }
 
   static Field fromJson(Map<String, Object> json) {
@@ -49,6 +51,7 @@ class Field extends Equatable {
       enumValues: myList,
       array:  array,
       association: association,
+      remark: json["remark"] as String,
     );
   }
 
@@ -91,6 +94,7 @@ class Field extends Equatable {
   bool isNativeType() {
     if (fieldType == "bool") return true;
     if (fieldType == "int") return true;
+    if (fieldType == "double") return true;
     if (fieldType == "String") return true;
     return false;
   }
