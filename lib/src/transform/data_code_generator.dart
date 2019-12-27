@@ -29,7 +29,7 @@ abstract class DataCodeGenerator extends CodeGenerator {
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
       if (field.array) {
-        codeBuffer.write(spaces(4) + "String " + fieldName(field) + "Csv = " + fieldName(field) + ".join(', ');");
+        codeBuffer.writeln(spaces(4) + "String " + fieldName(field) + "Csv = " + fieldName(field) + ".join(', ');");
         bool extraLine = true;
       }
     });

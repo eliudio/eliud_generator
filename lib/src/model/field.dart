@@ -3,15 +3,19 @@ import 'package:equatable/equatable.dart';
 class Field extends Equatable {
   final String fieldName;
   final String fieldType;
+  final String enumName;
+  final List<String> enumValues;
   final bool array;
   final bool association;
 
-  const Field({this.fieldName, this.fieldType, this.array, this.association});
+  const Field({this.fieldName, this.fieldType, this.array = false, this.association = false, this.enumName, this.enumValues});
 
   Map<String, Object> toJson() {
     return {
       "fieldName": fieldName,
       "fieldType": fieldType,
+      "enumName": enumName,
+      "enumValues": enumValues,
       "array": array,
       "association": association,
     };
@@ -26,12 +30,30 @@ class Field extends Equatable {
   }
 
   static Field fromJson(Map<String, Object> json) {
+    bool array = json["array"] as bool;
+    bool association = json["association"] as bool;
+    if (array == null) array = false;
+    if (association == null) association = false;
+    List<String> myList = null;
+    Iterable i = json["enumValues"];
+    if (i != null) {
+      myList = List();
+      i.forEach((val) {
+        myList.add(val);
+      });
+    }
     return Field(
       fieldName: json["fieldName"] as String,
       fieldType: json["fieldType"] as String,
-      array:  json["array"] as bool,
-      association: json["association"] as bool,
+      enumName: json["enumName"] as String,
+      enumValues: myList,
+      array:  array,
+      association: association,
     );
+  }
+
+  bool isEnum() {
+    return (fieldType == "enum");
   }
 
   String dataType(String suffix) {
@@ -45,11 +67,25 @@ class Field extends Equatable {
   }
 
   String dartModelType() {
-    return dataType("Model");
+    if (isEnum()) {
+      if (array)
+        return "List<" + enumName + ">";
+      else
+        return enumName;
+    } else {
+      return dataType("Model");
+    }
   }
 
   String dartEntityType() {
-    return dataType("Entity");
+    if (isEnum()) {
+      if (array)
+        return "List<int>";
+      else
+        return "int";
+    } else {
+      return dataType("Entity");
+    }
   }
 
   bool isNativeType() {

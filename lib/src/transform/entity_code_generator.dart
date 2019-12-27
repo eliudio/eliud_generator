@@ -27,7 +27,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if (!field.isNativeType()) {
+      if ((!field.isEnum()) && (!field.isNativeType())) {
         headerBuffer.writeln("import '" +
             camelcaseToUnderscore(field.fieldType) +
             ".entity.dart" +
@@ -66,7 +66,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
         " fromMap(Map map) {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if ((!field.association) && (!field.isNativeType())) {
+      if ((!field.isEnum()) && (!field.association) && (!field.isNativeType())) {
         extraLine = true;
         if (field.array) {
           codeBuffer.writeln(spaces(4) +
@@ -97,7 +97,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
         spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(spaces(6) + fieldName(field) + ": ");
-      if (field.association) {
+      if ((field.association) || (field.isEnum())) {
         codeBuffer.writeln("map['" + fieldName(field) + "'], ");
       } else {
         if (!field.isNativeType()) {
@@ -125,7 +125,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + "Map<String, Object> toDocument() {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if ((!field.association) && (!field.isNativeType())) {
+      if ((!field.isEnum()) && (!field.association) && (!field.isNativeType())) {
         extraLine = true;
         if (field.array) {
           codeBuffer.writeln(spaces(4) +
@@ -158,7 +158,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(4) + "return {");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(spaces(6) + "\"" + fieldName(field) + "\": ");
-      if (field.association) {
+      if ((field.association) || (field.isEnum())) {
         codeBuffer.writeln(fieldName(field) + ", ");
       } else {
         if (!field.isNativeType()) {

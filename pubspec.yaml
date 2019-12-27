@@ -10,6 +10,7 @@ dependencies:
   build: "1.2.2"
   json_schema: 2.2.1
   equatable: ^1.0.0
+  path_provider: 1.5.1
 
 dev_dependencies:
   flutter_test:
@@ -19,8 +20,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  module:
-    androidX: true
-    androidPackage: io.eliud.eliud_generator
-    iosBundleIdentifier: io.eliud.eliudGenerator

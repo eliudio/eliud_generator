@@ -1,10 +1,7 @@
-import 'dart:collection';
-
 import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
-import 'code_generator.dart';
 import 'data_code_generator.dart';
 
 class ModelCodeGenerator extends DataCodeGenerator {
@@ -21,12 +18,11 @@ class ModelCodeGenerator extends DataCodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-//    headerBuffer.writeln("import 'package:meta/meta.dart';");
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
     modelSpecifications.fields.forEach((field) {
-      if (!field.isNativeType()) {
+      if ((!field.isEnum()) && (!field.isNativeType())) {
         headerBuffer.writeln("import '" + camelcaseToUnderscore(field.fieldType) + ".model.dart" + "';");
       }
     });
@@ -37,6 +33,41 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
     headerBuffer.writeln();
     return headerBuffer.toString();
+  }
+
+  String _enums() {
+    StringBuffer codeBuffer = StringBuffer();
+    modelSpecifications.fields.forEach((field) {
+      if (field.isEnum()) {
+        codeBuffer.writeln("enum " + field.enumName + " {");
+        codeBuffer.write(spaces(2));
+        field.enumValues.forEach((value) {
+          codeBuffer.write(value + ", ");
+        });
+        codeBuffer.writeln("Unknown");
+        codeBuffer.writeln(spaces(2) + "}");
+      }
+    });
+    return codeBuffer.toString();
+  }
+
+  String _enumMethods() {
+    StringBuffer codeBuffer = StringBuffer();
+    modelSpecifications.fields.forEach((field) {
+      if (field.isEnum()) {
+        codeBuffer.writeln(field.enumName + " to" + field.enumName + "(int index) {");
+        codeBuffer.writeln(spaces(2) + "switch (index) {");
+        int index = 0;
+        field.enumValues.forEach((value) {
+          codeBuffer.writeln(spaces(4) + "case $index: return " + field.enumName + "." + value + ";");
+          index++;
+        });
+        codeBuffer.writeln(spaces(2) + "}");
+        codeBuffer.writeln(spaces(2) + "return " + field.enumName + ".Unknown;");
+      codeBuffer.writeln("}");
+      }
+    });
+    return codeBuffer.toString();
   }
 
   String _fieldDefinitions() {
@@ -113,7 +144,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
       codeBuffer.write(spaces(10) + field.fieldName);
       if (field.association) codeBuffer.write("Id");
       codeBuffer.write(": " + field.fieldName);
-      if (field.association) {
+      if (field.isEnum()) {
+        codeBuffer.write(".index");
+      } else if (field.association) {
         codeBuffer.write(".id");
       } else {
         if (!field.isNativeType()) {
@@ -140,7 +173,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (!field.association) {
         codeBuffer.write(spaces(10) + field.fieldName + ": ");
-        if (!field.isNativeType()) {
+        if (field.isEnum()) {
+          codeBuffer.write("to" + field.enumName + "(entity." + field.fieldName + ")");
+        } else if (!field.isNativeType()) {
           if (field.array) {
             codeBuffer.writeln();
             codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
@@ -185,7 +220,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(spaces(10) + field.fieldName + ": ");
-      if (field.association) {
+      if (field.isEnum()) {
+        codeBuffer.write(
+            "to" + field.enumName + "(entity." + field.fieldName + ")");
+      } else if (field.association) {
         codeBuffer.write(field.fieldName + "Holder");
       } else {
         if (!field.isNativeType()) {
@@ -216,6 +254,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
+
+    codeBuffer.writeln(_enums());
+    codeBuffer.writeln(_enumMethods());
 
     String className = modelSpecifications.modelClassName();
     codeBuffer.writeln("class $className {");

@@ -15,7 +15,7 @@ class EntityCodeBuilder extends CodeBuilder {
   @override
   CodeGenerator generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
-    EntityCodeGenerator modelCodeGenerator = EntityCodeGenerator(modelSpecifications: modelSpecification);
-    return modelCodeGenerator;
+    EntityCodeGenerator entityCodeGenerator = EntityCodeGenerator(modelSpecifications: modelSpecification);
+    return entityCodeGenerator;
   }
 }
