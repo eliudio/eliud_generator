@@ -5,6 +5,10 @@ targets:
         enabled: true
       eliud_generator|entity:
         enabled: true
+      eliud_generator|repository:
+        enabled: true
+      eliud_generator|firestore:
+        enabled: true
 
 builders:
   model:
@@ -20,5 +24,21 @@ builders:
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["entity"]
     build_extensions: {".spec": [".entity.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  repository:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["repository"]
+    build_extensions: {".spec": [".repository.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  firestore:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["firestore"]
+    build_extensions: {".spec": [".firestore.dart"]}
     build_to: source
     auto_apply: all_packages

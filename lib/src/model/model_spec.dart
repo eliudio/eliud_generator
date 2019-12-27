@@ -6,8 +6,9 @@ import 'field.dart';
 
 class ModelSpecification extends Specification {
   final List<Field> fields;
+  bool requiresBLoC;
 
-  ModelSpecification({ String id, this.fields }) : super(id: id);
+  ModelSpecification({ String id, this.requiresBLoC, this.fields }) : super(id: id);
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -16,6 +17,7 @@ class ModelSpecification extends Specification {
 
     return <String, dynamic>{
       "id": id,
+      "requiresBloc": requiresBLoC,
       'fields': jsonFields,
     };
   }
@@ -27,11 +29,11 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, fields];
+  List<Object> get props => [id, requiresBLoC, fields];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $requiresBLoC }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -42,6 +44,7 @@ class ModelSpecification extends Specification {
 
     return ModelSpecification(
         id: json["id"] as String,
+        requiresBLoC: json["requiresBLoC"] as bool,
         fields: menuItems
     );
   }

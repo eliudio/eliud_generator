@@ -10,6 +10,7 @@ abstract class CodeBuilder extends Builder {
     final AssetId output = buildStep.inputId.changeExtension(extension);
     final String jsonString = await buildStep.readAsString(buildStep.inputId);
     CodeGenerator codeGenerator = generator(jsonString);
-    await buildStep.writeAsString(output, codeGenerator.getCode());
+    if (codeGenerator != null)
+      await buildStep.writeAsString(output, codeGenerator.getCode());
   }
 }

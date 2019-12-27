@@ -3,8 +3,9 @@ import 'package:json_schema/json_schema.dart';
 
 abstract class CodeGenerator {
   final ModelSpecification modelSpecifications;
+  final List<String> uniqueAssociationTypes;
 
-  CodeGenerator({ this.modelSpecifications });
+  CodeGenerator({ this.modelSpecifications }) : uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
 
   String theFileName();
 
@@ -22,10 +23,9 @@ abstract class CodeGenerator {
     headerBuffer.writeln();
     headerBuffer.writeln("This code is generated. This is read only. Don't touch!");
     headerBuffer.writeln("*/");
+    headerBuffer.writeln();
     return headerBuffer.toString();
   }
-
-  String getCode();
 
   bool hasArray() {
     bool returnMe = false;
@@ -41,4 +41,14 @@ abstract class CodeGenerator {
     return ALL_SPACES.substring(0, amount);
   }
 
+  String commonImports();
+  String body();
+
+  String getCode() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.write(header());
+    codeBuffer.write(commonImports());
+    codeBuffer.write(body());
+    return codeBuffer.toString();
+  }
 }

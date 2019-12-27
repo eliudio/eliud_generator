@@ -22,9 +22,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
     return field.dartEntityType();
   }
 
-  String _commonImports() {
+  @override
+  String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln();
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
       if (!field.isNativeType()) {
@@ -181,7 +181,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _body() {
+  @override
+  String body() {
     StringBuffer codeBuffer = StringBuffer();
 
     String className = modelSpecifications.entityClassName();
@@ -196,14 +197,6 @@ class EntityCodeGenerator extends DataCodeGenerator {
 
     codeBuffer.writeln("}");
     codeBuffer.writeln();
-    return codeBuffer.toString();
-  }
-
-  String getCode() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(header());
-    codeBuffer.write(_commonImports());
-    codeBuffer.write(_body());
     return codeBuffer.toString();
   }
 }

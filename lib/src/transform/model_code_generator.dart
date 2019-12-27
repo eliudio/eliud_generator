@@ -18,9 +18,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
     return modelSpecifications.modelFileName();
   }
 
-  String _commonImports() {
+  @override
+  String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("import 'package:meta/meta.dart';");
+//    headerBuffer.writeln("import 'package:meta/meta.dart';");
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
@@ -30,7 +31,6 @@ class ModelCodeGenerator extends DataCodeGenerator {
       }
     });
 
-    List<String> uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
     uniqueAssociationTypes.forEach((type) {
       headerBuffer.writeln("import '" + camelcaseToUnderscore(type) + ".repository.dart" + "';");
     });
@@ -166,7 +166,6 @@ class ModelCodeGenerator extends DataCodeGenerator {
   }
 
   String _fromEntityPlus() {
-    List<String> uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
     if (uniqueAssociationTypes.isEmpty) return "";
 
     StringBuffer codeBuffer = StringBuffer();
@@ -178,7 +177,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (field.association) {
         codeBuffer.writeln(spaces(4) + field.fieldType + "Model " + field.fieldName + "Holder;");
-        codeBuffer.writeln(spaces(4) + "await " + firstLowerCase(field.fieldType) + "Repository.get" + field.fieldType + "(entity." + field.fieldName + "Id" + ").then((val) {");
+        codeBuffer.writeln(spaces(4) + "await " + firstLowerCase(field.fieldType) + "Repository.get(entity." + field.fieldName + "Id" + ").then((val) {");
         codeBuffer.writeln(spaces(6) + field.fieldName + "Holder" + " = val;");
         codeBuffer.writeln(spaces(4) + "});");
       }
@@ -214,7 +213,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _body() {
+  @override
+  String body() {
     StringBuffer codeBuffer = StringBuffer();
 
     String className = modelSpecifications.modelClassName();
@@ -230,14 +230,6 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
     codeBuffer.writeln("}");
     codeBuffer.writeln();
-    return codeBuffer.toString();
-  }
-
-  String getCode() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(header());
-    codeBuffer.write(_commonImports());
-    codeBuffer.write(_body());
     return codeBuffer.toString();
   }
 }

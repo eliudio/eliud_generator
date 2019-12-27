@@ -21,11 +21,27 @@ abstract class Specification extends Equatable {
     return id + "Entity";
   }
 
+  String repositoryClassName() {
+    return id + "Repository";
+  }
+
+  String firestoreClassName() {
+    return id + "Firestore";
+  }
+
   String modelFileName() {
     return camelcaseToUnderscore(id) + ".model.dart";
   }
 
   String entityFileName() {
     return camelcaseToUnderscore(id) + ".entity.dart";
+  }
+
+  String repositoryFileName() {
+    return camelcaseToUnderscore(id) + ".repository.dart";
+  }
+
+  String firestoreFileName() {
+    return camelcaseToUnderscore(id) + ".firestore.dart";
   }
 }
