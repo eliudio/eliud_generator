@@ -14,28 +14,18 @@ class FirestoreCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
-    if (!uniqueAssociationTypes.isEmpty) headerBuffer.writeln("import 'package:flutter/cupertino.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
     headerBuffer.writeln("import '" + modelSpecifications.modelFileName() + "';");
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
     headerBuffer.writeln();
-    uniqueAssociationTypes.forEach((type) {
-      headerBuffer.writeln("import '" + camelcaseToUnderscore(type) + ".repository.dart" + "';");
-    });
 
-    if (!uniqueAssociationTypes.isEmpty) headerBuffer.writeln();
     return headerBuffer.toString();
   }
 
   String _dataMembers() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "final " + _collectionName() + " = Firestore.instance.collection('" + _id() + "');");
-
-    uniqueAssociationTypes.forEach((field) {
-      codeBuffer.writeln(spaces(2)+ "final " + field + "Repository " + firstLowerCase(field) + "Repository;");
-    });
-
+    codeBuffer.writeln(spaces(2) + "final " + _collectionName() + " = Firestore.instance.collection('" + firstLowerCase(_id()) + "s');");
     return codeBuffer.toString();
   }
 
@@ -43,11 +33,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     if (uniqueAssociationTypes.isEmpty) return "";
 
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(spaces(2) + modelSpecifications.firestoreClassName() + "({");
-    uniqueAssociationTypes.forEach((field) {
-      codeBuffer.write("@required this." + firstLowerCase(field) + "Repository, ");
-    });
-    codeBuffer.writeln("});");
+    codeBuffer.writeln(spaces(2) + modelSpecifications.firestoreClassName() + "();");
 
     return codeBuffer.toString();
   }
@@ -85,17 +71,9 @@ class FirestoreCodeGenerator extends CodeGenerator {
   }
 
   String _populateDocPlus() {
-    if (uniqueAssociationTypes.isEmpty) return "";
-
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "Future<" + modelSpecifications.modelClassName() + "> _populateDocPlus(DocumentSnapshot doc) async {");
-    codeBuffer.write(spaces(4) + "return " + modelSpecifications.modelClassName() + ".fromEntityPlus(" + _id() + "Entity.fromMap(doc.data)");
-
-    uniqueAssociationTypes.forEach((field) {
-      codeBuffer.write(", " + firstLowerCase(field) + "Repository");
-    });
-
-    codeBuffer.writeln(");");
+    codeBuffer.write(spaces(4) + "return " + modelSpecifications.modelClassName() + ".fromEntityPlus(" + _id() + "Entity.fromMap(doc.data));");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
@@ -105,11 +83,9 @@ class FirestoreCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "Future<" + modelSpecifications.modelClassName() + "> get(String id) {");
     codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(id).get().then((doc) {");
     codeBuffer.writeln(spaces(6) + "if (doc.data != null)");
-    if (!uniqueAssociationTypes.isEmpty)
-      codeBuffer.writeln(spaces(6) + "return _populateDocPlus(doc);");
-    else
-      codeBuffer.writeln(spaces(6) + "return _populateDoc(doc);");
-    codeBuffer.writeln(spaces(6) + "else return null;");
+    codeBuffer.writeln(spaces(8) + "return _populateDocPlus(doc);");
+    codeBuffer.writeln(spaces(6) + "else");
+    codeBuffer.writeln(spaces(8) + "return null;");
     codeBuffer.writeln(spaces(4) + "});");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();

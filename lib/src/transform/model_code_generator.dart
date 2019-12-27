@@ -45,7 +45,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
           codeBuffer.write(value + ", ");
         });
         codeBuffer.writeln("Unknown");
-        codeBuffer.writeln(spaces(2) + "}");
+        codeBuffer.writeln("}");
+        codeBuffer.writeln();
       }
     });
     return codeBuffer.toString();
@@ -64,7 +65,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
         });
         codeBuffer.writeln(spaces(2) + "}");
         codeBuffer.writeln(spaces(2) + "return " + field.enumName + ".Unknown;");
-      codeBuffer.writeln("}");
+        codeBuffer.writeln("}");
+        codeBuffer.writeln();
       }
     });
     return codeBuffer.toString();
@@ -72,6 +74,15 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
   String _fieldDefinitions() {
     StringBuffer codeBuffer = StringBuffer();
+    if (uniqueAssociationTypes.isNotEmpty) {
+      codeBuffer.writeln(spaces(2) + "// Need to initialise these:");
+    }
+    uniqueAssociationTypes.forEach((type) {
+      codeBuffer.writeln(spaces(2) + "static " + type + "Repository "+ firstLowerCase(type) + "Repository;");
+    });
+    if (uniqueAssociationTypes.isNotEmpty) {
+      codeBuffer.writeln();
+    }
     modelSpecifications.fields.forEach((field) {
       if ((field.remark != null) && (field.remark.length > 0)) {
         codeBuffer.writeln();
@@ -82,12 +93,17 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.write("final ");
       codeBuffer.writeln(field.dartModelType() + " " + field.fieldName + ";");
     });
-    codeBuffer.writeln();
+    return codeBuffer.toString();
+  }
 
-    // Constructor
+  String _constructor() {
+    StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(getConstructor(modelSpecifications.modelClassName()));
+    return codeBuffer.toString();
+  }
 
-    // copyWith
+  String _copyWith() {
+    StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(spaces(2) + modelSpecifications.modelClassName() + " copyWith({");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(
@@ -205,14 +221,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
   }
 
   String _fromEntityPlus() {
-    if (uniqueAssociationTypes.isEmpty) return "";
-
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(spaces(2) + "static Future<" + modelSpecifications.modelClassName() + "> fromEntityPlus(" + modelSpecifications.entityClassName() + " entity");
-    uniqueAssociationTypes.forEach((field) {
-      codeBuffer.write(", " + field + "Repository " + firstLowerCase(field) + "Repository");
-    });
-    codeBuffer.writeln(") async {");
+    codeBuffer.writeln(spaces(2) + "static Future<" + modelSpecifications.modelClassName() + "> fromEntityPlus(" + modelSpecifications.entityClassName() + " entity) async {");
     modelSpecifications.fields.forEach((field) {
       if (field.association) {
         codeBuffer.writeln(spaces(4) + field.fieldType + "Model " + field.fieldName + "Holder;");
@@ -233,15 +243,15 @@ class ModelCodeGenerator extends DataCodeGenerator {
         if (!field.isNativeType()) {
           if (field.array) {
             codeBuffer.writeln();
-            codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
+            codeBuffer.writeln(spaces(12) + "await Future.wait(entity. " + field.fieldName);
             codeBuffer.writeln(
                 spaces(12) + ".map((item) => " + field.fieldType +
-                    "Model.fromEntity(item))");
-            codeBuffer.write(spaces(12) + ".toList()");
+                    "Model.fromEntityPlus(item))");
+            codeBuffer.write(spaces(12) + ".toList())");
           } else {
             codeBuffer.writeln();
             codeBuffer.write(
-                spaces(12) + field.fieldType + "Model.fromEntity(entity." +
+                spaces(12) + "await " + field.fieldType + "Model.fromEntityPlus(entity." +
                     field.fieldName + ")");
           }
         } else {
@@ -266,6 +276,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln("class $className {");
 
     codeBuffer.writeln(_fieldDefinitions());
+    codeBuffer.writeln(_constructor());
+    codeBuffer.writeln(_copyWith());
     codeBuffer.writeln(_hashCode());
     codeBuffer.writeln(_equalsOperator());
     codeBuffer.writeln(toStringCode(modelSpecifications.modelClassName()));
