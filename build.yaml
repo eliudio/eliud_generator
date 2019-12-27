@@ -9,6 +9,12 @@ targets:
         enabled: true
       eliud_generator|firestore:
         enabled: true
+      eliud_generator|event:
+        enabled: true
+      eliud_generator|state:
+        enabled: true
+      eliud_generator|bloc:
+        enabled: true
 
 builders:
   model:
@@ -32,6 +38,30 @@ builders:
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["repository"]
     build_extensions: {".spec": [".repository.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  event:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["event"]
+    build_extensions: {".spec": [".event.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  state:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["state"]
+    build_extensions: {".spec": [".state.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  bloc:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["bloc"]
+    build_extensions: {".spec": [".bloc.dart"]}
     build_to: source
     auto_apply: all_packages
 
