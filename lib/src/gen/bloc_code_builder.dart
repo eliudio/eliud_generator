@@ -15,7 +15,7 @@ class BlocCodeBuilder extends CodeBuilder {
   @override
   CodeGenerator generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
-    if (modelSpecification.requiresBLoC) {
+    if (modelSpecification.generate.generateBloc) {
       BlocCodeGenerator repositoryCodeGenerator = BlocCodeGenerator(
           modelSpecifications: modelSpecification);
       return repositoryCodeGenerator;

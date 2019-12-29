@@ -1,5 +1,6 @@
 import 'package:build/build.dart';
 import 'package:eliud_generator/src/gen/bloc_code_builder.dart';
+import 'package:eliud_generator/src/gen/component_code_builder.dart';
 import 'file:///C:/src/eliud/eliud_generator/lib/src/gen/model_code_builder.dart';
 import 'package:eliud_generator/src/gen/entity_code_builder.dart';
 import 'package:eliud_generator/src/gen/event_code_builder.dart';
@@ -27,4 +28,7 @@ Builder state(BuilderOptions options) =>
 
 Builder bloc(BuilderOptions options) =>
     BlocCodeBuilder();
+
+Builder component(BuilderOptions options) =>
+    ComponentCodeBuilder();
 

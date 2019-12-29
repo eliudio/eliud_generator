@@ -17,7 +17,7 @@ class EventCodeBuilder extends CodeBuilder {
   @override
   CodeGenerator generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
-    if (modelSpecification.requiresBLoC) {
+    if (modelSpecification.generate.generateBloc) {
       EventCodeGenerator eventCodeGenerator = EventCodeGenerator(
           modelSpecifications: modelSpecification);
       return eventCodeGenerator;

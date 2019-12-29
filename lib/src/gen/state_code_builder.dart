@@ -15,7 +15,7 @@ class StateCodeBuilder extends CodeBuilder {
   @override
   CodeGenerator generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
-    if (modelSpecification.requiresBLoC) {
+    if (modelSpecification.generate.generateBloc) {
       StateCodeGenerator stateCodeGenerator = StateCodeGenerator(
           modelSpecifications: modelSpecification);
       return stateCodeGenerator;

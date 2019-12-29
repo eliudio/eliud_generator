@@ -1,6 +1,12 @@
 {
   "id": "Application",
-  "requiresBLoC": true,
+  "generate": {
+    "generateComponent": false,
+    "generateBloc": true,
+    "generateRepository": true,
+    "generateModel": true,
+    "generateEntity": true,
+  },
   "fields": [
     {
       "fieldName": "id",

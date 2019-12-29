@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:eliud_generator/src/model/spec.dart';
 
 import 'field.dart';
+import 'gen_spec.dart';
 
 class ModelSpecification extends Specification {
   final List<Field> fields;
-  bool requiresBLoC;
+  final GenerateSpecification generate;
 
-  ModelSpecification({ String id, this.requiresBLoC, this.fields }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.fields }) : super(id: id);
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -17,7 +18,7 @@ class ModelSpecification extends Specification {
 
     return <String, dynamic>{
       "id": id,
-      "requiresBloc": requiresBLoC,
+      "generate": generate.toJson(),
       'fields': jsonFields,
     };
   }
@@ -29,11 +30,11 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, requiresBLoC, fields];
+  List<Object> get props => [id, generate, fields];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $requiresBLoC }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -44,7 +45,7 @@ class ModelSpecification extends Specification {
 
     return ModelSpecification(
         id: json["id"] as String,
-        requiresBLoC: json["requiresBLoC"] as bool,
+        generate: GenerateSpecification.fromJson(json["generate"]),
         fields: menuItems
     );
   }

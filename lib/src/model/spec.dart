@@ -29,6 +29,10 @@ abstract class Specification extends Equatable {
     return id + "Firestore";
   }
 
+  String componentClassName() {
+    return "Abstract" + id + "Component";
+  }
+
   String modelFileName() {
     return camelcaseToUnderscore(id) + ".model.dart";
   }
@@ -55,6 +59,10 @@ abstract class Specification extends Equatable {
 
   String blocFileName() {
     return camelcaseToUnderscore(id) + ".bloc.dart";
+  }
+
+  String componentFileName() {
+    return camelcaseToUnderscore(id) + ".component.dart";
   }
 
 }
