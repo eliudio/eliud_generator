@@ -9,6 +9,12 @@ abstract class CodeGenerator {
 
   String theFileName();
 
+  String resolveImport({String importThis}) {
+    if (importThis.startsWith("action.")) return "package:eliud_model/built_in/" + importThis;
+    if (importThis.startsWith("image.")) return "package:eliud_model/built_in/" + importThis;
+    return importThis;
+  }
+
   String header() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("/*");

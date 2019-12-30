@@ -29,8 +29,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if ((!field.isEnum()) && (!field.isNativeType())) {
         headerBuffer.writeln("import '" +
-            camelcaseToUnderscore(field.fieldType) +
-            ".entity.dart" +
+            resolveImport(
+                importThis:
+                    camelcaseToUnderscore(field.fieldType) + ".entity.dart") +
             "';");
         extraLine = true;
       }
@@ -66,7 +67,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
         " fromMap(Map map) {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if ((!field.isEnum()) && (!field.association) && (!field.isNativeType())) {
+      if ((!field.isEnum()) &&
+          (!field.association) &&
+          (!field.isNativeType())) {
         extraLine = true;
         if (field.array) {
           codeBuffer.writeln(spaces(4) +
@@ -76,9 +79,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
               fieldName(field) +
               "'] as List<dynamic>)");
           codeBuffer.writeln(spaces(8) + ".map((dynamic item) =>");
-          codeBuffer.writeln(spaces(8) +
-              field.fieldType +
-              "Entity.fromMap(item as Map))");
+          codeBuffer.writeln(
+              spaces(8) + field.fieldType + "Entity.fromMap(item as Map))");
           codeBuffer.writeln(spaces(8) + ".toList();");
         } else {
           codeBuffer.writeln(spaces(4) +
@@ -125,7 +127,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + "Map<String, Object> toDocument() {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if ((!field.isEnum()) && (!field.association) && (!field.isNativeType())) {
+      if ((!field.isEnum()) &&
+          (!field.association) &&
+          (!field.isNativeType())) {
         extraLine = true;
         if (field.array) {
           codeBuffer.writeln(spaces(4) +

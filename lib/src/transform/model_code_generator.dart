@@ -23,12 +23,12 @@ class ModelCodeGenerator extends DataCodeGenerator {
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
     modelSpecifications.fields.forEach((field) {
       if ((!field.isEnum()) && (!field.isNativeType())) {
-        headerBuffer.writeln("import '" + camelcaseToUnderscore(field.fieldType) + ".model.dart" + "';");
+        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + ".model.dart") + "';");
       }
     });
 
     uniqueAssociationTypes.forEach((type) {
-      headerBuffer.writeln("import '" + camelcaseToUnderscore(type) + ".repository.dart" + "';");
+      headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(type) + ".repository.dart") + "';");
     });
 
     headerBuffer.writeln();

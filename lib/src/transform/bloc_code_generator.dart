@@ -13,10 +13,10 @@ class BlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + modelSpecifications.modelFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.eventFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.stateFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.eventFileName()) + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.stateFileName()) + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
 
     if (uniqueAssociationTypes.isNotEmpty) headerBuffer.writeln();
     return headerBuffer.toString();

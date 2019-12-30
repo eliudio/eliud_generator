@@ -13,7 +13,7 @@ class RepositoryCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:async';");
-    headerBuffer.writeln("import '" + modelSpecifications.modelFileName() + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln();
     return headerBuffer.toString();
   }

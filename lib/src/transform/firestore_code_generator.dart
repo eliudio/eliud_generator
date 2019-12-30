@@ -15,9 +15,9 @@ class FirestoreCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.modelFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.entityFileName()) + "';");
     headerBuffer.writeln();
 
     return headerBuffer.toString();
