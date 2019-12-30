@@ -10,8 +10,9 @@ abstract class CodeGenerator {
   String theFileName();
 
   String resolveImport({String importThis}) {
-    if (importThis.startsWith("action.")) return "package:eliud_model/built_in/" + importThis;
-    if (importThis.startsWith("image.")) return "package:eliud_model/built_in/" + importThis;
+    if (importThis.startsWith("action.")) return "package:eliud_model/shared/" + importThis;
+    if (importThis.startsWith("image.")) return "package:eliud_model/shared/" + importThis;
+    if (importThis.startsWith("rgb.")) return "package:eliud_model/shared/" + importThis;
     return importThis;
   }
 
