@@ -163,7 +163,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(spaces(10) + field.fieldName);
       if (field.association) codeBuffer.write("Id");
-      codeBuffer.write(": " + field.fieldName);
+      codeBuffer.write(": (" + field.fieldName + " != null) ? " + field.fieldName);
       if (field.isEnum()) {
         codeBuffer.write(".index");
       } else if (field.association) {
@@ -179,7 +179,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
           }
         }
       }
-      codeBuffer.writeln(", ");
+      codeBuffer.writeln(" : null, ");
     });
     codeBuffer.writeln(spaces(4) + ");");
     codeBuffer.writeln(spaces(2) + "}");
@@ -189,6 +189,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _fromEntity() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "static " + modelSpecifications.modelClassName() + " fromEntity(" + modelSpecifications.entityClassName() + " entity) {");
+    codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       if (!field.association) {
@@ -231,6 +232,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.writeln(spaces(4) + "});");
       }
     });
+    codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(spaces(10) + field.fieldName + ": ");

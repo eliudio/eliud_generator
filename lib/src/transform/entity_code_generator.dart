@@ -66,6 +66,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
         modelSpecifications.entityClassName() +
         " fromMap(Map map) {");
     bool extraLine = false;
+    codeBuffer.writeln(spaces(4) + "if (map == null) return null;");
+    codeBuffer.writeln();
     modelSpecifications.fields.forEach((field) {
       if ((!field.isEnum()) &&
           (!field.association) &&

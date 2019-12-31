@@ -5,14 +5,17 @@ abstract class CodeGenerator {
   final ModelSpecification modelSpecifications;
   final List<String> uniqueAssociationTypes;
 
-  CodeGenerator({ this.modelSpecifications }) : uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
+  CodeGenerator({this.modelSpecifications})
+      : uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
 
   String theFileName();
 
   String resolveImport({String importThis}) {
-    if (importThis.startsWith("action.")) return "package:eliud_model/shared/" + importThis;
-    if (importThis.startsWith("image.")) return "package:eliud_model/shared/" + importThis;
-    if (importThis.startsWith("rgb.")) return "package:eliud_model/shared/" + importThis;
+    if ((importThis.startsWith("action.")) ||
+        (importThis.startsWith("image.")) ||
+        (importThis.startsWith("rgb.")) ||
+        (importThis.startsWith("icon.")))
+      return "package:eliud_model/shared/" + importThis;
     return importThis;
   }
 
@@ -28,7 +31,8 @@ abstract class CodeGenerator {
     headerBuffer.writeln();
     headerBuffer.writeln("           " + theFileName());
     headerBuffer.writeln();
-    headerBuffer.writeln("This code is generated. This is read only. Don't touch!");
+    headerBuffer
+        .writeln("This code is generated. This is read only. Don't touch!");
     headerBuffer.writeln("*/");
     headerBuffer.writeln();
     return headerBuffer.toString();
@@ -42,7 +46,8 @@ abstract class CodeGenerator {
     return returnMe;
   }
 
-  static final ALL_SPACES = "                                                                                         ";
+  static final ALL_SPACES =
+      "                                                                                         ";
 
   String spaces(int amount) {
     return ALL_SPACES.substring(0, amount);
