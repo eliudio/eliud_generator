@@ -25,6 +25,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
+    headerBuffer.writeln("import 'dart:collection';");
+
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
       if ((!field.isEnum()) && (!field.isNativeType())) {
@@ -161,28 +163,28 @@ class EntityCodeGenerator extends DataCodeGenerator {
       }
     });
     if (extraLine) codeBuffer.writeln();
-    codeBuffer.writeln(spaces(4) + "return {");
+    codeBuffer.writeln(spaces(4) + "Map<String, Object> theDocument = HashMap();");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(spaces(6) + "\"" + fieldName(field) + "\": ");
+      codeBuffer.write(spaces(6) + "if (" + fieldName(field) + " != null) "+ "theDocument[\"" + fieldName(field) + "\"] = ");
       if ((field.association) || (field.isEnum())) {
-        codeBuffer.writeln(fieldName(field) + ", ");
+        codeBuffer.writeln(fieldName(field) + ";");
       } else {
         if (!field.isNativeType()) {
           if (field.array) {
-            codeBuffer.writeln(fieldName(field) + "ListMap, ");
+            codeBuffer.writeln(fieldName(field) + "ListMap;");
           } else {
-            codeBuffer.writeln(fieldName(field) + "Map, ");
+            codeBuffer.writeln(fieldName(field) + "Map;");
           }
         } else {
           if (field.array) {
-            codeBuffer.writeln(fieldName(field) + ".toList(), ");
+            codeBuffer.writeln(fieldName(field) + ".toList();");
           } else {
-            codeBuffer.writeln(fieldName(field) + ", ");
+            codeBuffer.writeln(fieldName(field) + ";");
           }
         }
       }
     });
-    codeBuffer.writeln(spaces(4) + "};");
+    codeBuffer.writeln(spaces(4) + "return theDocument;");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
