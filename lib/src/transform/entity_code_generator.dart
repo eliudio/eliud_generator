@@ -195,7 +195,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln("class $className {");
 
     codeBuffer.writeln(_fieldDefinitions());
-    codeBuffer.write(getConstructor(modelSpecifications.entityClassName()));
+    codeBuffer.write(getConstructor(name: modelSpecifications.entityClassName(), terminate: true));
     codeBuffer.writeln(_getProps());
     codeBuffer.writeln(toStringCode(modelSpecifications.entityClassName()));
     codeBuffer.writeln(_fromMap());

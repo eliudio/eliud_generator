@@ -98,7 +98,17 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
   String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(getConstructor(modelSpecifications.modelClassName()));
+    codeBuffer.write(getConstructor(name: modelSpecifications.modelClassName(), terminate: uniqueAssociationTypes.isEmpty));
+    if (uniqueAssociationTypes.isNotEmpty) {
+      codeBuffer.writeln(" {");
+    }
+    uniqueAssociationTypes.forEach((type) {
+      codeBuffer.writeln(spaces(4) + "assert("+ firstLowerCase(type) + "Repository != null);");
+    });
+    if (uniqueAssociationTypes.isNotEmpty) {
+      codeBuffer.writeln(spaces(2) + "}");
+    }
+
     return codeBuffer.toString();
   }
 
@@ -224,15 +234,21 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _fromEntityPlus() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "static Future<" + modelSpecifications.modelClassName() + "> fromEntityPlus(" + modelSpecifications.entityClassName() + " entity) async {");
+    codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
+    codeBuffer.writeln();
     modelSpecifications.fields.forEach((field) {
       if (field.association) {
         codeBuffer.writeln(spaces(4) + field.fieldType + "Model " + field.fieldName + "Holder;");
-        codeBuffer.writeln(spaces(4) + "await " + firstLowerCase(field.fieldType) + "Repository.get(entity." + field.fieldName + "Id" + ").then((val) {");
-        codeBuffer.writeln(spaces(6) + field.fieldName + "Holder" + " = val;");
-        codeBuffer.writeln(spaces(4) + "});");
+        codeBuffer.writeln(spaces(4) + "if (entity." + field.fieldName + "Id != null) {");
+        codeBuffer.writeln(spaces(6) + "try {");
+        codeBuffer.writeln(spaces(8) + "await " + firstLowerCase(field.fieldType) + "Repository.get(entity." + field.fieldName + "Id" + ").then((val) {");
+        codeBuffer.writeln(spaces(10) + field.fieldName + "Holder" + " = val;");
+        codeBuffer.writeln(spaces(8) + "}).catchError((error) {});");
+        codeBuffer.writeln(spaces(6) + "} catch (_) {}");
+        codeBuffer.writeln(spaces(4) + "}");
+        codeBuffer.writeln();
       }
     });
-    codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(spaces(10) + field.fieldName + ": ");

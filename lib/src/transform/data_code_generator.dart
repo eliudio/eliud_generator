@@ -9,7 +9,7 @@ abstract class DataCodeGenerator extends CodeGenerator {
 
   String fieldName(Field field);
 
-  String getConstructor(String name) {
+  String getConstructor({String name, bool terminate}) {
     StringBuffer codeBuffer = StringBuffer();
     // Constructor
     codeBuffer.write(spaces(2) + name + "({");
@@ -17,8 +17,11 @@ abstract class DataCodeGenerator extends CodeGenerator {
       codeBuffer.write(
           "this." + fieldName(field) + ", ");
     });
-    codeBuffer.writeln("});");
-    codeBuffer.writeln();
+    codeBuffer.write("})");
+    if (terminate) {
+      codeBuffer.writeln(";");
+      codeBuffer.writeln();
+    }
     return codeBuffer.toString();
   }
 
