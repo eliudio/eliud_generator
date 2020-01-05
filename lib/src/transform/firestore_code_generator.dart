@@ -96,7 +96,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "Stream<List<" + modelSpecifications.modelClassName() + ">> values() {");
     codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".snapshots().map((snapshot) {");
     codeBuffer.writeln(spaces(6) + "return snapshot.documents");
-    codeBuffer.writeln(spaces(12) + ".map((doc) => _populateDoc(doc));");
+    codeBuffer.writeln(spaces(12) + ".map((doc) => _populateDoc(doc)).toList();");
     codeBuffer.writeln(spaces(4) + "});");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();

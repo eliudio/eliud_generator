@@ -1,6 +1,5 @@
 import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
-import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
@@ -32,8 +31,8 @@ abstract class DataCodeGenerator extends CodeGenerator {
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
       if (field.array) {
-        codeBuffer.writeln(spaces(4) + "String " + fieldName(field) + "Csv = " + fieldName(field) + ".join(', ');");
-        bool extraLine = true;
+        codeBuffer.writeln(spaces(4) + "String " + fieldName(field) + "Csv = (" + fieldName(field) + " == null) ? '' : " + fieldName(field) + ".join(', ');");
+        extraLine = true;
       }
     });
     if (extraLine) codeBuffer.writeln();
