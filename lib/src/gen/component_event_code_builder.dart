@@ -1,14 +1,14 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/transform/code_generator.dart';
-import 'package:eliud_generator/src/transform/state_code_generator.dart';
+import 'package:eliud_generator/src/transform/component_event_code_generator.dart';
 
 import 'code_builder.dart';
 
-/// A builder which builds an state class based on a `spec` file
-class StateCodeBuilder extends CodeBuilder {
+/// A builder which builds an event class based on a `spec` file
+class ComponentEventCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.state.dart'],
+      '.spec': const ['.component.event.dart'],
     };
   }
 
@@ -16,9 +16,9 @@ class StateCodeBuilder extends CodeBuilder {
   CodeGenerator generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateBloc) {
-      StateCodeGenerator stateCodeGenerator = StateCodeGenerator(
+      ComponentEventCodeGenerator eventCodeGenerator = ComponentEventCodeGenerator(
           modelSpecifications: modelSpecification);
-      return stateCodeGenerator;
+      return eventCodeGenerator;
     }
   }
 }

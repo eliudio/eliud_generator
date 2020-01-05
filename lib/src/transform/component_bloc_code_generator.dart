@@ -3,8 +3,8 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-class BlocCodeGenerator extends CodeGenerator {
-  BlocCodeGenerator({ModelSpecification modelSpecifications})
+class ComponentBlocCodeGenerator extends CodeGenerator {
+  ComponentBlocCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -14,8 +14,8 @@ class BlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.eventFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.stateFileName()) + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.componentEventFileName()) + "';");
+    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.componentStateFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
 
     if (uniqueAssociationTypes.isNotEmpty) headerBuffer.writeln();
@@ -105,6 +105,6 @@ class BlocCodeGenerator extends CodeGenerator {
 
   @override
   String theFileName() {
-    return modelSpecifications.blocFileName();
+    return modelSpecifications.componentBlocFileName();
   }
 }

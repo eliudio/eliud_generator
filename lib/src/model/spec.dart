@@ -49,16 +49,16 @@ abstract class Specification extends Equatable {
     return camelcaseToUnderscore(id) + ".firestore.dart";
   }
 
-  String stateFileName() {
-    return camelcaseToUnderscore(id) + ".state.dart";
+  String componentStateFileName() {
+    return camelcaseToUnderscore(id) + ".component.state.dart";
   }
 
-  String eventFileName() {
-    return camelcaseToUnderscore(id) + ".event.dart";
+  String componentEventFileName() {
+    return camelcaseToUnderscore(id) + ".component.event.dart";
   }
 
-  String blocFileName() {
-    return camelcaseToUnderscore(id) + ".bloc.dart";
+  String componentBlocFileName() {
+    return camelcaseToUnderscore(id) + ".component.bloc.dart";
   }
 
   String componentFileName() {

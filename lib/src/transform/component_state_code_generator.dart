@@ -2,8 +2,8 @@ import 'package:eliud_generator/src/model/model_spec.dart';
 
 import 'code_generator.dart';
 
-class StateCodeGenerator extends CodeGenerator {
-  StateCodeGenerator ({ModelSpecification modelSpecifications})
+class ComponentStateCodeGenerator extends CodeGenerator {
+  ComponentStateCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -62,6 +62,6 @@ class StateCodeGenerator extends CodeGenerator {
 
   @override
   String theFileName() {
-    return modelSpecifications.stateFileName();
+    return modelSpecifications.componentStateFileName();
   }
 }

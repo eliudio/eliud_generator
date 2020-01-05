@@ -9,11 +9,11 @@ targets:
         enabled: true
       eliud_generator|firestore:
         enabled: true
-      eliud_generator|event:
+      eliud_generator|component_event:
         enabled: true
-      eliud_generator|state:
+      eliud_generator|component_state:
         enabled: true
-      eliud_generator|bloc:
+      eliud_generator|component_bloc:
         enabled: true
       eliud_generator|component:
         enabled: true
@@ -43,35 +43,35 @@ builders:
     build_to: source
     auto_apply: all_packages
 
-  event:
-    target: ":eliud_generator"
-    import: "package:eliud_generator/builder.dart"
-    builder_factories: ["event"]
-    build_extensions: {".spec": [".event.dart"]}
-    build_to: source
-    auto_apply: all_packages
-
-  state:
-    target: ":eliud_generator"
-    import: "package:eliud_generator/builder.dart"
-    builder_factories: ["state"]
-    build_extensions: {".spec": [".state.dart"]}
-    build_to: source
-    auto_apply: all_packages
-
-  bloc:
-    target: ":eliud_generator"
-    import: "package:eliud_generator/builder.dart"
-    builder_factories: ["bloc"]
-    build_extensions: {".spec": [".bloc.dart"]}
-    build_to: source
-    auto_apply: all_packages
-
   firestore:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["firestore"]
     build_extensions: {".spec": [".firestore.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  component_event:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["component_event"]
+    build_extensions: {".spec": [".component.event.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  component_state:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["component_state"]
+    build_extensions: {".spec": [".component.state.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  component_bloc:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["component_bloc"]
+    build_extensions: {".spec": [".component.bloc.dart"]}
     build_to: source
     auto_apply: all_packages
 

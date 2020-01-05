@@ -2,8 +2,8 @@ import 'package:eliud_generator/src/model/model_spec.dart';
 
 import 'code_generator.dart';
 
-class EventCodeGenerator extends CodeGenerator {
-  EventCodeGenerator ({ModelSpecification modelSpecifications})
+class ComponentEventCodeGenerator extends CodeGenerator {
+  ComponentEventCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -37,6 +37,6 @@ class EventCodeGenerator extends CodeGenerator {
 
   @override
   String theFileName() {
-    return modelSpecifications.eventFileName();
+    return modelSpecifications.componentEventFileName();
   }
 }
