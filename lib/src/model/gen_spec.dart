@@ -10,8 +10,10 @@ class GenerateSpecification {
   final bool generateRepository;
   final bool generateModel;
   final bool generateEntity;
+  final bool generateForm;
+  final bool generateList;
 
-  GenerateSpecification({ this.generateComponent, this.generateBloc, this.generateRepository, this.generateModel, this.generateEntity});
+  GenerateSpecification({ this.generateComponent, this.generateBloc, this.generateRepository, this.generateModel, this.generateEntity, this.generateForm, this.generateList});
 
   Map<String, Object> toJson() {
     return <String, dynamic>{
@@ -20,6 +22,8 @@ class GenerateSpecification {
       "generateRepository": generateRepository,
       "generateModel": generateModel,
       "generateEntity": generateEntity,
+      "generateForm": generateForm,
+      "generateList": generateList,
     };
   }
 
@@ -30,11 +34,11 @@ class GenerateSpecification {
   }
 
   @override
-  List<Object> get props => [generateComponent, generateBloc, generateRepository, generateModel, generateEntity];
+  List<Object> get props => [generateComponent, generateBloc, generateRepository, generateModel, generateEntity, generateForm, generateList];
 
   @override
   String toString() {
-    return 'GenerateSpecification { generateComponent: $generateComponent, generateBloc: $generateBloc, generateRepository: $generateRepository, generateModel: $generateModel, generateEntity: $generateEntity }';
+    return 'GenerateSpecification { generateComponent: $generateComponent, generateBloc: $generateBloc, generateRepository: $generateRepository, generateModel: $generateModel, generateEntity: $generateEntity, generateForm: $generateForm, generateList: $generateList }';
   }
 
   static GenerateSpecification fromJson(Map<String, Object> json) {
@@ -44,6 +48,8 @@ class GenerateSpecification {
       generateRepository: json["generateRepository"] as bool,
       generateModel: json["generateModel"] as bool,
       generateEntity: json["generateEntity"] as bool,
+      generateForm: json["generateForm"] as bool,
+      generateList: json["generateList"] as bool,
     );
   }
 

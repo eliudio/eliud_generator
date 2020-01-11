@@ -3,18 +3,20 @@ import 'package:equatable/equatable.dart';
 class Field extends Equatable {
   final String fieldName;
   final String fieldType;
+  final String fieldValidation;
   final String enumName;
   final List<String> enumValues;
   final bool array;
   final bool association;
   final String remark;
 
-  const Field({this.fieldName, this.fieldType, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark});
+  const Field({this.fieldName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark});
 
   Map<String, Object> toJson() {
     return {
       "fieldName": fieldName,
       "fieldType": fieldType,
+      "fieldValidation": fieldValidation,
       "enumName": enumName,
       "enumValues": enumValues,
       "array": array,
@@ -24,11 +26,11 @@ class Field extends Equatable {
   }
 
   @override
-  List<Object> get props => [fieldName, fieldType, array, association, enumName, enumValues, remark];
+  List<Object> get props => [fieldName, fieldType, fieldValidation, array, association, enumName, enumValues, remark];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, fieldType: $fieldType, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark }';
+    return 'Field { fieldName: $fieldName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark }';
   }
 
   static Field fromJson(Map<String, Object> json) {
@@ -47,6 +49,7 @@ class Field extends Equatable {
     return Field(
       fieldName: json["fieldName"] as String,
       fieldType: json["fieldType"] as String,
+      fieldValidation: json["fieldValidation"] as String,
       enumName: json["enumName"] as String,
       enumValues: myList,
       array:  array,

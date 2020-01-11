@@ -82,3 +82,68 @@ builders:
     build_extensions: {".spec": [".component.dart"]}
     build_to: source
     auto_apply: all_packages
+
+  list_event:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["list_event"]
+    build_extensions: {".spec": [".list.event.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  list_state:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["list_state"]
+    build_extensions: {".spec": [".list.state.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  list_bloc:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["list_bloc"]
+    build_extensions: {".spec": [".list.bloc.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  list:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["list"]
+    build_extensions: {".spec": [".list.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  form_event:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["form_event"]
+    build_extensions: {".spec": [".form.event.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  form_state:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["form_state"]
+    build_extensions: {".spec": [".form.state.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  form_bloc:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["form_bloc"]
+    build_extensions: {".spec": [".form.bloc.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  form:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["form"]
+    build_extensions: {".spec": [".form.dart"]}
+    build_to: source
+    auto_apply: all_packages
+

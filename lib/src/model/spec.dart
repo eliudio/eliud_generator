@@ -33,6 +33,22 @@ abstract class Specification extends Equatable {
     return "Abstract" + id + "Component";
   }
 
+  String formClassName() {
+    return id + "Form";
+  }
+
+  String formStateClassName() {
+    return id + "FormState";
+  }
+
+  String formEventClassName() {
+    return id + "FormEvent";
+  }
+
+  String listClassName() {
+    return id + "List";
+  }
+
   String modelFileName() {
     return camelcaseToUnderscore(id) + ".model.dart";
   }
@@ -65,4 +81,35 @@ abstract class Specification extends Equatable {
     return camelcaseToUnderscore(id) + ".component.dart";
   }
 
+  String listStateFileName() {
+    return camelcaseToUnderscore(id) + ".list.state.dart";
+  }
+
+  String listEventFileName() {
+    return camelcaseToUnderscore(id) + ".list.event.dart";
+  }
+
+  String listBlocFileName() {
+    return camelcaseToUnderscore(id) + ".list.bloc.dart";
+  }
+
+  String listFileName() {
+    return camelcaseToUnderscore(id) + ".list.dart";
+  }
+
+  String formStateFileName() {
+    return camelcaseToUnderscore(id) + ".form.state.dart";
+  }
+
+  String formEventFileName() {
+    return camelcaseToUnderscore(id) + ".form.event.dart";
+  }
+
+  String formBlocFileName() {
+    return camelcaseToUnderscore(id) + ".form.bloc.dart";
+  }
+
+  String formFileName() {
+    return camelcaseToUnderscore(id) + ".form.dart";
+  }
 }
