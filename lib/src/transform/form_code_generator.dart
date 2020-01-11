@@ -18,55 +18,32 @@ class FormCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formStateFileName()) + "';");
+    headerBuffer.writeln("import '../tools/enums.dart';");
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
 
   @override
   String body() {
-    return "";
     StringBuffer codeBuffer = StringBuffer();
     String idTag = firstLowerCase(modelSpecifications.id) + "Id";
     String className = modelSpecifications.formClassName();
-    codeBuffer.writeln("abstract class " + className + " extends StatelessWidget {");
-    codeBuffer.writeln(spaces(2) + "final String " + idTag + ";");
+    codeBuffer.writeln("class " + className + " extends StatelessWidget {");
+    codeBuffer.writeln(spaces(2) + "FormAction formAction;");
+    codeBuffer.writeln(spaces(2) + modelSpecifications.modelClassName() + " value;");
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + className + "({this." + idTag + "});");
+
+    codeBuffer.writeln(spaces(2) + className + "({Key key, @required this.formAction, @required this.value}) : super(key: key);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
-    codeBuffer.writeln(spaces(4) + "return BlocProvider<" + modelSpecifications.id + "Bloc> (");
-    codeBuffer.writeln(spaces(10) + "create: (context) => " + modelSpecifications.id + "Bloc(");
-    codeBuffer.writeln(spaces(12) + firstLowerCase(modelSpecifications.id) + "Repository: get" + modelSpecifications.id + "Repository())");
-    codeBuffer.writeln(spaces(8) + "..add(Fetch" + modelSpecifications.id + "(id: " + firstLowerCase(modelSpecifications.id) + "Id)),");
-    codeBuffer.writeln(spaces(6) + "child: _" + firstLowerCase(modelSpecifications.id) + "BlockBuilder(context),");
+    codeBuffer.writeln(spaces(4) + "return Scaffold(");
+    codeBuffer.writeln(spaces(6) + "appBar: formAction == FormAction.UpdateAction ? AppBar(title: Text(\"Update\")) : AppBar(title: Text(\"Add\")),");
+    codeBuffer.writeln(spaces(6) + "body: null,");
+    codeBuffer.writeln(spaces(6) + "//child: null");
     codeBuffer.writeln(spaces(4) + ");");
     codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Widget _" + firstLowerCase(modelSpecifications.id) + "BlockBuilder(BuildContext context) {");
-    codeBuffer.writeln(spaces(4) + "return BlocBuilder<" + modelSpecifications.id + "Bloc, " + modelSpecifications.id + "State>(builder: (context, state) {");
-    codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "Loaded) {");
-    codeBuffer.writeln(spaces(8) + "if (state.value == null) {");
-    codeBuffer.writeln(spaces(10) + "return alertWidget(title: 'Error', content: 'No " + firstLowerCase(modelSpecifications.id) + " defined');");
-    codeBuffer.writeln(spaces(8) + "} else {");
-    codeBuffer.writeln(spaces(10) + "return yourWidget(context, state.value);");
-    codeBuffer.writeln(spaces(8) + "}");
-    codeBuffer.writeln(spaces(6) + "} else if (state is " + modelSpecifications.id + "Error) {");
-    codeBuffer.writeln(spaces(8) + "return alertWidget(title: 'Error', content: state.message);");
-    codeBuffer.writeln(spaces(6) + "} else {");
-    codeBuffer.writeln(spaces(8) + "return Center(");
-    codeBuffer.writeln(spaces(10) + "child: CircularProgressIndicator(),");
-    codeBuffer.writeln(spaces(8) + ");");
-    codeBuffer.writeln(spaces(6) + "}");
-    codeBuffer.writeln(spaces(4) + "});");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Widget yourWidget(BuildContext context, " + modelSpecifications.id + "Model value);");
-    codeBuffer.writeln(spaces(2) + "Widget alertWidget({ title: String, content: String});");
-    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "Repository get" + modelSpecifications.id + "Repository();");
     codeBuffer.writeln("}");
-    codeBuffer.writeln();
-
     codeBuffer.writeln();
     return codeBuffer.toString();
   }
