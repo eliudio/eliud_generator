@@ -86,7 +86,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("class " + modelSpecifications.id + "Bloc extends Bloc<" + modelSpecifications.formEventClassName() + ", " + modelSpecifications.formStateClassName() + "> {");
+    codeBuffer.writeln("class " + modelSpecifications.id + "FormBloc extends Bloc<" + modelSpecifications.formEventClassName() + ", " + modelSpecifications.formStateClassName() + "> {");
 
     codeBuffer.writeln(_initialState());
     codeBuffer.writeln(_mapEventToState());

@@ -24,35 +24,58 @@ String jsonString() {
   return
       '{'+
       '  \"id\": \"Application\",'+
-      '  \"requiresBLoC\": true,'+
+      '  \"generate": {'+
+      '    \"generateComponent": false,'+
+      '    \"generateBloc": true,'+
+      '    \"generateRepository": true,'+
+      '    \"generateModel": true,'+
+      '    \"generateEntity": true,'+
+      '    \"generateForm": true,'+
+      '    \"generateList": true'+
+      '  },'+
       '  \"fields\": ['+
       '    {'+
       '      \"fieldName\": \"id\",'+
-      '      \"fieldType\": \"String\"'+
+      '      \"fieldType\": \"String\",'+
+      '      \"group\": \"general\"'+
       '    },'+
       '    {'+
       '      \"fieldName\": \"title\",'+
-      '      \"fieldType\": \"String\"'+
+      '      \"fieldType\": \"String\",'+
+      '      \"group\": \"general\"'+
       '    },'+
       '    {'+
       '      \"fieldName\": \"description\",'+
-      '      \"fieldType\": \"String\"'+
+      '      \"fieldType\": \"String\",'+
+      '      \"group\": \"incorrect\"'+
       '    },'+
       '    {'+
       '      \"fieldName\": \"entryPageId\",'+
-      '      \"fieldType\": \"String\"'+
+      '      \"fieldType\": \"String\",'+
+      '      \"group\": \"group2\"'+
       '    },'+
       '    {'+
       '      \"fieldName\": \"authenticationRequirement\",'+
       '      \"fieldType\": \"enum\",'+
       '      \"enumName\": \"AuthenticationRequirement\",'+
-      '      \"enumValues\" : [ \"LoginRequired\", \"LoginOptional\", \"NoLogin\" ]'+
+      '      \"enumValues\" : [ \"LoginRequired\", \"LoginOptional\", \"NoLogin\" ],'+
+      '      \"group\": \"group2\"'+
       '    },'+
       '    {'+
       '      \"fieldName\": \"logo\",'+
       '      \"fieldType\": \"Image\",'+
-      '      \"association\": true'+
+      '      \"association\": true'
       '    }'+
+      '  ],'+
+      '  \"groups\": ['+
+      '  {'+
+      '  \"group\": \"general\",'+
+      '  \"description\": \"General\"'+
+      '  },'+
+      '  {'+
+      '  \"group\": \"group2\",'+
+      '  \"description\": \"Menu items\"'+
+      '  }'+
       '  ]'+
       '}';
 }
@@ -60,6 +83,7 @@ String jsonString() {
 void main() {
   // TestWidgetsFlutterBinding.ensureInitialized();
 
+/*
   test('coded config', ()  async {
     List<Field> fields = List();
     fields.add(Field(fieldName: "id", fieldType: "String"));
@@ -77,12 +101,27 @@ void main() {
     expect(1, 1);
   });
 
+*/
   test('application', ()  async {
     ModelSpecification modelSpecifications = ModelSpecification.fromJsonString(jsonString());
-    print(modelSpecifications.toJsonString());
-    print(ModelCodeGenerator(modelSpecifications: modelSpecifications).getCode());
-    print(EntityCodeGenerator(modelSpecifications: modelSpecifications).getCode());
-    print(FirestoreCodeGenerator(modelSpecifications: modelSpecifications).getCode());
+    //print(modelSpecifications.toJsonString());
+    if (modelSpecifications.groups != null) {
+      modelSpecifications.groups.forEach((group) {
+        print(group.description + ":");
+        modelSpecifications.fieldsForGroups(group).forEach((field) {
+          print(field.fieldName);
+        });
+        print("----");
+      });
+    }
+    print("No group:");
+    modelSpecifications.unGroupedFields().forEach((field) {
+      print(field.fieldName);
+    });
+    print("----");
+    //print(ModelCodeGenerator(modelSpecifications: modelSpecifications).getCode());
+    //print(EntityCodeGenerator(modelSpecifications: modelSpecifications).getCode());
+    //print(FirestoreCodeGenerator(modelSpecifications: modelSpecifications).getCode());
     expect(1, 1);
   });
 }

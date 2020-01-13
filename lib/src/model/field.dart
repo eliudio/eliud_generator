@@ -1,5 +1,9 @@
 import 'package:equatable/equatable.dart';
 
+enum FormTypeField {
+  EntryField, CheckBox, Selection, Lookup, List, Unsupported
+}
+
 class Field extends Equatable {
   final String fieldName;
   final String fieldType;
@@ -9,8 +13,9 @@ class Field extends Equatable {
   final bool array;
   final bool association;
   final String remark;
+  final String group;
 
-  const Field({this.fieldName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark});
+  const Field({this.fieldName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group});
 
   Map<String, Object> toJson() {
     return {
@@ -21,16 +26,17 @@ class Field extends Equatable {
       "enumValues": enumValues,
       "array": array,
       "association": association,
-      "remark": remark
+      "remark": remark,
+      "group": group
     };
   }
 
   @override
-  List<Object> get props => [fieldName, fieldType, fieldValidation, array, association, enumName, enumValues, remark];
+  List<Object> get props => [fieldName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark }';
+    return 'Field { fieldName: $fieldName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group }';
   }
 
   static Field fromJson(Map<String, Object> json) {
@@ -55,11 +61,28 @@ class Field extends Equatable {
       array:  array,
       association: association,
       remark: json["remark"] as String,
+      group: json["group"] as String,
     );
   }
 
   bool isEnum() {
     return (fieldType == "enum");
+  }
+
+  bool isInt() {
+    return (fieldType == "int");
+  }
+
+  bool isDouble() {
+    return (fieldType == "double");
+  }
+
+  bool isString() {
+    return (fieldType == "String");
+  }
+
+  bool isBool() {
+    return (fieldType == "bool");
   }
 
   String dataType(String suffix) {
@@ -95,10 +118,24 @@ class Field extends Equatable {
   }
 
   bool isNativeType() {
-    if (fieldType == "bool") return true;
-    if (fieldType == "int") return true;
-    if (fieldType == "double") return true;
-    if (fieldType == "String") return true;
+    if (isBool()) return true;
+    if (isInt()) return true;
+    if (isDouble()) return true;
+    if (isString()) return true;
     return false;
+  }
+
+  FormTypeField formFieldType() {
+    if (array) {
+      if (!association) return FormTypeField.List;
+    } else {
+      if (association) return FormTypeField.Lookup;
+      if (isEnum()) return FormTypeField.Selection;
+      if (isInt()) return FormTypeField.EntryField;
+      if (isDouble()) return FormTypeField.EntryField;
+      if (isString()) return FormTypeField.EntryField;
+      if (isBool()) return FormTypeField.CheckBox;
+    }
+    return FormTypeField.Unsupported;
   }
 }
