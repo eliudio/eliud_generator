@@ -1,3 +1,4 @@
+import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
@@ -17,6 +18,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formEventFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formStateFileName()) + "';");
+    headerBuffer.writeln("import '../tools/string_validator.dart';");
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -25,6 +27,21 @@ class FormBlocCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "get initialState => " + modelSpecifications.id + "FormUninitialized();");
+    return codeBuffer.toString();
+  }
+
+  String _yield(int amountOfSpaces, Field field) {
+    StringBuffer codeBuffer = StringBuffer();
+    if (field.fieldValidation != null) {
+      codeBuffer.writeln(spaces(amountOfSpaces) + "if (!_is" + firstUpperCase(field.fieldName) + "Valid(event.value)) {");
+      String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Invalid value\", value: newValue);";
+      codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield " + errorClassName + "");
+      codeBuffer.writeln(spaces(amountOfSpaces) + "} else {");
+      codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
+      codeBuffer.writeln(spaces(amountOfSpaces) + "}");
+    } else {
+      codeBuffer.writeln(spaces(amountOfSpaces) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
+    }
     return codeBuffer.toString();
   }
 
@@ -44,16 +61,36 @@ class FormBlocCodeGenerator extends CodeGenerator {
     modelSpecifications.fields.forEach((field) {
       String className = "Changed" + modelSpecifications.id + firstUpperCase(field.fieldName);
       codeBuffer.writeln(spaces(6) + "if (event is " + className + ") {");
-      String submittableString = "yield Submittable" + modelSpecifications.id + "Form(value: newValue);";
-      if (field.fieldValidation != null) {
-        codeBuffer.writeln(spaces(8) + "if (!_is" + firstUpperCase(field.fieldName) + "Valid(event.value)) {");
-        String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Invalid value\", value: newValue);";
-        codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
+      if (field.isInt()) {
+        codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
+        codeBuffer.writeln(
+            spaces(10) + "newValue = currentState.value.copyWith(" +
+                field.fieldName + ": int.parse(event.value));");
+        codeBuffer.writeln(_yield(10, field));
         codeBuffer.writeln(spaces(8) + "} else {");
-        codeBuffer.writeln(spaces(10) + submittableString);
+        codeBuffer.writeln(
+            spaces(10) + "newValue = currentState.value.copyWith(" +
+                field.fieldName + ": 0);");
+        String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Value should be a number\", value: newValue);";
+        codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
+        codeBuffer.writeln(spaces(8) + "}");
+      } else if (field.isDouble()) {
+        codeBuffer.writeln(spaces(8) + "if (isDouble(event.value)) {");
+        codeBuffer.writeln(
+            spaces(10) + "newValue = currentState.value.copyWith(" +
+                field.fieldName + ": double.parse(event.value));");
+        codeBuffer.writeln(_yield(10, field));
+        codeBuffer.writeln(spaces(8) + "} else {");
+        codeBuffer.writeln(
+            spaces(10) + "newValue = currentState.value.copyWith(" +
+                field.fieldName + ": 0.0);");
+        String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Value should be a number or decimal number\", value: newValue);";
+        codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
         codeBuffer.writeln(spaces(8) + "}");
       } else {
-        codeBuffer.writeln(spaces(8) + submittableString);
+        codeBuffer.writeln(spaces(8) + "newValue = currentState.value.copyWith(" +
+            field.fieldName + ": event.value);");
+        codeBuffer.writeln(_yield(8, field));
       }
       codeBuffer.writeln(spaces(8) + "return;");
       codeBuffer.writeln(spaces(6) + "}");

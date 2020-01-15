@@ -47,8 +47,11 @@ class FormEventCodeGenerator extends CodeGenerator {
 
     modelSpecifications.fields.forEach((field) {
       String className = "Changed" + modelSpecifications.id + firstUpperCase(field.fieldName);
-      codeBuffer.writeln("class " + className + " extends " + formClassName + "{ ");
-      codeBuffer.writeln(spaces(2) + "final " + field.dartModelType() + " value;");
+      codeBuffer.writeln("class " + className + " extends " + formClassName + " {");
+      if (field.isInt() || field.isDouble() || field.isString())
+        codeBuffer.writeln(spaces(2) + "final String value;");
+      else
+        codeBuffer.writeln(spaces(2) + "final " + field.dartModelType() + " value;");
       codeBuffer.writeln();
       codeBuffer.writeln(spaces(2) + className + "({this.value});");
       codeBuffer.writeln();
