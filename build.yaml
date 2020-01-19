@@ -17,6 +17,8 @@ targets:
         enabled: true
       eliud_generator|component:
         enabled: true
+      eliud_generator|internal_component:
+        enabled: true
 
 builders:
   model:
@@ -147,3 +149,10 @@ builders:
     build_to: source
     auto_apply: all_packages
 
+  internal_component:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["internal_component"]
+    build_extensions: {r"$lib$": ["internal_component4.dart"]}
+    build_to: source
+    auto_apply: all_packages

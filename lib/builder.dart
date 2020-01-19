@@ -1,6 +1,7 @@
 import 'package:build/build.dart';
 
 import 'package:eliud_generator/src/gen/entity_code_builder.dart';
+import 'package:eliud_generator/src/gen/internal_component_builder.dart';
 import 'package:eliud_generator/src/gen/model_code_builder.dart';
 
 import 'package:eliud_generator/src/gen/firestore_code_builder.dart';
@@ -70,3 +71,5 @@ Builder form_bloc(BuilderOptions options) =>
 Builder form(BuilderOptions options) =>
     FormCodeBuilder();
 
+Builder internal_component(BuilderOptions options) =>
+    InternalComponentBuilder();

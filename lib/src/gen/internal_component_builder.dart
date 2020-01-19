@@ -3,39 +3,34 @@ import 'dart:async';
 import 'package:build/build.dart';
 
 import 'package:build/build.dart';
+import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/transform/code_generator.dart';
+import 'package:eliud_generator/src/transform/code_generator_multi.dart';
+import 'package:eliud_generator/src/transform/internal_component_generator.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as p;
 
-abstract class CodeBuilderMulti implements Builder {
-  static final _allFilesInLib = new Glob('lib/**.spec');
+import 'code_builder_multi.dart';
 
-  static AssetId _allFileOutput(BuildStep buildStep) {
-    return new AssetId(
-      buildStep.inputId.package,
-      p.join('lib', 'all_files.txt'),
-    );
-  }
+class InternalComponentBuilder extends CodeBuilderMulti {
+  InternalComponentCodeGenerator internalComponentCodeGenerator = InternalComponentCodeGenerator(fileName);
+
+  static const String fileName = 'shared/internal_component.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {
     return const {
-      r'$lib$': const ['all_files.txt'],
+      r'$lib$': const [ fileName ],
     };
   }
 
   @override
-  Future<void> build(BuildStep buildStep) async {
-    final files = <String>[];
-    List<String> specifications;
-    await for (final input in buildStep.findAssets(_allFilesInLib)) {
-      files.add(input.path);
-      final String jsonString = await buildStep.readAsString(input);
-      specifications.add(jsonString);
-    }
-    final output = _allFileOutput(buildStep);
-    return buildStep.writeAsString(output, specifications.join('\n'));
+  CodeGeneratorMulti generator() {
+    return internalComponentCodeGenerator;
   }
 
-  CodeGenerator generator(List<String> specifications);
+  @override
+  String getFileName() {
+    return fileName;
+  }
 }
