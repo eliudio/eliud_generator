@@ -4,10 +4,12 @@ import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/transform/entity_code_generator.dart';
 import 'package:eliud_generator/src/transform/firestore_code_generator.dart';
+import 'package:eliud_generator/src/transform/form_code_generator.dart';
 import 'package:eliud_generator/src/transform/model_code_generator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/vm.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 Future<String> get _localPath async {
   final directory = await getApplicationDocumentsDirectory();
@@ -81,27 +83,21 @@ String jsonString() {
 }
 
 void main() {
+
+  test('the real thing', ()  async {
+    var pathToFile = join(dirname(Platform.script.toFilePath()), '../eliud_model/lib/model', 'menu.spec');
+    var file = File(pathToFile);
+    if (await file.exists()) {
+      var contents = await file.readAsString();
+      ModelSpecification modelSpecifications = ModelSpecification
+          .fromJsonString(
+          contents);
+      print(new FormCodeGenerator(modelSpecifications: modelSpecifications).getCode());
+      print("****************************************************************");
+    }
+  });
   // TestWidgetsFlutterBinding.ensureInitialized();
 
-/*
-  test('coded config', ()  async {
-    List<Field> fields = List();
-    fields.add(Field(fieldName: "id", fieldType: "String"));
-    fields.add(Field(fieldName: "menuItems", array: true, fieldType: "MenuItem"));
-    List<String> values = List();
-    values.add("EnumValue1");
-    values.add("EnumValue2");
-    values.add("EnumValue3");
-    fields.add(Field(fieldName: "myValue", enumName: "MyEnum", enumValues: values, fieldType: "enum"));
-    ModelSpecification modelSpecifications = ModelSpecification(id: "Menu", fields: fields);
-    print(modelSpecifications.toJsonString());
-    print(ModelCodeGenerator(modelSpecifications: modelSpecifications).getCode());
-    print(EntityCodeGenerator(modelSpecifications: modelSpecifications).getCode());
-    print(FirestoreCodeGenerator(modelSpecifications: modelSpecifications).getCode());
-    expect(1, 1);
-  });
-
-*/
   test('application', ()  async {
     ModelSpecification modelSpecifications = ModelSpecification.fromJsonString(jsonString());
     //print(modelSpecifications.toJsonString());

@@ -263,11 +263,107 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "Navigator.pop(context);");
     codeBuffer.writeln(spaces(6) + "}");
 
+
+    codeBuffer.writeln(spaces(6) + "return Container(");
+    codeBuffer.writeln(spaces(10) + "padding:");
+    codeBuffer.writeln(spaces(10) + "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
+    codeBuffer.writeln(spaces(12) + "child: Form(");
+
+    codeBuffer.writeln(spaces(12) + "child: ListView(");
+    codeBuffer.writeln(spaces(14) + "padding: const EdgeInsets.all(8),");
+    codeBuffer.writeln(spaces(14) + "children: <Widget>[");
+    if (modelSpecifications.groups == null) {
+      codeBuffer.writeln(_fields(modelSpecifications.fields));
+    } else {
+      codeBuffer.writeln(
+          _groupedFieldsFor("General", modelSpecifications.unGroupedFields()));
+      modelSpecifications.groups.forEach((group) {
+        codeBuffer.writeln(
+            _groupedFieldsFor(group.description ?? group.group, modelSpecifications.fieldsForGroups(group)));
+      }
+      );
+    }
+    codeBuffer.writeln(spaces(16) + "RaisedButton(");
+    codeBuffer.writeln(spaces(18) + "onPressed: state is " + modelSpecifications.id + "FormError ? null : _onSubmitPressed,");
+    codeBuffer.writeln(spaces(18) + "child: Text('Submit'),");
+    codeBuffer.writeln(spaces(16) + "),");
+    codeBuffer.writeln(spaces(14) + "],");
+    codeBuffer.writeln(spaces(12) + "),");
+
+    codeBuffer.writeln(spaces(10) + "));");
+
     // close blocbuilder
     codeBuffer.writeln(spaces(4) + "});");
 
     // close method
     codeBuffer.writeln(spaces(2) + "}");
+    return codeBuffer.toString();
+  }
+
+  String _groupedFieldHeader(String groupLabel) {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(16) + "Container(");
+    codeBuffer.writeln(spaces(18) + "alignment: Alignment.centerLeft,");
+    codeBuffer.writeln(spaces(18) + "padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),");
+    codeBuffer.writeln(spaces(18) + "child: Text('$groupLabel',");
+    codeBuffer.writeln(spaces(22) + "style: TextStyle(");
+    codeBuffer.writeln(spaces(26) + "color: Colors.red, fontWeight: FontWeight.bold)),");
+    codeBuffer.writeln(spaces(16) + "),");
+    return codeBuffer.toString();
+  }
+
+  String _groupedFieldFooter() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(16) + "const Divider(height: 1.0, thickness: 1.0, color: Colors.red),");
+    return codeBuffer.toString();
+  }
+
+  String _field(Field field) {
+    StringBuffer codeBuffer = StringBuffer();
+    switch (field.formFieldType()) {
+      case FormTypeField.EntryField:
+        codeBuffer.writeln(spaces(16) + "TextFormField(");
+        codeBuffer.writeln(spaces(18) + "controller: _" + field.fieldName + "Controller,");
+        codeBuffer.writeln(spaces(18) + "decoration: InputDecoration(");
+        codeBuffer.writeln(spaces(20) + "icon: Icon(Icons.email),");
+        codeBuffer.writeln(spaces(20) + "labelText: '" + field.fieldName + "',");
+        codeBuffer.writeln(spaces(18) + "),");
+        if (field.isDouble()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.number,");
+        if (field.isInt()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.number,");
+        if (field.isString()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.text,");
+        codeBuffer.writeln(spaces(18) + "autovalidate: true,");
+        codeBuffer.writeln(spaces(18) + "validator: (_) {");
+        codeBuffer.writeln(spaces(20) + "return state is " + firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError ? state.message : null;");
+        codeBuffer.writeln(spaces(18) + "},");
+        codeBuffer.writeln(spaces(16) + "),");
+        break;
+      case FormTypeField.CheckBox:
+        break;
+      case FormTypeField.Lookup:
+        break;
+      case FormTypeField.Selection:
+        break;
+      case FormTypeField.List:
+        break;
+      case FormTypeField.Unsupported:
+        break;
+    }
+    return codeBuffer.toString();
+  }
+
+  String _groupedFieldsFor(String groupLabel, List<Field> fields) {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(_groupedFieldHeader(groupLabel));
+    codeBuffer.writeln(_fields(fields));
+    codeBuffer.writeln(_groupedFieldFooter());
+    return codeBuffer.toString();
+  }
+
+  String _fields(List<Field> fields) {
+    StringBuffer codeBuffer = StringBuffer();
+    fields.forEach((field) {
+      codeBuffer.writeln(_field(field));
+    });
     return codeBuffer.toString();
   }
 
