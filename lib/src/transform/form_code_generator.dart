@@ -275,8 +275,11 @@ class FormCodeGenerator extends CodeGenerator {
     if (modelSpecifications.groups == null) {
       codeBuffer.writeln(_fields(modelSpecifications.fields));
     } else {
-      codeBuffer.writeln(
-          _groupedFieldsFor("General", modelSpecifications.unGroupedFields()));
+      if (modelSpecifications.hasUngroupedFields()) {
+        codeBuffer.writeln(
+            _groupedFieldsFor(
+                "General", modelSpecifications.unGroupedFields()));
+      }
       modelSpecifications.groups.forEach((group) {
         codeBuffer.writeln(
             _groupedFieldsFor(group.description ?? group.group, modelSpecifications.fieldsForGroups(group)));

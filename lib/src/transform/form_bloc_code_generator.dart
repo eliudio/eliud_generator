@@ -97,6 +97,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
     });
 
     codeBuffer.writeln(spaces(6) + "if (event is " + modelSpecifications.id + "FormSubmitted) {");
+    codeBuffer.writeln(spaces(8) + "newValue = currentState.value;");
     codeBuffer.writeln(spaces(8) + "yield " + modelSpecifications.id + "SuccessfullySubmitted(value: newValue);");
     codeBuffer.writeln(spaces(8) + "return;");
     codeBuffer.writeln(spaces(6) + "}");

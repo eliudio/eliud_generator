@@ -102,6 +102,10 @@ class ModelSpecification extends Specification {
     return false;
   }
 
+  bool hasUngroupedFields() {
+    return (unGroupedFields().length > 0);
+  }
+
   List<Field> unGroupedFields() {
     final List<Field> thoseFields = new List();
     fields.forEach((field) {
