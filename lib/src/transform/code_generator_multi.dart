@@ -12,5 +12,5 @@ abstract class CodeGeneratorMulti extends CodeGeneratorBase {
     return fileName;
   }
 
-  String getCode(List<ModelSpecification> modelSpecifications);
+  String getCode(List<ModelSpecificationPlus> modelSpecificationPlus);
 }

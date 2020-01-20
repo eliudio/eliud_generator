@@ -6,6 +6,13 @@ import 'field.dart';
 import 'gen_spec.dart';
 import 'group.dart';
 
+class ModelSpecificationPlus {
+  final ModelSpecification modelSpecification;
+  final String path;
+
+  ModelSpecificationPlus({ this.modelSpecification, this.path });
+}
+
 class ModelSpecification extends Specification {
   final List<Field> fields;
   final List<Group> groups;

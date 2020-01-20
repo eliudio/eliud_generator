@@ -21,18 +21,14 @@ abstract class CodeBuilderMulti implements Builder {
 
   @override
   Future<void> build(BuildStep buildStep) async {
-    final files = <String>[];
-    List<String> specifications = List();
+    List<ModelSpecificationPlus> specifications = List();
     await for (final input in buildStep.findAssets(_allFilesInLib)) {
-      files.add(input.path);
+      String path = input.path.substring(4).replaceAll(".spec", "");
       final String jsonString = await buildStep.readAsString(input);
-      specifications.add(jsonString);
+      specifications.add(ModelSpecificationPlus(modelSpecification: ModelSpecification.fromJsonString(jsonString), path: path));
     }
-    List<ModelSpecification> modelSpecifications = specifications.map((spec) =>
-        ModelSpecification.fromJsonString(spec)).toList();
-
     CodeGeneratorMulti codeGenerator = generator();
-    String theCode = codeGenerator.getCode(modelSpecifications);
+    String theCode = codeGenerator.getCode(specifications);
     final output = _allFileOutput(getFileName(), buildStep);
     return buildStep.writeAsString(output, theCode);
   }

@@ -21,6 +21,7 @@ import 'package:eliud_generator/src/gen/list_bloc_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_event_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_state_code_builder.dart';
+import 'package:eliud_generator/src/gen/repository_singleton_builder.dart';
 
 
 Builder model(BuilderOptions options) =>
@@ -73,3 +74,7 @@ Builder form(BuilderOptions options) =>
 
 Builder internal_component(BuilderOptions options) =>
     InternalComponentBuilder();
+
+Builder repository_singleton(BuilderOptions options) =>
+    RepositorySingletonBuilder();
+
