@@ -5,6 +5,7 @@ import 'package:eliud_generator/src/model/spec.dart';
 import 'field.dart';
 import 'gen_spec.dart';
 import 'group.dart';
+import 'list_fields.dart';
 
 class ModelSpecificationPlus {
   final ModelSpecification modelSpecification;
@@ -17,8 +18,9 @@ class ModelSpecification extends Specification {
   final List<Field> fields;
   final List<Group> groups;
   final GenerateSpecification generate;
+  final ListFields listFields;
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields }) : super(id: id);
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -34,6 +36,7 @@ class ModelSpecification extends Specification {
       "generate": generate.toJson(),
       'fields': jsonFields,
       'groups': jsonGroups,
+      'listFields': listFields.toJson(),
     };
   }
 
@@ -48,7 +51,7 @@ class ModelSpecification extends Specification {
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -66,11 +69,17 @@ class ModelSpecification extends Specification {
           .toList();
     }
 
+    var theListFields;
+    var jsonListFields = json['listFields'];
+    if (jsonListFields != null)
+      theListFields = ListFields.fromJson(jsonListFields);
+
     return ModelSpecification(
         id: json["id"] as String,
         generate: GenerateSpecification.fromJson(json["generate"]),
         fields: theItems,
-        groups: theGroups
+        groups: theGroups,
+        listFields: theListFields,
     );
   }
 

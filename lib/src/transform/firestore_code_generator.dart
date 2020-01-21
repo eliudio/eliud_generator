@@ -41,7 +41,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
   String _add() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "Future<void> add(" + modelSpecifications.modelClassName() + " value) {");
-    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.id).setData(value.toEntity().toDocument());");
+    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.documentID).setData(value.toEntity().toDocument());");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
@@ -49,7 +49,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
   String _delete() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "Future<void> delete(" + modelSpecifications.modelClassName() + " value) {");
-    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.id).delete();");
+    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.documentID).delete();");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
@@ -57,7 +57,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
   String _update() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "Future<void> update(" + modelSpecifications.modelClassName() + " value) {");
-    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.id).updateData(value.toEntity().toDocument());");
+    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.documentID).updateData(value.toEntity().toDocument());");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
@@ -65,7 +65,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
   String _populateDoc() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + modelSpecifications.modelClassName() + " _populateDoc(DocumentSnapshot doc) {");
-    codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + ".fromEntity(" + _id() + "Entity.fromMap(doc.data));");
+    codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + ".fromEntity(doc.documentID, " + _id() + "Entity.fromMap(doc.data));");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
@@ -73,7 +73,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
   String _populateDocPlus() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "Future<" + modelSpecifications.modelClassName() + "> _populateDocPlus(DocumentSnapshot doc) async {");
-    codeBuffer.write(spaces(4) + "return " + modelSpecifications.modelClassName() + ".fromEntityPlus(" + _id() + "Entity.fromMap(doc.data));");
+    codeBuffer.write(spaces(4) + "return " + modelSpecifications.modelClassName() + ".fromEntityPlus(doc.documentID, " + _id() + "Entity.fromMap(doc.data));");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }

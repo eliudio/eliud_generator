@@ -56,7 +56,29 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(18) + "return BlocProvider.value(");
     codeBuffer.writeln(spaces(22) + "value: BlocProvider.of<" + modelSpecifications.id + "ListBloc" + ">(context),");
     codeBuffer.writeln(spaces(22) + "child: " + modelSpecifications.formClassName() + "(");
-    codeBuffer.writeln(spaces(24) + "value: " + modelSpecifications.modelClassName() + "(), formAction: FormAction.AddAction));");
+    codeBuffer.writeln(spaces(24) + "value: " + modelSpecifications.modelClassName() + "(");
+    modelSpecifications.fields.forEach((field) {
+      if (field.defaultValue != null) {
+        codeBuffer.write(spaces(33) + field.fieldName + ": ");
+        if ((field.isInt()) || (field.isDouble())) {
+          codeBuffer.write(field.defaultValue);
+        } else if (field.isString()) {
+          codeBuffer.write("\"" + field.defaultValue + "\"");
+        }
+        codeBuffer.writeln(", ");
+      } else {
+        if (field.isInt()) {
+          codeBuffer.writeln(spaces(33) + field.fieldName + ": 0,");
+        } else if (field.isDouble()) {
+            codeBuffer.writeln(spaces(33) + field.fieldName + ": 0.0,");
+        } else if (field.isString()) {
+          codeBuffer.writeln(spaces(33) + field.fieldName + ": \"\",");
+        }
+      }
+    });
+    codeBuffer.writeln(spaces(31) + "), ");
+    codeBuffer.writeln(spaces(24) + "formAction: FormAction.AddAction)");
+    codeBuffer.writeln(spaces(22) + ");");
     codeBuffer.writeln(spaces(16) + "}),");
     codeBuffer.writeln(spaces(14) + ");");
     codeBuffer.writeln(spaces(12) + "},");
@@ -71,7 +93,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(20) + "BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context)");
     codeBuffer.writeln(spaces(24) + ".add(Delete" + modelSpecifications.id + "List(value: value));");
     codeBuffer.writeln(spaces(20) + "Scaffold.of(context).showSnackBar(DeleteSnackBar(");
-    codeBuffer.writeln(spaces(22) + "message: \"" + modelSpecifications.id + " \" + value.id,",);
+    codeBuffer.writeln(spaces(22) + "message: \"" + modelSpecifications.id + " \" + value.documentID,",);
     codeBuffer.writeln(spaces(22) + "onUndo: () => BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context)");
     codeBuffer.writeln(spaces(26) + ".add(Add" + modelSpecifications.id + "List(value: value)),");
     codeBuffer.writeln(spaces(20) + "));");
@@ -90,7 +112,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(22) + "Scaffold.of(context).showSnackBar(");
     codeBuffer.writeln(spaces(24) + "DeleteSnackBar(");
 
-    codeBuffer.writeln(spaces(26) + "message: \"" + modelSpecifications.id + " \" + value.id,",);
+    codeBuffer.writeln(spaces(26) + "message: \"" + modelSpecifications.id + " \" + value.documentID,",);
     codeBuffer.writeln(spaces(26) + "onUndo: () => BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context)");
     codeBuffer.writeln(spaces(30) + ".add(Add" + modelSpecifications.id + "List(value: value)),");
     codeBuffer.writeln(spaces(24) + "),");
@@ -126,28 +148,33 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
     codeBuffer.writeln(spaces(4) + "return Dismissible(");
-    codeBuffer.writeln(spaces(6) + "key: Key('__" + modelSpecifications.id + "_item_\${value.id}'),");
+    codeBuffer.writeln(spaces(6) + "key: Key('__" + modelSpecifications.id + "_item_\${value.documentID}'),");
     codeBuffer.writeln(spaces(6) + "onDismissed: onDismissed,");
     codeBuffer.writeln(spaces(6) + "child: ListTile(");
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");
     codeBuffer.writeln(spaces(8) + "title: Hero(");
-    codeBuffer.writeln(spaces(10) + "tag: '\${value.id}__heroTag',");
+    String title = modelSpecifications.listFields?.title ?? "documentID";
+    codeBuffer.writeln(spaces(10) + "tag: '\${value." + title + "}__heroTag',");
     codeBuffer.writeln(spaces(10) + "child: Container(");
     codeBuffer.writeln(spaces(12) + "width: MediaQuery.of(context).size.width,");
     codeBuffer.writeln(spaces(12) + "child: Text(");
-    codeBuffer.writeln(spaces(14) + "value.id,");
+    codeBuffer.writeln(spaces(14) + "value." + title + ",");
     codeBuffer.writeln(spaces(14) + "style: Theme.of(context).textTheme.title,");
     codeBuffer.writeln(spaces(12) + "),");
     codeBuffer.writeln(spaces(10) + "),");
     codeBuffer.writeln(spaces(8) + "),");
-    codeBuffer.writeln(spaces(8) + "subtitle: value.id.isNotEmpty");
-    codeBuffer.writeln(spaces(12) + "? Text(");
-    codeBuffer.writeln(spaces(10) + "value.id,");
-    codeBuffer.writeln(spaces(10) + "maxLines: 1,");
-    codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
-    codeBuffer.writeln(spaces(10) + "style: Theme.of(context).textTheme.subhead,");
-    codeBuffer.writeln(spaces(8) + ")");
-    codeBuffer.writeln(spaces(12) + ": null,");
+    String subTitle = modelSpecifications.listFields.subTitle;
+    if (subTitle != null) {
+      codeBuffer.writeln(spaces(8) + "subtitle: value." + subTitle + ".isNotEmpty");
+      codeBuffer.writeln(spaces(12) + "? Text(");
+      codeBuffer.writeln(spaces(10) + "value." + subTitle + ",");
+      codeBuffer.writeln(spaces(10) + "maxLines: 1,");
+      codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
+      codeBuffer.writeln(
+          spaces(10) + "style: Theme.of(context).textTheme.subhead,");
+      codeBuffer.writeln(spaces(8) + ")");
+      codeBuffer.writeln(spaces(12) + ": null,");
+    }
     codeBuffer.writeln(spaces(6) + "),");
     codeBuffer.writeln(spaces(4) + ");");
 

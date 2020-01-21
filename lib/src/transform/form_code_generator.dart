@@ -326,9 +326,17 @@ class FormCodeGenerator extends CodeGenerator {
     switch (field.formFieldType()) {
       case FormTypeField.EntryField:
         codeBuffer.writeln(spaces(16) + "TextFormField(");
+        if (field.fieldName == "documentID") {
+          codeBuffer.writeln(spaces(18) + "readOnly: (formAction == FormAction.UpdateAction),");
+        }
         codeBuffer.writeln(spaces(18) + "controller: _" + field.fieldName + "Controller,");
         codeBuffer.writeln(spaces(18) + "decoration: InputDecoration(");
-        codeBuffer.writeln(spaces(20) + "icon: Icon(Icons.email),");
+        codeBuffer.write(spaces(20) + "icon: Icon(Icons.");
+        if (field.iconName != null)
+          codeBuffer.write(field.iconName);
+        else
+          codeBuffer.write("adjust");
+        codeBuffer.writeln("),");
         codeBuffer.writeln(spaces(20) + "labelText: '" + field.fieldName + "',");
         codeBuffer.writeln(spaces(18) + "),");
         if (field.isDouble()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.number,");

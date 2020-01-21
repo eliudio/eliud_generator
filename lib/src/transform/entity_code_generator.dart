@@ -45,8 +45,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
   String _fieldDefinitions() {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(
-          "  final " + dartEntityType(field) + " " + fieldName(field) + ";");
+      if (field.fieldName != "documentID")
+        codeBuffer.writeln(
+            "  final " + dartEntityType(field) + " " + fieldName(field) + ";");
     });
     return codeBuffer.toString();
   }
@@ -55,7 +56,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(spaces(2) + "List<Object> get props => [");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(fieldName(field) + ", ");
+      if (field.fieldName != "documentID")
+        codeBuffer.write(fieldName(field) + ", ");
     });
     codeBuffer.writeln("];");
     return codeBuffer.toString();
@@ -102,21 +104,24 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(spaces(6) + fieldName(field) + ": ");
-      if ((field.association) || (field.isEnum())) {
-        codeBuffer.writeln("map['" + fieldName(field) + "'], ");
-      } else {
-        if (!field.isNativeType()) {
-          if (field.array) {
-            codeBuffer.writeln(fieldName(field) + "List, ");
-          } else {
-            codeBuffer.writeln(fieldName(field) + "FromMap, ");
-          }
+      if (field.fieldName != "documentID") {
+        codeBuffer.write(spaces(6) + fieldName(field) + ": ");
+        if ((field.association) || (field.isEnum())) {
+          codeBuffer.writeln("map['" + fieldName(field) + "'], ");
         } else {
-          if (field.array) {
-            codeBuffer.writeln("List.from(map['" + fieldName(field) + "']), ");
+          if (!field.isNativeType()) {
+            if (field.array) {
+              codeBuffer.writeln(fieldName(field) + "List, ");
+            } else {
+              codeBuffer.writeln(fieldName(field) + "FromMap, ");
+            }
           } else {
-            codeBuffer.writeln("map['" + fieldName(field) + "'], ");
+            if (field.array) {
+              codeBuffer.writeln(
+                  "List.from(map['" + fieldName(field) + "']), ");
+            } else {
+              codeBuffer.writeln("map['" + fieldName(field) + "'], ");
+            }
           }
         }
       }
@@ -165,21 +170,24 @@ class EntityCodeGenerator extends DataCodeGenerator {
     if (extraLine) codeBuffer.writeln();
     codeBuffer.writeln(spaces(4) + "Map<String, Object> theDocument = HashMap();");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(spaces(6) + "if (" + fieldName(field) + " != null) "+ "theDocument[\"" + fieldName(field) + "\"] = ");
-      if ((field.association) || (field.isEnum())) {
-        codeBuffer.writeln(fieldName(field) + ";");
-      } else {
-        if (!field.isNativeType()) {
-          if (field.array) {
-            codeBuffer.writeln(fieldName(field) + "ListMap;");
-          } else {
-            codeBuffer.writeln(fieldName(field) + "Map;");
-          }
+      if (field.fieldName != "documentID") {
+        codeBuffer.write(spaces(6) + "if (" + fieldName(field) + " != null) " +
+            "theDocument[\"" + fieldName(field) + "\"] = ");
+        if ((field.association) || (field.isEnum())) {
+          codeBuffer.writeln(fieldName(field) + ";");
         } else {
-          if (field.array) {
-            codeBuffer.writeln(fieldName(field) + ".toList();");
+          if (!field.isNativeType()) {
+            if (field.array) {
+              codeBuffer.writeln(fieldName(field) + "ListMap;");
+            } else {
+              codeBuffer.writeln(fieldName(field) + "Map;");
+            }
           } else {
-            codeBuffer.writeln(fieldName(field) + ";");
+            if (field.array) {
+              codeBuffer.writeln(fieldName(field) + ".toList();");
+            } else {
+              codeBuffer.writeln(fieldName(field) + ";");
+            }
           }
         }
       }
@@ -197,9 +205,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln("class $className {");
 
     codeBuffer.writeln(_fieldDefinitions());
-    codeBuffer.write(getConstructor(name: modelSpecifications.entityClassName(), terminate: true));
+    codeBuffer.write(getConstructor(removeDocumentID: true, name: modelSpecifications.entityClassName(), terminate: true));
     codeBuffer.writeln(_getProps());
-    codeBuffer.writeln(toStringCode(modelSpecifications.entityClassName()));
+    codeBuffer.writeln(toStringCode(true, modelSpecifications.entityClassName()));
     codeBuffer.writeln(_fromMap());
     codeBuffer.writeln(_toDocument());
 

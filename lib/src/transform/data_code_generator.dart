@@ -8,13 +8,14 @@ abstract class DataCodeGenerator extends CodeGenerator {
 
   String fieldName(Field field);
 
-  String getConstructor({String name, bool terminate}) {
+  String getConstructor({bool removeDocumentID, String name, bool terminate}) {
     StringBuffer codeBuffer = StringBuffer();
     // Constructor
     codeBuffer.write(spaces(2) + name + "({");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(
-          "this." + fieldName(field) + ", ");
+      if (!((removeDocumentID) && (field.fieldName == "documentID")))
+        codeBuffer.write(
+            "this." + fieldName(field) + ", ");
     });
     codeBuffer.write("})");
     if (terminate) {
@@ -24,7 +25,7 @@ abstract class DataCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String toStringCode(String name) {
+  String toStringCode(bool removeDocumentID, String name) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() {");
@@ -38,14 +39,17 @@ abstract class DataCodeGenerator extends CodeGenerator {
     if (extraLine) codeBuffer.writeln();
     codeBuffer.write(spaces(4) + "return '" + name + "{");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(fieldName(field) + ": ");
-      if (field.array) {
-        codeBuffer.write(field.fieldType + "[] { \$" + fieldName(field) + "Csv }");
-      } else {
-        codeBuffer.write("\$" + fieldName(field));
-      }
-      if (modelSpecifications.fields.last != field) {
-        codeBuffer.write(", ");
+      if (!((removeDocumentID) && (field.fieldName == "documentID"))) {
+        codeBuffer.write(fieldName(field) + ": ");
+        if (field.array) {
+          codeBuffer.write(
+              field.fieldType + "[] { \$" + fieldName(field) + "Csv }");
+        } else {
+          codeBuffer.write("\$" + fieldName(field));
+        }
+        if (modelSpecifications.fields.last != field) {
+          codeBuffer.write(", ");
+        }
       }
     });
     codeBuffer.writeln("}';");

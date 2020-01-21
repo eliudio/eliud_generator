@@ -14,8 +14,10 @@ class Field extends Equatable {
   final bool association;
   final String remark;
   final String group;
+  final String defaultValue;
+  final String iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
 
-  const Field({this.fieldName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group});
+  const Field({this.fieldName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName});
 
   Map<String, Object> toJson() {
     return {
@@ -27,16 +29,18 @@ class Field extends Equatable {
       "array": array,
       "association": association,
       "remark": remark,
-      "group": group
+      "group": group,
+      "defaultValue": defaultValue,
+      "iconName": iconName,
     };
   }
 
   @override
-  List<Object> get props => [fieldName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group];
+  List<Object> get props => [fieldName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group, defaultValue, iconName];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group }';
+    return 'Field { fieldName: $fieldName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName }';
   }
 
   static Field fromJson(Map<String, Object> json) {
@@ -62,6 +66,8 @@ class Field extends Equatable {
       association: association,
       remark: json["remark"] as String,
       group: json["group"] as String,
+      defaultValue: json["defaultValue"] as String,
+      iconName: json["iconName"] as String,
     );
   }
 
