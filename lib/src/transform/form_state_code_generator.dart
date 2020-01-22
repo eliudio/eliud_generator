@@ -99,7 +99,7 @@ class FormStateCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "List<Object> get props => [ message, value ];");
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "FormError({this.message, " + modelClassName + " value }) : super();");
+    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "FormError({this.message, " + modelClassName + " value }) : super(value: value);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() {");

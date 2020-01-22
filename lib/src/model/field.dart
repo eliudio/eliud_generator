@@ -6,6 +6,7 @@ enum FormTypeField {
 
 class Field extends Equatable {
   final String fieldName;
+  final String displayName;
   final String fieldType;
   final String fieldValidation;
   final String enumName;
@@ -17,11 +18,12 @@ class Field extends Equatable {
   final String defaultValue;
   final String iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
 
-  const Field({this.fieldName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName});
+  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName});
 
   Map<String, Object> toJson() {
     return {
       "fieldName": fieldName,
+      "displayName": displayName,
       "fieldType": fieldType,
       "fieldValidation": fieldValidation,
       "enumName": enumName,
@@ -36,11 +38,11 @@ class Field extends Equatable {
   }
 
   @override
-  List<Object> get props => [fieldName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group, defaultValue, iconName];
+  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group, defaultValue, iconName];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName }';
+    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName }';
   }
 
   static Field fromJson(Map<String, Object> json) {
@@ -58,6 +60,7 @@ class Field extends Equatable {
     }
     return Field(
       fieldName: json["fieldName"] as String,
+      displayName: json["displayName"] as String,
       fieldType: json["fieldType"] as String,
       fieldValidation: json["fieldValidation"] as String,
       enumName: json["enumName"] as String,

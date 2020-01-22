@@ -335,9 +335,16 @@ class FormCodeGenerator extends CodeGenerator {
         if (field.iconName != null)
           codeBuffer.write(field.iconName);
         else
-          codeBuffer.write("adjust");
+          codeBuffer.write("text_format");
         codeBuffer.writeln("),");
-        codeBuffer.writeln(spaces(20) + "labelText: '" + field.fieldName + "',");
+        codeBuffer.write(spaces(20) + "labelText: '");
+        if (field.displayName == null)
+          codeBuffer.write(field.fieldName);
+        else
+          codeBuffer.write(field.displayName);
+        codeBuffer.writeln("',");
+        if (field.remark != null)
+          codeBuffer.writeln(spaces(20) + "hintText: \"" + field.remark + "\",");
         codeBuffer.writeln(spaces(18) + "),");
         if (field.isDouble()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.number,");
         if (field.isInt()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.number,");
@@ -349,10 +356,35 @@ class FormCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(16) + "),");
         break;
       case FormTypeField.CheckBox:
+        codeBuffer.writeln(spaces(16) + "CheckboxListTile(");
+        codeBuffer.write(spaces(20) + "title: const Text('");
+        if (field.displayName == null)
+          codeBuffer.write(field.fieldName);
+        else
+          codeBuffer.write(field.displayName);
+        codeBuffer.writeln("'),");
+        codeBuffer.writeln(spaces(20) + "value: _" + firstLowerCase(field.fieldName) + "Selection,");
+        codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
+//      codeBuffer.writeln(spaces(22) + "setState(() => print());");
+        codeBuffer.writeln(spaces(22) + "setSelection" + firstUpperCase(field.fieldName) + "(val);");
+        codeBuffer.writeln(spaces(20) + "}),");
         break;
       case FormTypeField.Lookup:
         break;
       case FormTypeField.Selection:
+        int i = 0;
+        field.enumValues.forEach((enumField) {
+          codeBuffer.writeln(spaces(16) + "RadioListTile(");
+          codeBuffer.writeln(spaces(20) + "value: $i,");
+          codeBuffer.writeln(spaces(20) + "groupValue: _" + firstLowerCase(field.fieldName) + "SelectedRadioTile,");
+          codeBuffer.writeln(spaces(20) + "title: Text(\"" + enumField + "\"),");
+          codeBuffer.writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\"),");
+          codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
+          codeBuffer.writeln(spaces(22) + "setSelection" + firstUpperCase(field.fieldName) + "(val);");
+          codeBuffer.writeln(spaces(20) + "},");
+          codeBuffer.writeln(spaces(16) + "),");
+          i++;
+        });
         break;
       case FormTypeField.List:
         break;
@@ -408,7 +440,7 @@ class FormCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _xyzSetSelection(Field field) {
+  String _xyzSetEnumSelection(Field field) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "void setSelection" + firstUpperCase(field.fieldName) + "(int val) {");
     codeBuffer.writeln(spaces(4) + "setState(() {");
@@ -416,6 +448,19 @@ class FormCodeGenerator extends CodeGenerator {
         spaces(6) + "_" + field.fieldName + "SelectedRadioTile = val;");
     codeBuffer.writeln(spaces(4) + "});");
     codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: to" + field.dartModelType() + "(val)));");
+    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln();
+    return codeBuffer.toString();
+  }
+
+  String _xyzSetBooleanSelection(Field field) {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) + "void setSelection" + firstUpperCase(field.fieldName) + "(bool val) {");
+    codeBuffer.writeln(spaces(4) + "setState(() {");
+    codeBuffer.writeln(
+        spaces(6) + "_" + field.fieldName + "Selection = val;");
+    codeBuffer.writeln(spaces(4) + "});");
+    codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: val));");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     return codeBuffer.toString();
@@ -429,20 +474,12 @@ class FormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(_xyzOnChanged(field));
           break;
         case FormTypeField.CheckBox:
-/*
-          codeBuffer.writeln(spaces(2) + "void setSelection" + firstUpperCase(field.fieldName) + "(bool val) {");
-          codeBuffer.writeln(spaces(4) + "setState(() {");
-          codeBuffer.writeln(
-              spaces(6) + "_" + field.fieldName + "Selection = val;");
-          codeBuffer.writeln(spaces(4) + "});");
-          codeBuffer.writeln(spaces(2) + "}");
-          codeBuffer.writeln();
-*/
+          codeBuffer.writeln(_xyzSetBooleanSelection(field));
           break;
         case FormTypeField.Lookup:
           break;
         case FormTypeField.Selection:
-          codeBuffer.writeln(_xyzSetSelection(field));
+          codeBuffer.writeln(_xyzSetEnumSelection(field));
           break;
         case FormTypeField.List:
           break;

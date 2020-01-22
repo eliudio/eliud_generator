@@ -165,7 +165,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "),");
     String subTitle = modelSpecifications.listFields.subTitle;
     if (subTitle != null) {
-      codeBuffer.writeln(spaces(8) + "subtitle: value." + subTitle + ".isNotEmpty");
+      codeBuffer.writeln(spaces(8) + "subtitle: (value." + subTitle + " != null) && (value." + subTitle + ".isNotEmpty)");
       codeBuffer.writeln(spaces(12) + "? Text(");
       codeBuffer.writeln(spaces(10) + "value." + subTitle + ",");
       codeBuffer.writeln(spaces(10) + "maxLines: 1,");
