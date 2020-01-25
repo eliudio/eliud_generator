@@ -262,7 +262,6 @@ class FormCodeGenerator extends CodeGenerator {
     });
     codeBuffer.writeln(spaces(12) + ")));");
     codeBuffer.writeln(spaces(8) + "}");
-    codeBuffer.writeln(spaces(8) + "Navigator.pop(context);");
     codeBuffer.writeln(spaces(6) + "}");
 
     codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "FormInitialized) {");
@@ -532,6 +531,7 @@ class FormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "void _onSubmitPressed() {");
     codeBuffer.writeln(spaces(4) + "_myFormBloc.add(" + modelSpecifications.id + "FormSubmitted());");
+    codeBuffer.writeln(spaces(4) + "Navigator.pop(context);");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     return codeBuffer.toString();
