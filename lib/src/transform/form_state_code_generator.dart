@@ -118,7 +118,6 @@ class FormStateCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(_generateClass2(className: modelSpecifications.id + "FormLoaded", extendsThis: modelSpecifications.id + "FormInitialized"));
     codeBuffer.writeln(_generateClass2(className: "Submittable" + modelSpecifications.id + "Form", extendsThis: modelSpecifications.id + "FormInitialized"));
-    codeBuffer.writeln(_generateClass2(className: modelSpecifications.id + "SuccessfullySubmitted", extendsThis: modelSpecifications.id + "FormInitialized"));
 
     return codeBuffer.toString();
   }

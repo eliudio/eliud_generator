@@ -9,6 +9,8 @@ import 'code_generator_multi.dart';
 // triggerSignature = method signature for callback
 
 const String _imports = """
+import '../tools/random.dart';
+
 import 'component_constructor.dart';
 import 'dart:async';
 
@@ -37,39 +39,55 @@ static Widget \${lid}sList(List<\${id}Model> values, \${id}ListChanged trigger) 
 
 const String _InMemoryRepositoryTemplate = """
 class \${id}InMemoryRepository implements \${id}Repository {
-    List<\${id}Model> items;
-    \${triggerSignature} trigger;
+    final List<\${id}Model> items;
+    final \${triggerSignature} trigger;
+    Stream<List<\${id}Model>> theValues;
 
-    \${id}InMemoryRepository({this.trigger, this.items});
+    \${id}InMemoryRepository({this.trigger, this.items}) {
+        List<List<\${id}Model>> myList = new List<List<\${id}Model>>();
+        myList.add(items);
+        theValues = Stream<List<\${id}Model>>.fromIterable(myList);
+    }
+
+    int _index(String documentID) {
+      int i = 0;
+      for (final item in items) {
+        if (item.documentID == documentID) {
+          return i;
+        }
+        i++;
+      }
+      return -1;
+    }
 
     Future<void> add(\${id}Model value) {
-        items.add(value);
+        items.add(value.copyWith(documentID: newRandomKey()));
         trigger(items);
     }
 
     Future<void> delete(\${id}Model value) {
-        items.removeAt(items.indexOf(value));
-        trigger(items);
+      int index = _index(value.documentID);
+      if (index >= 0) items.removeAt(index);
+      trigger(items);
     }
 
     Future<void> update(\${id}Model value) {
-        int index = items.indexOf(value);
-        items.removeAt(index);
-        items.add(value);
+      int index = _index(value.documentID);
+      if (index >= 0) {
+        items.replaceRange(index, index+1, [value]);
         trigger(items);
+      }
     }
 
     Future<\${id}Model> get(String id) {
-        int index = int.parse(id);
-        var completer = new Completer<\${id}Model>();
-        completer.complete(items[index]);
-        return completer.future;
+      int index = _index(id);
+      var completer = new Completer<\${id}Model>();
+      completer.complete(items[index]);
+      return completer.future;
     }
 
     Stream<List<\${id}Model>> values() {
-        List<List<\${id}Model>> myList = new List<List<\${id}Model>>();
-        myList.add(items);
-        return Stream<List<\${id}Model>>.fromIterable(myList);
+      return theValues;
     }
 }
 """;

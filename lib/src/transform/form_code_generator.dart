@@ -245,25 +245,6 @@ class FormCodeGenerator extends CodeGenerator {
     });
     codeBuffer.writeln(spaces(6) + "}");
 
-    // state is ...Submitted
-    codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "SuccessfullySubmitted) {");
-    codeBuffer.writeln(spaces(8) + "if (formAction == FormAction.UpdateAction) {");
-    codeBuffer.writeln(spaces(10) + "BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context).add(");
-    codeBuffer.writeln(spaces(12) + "Update" + modelSpecifications.id + "List(value: "+ modelSpecifications.modelClassName() + "(");
-    modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(spaces(16) + field.fieldName + ": state.value." + field.fieldName + ", ");
-    });
-    codeBuffer.writeln(spaces(10) + ")));");
-    codeBuffer.writeln(spaces(8) + "} else {");
-    codeBuffer.writeln(spaces(10) + "BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context).add(");
-    codeBuffer.writeln(spaces(12) + "Add" + modelSpecifications.id + "List(value: "+ modelSpecifications.modelClassName() + "(");
-    modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(spaces(16) + field.fieldName + ": state.value." + field.fieldName + ", ");
-    });
-    codeBuffer.writeln(spaces(12) + ")));");
-    codeBuffer.writeln(spaces(8) + "}");
-    codeBuffer.writeln(spaces(6) + "}");
-
     codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "FormInitialized) {");
     codeBuffer.writeln(spaces(8) + "return Container(");
     codeBuffer.writeln(spaces(10) + "padding:");
@@ -288,7 +269,30 @@ class FormCodeGenerator extends CodeGenerator {
       );
     }
     codeBuffer.writeln(spaces(16) + "RaisedButton(");
-    codeBuffer.writeln(spaces(18) + "onPressed: state is " + modelSpecifications.id + "FormError ? null : _onSubmitPressed,");
+    codeBuffer.writeln(spaces(18) + "onPressed: () {");
+    codeBuffer.writeln(spaces(14 + 6) + "if (state is " + modelSpecifications.id + "FormError) {");
+    codeBuffer.writeln(spaces(14 + 8) + "return null;");
+    codeBuffer.writeln(spaces(14 + 6) + "} else {");
+    codeBuffer.writeln(spaces(14 + 8) + "if (formAction == FormAction.UpdateAction) {");
+    codeBuffer.writeln(spaces(14 + 10) + "BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context).add(");
+    codeBuffer.writeln(spaces(14 + 12) + "Update" + modelSpecifications.id + "List(value: "+ modelSpecifications.modelClassName() + "(");
+    modelSpecifications.fields.forEach((field) {
+      codeBuffer.writeln(spaces(14 + 16) + field.fieldName + ": state.value." + field.fieldName + ", ");
+    });
+    codeBuffer.writeln(spaces(14 + 10) + ")));");
+    codeBuffer.writeln(spaces(14 + 8) + "} else {");
+    codeBuffer.writeln(spaces(14 + 10) + "BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context).add(");
+    codeBuffer.writeln(spaces(14 + 12) + "Add" + modelSpecifications.id + "List(value: "+ modelSpecifications.modelClassName() + "(");
+    modelSpecifications.fields.forEach((field) {
+      codeBuffer.writeln(spaces(14 + 16) + field.fieldName + ": state.value." + field.fieldName + ", ");
+    });
+    codeBuffer.writeln(spaces(14 + 12) + ")));");
+    codeBuffer.writeln(spaces(14 + 8) + "}");
+    codeBuffer.writeln(spaces(14 + 8) + "Navigator.pop(context);");
+    codeBuffer.writeln(spaces(14 + 8) + "return true;");
+    codeBuffer.writeln(spaces(14 + 6) + "}");
+
+    codeBuffer.writeln(spaces(18) + "},");
     codeBuffer.writeln(spaces(18) + "child: Text('Submit'),");
     codeBuffer.writeln(spaces(16) + "),");
     codeBuffer.writeln(spaces(14) + "],");
@@ -435,7 +439,6 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(_xyzFormStateBuild());
     codeBuffer.writeln(_xyzChangeds());
     codeBuffer.writeln(_dispose());
-    codeBuffer.writeln(_submitPressed());
     codeBuffer.writeln("}");
     codeBuffer.writeln();
     return codeBuffer.toString();
@@ -524,16 +527,6 @@ class FormCodeGenerator extends CodeGenerator {
     });
     codeBuffer.writeln(spaces(4) + "super.dispose();");
     codeBuffer.writeln(spaces(2) + "}");
-    return codeBuffer.toString();
-  }
-
-  String _submitPressed() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "void _onSubmitPressed() {");
-    codeBuffer.writeln(spaces(4) + "_myFormBloc.add(" + modelSpecifications.id + "FormSubmitted());");
-    codeBuffer.writeln(spaces(4) + "Navigator.pop(context);");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
     return codeBuffer.toString();
   }
 

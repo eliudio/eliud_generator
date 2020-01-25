@@ -64,10 +64,6 @@ class FormEventCodeGenerator extends CodeGenerator {
       codeBuffer.writeln();
     });
 
-    codeBuffer.writeln("class " + modelSpecifications.id + "FormSubmitted extends " + formClassName + " {");
-    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "FormSubmitted();");
-    codeBuffer.writeln("}");
-
     return codeBuffer.toString();
   }
 

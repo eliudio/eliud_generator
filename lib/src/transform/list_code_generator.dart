@@ -67,6 +67,8 @@ class ListCodeGenerator extends CodeGenerator {
         }
         codeBuffer.writeln(", ");
       } else {
+        if (field.array)
+          codeBuffer.writeln(spaces(33) + field.fieldName + ": [],");
         if (field.isInt()) {
           codeBuffer.writeln(spaces(33) + field.fieldName + ": 0,");
         } else if (field.isDouble()) {
@@ -147,20 +149,18 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "final DismissDirectionCallback onDismissed;");
     codeBuffer.writeln(spaces(2) + "final GestureTapCallback onTap;");
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + " value;");
-    codeBuffer.writeln(spaces(2) + "final int index;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListItem({");
     codeBuffer.writeln(spaces(4) + "Key key,");
     codeBuffer.writeln(spaces(4) + "@required this.onDismissed,");
     codeBuffer.writeln(spaces(4) + "@required this.onTap,");
     codeBuffer.writeln(spaces(4) + "@required this.value,");
-    codeBuffer.writeln(spaces(4) + "@required this.index,");
     codeBuffer.writeln(spaces(2) + "}) : super(key: key);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
     codeBuffer.writeln(spaces(4) + "return Dismissible(");
-    codeBuffer.writeln(spaces(6) + "key: Key('__" + modelSpecifications.id + "_item_\${index}'),");
+    codeBuffer.writeln(spaces(6) + "key: Key('__" + modelSpecifications.id + "_item_\${value.documentID}'),");
     codeBuffer.writeln(spaces(6) + "onDismissed: onDismissed,");
     codeBuffer.writeln(spaces(6) + "child: ListTile(");
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");
