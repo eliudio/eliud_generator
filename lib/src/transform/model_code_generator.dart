@@ -31,6 +31,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
       headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(type) + ".repository.dart") + "';");
     });
 
+    headerBuffer.writeln("import '../tools/random.dart';");
+
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -220,7 +222,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
             codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
             codeBuffer.writeln(
                 spaces(12) + ".map((item) => " + field.fieldType +
-                    "Model.fromEntity(item))");
+                    "Model.fromEntity(newRandomKey(), item))");
             codeBuffer.write(spaces(12) + ".toList()");
           } else {
             codeBuffer.writeln();
@@ -280,7 +282,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
             codeBuffer.writeln(spaces(12) + "await Future.wait(entity. " + field.fieldName);
             codeBuffer.writeln(
                 spaces(12) + ".map((item) => " + field.fieldType +
-                    "Model.fromEntityPlus(item))");
+                    "Model.fromEntityPlus(newRandomKey(), item))");
             codeBuffer.write(spaces(12) + ".toList())");
           } else {
             codeBuffer.writeln();
