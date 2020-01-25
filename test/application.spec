@@ -2,7 +2,6 @@
   "id": "Application",
   "generate": {
     "generateComponent": false,
-    "generateBloc": true,
     "generateRepository": true,
     "generateModel": true,
     "generateEntity": true,

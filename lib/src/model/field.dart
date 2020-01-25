@@ -33,7 +33,7 @@ class Field extends Equatable {
       "remark": remark,
       "group": group,
       "defaultValue": defaultValue,
-      "iconName": iconName,
+      "iconName": iconName
     };
   }
 

@@ -19,8 +19,9 @@ class ModelSpecification extends Specification {
   final List<Group> groups;
   final GenerateSpecification generate;
   final ListFields listFields;
+  final String displayOnDelete; // field to be displayed when item is deleted
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete }) : super(id: id);
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -37,6 +38,7 @@ class ModelSpecification extends Specification {
       'fields': jsonFields,
       'groups': jsonGroups,
       'listFields': listFields.toJson(),
+      "displayOnDelete": displayOnDelete,
     };
   }
 
@@ -47,11 +49,11 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, generate, fields, groups];
+  List<Object> get props => [id, generate, fields, groups, displayOnDelete];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -80,6 +82,7 @@ class ModelSpecification extends Specification {
         fields: theItems,
         groups: theGroups,
         listFields: theListFields,
+        displayOnDelete: json["displayOnDelete"] as String
     );
   }
 

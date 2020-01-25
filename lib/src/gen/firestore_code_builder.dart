@@ -15,7 +15,7 @@ class FirestoreCodeBuilder extends CodeBuilder {
   @override
   CodeGenerator generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
-    if (modelSpecification.generate.generateRepository) {
+    if (modelSpecification.generate.generateFirestoreRepository) {
       FirestoreCodeGenerator firestoreCodeGenerator = FirestoreCodeGenerator(
           modelSpecifications: modelSpecification);
       return firestoreCodeGenerator;

@@ -93,7 +93,12 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(20) + "BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context)");
     codeBuffer.writeln(spaces(24) + ".add(Delete" + modelSpecifications.id + "List(value: value));");
     codeBuffer.writeln(spaces(20) + "Scaffold.of(context).showSnackBar(DeleteSnackBar(");
-    codeBuffer.writeln(spaces(22) + "message: \"" + modelSpecifications.id + " \" + value.documentID,",);
+    codeBuffer.write(spaces(22) + "message: \"" + modelSpecifications.id + " \" + value.");
+    if (modelSpecifications.displayOnDelete != null)
+      codeBuffer.write(modelSpecifications.displayOnDelete);
+    else
+      codeBuffer.write("documentID");
+    codeBuffer.writeln(",");
     codeBuffer.writeln(spaces(22) + "onUndo: () => BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context)");
     codeBuffer.writeln(spaces(26) + ".add(Add" + modelSpecifications.id + "List(value: value)),");
     codeBuffer.writeln(spaces(20) + "));");
@@ -112,7 +117,12 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(22) + "Scaffold.of(context).showSnackBar(");
     codeBuffer.writeln(spaces(24) + "DeleteSnackBar(");
 
-    codeBuffer.writeln(spaces(26) + "message: \"" + modelSpecifications.id + " \" + value.documentID,",);
+    codeBuffer.write(spaces(22) + "message: \"" + modelSpecifications.id + " \" + value.");
+    if (modelSpecifications.displayOnDelete != null)
+      codeBuffer.write(modelSpecifications.displayOnDelete);
+    else
+      codeBuffer.write("documentID");
+    codeBuffer.writeln(",");
     codeBuffer.writeln(spaces(26) + "onUndo: () => BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context)");
     codeBuffer.writeln(spaces(30) + ".add(Add" + modelSpecifications.id + "List(value: value)),");
     codeBuffer.writeln(spaces(24) + "),");
@@ -137,18 +147,20 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "final DismissDirectionCallback onDismissed;");
     codeBuffer.writeln(spaces(2) + "final GestureTapCallback onTap;");
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + " value;");
+    codeBuffer.writeln(spaces(2) + "final int index;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListItem({");
     codeBuffer.writeln(spaces(4) + "Key key,");
     codeBuffer.writeln(spaces(4) + "@required this.onDismissed,");
     codeBuffer.writeln(spaces(4) + "@required this.onTap,");
     codeBuffer.writeln(spaces(4) + "@required this.value,");
+    codeBuffer.writeln(spaces(4) + "@required this.index,");
     codeBuffer.writeln(spaces(2) + "}) : super(key: key);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
     codeBuffer.writeln(spaces(4) + "return Dismissible(");
-    codeBuffer.writeln(spaces(6) + "key: Key('__" + modelSpecifications.id + "_item_\${value.documentID}'),");
+    codeBuffer.writeln(spaces(6) + "key: Key('__" + modelSpecifications.id + "_item_\${index}'),");
     codeBuffer.writeln(spaces(6) + "onDismissed: onDismissed,");
     codeBuffer.writeln(spaces(6) + "child: ListTile(");
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");

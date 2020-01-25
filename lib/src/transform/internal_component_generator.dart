@@ -20,7 +20,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
 
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
-      if (ms.generate.generateList) {
+      if (ms.generate.generateInternalComponent) {
         codeBuffer.writeln("import '../" + spec.path + ".list.bloc.dart';");
         codeBuffer.writeln("import '../" + spec.path + ".list.dart';");
         codeBuffer.writeln("import '../" + spec.path + ".list.event.dart';");
@@ -28,7 +28,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
       }
     });
 
-    codeBuffer.writeln("class InternalComponentConstructorDefault implements ComponentConstructor {");
+    codeBuffer.writeln("class InternalComponentFactory implements ComponentConstructor {");
     codeBuffer.writeln(spaces(2) + "Widget createNew({String id}) {");
     codeBuffer.writeln(spaces(4) + "return InternalComponent(componentId: id);");
     codeBuffer.writeln(spaces(2) + "}");
@@ -43,7 +43,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
-      if (ms.generate.generateList) {
+      if (ms.generate.generateInternalComponent) {
         codeBuffer.writeln(spaces(4) + "if (componentId == \"" + firstLowerCase(ms.id) + "s\") return _" + firstLowerCase(ms.id) + "Build();");
       }
     });
@@ -53,7 +53,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
-      if (ms.generate.generateList) {
+      if (ms.generate.generateInternalComponent) {
         codeBuffer.writeln(spaces(2) + "Widget _" + firstLowerCase(ms.id) + "Build() {");
         codeBuffer.writeln(spaces(4) + "return MultiBlocProvider(");
         codeBuffer.writeln(spaces(6) + "providers: [");

@@ -12,7 +12,7 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(header());
     modelSpecificationPlus.forEach((spec) {
-      if (spec.modelSpecification.generate.generateRepository) {
+      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
         String path = spec.path;
         codeBuffer.writeln("import '../" + path + ".firestore.dart';");
         codeBuffer.writeln("import '../" + path + ".repository.dart';");
@@ -30,7 +30,7 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     codeBuffer.writeln("class RepositorySingleton {");
     modelSpecificationPlus.forEach((spec) {
-      if (spec.modelSpecification.generate.generateRepository) {
+      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
         codeBuffer.writeln(spaces(2) + "static final " + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository = new " + spec.modelSpecification.id + "Firestore();");
       }
     });

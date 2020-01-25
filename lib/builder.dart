@@ -1,7 +1,6 @@
 import 'package:build/build.dart';
 
 import 'package:eliud_generator/src/gen/entity_code_builder.dart';
-import 'package:eliud_generator/src/gen/internal_component_builder.dart';
 import 'package:eliud_generator/src/gen/model_code_builder.dart';
 
 import 'package:eliud_generator/src/gen/firestore_code_builder.dart';
@@ -21,8 +20,11 @@ import 'package:eliud_generator/src/gen/list_bloc_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_event_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_state_code_builder.dart';
+
 import 'package:eliud_generator/src/gen/repository_singleton_builder.dart';
 
+import 'package:eliud_generator/src/gen/internal_component_builder.dart';
+import 'package:eliud_generator/src/gen/embedded_component_builder.dart';
 
 Builder model(BuilderOptions options) =>
     ModelCodeBuilder();
@@ -74,6 +76,9 @@ Builder form(BuilderOptions options) =>
 
 Builder internal_component(BuilderOptions options) =>
     InternalComponentBuilder();
+
+Builder embedded_component(BuilderOptions options) =>
+    EmbeddedComponentBuilder();
 
 Builder repository_singleton(BuilderOptions options) =>
     RepositorySingletonBuilder();

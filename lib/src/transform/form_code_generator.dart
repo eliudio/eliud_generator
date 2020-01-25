@@ -11,6 +11,7 @@ class FormCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
+    headerBuffer.writeln("import 'package:eliud_model/shared/embedded_component.dart';");
     headerBuffer.writeln("import 'package:flutter/material.dart';");
     headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
     headerBuffer.writeln();
@@ -35,8 +36,6 @@ class FormCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import '../tools/enums.dart';");
 
     headerBuffer.writeln("import 'package:flutter/foundation.dart';");
-    headerBuffer.writeln("import 'package:flutter/material.dart';");
-    headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
     headerBuffer.writeln(
         "import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';");
     headerBuffer.writeln("import 'package:intl/intl.dart';");
@@ -44,6 +43,8 @@ class FormCodeGenerator extends CodeGenerator {
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
+
+
 
   String _xyzFrom() {
     StringBuffer codeBuffer = StringBuffer();
@@ -213,6 +214,7 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln();
 
     // state is ...FormLoaded
+    codeBuffer.writeln(spaces(6) + "Size fullSize = MediaQuery.of(context).size;");
     codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "FormLoaded) {");
     modelSpecifications.fields.forEach((field) {
       switch (field.formFieldType()) {
@@ -263,8 +265,8 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "Navigator.pop(context);");
     codeBuffer.writeln(spaces(6) + "}");
 
-
-    codeBuffer.writeln(spaces(6) + "return Container(");
+    codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "FormInitialized) {");
+    codeBuffer.writeln(spaces(8) + "return Container(");
     codeBuffer.writeln(spaces(10) + "padding:");
     codeBuffer.writeln(spaces(10) + "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
     codeBuffer.writeln(spaces(12) + "child: Form(");
@@ -293,8 +295,12 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14) + "],");
     codeBuffer.writeln(spaces(12) + "),");
 
-    codeBuffer.writeln(spaces(10) + "));");
+    codeBuffer.writeln(spaces(10) + ")");
+    codeBuffer.writeln(spaces(8) + ");");
 
+    codeBuffer.writeln(spaces(6) + "} else {");
+    codeBuffer.writeln(spaces(8) + "return CircularProgressIndicator();");
+    codeBuffer.writeln(spaces(6) + "}");
     // close blocbuilder
     codeBuffer.writeln(spaces(4) + "});");
 
@@ -387,7 +393,13 @@ class FormCodeGenerator extends CodeGenerator {
         });
         break;
       case FormTypeField.List:
+        codeBuffer.writeln(spaces(16) + "new Container(");
+        codeBuffer.writeln(spaces(20) + "height: (fullSize.height / 2.5), ");
+        codeBuffer.writeln(spaces(20) + "child: EmbeddedComponentFactory." + firstLowerCase(field.fieldType) + "sList(state.value." + field.fieldName + ", _on" + field.fieldType + "sChanged)");
+        codeBuffer.writeln(spaces(16) + "),");
         break;
+
+    break;
       case FormTypeField.Unsupported:
         break;
     }
@@ -432,9 +444,17 @@ class FormCodeGenerator extends CodeGenerator {
 
   String _xyzOnChanged(Field field) {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(
-        spaces(2) + "void _on" + firstUpperCase(field.fieldName) + "Changed() {");
+    codeBuffer.writeln(spaces(2) + "void _on" + firstUpperCase(field.fieldName) + "Changed() {");
     codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: _" + firstLowerCase(field.fieldName) + "Controller.text));");
+    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln();
+    return codeBuffer.toString();
+  }
+
+  String _listChanged(Field field) {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) + "void _on" + firstUpperCase(field.fieldName) + "Changed(value) {");
+    codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: value));");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     return codeBuffer.toString();
@@ -470,6 +490,9 @@ class FormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
       switch (field.formFieldType()) {
+        case FormTypeField.List:
+          codeBuffer.writeln(_listChanged(field));
+          break;
         case FormTypeField.EntryField:
           codeBuffer.writeln(_xyzOnChanged(field));
           break;
@@ -480,8 +503,6 @@ class FormCodeGenerator extends CodeGenerator {
           break;
         case FormTypeField.Selection:
           codeBuffer.writeln(_xyzSetEnumSelection(field));
-          break;
-        case FormTypeField.List:
           break;
         case FormTypeField.Unsupported:
           break;
@@ -512,6 +533,7 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "void _onSubmitPressed() {");
     codeBuffer.writeln(spaces(4) + "_myFormBloc.add(" + modelSpecifications.id + "FormSubmitted());");
     codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln();
     return codeBuffer.toString();
   }
 
