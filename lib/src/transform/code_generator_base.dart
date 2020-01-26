@@ -26,7 +26,7 @@ abstract class CodeGeneratorBase {
     StringBuffer headerBuffer = StringBuffer();
     Map<String, String> parameters = Map();
     parameters['\${fileName}'] = theFileName();
-    headerBuffer.writeln(process(_header, parameters));
+    headerBuffer.writeln(process(_header, parameters: parameters));
     return headerBuffer.toString();
   }
 

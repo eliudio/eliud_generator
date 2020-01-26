@@ -3,6 +3,97 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator_multi.dart';
 
+const String _imports = """
+import '../shared/repository_singleton.dart';
+
+import 'component_constructor.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+""";
+
+const String _componentImports = """
+import '../\${path}.list.bloc.dart';
+import '../\${path}.list.dart';
+import '../\${path}.dropdownbutton.dart';
+import '../\${path}.list.event.dart';
+
+""";
+
+const String _ListFactoryCode = """
+class ListComponentFactory implements ComponentConstructor {
+  Widget createNew({String id}) {
+    return ListComponent(componentId: id);
+  }
+}
+
+""";
+
+const String _DropdownButtonFactoryCode = """
+class DropdownButtonComponentFactory implements ComponentConstructor {
+  Widget createNew({String id, String value}) {
+    return DropdownButtonComponent(componentId: id, value: value);
+  }
+}
+
+""";
+
+const String _ListComponentCodeHeader = """
+class ListComponent extends StatelessWidget {
+  final String componentId;
+
+  ListComponent({this.componentId});
+
+  @override
+  Widget build(BuildContext context) {
+""";
+
+const String _DropdownButtonComponentCodeHeader = """
+class DropdownButtonComponent extends StatelessWidget {
+  final String componentId;
+  final String value;
+
+  DropdownButtonComponent({this.componentId, this.value});
+
+  @override
+  Widget build(BuildContext context) {
+""";
+
+
+const String _SpecificListComponentCode = """
+  Widget _\${lowerSpecific}Build() {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<\${upperSpecific}ListBloc>(
+          create: (context) => \${upperSpecific}ListBloc(
+            \${lowerSpecific}Repository: RepositorySingleton.\${lowerSpecific}Repository,
+          )..add(Load\${upperSpecific}List()),
+        )
+      ],
+      child: \${upperSpecific}ListWidget(),
+    );
+  }
+""";
+
+const String _SpecificDropdownButtonComponentCode = """
+  Widget _\${lowerSpecific}Build() {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<\${upperSpecific}ListBloc>(
+          create: (context) => \${upperSpecific}ListBloc(
+            \${lowerSpecific}Repository: RepositorySingleton.\${lowerSpecific}Repository,
+          )..add(Load\${upperSpecific}List()),
+        )
+      ],
+      child: \${upperSpecific}DropdownButtonWidget(),
+    );
+  }
+""";
+
+const String _SpecificCodeFooter = """
+}
+""";
+
 class InternalComponentCodeGenerator extends CodeGeneratorMulti {
   InternalComponentCodeGenerator(String fileName): super(fileName: fileName);
 
@@ -10,37 +101,31 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(header());
-    codeBuffer.writeln("import '../shared/repository_singleton.dart';");
-    codeBuffer.writeln();
-    codeBuffer.writeln("import 'component_constructor.dart';");
-    codeBuffer.writeln();
-    codeBuffer.writeln("import 'package:flutter/material.dart';");
-    codeBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
-    codeBuffer.writeln();
+    codeBuffer.writeln(process(_imports));
 
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln("import '../" + spec.path + ".list.bloc.dart';");
-        codeBuffer.writeln("import '../" + spec.path + ".list.dart';");
-        codeBuffer.writeln("import '../" + spec.path + ".list.event.dart';");
-        codeBuffer.writeln();
+        codeBuffer.writeln(process(_componentImports, parameters: <String, String> { "\${path}": spec.path }));
       }
     });
 
-    codeBuffer.writeln("class InternalComponentFactory implements ComponentConstructor {");
-    codeBuffer.writeln(spaces(2) + "Widget createNew({String id}) {");
-    codeBuffer.writeln(spaces(4) + "return InternalComponent(componentId: id);");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
-    codeBuffer.writeln("class InternalComponent extends StatelessWidget {");
-    codeBuffer.writeln(spaces(2) + "final String componentId;");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "InternalComponent({this.componentId});");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
+    codeBuffer.writeln(process(_ListFactoryCode));
+    codeBuffer.writeln(process(_DropdownButtonFactoryCode));
+
+    codeBuffer.writeln(_code(modelSpecificationPlus, true));
+    codeBuffer.writeln(_code(modelSpecificationPlus, false));
+
+    return codeBuffer.toString();
+
+  }
+
+  String _code(modelSpecificationPlus, list) {
+    StringBuffer codeBuffer = StringBuffer();
+    if (list)
+      codeBuffer.writeln(process(_ListComponentCodeHeader));
+    else
+      codeBuffer.writeln(process(_DropdownButtonComponentCodeHeader));
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
@@ -54,24 +139,13 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(spaces(2) + "Widget _" + firstLowerCase(ms.id) + "Build() {");
-        codeBuffer.writeln(spaces(4) + "return MultiBlocProvider(");
-        codeBuffer.writeln(spaces(6) + "providers: [");
-        codeBuffer.writeln(spaces(8) + "BlocProvider<" + ms.id + "ListBloc>(");
-        codeBuffer.writeln(spaces(10) + "create: (context) => " + ms.id + "ListBloc(");
-        codeBuffer.writeln(spaces(12) + firstLowerCase(ms.id) + "Repository: RepositorySingleton." + firstLowerCase(ms.id) + "Repository,");
-        codeBuffer.writeln(spaces(10) + ")..add(Load" + ms.id + "List()),");
-        codeBuffer.writeln(spaces(8) + ")");
-        codeBuffer.writeln(spaces(6) + "],");
-        codeBuffer.writeln(spaces(6) + "child: " + ms.id + "ListWidget(),");
-        codeBuffer.writeln(spaces(4) + ");");
-        codeBuffer.writeln(spaces(2) + "}");
-        codeBuffer.writeln();
+        if (list)
+          codeBuffer.writeln(process(_SpecificListComponentCode, parameters: <String, String> { "\${lowerSpecific}": firstLowerCase(ms.id), "\${upperSpecific}": ms.id }));
+        else
+          codeBuffer.writeln(process(_SpecificDropdownButtonComponentCode, parameters: <String, String> { "\${lowerSpecific}": firstLowerCase(ms.id), "\${upperSpecific}": ms.id }));
       }
     });
-    codeBuffer.writeln();
-    codeBuffer.writeln("}");
+    codeBuffer.writeln(process(_SpecificCodeFooter));
     return codeBuffer.toString();
-
   }
 }

@@ -128,7 +128,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
         Map<String, String> parameters = Map();
         parameters['\${id}'] = ms.id;
         parameters['\${lid}'] = firstLowerCase(ms.id);
-        codeBuffer.writeln(process(_InMemoryRepositoryMethod, parameters));
+        codeBuffer.writeln(process(_InMemoryRepositoryMethod, parameters: parameters));
       }
     });
     codeBuffer.writeln();
@@ -140,7 +140,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
         Map<String, String> parameters = Map();
         parameters['\${id}'] = ms.id;
         parameters['\${triggerSignature}'] = ms.id + "ListChanged";
-        codeBuffer.writeln(process(_InMemoryRepositoryTemplate, parameters));
+        codeBuffer.writeln(process(_InMemoryRepositoryTemplate, parameters: parameters));
       }
     });
     return codeBuffer.toString();

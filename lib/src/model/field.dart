@@ -18,8 +18,9 @@ class Field extends Equatable {
   final String defaultValue;
   final String iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
   final bool hidden;
+  final String bespokeFormField;
 
-  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden});
+  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden, this.bespokeFormField});
 
   Map<String, Object> toJson() {
     return {
@@ -35,16 +36,17 @@ class Field extends Equatable {
       "group": group,
       "defaultValue": defaultValue,
       "iconName": iconName,
-      "hidden": hidden
+      "hidden": hidden,
+      "bespokeFormField": bespokeFormField
     };
   }
 
   @override
-  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden];
+  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden, bespokeFormField];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName, hidden: $hidden }';
+    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName, hidden: $hidden, bespokeFormField: $bespokeFormField }';
   }
 
   static Field fromJson(Map<String, Object> json) {
@@ -72,7 +74,8 @@ class Field extends Equatable {
       group: json["group"] as String,
       defaultValue: json["defaultValue"] as String,
       iconName: json["iconName"] as String,
-      hidden: hidden
+      hidden: hidden,
+      bespokeFormField: json["bespokeFormField"] as String,
     );
   }
 

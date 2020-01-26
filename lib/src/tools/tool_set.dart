@@ -10,11 +10,15 @@ String firstLowerCase(String s) => s[0].toLowerCase() + s.substring(1);
 
 String firstUpperCase(String s) => s[0].toUpperCase() + s.substring(1);
 
-String process(String template, Map<String, String> parameters) {
-  String processed = template;
-  parameters.forEach((key, value) {
-    processed = processed.replaceAll(key, value);
-  });
-  return processed;
+String process(String template, { Map<String, String> parameters }) {
+  if (parameters != null) {
+    String processed = template;
+    parameters.forEach((key, value) {
+      processed = processed.replaceAll(key, value);
+    });
+    return processed;
+  } else {
+    return template;
+  }
 }
 

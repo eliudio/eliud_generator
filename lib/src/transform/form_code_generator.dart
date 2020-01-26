@@ -34,6 +34,7 @@ class FormCodeGenerator extends CodeGenerator {
         resolveImport(importThis: modelSpecifications.formStateFileName()) +
         "';");
     headerBuffer.writeln("import '../tools/enums.dart';");
+    headerBuffer.writeln("import '../shared/bespoke_formfields.dart';");
 
     headerBuffer.writeln("import 'package:flutter/foundation.dart';");
     headerBuffer.writeln(
@@ -332,79 +333,105 @@ class FormCodeGenerator extends CodeGenerator {
 
   String _field(Field field) {
     StringBuffer codeBuffer = StringBuffer();
-    switch (field.formFieldType()) {
-      case FormTypeField.EntryField:
-        codeBuffer.writeln(spaces(16) + "TextFormField(");
-        if (field.fieldName == "documentID") {
-          codeBuffer.writeln(spaces(18) + "readOnly: (formAction == FormAction.UpdateAction),");
-        }
-        codeBuffer.writeln(spaces(18) + "controller: _" + field.fieldName + "Controller,");
-        codeBuffer.writeln(spaces(18) + "decoration: InputDecoration(");
-        codeBuffer.write(spaces(20) + "icon: Icon(Icons.");
-        if (field.iconName != null)
-          codeBuffer.write(field.iconName);
-        else
-          codeBuffer.write("text_format");
-        codeBuffer.writeln("),");
-        codeBuffer.write(spaces(20) + "labelText: '");
-        if (field.displayName == null)
-          codeBuffer.write(field.fieldName);
-        else
-          codeBuffer.write(field.displayName);
-        codeBuffer.writeln("',");
-        if (field.remark != null)
-          codeBuffer.writeln(spaces(20) + "hintText: \"" + field.remark + "\",");
-        codeBuffer.writeln(spaces(18) + "),");
-        if (field.isDouble()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.number,");
-        if (field.isInt()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.number,");
-        if (field.isString()) codeBuffer.writeln(spaces(18) + "keyboardType: TextInputType.text,");
-        codeBuffer.writeln(spaces(18) + "autovalidate: true,");
-        codeBuffer.writeln(spaces(18) + "validator: (_) {");
-        codeBuffer.writeln(spaces(20) + "return state is " + firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError ? state.message : null;");
-        codeBuffer.writeln(spaces(18) + "},");
-        codeBuffer.writeln(spaces(16) + "),");
-        break;
-      case FormTypeField.CheckBox:
-        codeBuffer.writeln(spaces(16) + "CheckboxListTile(");
-        codeBuffer.write(spaces(20) + "title: const Text('");
-        if (field.displayName == null)
-          codeBuffer.write(field.fieldName);
-        else
-          codeBuffer.write(field.displayName);
-        codeBuffer.writeln("'),");
-        codeBuffer.writeln(spaces(20) + "value: _" + firstLowerCase(field.fieldName) + "Selection,");
-        codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
-//      codeBuffer.writeln(spaces(22) + "setState(() => print());");
-        codeBuffer.writeln(spaces(22) + "setSelection" + firstUpperCase(field.fieldName) + "(val);");
-        codeBuffer.writeln(spaces(20) + "}),");
-        break;
-      case FormTypeField.Lookup:
-        break;
-      case FormTypeField.Selection:
-        int i = 0;
-        field.enumValues.forEach((enumField) {
-          codeBuffer.writeln(spaces(16) + "RadioListTile(");
-          codeBuffer.writeln(spaces(20) + "value: $i,");
-          codeBuffer.writeln(spaces(20) + "groupValue: _" + firstLowerCase(field.fieldName) + "SelectedRadioTile,");
-          codeBuffer.writeln(spaces(20) + "title: Text(\"" + enumField + "\"),");
-          codeBuffer.writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\"),");
-          codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
-          codeBuffer.writeln(spaces(22) + "setSelection" + firstUpperCase(field.fieldName) + "(val);");
-          codeBuffer.writeln(spaces(20) + "},");
+    if (field.bespokeFormField == null) {
+      switch (field.formFieldType()) {
+        case FormTypeField.EntryField:
+          codeBuffer.writeln(spaces(16) + "TextFormField(");
+          if (field.fieldName == "documentID") {
+            codeBuffer.writeln(spaces(18) +
+                "readOnly: (formAction == FormAction.UpdateAction),");
+          }
+          codeBuffer.writeln(
+              spaces(18) + "controller: _" + field.fieldName + "Controller,");
+          codeBuffer.writeln(spaces(18) + "decoration: InputDecoration(");
+          codeBuffer.write(spaces(20) + "icon: Icon(Icons.");
+          if (field.iconName != null)
+            codeBuffer.write(field.iconName);
+          else
+            codeBuffer.write("text_format");
+          codeBuffer.writeln("),");
+          codeBuffer.write(spaces(20) + "labelText: '");
+          if (field.displayName == null)
+            codeBuffer.write(field.fieldName);
+          else
+            codeBuffer.write(field.displayName);
+          codeBuffer.writeln("',");
+          if (field.remark != null)
+            codeBuffer.writeln(
+                spaces(20) + "hintText: \"" + field.remark + "\",");
+          codeBuffer.writeln(spaces(18) + "),");
+          if (field.isDouble()) codeBuffer.writeln(
+              spaces(18) + "keyboardType: TextInputType.number,");
+          if (field.isInt()) codeBuffer.writeln(
+              spaces(18) + "keyboardType: TextInputType.number,");
+          if (field.isString()) codeBuffer.writeln(
+              spaces(18) + "keyboardType: TextInputType.text,");
+          codeBuffer.writeln(spaces(18) + "autovalidate: true,");
+          codeBuffer.writeln(spaces(18) + "validator: (_) {");
+          codeBuffer.writeln(spaces(20) + "return state is " +
+              firstUpperCase(field.fieldName) + modelSpecifications.id +
+              "FormError ? state.message : null;");
+          codeBuffer.writeln(spaces(18) + "},");
           codeBuffer.writeln(spaces(16) + "),");
-          i++;
-        });
-        break;
-      case FormTypeField.List:
-        codeBuffer.writeln(spaces(16) + "new Container(");
-        codeBuffer.writeln(spaces(20) + "height: (fullSize.height / 2.5), ");
-        codeBuffer.writeln(spaces(20) + "child: EmbeddedComponentFactory." + firstLowerCase(field.fieldType) + "sList(state.value." + field.fieldName + ", _on" + field.fieldType + "sChanged)");
-        codeBuffer.writeln(spaces(16) + "),");
-        break;
+          break;
+        case FormTypeField.CheckBox:
+          codeBuffer.writeln(spaces(16) + "CheckboxListTile(");
+          codeBuffer.write(spaces(20) + "title: const Text('");
+          if (field.displayName == null)
+            codeBuffer.write(field.fieldName);
+          else
+            codeBuffer.write(field.displayName);
+          codeBuffer.writeln("'),");
+          codeBuffer.writeln(
+              spaces(20) + "value: _" + firstLowerCase(field.fieldName) +
+                  "Selection,");
+          codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
+          //      codeBuffer.writeln(spaces(22) + "setState(() => print());");
+          codeBuffer.writeln(
+              spaces(22) + "setSelection" + firstUpperCase(field.fieldName) +
+                  "(val);");
+          codeBuffer.writeln(spaces(20) + "}),");
+          break;
+        case FormTypeField.Lookup:
+          break;
+        case FormTypeField.Selection:
+          int i = 0;
+          field.enumValues.forEach((enumField) {
+            codeBuffer.writeln(spaces(16) + "RadioListTile(");
+            codeBuffer.writeln(spaces(20) + "value: $i,");
+            codeBuffer.writeln(
+                spaces(20) + "groupValue: _" + firstLowerCase(field.fieldName) +
+                    "SelectedRadioTile,");
+            codeBuffer.writeln(
+                spaces(20) + "title: Text(\"" + enumField + "\"),");
+            codeBuffer.writeln(
+                spaces(20) + "subtitle: Text(\"" + enumField + "\"),");
+            codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
+            codeBuffer.writeln(
+                spaces(22) + "setSelection" + firstUpperCase(field.fieldName) +
+                    "(val);");
+            codeBuffer.writeln(spaces(20) + "},");
+            codeBuffer.writeln(spaces(16) + "),");
+            i++;
+          });
+          break;
+        case FormTypeField.List:
+          codeBuffer.writeln(spaces(16) + "new Container(");
+          codeBuffer.writeln(spaces(20) + "height: (fullSize.height / 2.5), ");
+          codeBuffer.writeln(spaces(20) + "child: EmbeddedComponentFactory." +
+              firstLowerCase(field.fieldName) + "List(state.value." +
+              field.fieldName + ", _on" + firstUpperCase(field.fieldName)+ "Changed)");
+          codeBuffer.writeln(spaces(16) + "),");
+          break;
 
-    break;
-      case FormTypeField.Unsupported:
-        break;
+          break;
+        case FormTypeField.Unsupported:
+          break;
+      }
+    } else {
+      codeBuffer.writeln(spaces(16) + field.bespokeFormField + "(" + "state.value." +
+          field.fieldName + ", _on" + firstUpperCase(field.fieldName)+ "Changed),");
+
     }
     return codeBuffer.toString();
   }
@@ -454,7 +481,7 @@ class FormCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _listChanged(Field field) {
+  String _otherChanged(Field field) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "void _on" + firstUpperCase(field.fieldName) + "Changed(value) {");
     codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: value));");
@@ -492,23 +519,27 @@ class FormCodeGenerator extends CodeGenerator {
   String _xyzChangeds() {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
-      switch (field.formFieldType()) {
-        case FormTypeField.List:
-          codeBuffer.writeln(_listChanged(field));
-          break;
-        case FormTypeField.EntryField:
-          codeBuffer.writeln(_xyzOnChanged(field));
-          break;
-        case FormTypeField.CheckBox:
-          codeBuffer.writeln(_xyzSetBooleanSelection(field));
-          break;
-        case FormTypeField.Lookup:
-          break;
-        case FormTypeField.Selection:
-          codeBuffer.writeln(_xyzSetEnumSelection(field));
-          break;
-        case FormTypeField.Unsupported:
-          break;
+      if (field.bespokeFormField == null) {
+        switch (field.formFieldType()) {
+          case FormTypeField.List:
+            codeBuffer.writeln(_otherChanged(field));
+            break;
+          case FormTypeField.EntryField:
+            codeBuffer.writeln(_xyzOnChanged(field));
+            break;
+          case FormTypeField.CheckBox:
+            codeBuffer.writeln(_xyzSetBooleanSelection(field));
+            break;
+          case FormTypeField.Lookup:
+            break;
+          case FormTypeField.Selection:
+            codeBuffer.writeln(_xyzSetEnumSelection(field));
+            break;
+          case FormTypeField.Unsupported:
+            break;
+        }
+      } else {
+        codeBuffer.writeln(_otherChanged(field));
       }
     });
     return codeBuffer.toString();
