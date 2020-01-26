@@ -17,8 +17,9 @@ class Field extends Equatable {
   final String group;
   final String defaultValue;
   final String iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
+  final bool hidden;
 
-  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName});
+  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden});
 
   Map<String, Object> toJson() {
     return {
@@ -33,24 +34,24 @@ class Field extends Equatable {
       "remark": remark,
       "group": group,
       "defaultValue": defaultValue,
-      "iconName": iconName
+      "iconName": iconName,
+      "hidden": hidden
     };
   }
 
   @override
-  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group, defaultValue, iconName];
+  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName }';
+    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName, hidden: $hidden }';
   }
 
   static Field fromJson(Map<String, Object> json) {
-    bool array = json["array"] as bool;
-    bool association = json["association"] as bool;
-    if (array == null) array = false;
-    if (association == null) association = false;
-    List<String> myList = null;
+    bool array = json["array"] as bool ?? false;
+    bool association = json["association"] as bool ?? false;
+    bool hidden = json["hidden"] as bool ?? false;
+    List<String> myList;
     Iterable i = json["enumValues"];
     if (i != null) {
       myList = List();
@@ -71,6 +72,7 @@ class Field extends Equatable {
       group: json["group"] as String,
       defaultValue: json["defaultValue"] as String,
       iconName: json["iconName"] as String,
+      hidden: hidden
     );
   }
 

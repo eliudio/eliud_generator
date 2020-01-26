@@ -420,6 +420,7 @@ class FormCodeGenerator extends CodeGenerator {
   String _fields(List<Field> fields) {
     StringBuffer codeBuffer = StringBuffer();
     fields.forEach((field) {
+      if (!field.hidden)
       codeBuffer.writeln(_field(field));
     });
     return codeBuffer.toString();
