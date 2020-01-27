@@ -3,11 +3,6 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator_multi.dart';
 
-
-// lid = lower case modelspecifications.id
-// id = modelspecifications.id
-// triggerSignature = method signature for callback
-
 const String _imports = """
 import '../tools/random.dart';
 
@@ -16,6 +11,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+""";
+
+const String _specificImports = """
+import '../\${path}.list.bloc.dart';
+import '../\${path}.list.dart';
+import '../\${path}.list.event.dart';
+import '../\${path}.model.dart';
+import '../\${path}.repository.dart';
 """;
 
 const String _InMemoryRepositoryMethod = """
@@ -99,17 +102,12 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(header());
-    codeBuffer.writeln(_imports);
+    codeBuffer.writeln(process(_imports));
 
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        codeBuffer.writeln("import '../" + spec.path + ".list.bloc.dart';");
-        codeBuffer.writeln("import '../" + spec.path + ".list.dart';");
-        codeBuffer.writeln("import '../" + spec.path + ".list.event.dart';");
-        codeBuffer.writeln("import '../" + spec.path + ".model.dart';");
-        codeBuffer.writeln("import '../" + spec.path + ".repository.dart';");
-        codeBuffer.writeln();
+        codeBuffer.writeln(process(_specificImports, parameters: <String, String> { '\${path}': spec.path }));
       }
     });
 
@@ -125,10 +123,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        Map<String, String> parameters = Map();
-        parameters['\${id}'] = ms.id;
-        parameters['\${lid}'] = firstLowerCase(ms.id);
-        codeBuffer.writeln(process(_InMemoryRepositoryMethod, parameters: parameters));
+        codeBuffer.writeln(process(_InMemoryRepositoryMethod, parameters: <String, String> { "\${id}": ms.id,  "\${lid}": firstLowerCase(ms.id)}));
       }
     });
     codeBuffer.writeln();
@@ -137,10 +132,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        Map<String, String> parameters = Map();
-        parameters['\${id}'] = ms.id;
-        parameters['\${triggerSignature}'] = ms.id + "ListChanged";
-        codeBuffer.writeln(process(_InMemoryRepositoryTemplate, parameters: parameters));
+        codeBuffer.writeln(process(_InMemoryRepositoryTemplate, parameters: <String, String> { '\${id}': ms.id,  '\${triggerSignature}': ms.id + "ListChanged"}));
       }
     });
     return codeBuffer.toString();

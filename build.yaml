@@ -119,6 +119,14 @@ builders:
     build_to: source
     auto_apply: all_packages
 
+  dropdown_button:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["dropdown_button"]
+    build_extensions: {".spec": [".dropdown_button.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
   form_event:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"

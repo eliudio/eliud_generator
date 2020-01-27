@@ -15,7 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 const String _componentImports = """
 import '../\${path}.list.bloc.dart';
 import '../\${path}.list.dart';
-import '../\${path}.dropdownbutton.dart';
+import '../\${path}.dropdown_button.dart';
 import '../\${path}.list.event.dart';
 
 """;
@@ -30,9 +30,11 @@ class ListComponentFactory implements ComponentConstructor {
 """;
 
 const String _DropdownButtonFactoryCode = """
+typedef DropdownButtonChanged(String value);
+
 class DropdownButtonComponentFactory implements ComponentConstructor {
-  Widget createNew({String id, String value}) {
-    return DropdownButtonComponent(componentId: id, value: value);
+  Widget createNew({String id, String value, DropdownButtonChanged trigger}) {
+    return DropdownButtonComponent(componentId: id, value: value, trigger: trigger);
   }
 }
 
@@ -49,11 +51,14 @@ class ListComponent extends StatelessWidget {
 """;
 
 const String _DropdownButtonComponentCodeHeader = """
+typedef Changed(String value);
+
 class DropdownButtonComponent extends StatelessWidget {
   final String componentId;
   final String value;
+  final Changed trigger;
 
-  DropdownButtonComponent({this.componentId, this.value});
+  DropdownButtonComponent({this.componentId, this.value, this.trigger});
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +90,7 @@ const String _SpecificDropdownButtonComponentCode = """
           )..add(Load\${upperSpecific}List()),
         )
       ],
-      child: \${upperSpecific}DropdownButtonWidget(),
+      child: \${upperSpecific}DropdownButtonWidget(value: value, trigger: trigger, ),
     );
   }
 """;

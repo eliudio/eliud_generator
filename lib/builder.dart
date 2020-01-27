@@ -18,6 +18,7 @@ import 'package:eliud_generator/src/gen/form_state_code_builder.dart';
 
 import 'package:eliud_generator/src/gen/list_bloc_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_code_builder.dart';
+import 'package:eliud_generator/src/gen/dropdownbutton_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_event_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_state_code_builder.dart';
 
@@ -61,6 +62,9 @@ Builder list_bloc(BuilderOptions options) =>
 
 Builder list(BuilderOptions options) =>
     ListCodeBuilder();
+
+Builder dropdown_button(BuilderOptions options) =>
+    DropdownButtonCodeBuilder();
 
 Builder form_event(BuilderOptions options) =>
     FormEventCodeBuilder();
