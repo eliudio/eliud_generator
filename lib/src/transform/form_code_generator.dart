@@ -127,6 +127,9 @@ class FormCodeGenerator extends CodeGenerator {
 
   String _xyzFrom() {
     StringBuffer constructorParameters = StringBuffer();
+    if (modelSpecifications.generate.generateFirestoreRepository && modelSpecifications.generate.generateRepository) {
+      constructorParameters.writeln(firstLowerCase(modelSpecifications.id) + "Repository: RepositorySingleton." + firstLowerCase(modelSpecifications.id) + "Repository, ");
+    }
     modelSpecifications.uniqueAssociationTypes().forEach((field) {
       constructorParameters.writeln(firstLowerCase(field) + "Repository: RepositorySingleton." + firstLowerCase(field) + "Repository, ");
     });
@@ -283,7 +286,9 @@ class FormCodeGenerator extends CodeGenerator {
           break;
         case FormTypeField.Lookup:
           codeBuffer.writeln(
-              spaces(8) + "_" + field.fieldName + "= state.value." + field.fieldName + ".documentID;");
+              spaces(8) + "if (state.value." + field.fieldName + " != null)");
+          codeBuffer.writeln(
+              spaces(10) + "_" + field.fieldName + "= state.value." + field.fieldName + ".documentID;");
           break;
         case FormTypeField.Selection:
           codeBuffer.writeln(spaces(8) +

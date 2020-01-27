@@ -8,6 +8,10 @@ class FormBlocCodeGenerator extends CodeGenerator {
   FormBlocCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
+  bool _withRepository() {
+    return (modelSpecifications.generate.generateRepository) &&  (modelSpecifications.generate.generateFirestoreRepository);
+  }
+
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
@@ -55,7 +59,13 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(4) + "final currentState = state;");
     codeBuffer.writeln(spaces(4) + "if (currentState is " + modelSpecifications.id + "FormUninitialized) {");
     codeBuffer.writeln(spaces(6) + "if (event is Initialise" + modelSpecifications.id + "FormEvent) {");
-    codeBuffer.writeln(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: event.value);");
+    if (_withRepository())
+      codeBuffer.writeln(spaces(8) + "// Need to re-retrieve the document from the repository so that I get all associated types");
+    codeBuffer.write(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: ");
+    if (_withRepository())
+      codeBuffer.writeln("await _" + firstLowerCase(modelSpecifications.id) + "Repository.get(event.value.documentID));");
+    else
+      codeBuffer.writeln("event.value);");
     codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
     codeBuffer.writeln(spaces(8) + "return;");
     codeBuffer.writeln(spaces(6) + "}");
@@ -123,6 +133,8 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
   String _memberData() {
     StringBuffer codeBuffer = StringBuffer();
+    if (_withRepository())
+      codeBuffer.writeln(spaces(4) + "final " + modelSpecifications.id + "Repository _" + firstLowerCase(modelSpecifications.id) + "Repository;");
     modelSpecifications.uniqueAssociationTypes().forEach((field) {
         codeBuffer.writeln(spaces(4) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository;");
     });
@@ -131,16 +143,31 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
   String _constructor() {
     List<String> uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
-    if ((uniqueAssociationTypes == null) ||
-        (uniqueAssociationTypes.isEmpty)) {
+    if (!_withRepository() && uniqueAssociationTypes.isEmpty) {
       return spaces(2) + modelSpecifications.id + "FormBloc();";
     }
+
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "FormBloc({");
+    if (_withRepository())
+      codeBuffer.writeln(spaces(16) + "@required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository, ");
     uniqueAssociationTypes.forEach((field) {
         codeBuffer.writeln(spaces(16) + "@required " + field + "Repository " + firstLowerCase(field) + "Repository, ");
     });
     codeBuffer.writeln(spaces(14) + "}): ");
+    if (_withRepository()) {
+      codeBuffer.writeln(
+          spaces(10) + "assert(" + firstLowerCase(modelSpecifications.id) +
+              "Repository != null),");
+      codeBuffer.write(
+          spaces(10) + "_" + firstLowerCase(modelSpecifications.id) +
+              "Repository" + " = " + firstLowerCase(modelSpecifications.id) +
+              "Repository");
+      if (uniqueAssociationTypes.isEmpty)
+        codeBuffer.writeln();
+      else
+        codeBuffer.writeln(",");
+    }
     int i = 0;
     uniqueAssociationTypes.forEach((field) {
         codeBuffer.writeln(spaces(10) + "assert(" + firstLowerCase(field) + "Repository != null),");
