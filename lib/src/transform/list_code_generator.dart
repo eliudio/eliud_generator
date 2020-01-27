@@ -166,7 +166,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");
     codeBuffer.writeln(spaces(8) + "title: Hero(");
     String title = modelSpecifications.listFields?.title ?? "documentID";
-    codeBuffer.writeln(spaces(10) + "tag: '\${value." + title + "}__heroTag',");
+    codeBuffer.writeln(spaces(10) + "tag: '\${value.documentID}__heroTag',");
     codeBuffer.writeln(spaces(10) + "child: Container(");
     codeBuffer.writeln(spaces(12) + "width: MediaQuery.of(context).size.width,");
     codeBuffer.writeln(spaces(12) + "child: Text(");
