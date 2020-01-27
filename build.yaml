@@ -182,3 +182,11 @@ builders:
     build_extensions: {r"$lib$": ["repository_singleton.dart"]}
     build_to: source
     auto_apply: all_packages
+
+  repository_export:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["repository_export"]
+    build_extensions: {r"$lib$": ["repository_export.dart"]}
+    build_to: source
+    auto_apply: all_packages

@@ -109,6 +109,14 @@ class Field extends Equatable {
     }
   }
 
+  bool isModel() {
+    if (isEnum()) return false;
+    if (isString()) return false;
+    if (isDouble()) return false;
+    if (isInt()) return false;
+    return true;
+  }
+
   String dartModelType() {
     if (isEnum()) {
       if (array)

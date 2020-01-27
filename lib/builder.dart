@@ -21,6 +21,7 @@ import 'package:eliud_generator/src/gen/list_code_builder.dart';
 import 'package:eliud_generator/src/gen/dropdownbutton_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_event_code_builder.dart';
 import 'package:eliud_generator/src/gen/list_state_code_builder.dart';
+import 'package:eliud_generator/src/gen/repository_export_builder.dart';
 
 import 'package:eliud_generator/src/gen/repository_singleton_builder.dart';
 
@@ -86,4 +87,7 @@ Builder embedded_component(BuilderOptions options) =>
 
 Builder repository_singleton(BuilderOptions options) =>
     RepositorySingletonBuilder();
+
+Builder repository_export(BuilderOptions options) =>
+    RepositoryExportBuilder();
 

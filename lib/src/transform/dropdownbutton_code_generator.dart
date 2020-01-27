@@ -37,11 +37,8 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
       } else if (state is \${id}ListLoaded) {
         final values = state.values;
         return DropdownButton<String>(
-            items: state.values?.isNotEmpty == true
-                ? state.values
-                .map((\${id}Model pm) =>
-                DropdownMenuItem(value: pm.documentID, child: Text(pm.documentID)))
-                .toList()
+            items: state.values?.isNotEmpty
+                ? state.values.map((\${id}Model pm) => DropdownMenuItem(value: pm.documentID, child: Text(pm.documentID))).toList()
                 : const [],
             value: value,
             hint: Text('Select a \${lid}'),

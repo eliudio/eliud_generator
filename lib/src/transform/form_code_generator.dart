@@ -4,6 +4,113 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
+const String _imports = """
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+
+import 'package:intl/intl.dart';
+
+import '../tools/enums.dart';
+
+import '../shared/internal_component.dart';
+import '../shared/embedded_component.dart';
+import '../shared/bespoke_formfields.dart';
+import '../shared/repository_singleton.dart';
+
+""";
+
+const String _specificImports = """
+import '\${path}.list.bloc.dart';
+import '\${path}.list.event.dart';
+import '\${path}.model.dart';
+import '\${path}.form.bloc.dart';
+import '\${path}.form.event.dart';
+import '\${path}.form.state.dart';
+
+""";
+
+const String _xyzFormString = """
+class \${id}Form extends StatelessWidget {
+  FormAction formAction;
+  \${id}Model value;
+
+  \${id}Form({Key key, @required this.formAction, @required this.value}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: formAction == FormAction.UpdateAction ? AppBar(title: Text("Update")) : AppBar(title: Text("Add")),
+      body: BlocProvider<\${id}FormBloc >(
+          create: (context) => \${id}FormBloc(
+                                     \${constructorParameters}
+                                              )..add((Initialise\${id}FormEvent(value: value))),
+      child: My\${id}Form(formAction: formAction),
+        ));
+  }
+}
+
+""";
+
+const String _myXyzFormString = """
+class My\${id}Form extends StatefulWidget {
+  final FormAction formAction;
+
+  My\${id}Form({this.formAction});
+
+  _My\${id}FormState createState() => _My\${id}FormState(this.formAction);
+}
+
+""";
+
+const _groupFieldHeaderString = """
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                  child: Text('\${label}',
+                      style: TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold)),
+                ),
+""";
+
+const _otherChangedString = """
+  void _on\${upperFieldName}Changed(value) {
+    _myFormBloc.add(Changed\${id}\${upperFieldName}(value: value));
+  }
+
+""";
+
+const _xyzSetEnumSelectionString = """
+  void setSelection\${upperFieldName}(int val) {
+    setState(() {
+      _\${lowerFieldName}SelectedRadioTile = val;
+    });
+    _myFormBloc.add(Changed\${id}\${upperFieldName}(value: to\${fieldType}(val)));
+  }
+
+""";
+
+const _xyzSetBooleanSelectionString = """
+  void setSelection\${upperFieldName}(bool val) {
+    setState(() {
+      _\${lowerFieldName}Selection = val;
+    });
+    _myFormBloc.add(Changed\${id}\${upperFieldName}(value: val));
+  }
+""";
+
+const _xyzLookupChangedString = """
+  void _on\${upperFieldName}Selected(String val) {
+    setState(() {
+      _\${lowerFieldName} = val;
+    });
+    _myFormBloc.add(Changed\${id}\${upperFieldName}(value: val));
+  }
+
+""";
+
 class FormCodeGenerator extends CodeGenerator {
   FormCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -11,101 +118,31 @@ class FormCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("import 'package:eliud_model/shared/embedded_component.dart';");
-    headerBuffer.writeln("import 'package:flutter/material.dart';");
-    headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
-    headerBuffer.writeln();
-    headerBuffer.writeln("import '" +
-        resolveImport(importThis: modelSpecifications.listBlocFileName()) +
-        "';");
-    headerBuffer.writeln("import '" +
-        resolveImport(importThis: modelSpecifications.listEventFileName()) +
-        "';");
-    headerBuffer.writeln("import '" +
-        resolveImport(importThis: modelSpecifications.modelFileName()) +
-        "';");
-    headerBuffer.writeln("import '" +
-        resolveImport(importThis: modelSpecifications.formBlocFileName()) +
-        "';");
-    headerBuffer.writeln("import '" +
-        resolveImport(importThis: modelSpecifications.formEventFileName()) +
-        "';");
-    headerBuffer.writeln("import '" +
-        resolveImport(importThis: modelSpecifications.formStateFileName()) +
-        "';");
-    headerBuffer.writeln("import '../tools/enums.dart';");
-    headerBuffer.writeln("import '../shared/bespoke_formfields.dart';");
-
-    headerBuffer.writeln("import 'package:flutter/foundation.dart';");
-    headerBuffer.writeln(
-        "import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';");
-    headerBuffer.writeln("import 'package:intl/intl.dart';");
-
-    headerBuffer.writeln();
+    headerBuffer.writeln(process(_imports));
+    headerBuffer.writeln(process(_specificImports, parameters: <String, String>{
+      '\${path}': camelcaseToUnderscore(modelSpecifications.id)
+    }));
     return headerBuffer.toString();
   }
 
-
-
   String _xyzFrom() {
-    StringBuffer codeBuffer = StringBuffer();
-    String className = modelSpecifications.formClassName();
-    codeBuffer.writeln("class " + className + " extends StatelessWidget {");
-    codeBuffer.writeln(spaces(2) + "FormAction formAction;");
-    codeBuffer
-        .writeln(spaces(2) + modelSpecifications.modelClassName() + " value;");
-    codeBuffer.writeln();
+    StringBuffer constructorParameters = StringBuffer();
+    modelSpecifications.uniqueAssociationTypes().forEach((field) {
+      constructorParameters.writeln(firstLowerCase(field) + "Repository: RepositorySingleton." + firstLowerCase(field) + "Repository, ");
+    });
 
-    codeBuffer.writeln(spaces(2) +
-        className +
-        "({Key key, @required this.formAction, @required this.value}) : super(key: key);");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
-    codeBuffer.writeln(spaces(4) + "return Scaffold(");
-    codeBuffer.writeln(spaces(6) +
-        "appBar: formAction == FormAction.UpdateAction ? AppBar(title: Text(\"Update\")) : AppBar(title: Text(\"Add\")),");
-    codeBuffer.writeln(spaces(6) +
-        "body: BlocProvider<" +
-        modelSpecifications.id +
-        "FormBloc >(");
-    codeBuffer.writeln(spaces(10) +
-        "create: (context) => " +
-        modelSpecifications.id +
-        "FormBloc()");
-    codeBuffer.writeln(spaces(12) +
-        "..add((Initialise" +
-        modelSpecifications.id +
-        "FormEvent(value: value))),");
-    codeBuffer.writeln(spaces(6) +
-        "child: My" +
-        modelSpecifications.id +
-        "Form(formAction: formAction),");
-    codeBuffer.writeln(spaces(8) + "));");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
-    return codeBuffer.toString();
+    return process(_xyzFormString, parameters: <String, String>{
+      "\${id}": modelSpecifications.id,
+      "\${lid}": firstLowerCase(modelSpecifications.id),
+      "\${constructorParameters}": constructorParameters.toString(),
+    });
   }
 
   String _myXyzForm() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(
-        "class My" + modelSpecifications.id + "Form extends StatefulWidget {");
-    codeBuffer.writeln(spaces(2) + "final FormAction formAction;");
-    codeBuffer.writeln();
-    codeBuffer.writeln(
-        spaces(2) + "My" + modelSpecifications.id + "Form({this.formAction});");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) +
-        "_My" +
-        modelSpecifications.id +
-        "FormState createState() => _My" +
-        modelSpecifications.id +
-        "FormState(this.formAction);");
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
-    return codeBuffer.toString();
+    return process(_myXyzFormString, parameters: <String, String>{
+      "\${id}": modelSpecifications.id,
+      "\${lid}": firstLowerCase(modelSpecifications.id)
+    });
   }
 
   String _xyzFormStateMemberData() {
@@ -131,7 +168,8 @@ class FormCodeGenerator extends CodeGenerator {
               .writeln(spaces(2) + "bool _" + field.fieldName + "Selection;");
           break;
         case FormTypeField.Lookup:
-          // Support private data members for lookup / combo box
+          codeBuffer
+              .writeln(spaces(2) + "String _" + field.fieldName + ";");
           break;
         case FormTypeField.Selection:
           codeBuffer.writeln(
@@ -182,14 +220,12 @@ class FormCodeGenerator extends CodeGenerator {
               spaces(4) + "_" + field.fieldName + "Selection = false;");
           break;
         case FormTypeField.Lookup:
-          // Initialise private data members for lookup / combo box
           break;
         case FormTypeField.Selection:
           codeBuffer.writeln(
               spaces(4) + "_" + field.fieldName + "SelectedRadioTile = 0;");
           break;
         case FormTypeField.List:
-          // Initialise support private data members for list
           break;
         case FormTypeField.Unsupported:
           // Ignore
@@ -206,35 +242,56 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
 
     // start blocbuilder
-    codeBuffer.writeln(spaces(4) + "return BlocBuilder<" + modelSpecifications.id + "FormBloc, " + modelSpecifications.id +"FormState>(builder: (context, state) {");
+    codeBuffer.writeln(spaces(4) +
+        "return BlocBuilder<" +
+        modelSpecifications.id +
+        "FormBloc, " +
+        modelSpecifications.id +
+        "FormState>(builder: (context, state) {");
 
     // state is ...Uninitialized
-    codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "FormUninitialized) return Center(");
+    codeBuffer.writeln(spaces(6) +
+        "if (state is " +
+        modelSpecifications.id +
+        "FormUninitialized) return Center(");
     codeBuffer.writeln(spaces(8) + "child: CircularProgressIndicator(),");
     codeBuffer.writeln(spaces(6) + ");");
     codeBuffer.writeln();
 
     // state is ...FormLoaded
-    codeBuffer.writeln(spaces(6) + "Size fullSize = MediaQuery.of(context).size;");
-    codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "FormLoaded) {");
+    codeBuffer
+        .writeln(spaces(6) + "Size fullSize = MediaQuery.of(context).size;");
+    codeBuffer.writeln(
+        spaces(6) + "if (state is " + modelSpecifications.id + "FormLoaded) {");
     modelSpecifications.fields.forEach((field) {
       switch (field.formFieldType()) {
         case FormTypeField.EntryField:
           codeBuffer.writeln(spaces(8) +
               "_" +
               field.fieldName +
-              "Controller.text = state.value." + field.fieldName + ".toString();");
+              "Controller.text = state.value." +
+              field.fieldName +
+              ".toString();");
           break;
         case FormTypeField.CheckBox:
-          codeBuffer.writeln(
-              spaces(8) + "_" + field.fieldName + "Selection = state.value." + field.fieldName +  ";");
+          codeBuffer.writeln(spaces(8) +
+              "_" +
+              field.fieldName +
+              "Selection = state.value." +
+              field.fieldName +
+              ";");
           break;
         case FormTypeField.Lookup:
-          // Initialise private data members for lookup / combo box
+          codeBuffer.writeln(
+              spaces(8) + "_" + field.fieldName + "= state.value." + field.fieldName + ".documentID;");
           break;
         case FormTypeField.Selection:
-          codeBuffer.writeln(
-              spaces(8) + "_" + field.fieldName + "SelectedRadioTile = state.value." + field.fieldName +  ".index;");
+          codeBuffer.writeln(spaces(8) +
+              "_" +
+              field.fieldName +
+              "SelectedRadioTile = state.value." +
+              field.fieldName +
+              ".index;");
           break;
         case FormTypeField.List:
           // Initialise support private data members for list
@@ -246,10 +303,14 @@ class FormCodeGenerator extends CodeGenerator {
     });
     codeBuffer.writeln(spaces(6) + "}");
 
-    codeBuffer.writeln(spaces(6) + "if (state is " + modelSpecifications.id + "FormInitialized) {");
+    codeBuffer.writeln(spaces(6) +
+        "if (state is " +
+        modelSpecifications.id +
+        "FormInitialized) {");
     codeBuffer.writeln(spaces(8) + "return Container(");
     codeBuffer.writeln(spaces(10) + "padding:");
-    codeBuffer.writeln(spaces(10) + "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
+    codeBuffer.writeln(spaces(10) +
+        "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
     codeBuffer.writeln(spaces(12) + "child: Form(");
 
     codeBuffer.writeln(spaces(12) + "child: ListView(");
@@ -259,33 +320,59 @@ class FormCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(_fields(modelSpecifications.fields));
     } else {
       if (modelSpecifications.hasUngroupedFields()) {
-        codeBuffer.writeln(
-            _groupedFieldsFor(
-                "General", modelSpecifications.unGroupedFields()));
+        codeBuffer.writeln(_groupedFieldsFor(
+            "General", modelSpecifications.unGroupedFields()));
       }
       modelSpecifications.groups.forEach((group) {
-        codeBuffer.writeln(
-            _groupedFieldsFor(group.description ?? group.group, modelSpecifications.fieldsForGroups(group)));
-      }
-      );
+        codeBuffer.writeln(_groupedFieldsFor(group.description ?? group.group,
+            modelSpecifications.fieldsForGroups(group)));
+      });
     }
     codeBuffer.writeln(spaces(16) + "RaisedButton(");
     codeBuffer.writeln(spaces(18) + "onPressed: () {");
-    codeBuffer.writeln(spaces(14 + 6) + "if (state is " + modelSpecifications.id + "FormError) {");
+    codeBuffer.writeln(spaces(14 + 6) +
+        "if (state is " +
+        modelSpecifications.id +
+        "FormError) {");
     codeBuffer.writeln(spaces(14 + 8) + "return null;");
     codeBuffer.writeln(spaces(14 + 6) + "} else {");
-    codeBuffer.writeln(spaces(14 + 8) + "if (formAction == FormAction.UpdateAction) {");
-    codeBuffer.writeln(spaces(14 + 10) + "BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context).add(");
-    codeBuffer.writeln(spaces(14 + 12) + "Update" + modelSpecifications.id + "List(value: "+ modelSpecifications.modelClassName() + "(");
+    codeBuffer.writeln(
+        spaces(14 + 8) + "if (formAction == FormAction.UpdateAction) {");
+    codeBuffer.writeln(spaces(14 + 10) +
+        "BlocProvider.of<" +
+        modelSpecifications.id +
+        "ListBloc>(context).add(");
+    codeBuffer.writeln(spaces(14 + 12) +
+        "Update" +
+        modelSpecifications.id +
+        "List(value: " +
+        modelSpecifications.modelClassName() +
+        "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(spaces(14 + 16) + field.fieldName + ": state.value." + field.fieldName + ", ");
+      codeBuffer.writeln(spaces(14 + 16) +
+          field.fieldName +
+          ": state.value." +
+          field.fieldName +
+          ", ");
     });
     codeBuffer.writeln(spaces(14 + 10) + ")));");
     codeBuffer.writeln(spaces(14 + 8) + "} else {");
-    codeBuffer.writeln(spaces(14 + 10) + "BlocProvider.of<" + modelSpecifications.id + "ListBloc>(context).add(");
-    codeBuffer.writeln(spaces(14 + 12) + "Add" + modelSpecifications.id + "List(value: "+ modelSpecifications.modelClassName() + "(");
+    codeBuffer.writeln(spaces(14 + 10) +
+        "BlocProvider.of<" +
+        modelSpecifications.id +
+        "ListBloc>(context).add(");
+    codeBuffer.writeln(spaces(14 + 12) +
+        "Add" +
+        modelSpecifications.id +
+        "List(value: " +
+        modelSpecifications.modelClassName() +
+        "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(spaces(14 + 16) + field.fieldName + ": state.value." + field.fieldName + ", ");
+      codeBuffer.writeln(spaces(14 + 16) +
+          field.fieldName +
+          ": state.value." +
+          field.fieldName +
+          ", ");
     });
     codeBuffer.writeln(spaces(14 + 12) + ")));");
     codeBuffer.writeln(spaces(14 + 8) + "}");
@@ -314,20 +401,14 @@ class FormCodeGenerator extends CodeGenerator {
   }
 
   String _groupedFieldHeader(String groupLabel) {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(16) + "Container(");
-    codeBuffer.writeln(spaces(18) + "alignment: Alignment.centerLeft,");
-    codeBuffer.writeln(spaces(18) + "padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),");
-    codeBuffer.writeln(spaces(18) + "child: Text('$groupLabel',");
-    codeBuffer.writeln(spaces(22) + "style: TextStyle(");
-    codeBuffer.writeln(spaces(26) + "color: Colors.red, fontWeight: FontWeight.bold)),");
-    codeBuffer.writeln(spaces(16) + "),");
-    return codeBuffer.toString();
+    return process(_groupFieldHeaderString,
+        parameters: <String, String>{"\${label}": groupLabel});
   }
 
   String _groupedFieldFooter() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(16) + "const Divider(height: 1.0, thickness: 1.0, color: Colors.red),");
+    codeBuffer.writeln(spaces(16) +
+        "const Divider(height: 1.0, thickness: 1.0, color: Colors.red),");
     return codeBuffer.toString();
   }
 
@@ -357,19 +438,24 @@ class FormCodeGenerator extends CodeGenerator {
             codeBuffer.write(field.displayName);
           codeBuffer.writeln("',");
           if (field.remark != null)
-            codeBuffer.writeln(
-                spaces(20) + "hintText: \"" + field.remark + "\",");
+            codeBuffer
+                .writeln(spaces(20) + "hintText: \"" + field.remark + "\",");
           codeBuffer.writeln(spaces(18) + "),");
-          if (field.isDouble()) codeBuffer.writeln(
-              spaces(18) + "keyboardType: TextInputType.number,");
-          if (field.isInt()) codeBuffer.writeln(
-              spaces(18) + "keyboardType: TextInputType.number,");
-          if (field.isString()) codeBuffer.writeln(
-              spaces(18) + "keyboardType: TextInputType.text,");
+          if (field.isDouble())
+            codeBuffer
+                .writeln(spaces(18) + "keyboardType: TextInputType.number,");
+          if (field.isInt())
+            codeBuffer
+                .writeln(spaces(18) + "keyboardType: TextInputType.number,");
+          if (field.isString())
+            codeBuffer
+                .writeln(spaces(18) + "keyboardType: TextInputType.text,");
           codeBuffer.writeln(spaces(18) + "autovalidate: true,");
           codeBuffer.writeln(spaces(18) + "validator: (_) {");
-          codeBuffer.writeln(spaces(20) + "return state is " +
-              firstUpperCase(field.fieldName) + modelSpecifications.id +
+          codeBuffer.writeln(spaces(20) +
+              "return state is " +
+              firstUpperCase(field.fieldName) +
+              modelSpecifications.id +
               "FormError ? state.message : null;");
           codeBuffer.writeln(spaces(18) + "},");
           codeBuffer.writeln(spaces(16) + "),");
@@ -382,34 +468,44 @@ class FormCodeGenerator extends CodeGenerator {
           else
             codeBuffer.write(field.displayName);
           codeBuffer.writeln("'),");
-          codeBuffer.writeln(
-              spaces(20) + "value: _" + firstLowerCase(field.fieldName) +
-                  "Selection,");
+          codeBuffer.writeln(spaces(20) +
+              "value: _" +
+              firstLowerCase(field.fieldName) +
+              "Selection,");
           codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
           //      codeBuffer.writeln(spaces(22) + "setState(() => print());");
-          codeBuffer.writeln(
-              spaces(22) + "setSelection" + firstUpperCase(field.fieldName) +
-                  "(val);");
+          codeBuffer.writeln(spaces(22) +
+              "setSelection" +
+              firstUpperCase(field.fieldName) +
+              "(val);");
           codeBuffer.writeln(spaces(20) + "}),");
           break;
         case FormTypeField.Lookup:
+          codeBuffer.writeln(spaces(16) + "DropdownButtonComponentFactory().createNew(id: \""
+              + firstLowerCase(field.fieldType) + "s\", value: _"
+              + firstLowerCase(field.fieldName) + ", trigger: " + "_on" +
+              firstUpperCase(field.fieldName) +
+              "Selected)" + ",");
+
           break;
         case FormTypeField.Selection:
           int i = 0;
           field.enumValues.forEach((enumField) {
             codeBuffer.writeln(spaces(16) + "RadioListTile(");
             codeBuffer.writeln(spaces(20) + "value: $i,");
-            codeBuffer.writeln(
-                spaces(20) + "groupValue: _" + firstLowerCase(field.fieldName) +
-                    "SelectedRadioTile,");
-            codeBuffer.writeln(
-                spaces(20) + "title: Text(\"" + enumField + "\"),");
-            codeBuffer.writeln(
-                spaces(20) + "subtitle: Text(\"" + enumField + "\"),");
+            codeBuffer.writeln(spaces(20) +
+                "groupValue: _" +
+                firstLowerCase(field.fieldName) +
+                "SelectedRadioTile,");
+            codeBuffer
+                .writeln(spaces(20) + "title: Text(\"" + enumField + "\"),");
+            codeBuffer
+                .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\"),");
             codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
-            codeBuffer.writeln(
-                spaces(22) + "setSelection" + firstUpperCase(field.fieldName) +
-                    "(val);");
+            codeBuffer.writeln(spaces(22) +
+                "setSelection" +
+                firstUpperCase(field.fieldName) +
+                "(val);");
             codeBuffer.writeln(spaces(20) + "},");
             codeBuffer.writeln(spaces(16) + "),");
             i++;
@@ -418,9 +514,14 @@ class FormCodeGenerator extends CodeGenerator {
         case FormTypeField.List:
           codeBuffer.writeln(spaces(16) + "new Container(");
           codeBuffer.writeln(spaces(20) + "height: (fullSize.height / 2.5), ");
-          codeBuffer.writeln(spaces(20) + "child: EmbeddedComponentFactory." +
-              firstLowerCase(field.fieldName) + "List(state.value." +
-              field.fieldName + ", _on" + firstUpperCase(field.fieldName)+ "Changed)");
+          codeBuffer.writeln(spaces(20) +
+              "child: EmbeddedComponentFactory." +
+              firstLowerCase(field.fieldName) +
+              "List(state.value." +
+              field.fieldName +
+              ", _on" +
+              firstUpperCase(field.fieldName) +
+              "Changed)");
           codeBuffer.writeln(spaces(16) + "),");
           break;
 
@@ -429,9 +530,14 @@ class FormCodeGenerator extends CodeGenerator {
           break;
       }
     } else {
-      codeBuffer.writeln(spaces(16) + field.bespokeFormField + "(" + "state.value." +
-          field.fieldName + ", _on" + firstUpperCase(field.fieldName)+ "Changed),");
-
+      codeBuffer.writeln(spaces(16) +
+          field.bespokeFormField +
+          "(" +
+          "state.value." +
+          field.fieldName +
+          ", _on" +
+          firstUpperCase(field.fieldName) +
+          "Changed),");
     }
     return codeBuffer.toString();
   }
@@ -447,8 +553,7 @@ class FormCodeGenerator extends CodeGenerator {
   String _fields(List<Field> fields) {
     StringBuffer codeBuffer = StringBuffer();
     fields.forEach((field) {
-      if (!field.hidden)
-      codeBuffer.writeln(_field(field));
+      if (!field.hidden) codeBuffer.writeln(_field(field));
     });
     return codeBuffer.toString();
   }
@@ -474,46 +579,52 @@ class FormCodeGenerator extends CodeGenerator {
 
   String _xyzOnChanged(Field field) {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "void _on" + firstUpperCase(field.fieldName) + "Changed() {");
-    codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: _" + firstLowerCase(field.fieldName) + "Controller.text));");
+    codeBuffer.writeln(spaces(2) +
+        "void _on" +
+        firstUpperCase(field.fieldName) +
+        "Changed() {");
+    codeBuffer.writeln(spaces(4) +
+        "_myFormBloc.add(Changed" +
+        modelSpecifications.id +
+        firstUpperCase(field.fieldName) +
+        "(value: _" +
+        firstLowerCase(field.fieldName) +
+        "Controller.text));");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     return codeBuffer.toString();
   }
 
   String _otherChanged(Field field) {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "void _on" + firstUpperCase(field.fieldName) + "Changed(value) {");
-    codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: value));");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    return codeBuffer.toString();
+    return process(_otherChangedString, parameters: <String, String>{
+      "\${upperFieldName}": firstUpperCase(field.fieldName),
+      "\${id}": modelSpecifications.id
+    });
   }
 
   String _xyzSetEnumSelection(Field field) {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "void setSelection" + firstUpperCase(field.fieldName) + "(int val) {");
-    codeBuffer.writeln(spaces(4) + "setState(() {");
-    codeBuffer.writeln(
-        spaces(6) + "_" + field.fieldName + "SelectedRadioTile = val;");
-    codeBuffer.writeln(spaces(4) + "});");
-    codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: to" + field.dartModelType() + "(val)));");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    return codeBuffer.toString();
+    return process(_xyzSetEnumSelectionString, parameters: <String, String>{
+      "\${lowerFieldName}": firstLowerCase(field.fieldName),
+      "\${upperFieldName}": firstUpperCase(field.fieldName),
+      "\${id}": modelSpecifications.id,
+      "\${fieldType}": field.dartModelType()
+    });
   }
 
   String _xyzSetBooleanSelection(Field field) {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "void setSelection" + firstUpperCase(field.fieldName) + "(bool val) {");
-    codeBuffer.writeln(spaces(4) + "setState(() {");
-    codeBuffer.writeln(
-        spaces(6) + "_" + field.fieldName + "Selection = val;");
-    codeBuffer.writeln(spaces(4) + "});");
-    codeBuffer.writeln(spaces(4) + "_myFormBloc.add(Changed" + modelSpecifications.id + firstUpperCase(field.fieldName) + "(value: val));");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    return codeBuffer.toString();
+    return process(_xyzSetBooleanSelectionString, parameters: <String, String>{
+      "\${lowerFieldName}": firstLowerCase(field.fieldName),
+      "\${upperFieldName}": firstUpperCase(field.fieldName),
+      "\${id}": modelSpecifications.id
+    });
+  }
+
+  String _xyzLookupChanged(Field field) {
+    return process(_xyzLookupChangedString, parameters: <String, String>{
+      "\${lowerFieldName}": firstLowerCase(field.fieldName),
+      "\${upperFieldName}": firstUpperCase(field.fieldName),
+      "\${id}": modelSpecifications.id
+    });
   }
 
   String _xyzChangeds() {
@@ -531,6 +642,7 @@ class FormCodeGenerator extends CodeGenerator {
             codeBuffer.writeln(_xyzSetBooleanSelection(field));
             break;
           case FormTypeField.Lookup:
+            codeBuffer.writeln(_xyzLookupChanged(field));
             break;
           case FormTypeField.Selection:
             codeBuffer.writeln(_xyzSetEnumSelection(field));
@@ -551,10 +663,8 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "void dispose() {");
     modelSpecifications.fields.forEach((field) {
       if (field.formFieldType() == FormTypeField.EntryField) {
-        codeBuffer.writeln(spaces(4) +
-            "_" +
-            field.fieldName +
-            "Controller.dispose();");
+        codeBuffer.writeln(
+            spaces(4) + "_" + field.fieldName + "Controller.dispose();");
       }
     });
     codeBuffer.writeln(spaces(4) + "super.dispose();");

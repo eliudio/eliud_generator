@@ -19,6 +19,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formEventFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formStateFileName()) + "';");
     headerBuffer.writeln("import '../tools/string_validator.dart';");
+    headerBuffer.writeln("import 'package:flutter/cupertino.dart';");
+    headerBuffer.writeln("import '../shared/repository_export.dart';");
+
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -87,6 +90,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
         String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Value should be a number or decimal number\", value: newValue);";
         codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
         codeBuffer.writeln(spaces(8) + "}");
+      } else if (field.association) {
+        codeBuffer.writeln(spaces(8) + "newValue = currentState.value.copyWith(" + field.fieldName + ": await _" + firstLowerCase(field.fieldType) + "Repository.get(event.value));");
+        codeBuffer.writeln(_yield(8, field));
       } else {
         codeBuffer.writeln(spaces(8) + "newValue = currentState.value.copyWith(" +
             field.fieldName + ": event.value);");
@@ -115,11 +121,44 @@ class FormBlocCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
+  String _memberData() {
+    StringBuffer codeBuffer = StringBuffer();
+    modelSpecifications.uniqueAssociationTypes().forEach((field) {
+        codeBuffer.writeln(spaces(4) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository;");
+    });
+    return codeBuffer.toString();
+  }
+
+  String _constructor() {
+    List<String> uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
+    if ((uniqueAssociationTypes == null) ||
+        (uniqueAssociationTypes.isEmpty)) {
+      return spaces(2) + modelSpecifications.id + "FormBloc();";
+    }
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "FormBloc({");
+    uniqueAssociationTypes.forEach((field) {
+        codeBuffer.writeln(spaces(16) + "@required " + field + "Repository " + firstLowerCase(field) + "Repository, ");
+    });
+    codeBuffer.writeln(spaces(14) + "}): ");
+    int i = 0;
+    uniqueAssociationTypes.forEach((field) {
+        codeBuffer.writeln(spaces(10) + "assert(" + firstLowerCase(field) + "Repository != null),");
+        codeBuffer.write(spaces(10) + "_" + firstLowerCase(field) + "Repository" + " = " + firstLowerCase(field) + "Repository");
+        i++;
+        if (i < uniqueAssociationTypes.length) codeBuffer.writeln(",");
+    });
+    codeBuffer.writeln(";");
+    return codeBuffer.toString();
+  }
+
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln("class " + modelSpecifications.id + "FormBloc extends Bloc<" + modelSpecifications.formEventClassName() + ", " + modelSpecifications.formStateClassName() + "> {");
 
+    codeBuffer.writeln(_memberData());
+    codeBuffer.writeln(_constructor());
     codeBuffer.writeln(_initialState());
     codeBuffer.writeln(_mapEventToState());
     codeBuffer.writeln(_validations());
