@@ -35,12 +35,16 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
           child: CircularProgressIndicator(),
         );
       } else if (state is \${id}ListLoaded) {
+        String valueChosen;
+        if (state.values.indexWhere((v) => (v.documentID == value)) >= 0)
+          valueChosen = value;
+
         final values = state.values;
         return DropdownButton<String>(
-            items: state.values?.isNotEmpty
+            items: state.values.isNotEmpty
                 ? state.values.map((\${id}Model pm) => DropdownMenuItem(value: pm.documentID, child: Text(pm.documentID))).toList()
                 : const [],
-            value: value,
+            value: valueChosen,
             hint: Text('Select a \${lid}'),
             onChanged: _onChange,
           );

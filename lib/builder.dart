@@ -1,4 +1,5 @@
 import 'package:build/build.dart';
+import 'package:eliud_generator/src/gen/cross_component_builder.dart';
 
 import 'package:eliud_generator/src/gen/entity_code_builder.dart';
 import 'package:eliud_generator/src/gen/model_code_builder.dart';
@@ -81,6 +82,9 @@ Builder form(BuilderOptions options) =>
 
 Builder internal_component(BuilderOptions options) =>
     InternalComponentBuilder();
+
+Builder cross_component(BuilderOptions options) =>
+    CrossComponentBuilder();
 
 Builder embedded_component(BuilderOptions options) =>
     EmbeddedComponentBuilder();

@@ -20,6 +20,7 @@ import '../\${path}.list.event.dart';
 
 """;
 
+
 const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {
   Widget createNew({String id}) {
@@ -114,6 +115,18 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln(process(_componentImports, parameters: <String, String> { "\${path}": spec.path }));
       }
     });
+
+    codeBuffer.writeln("List<String> allInternalComponents = [");
+    codeBuffer.write(spaces(10));
+    modelSpecificationPlus.forEach((spec) {
+      ModelSpecification ms = spec.modelSpecification;
+      if (ms.generate.generateInternalComponent) {
+        codeBuffer.write("\"" + firstLowerCase(ms.id) + "s\", ");
+      }
+    });
+    codeBuffer.writeln();
+    codeBuffer.writeln(spaces(2) + "];");
+    codeBuffer.writeln();
 
     codeBuffer.writeln(process(_ListFactoryCode));
     codeBuffer.writeln(process(_DropdownButtonFactoryCode));

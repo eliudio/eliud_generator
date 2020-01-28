@@ -159,31 +159,33 @@ class FormCodeGenerator extends CodeGenerator {
   String _xyzFormStateFieldMemberData() {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
-      switch (field.formFieldType()) {
-        case FormTypeField.EntryField:
-          codeBuffer.writeln(spaces(2) +
-              "final TextEditingController _" +
-              field.fieldName +
-              "Controller = TextEditingController();");
-          break;
-        case FormTypeField.CheckBox:
-          codeBuffer
-              .writeln(spaces(2) + "bool _" + field.fieldName + "Selection;");
-          break;
-        case FormTypeField.Lookup:
-          codeBuffer
-              .writeln(spaces(2) + "String _" + field.fieldName + ";");
-          break;
-        case FormTypeField.Selection:
-          codeBuffer.writeln(
-              spaces(2) + "int _" + field.fieldName + "SelectedRadioTile;");
-          break;
-        case FormTypeField.List:
+      if (field.bespokeFormField == null) {
+        switch (field.formFieldType()) {
+          case FormTypeField.EntryField:
+            codeBuffer.writeln(spaces(2) +
+                "final TextEditingController _" +
+                field.fieldName +
+                "Controller = TextEditingController();");
+            break;
+          case FormTypeField.CheckBox:
+            codeBuffer
+                .writeln(spaces(2) + "bool _" + field.fieldName + "Selection;");
+            break;
+          case FormTypeField.Lookup:
+            codeBuffer
+                .writeln(spaces(2) + "String _" + field.fieldName + ";");
+            break;
+          case FormTypeField.Selection:
+            codeBuffer.writeln(
+                spaces(2) + "int _" + field.fieldName + "SelectedRadioTile;");
+            break;
+          case FormTypeField.List:
           // Support private data members for list
-          break;
-        case FormTypeField.Unsupported:
+            break;
+          case FormTypeField.Unsupported:
           // Ignore
-          break;
+            break;
+        }
       }
     });
     codeBuffer.writeln();
@@ -209,30 +211,32 @@ class FormCodeGenerator extends CodeGenerator {
         modelSpecifications.id +
         "FormBloc>(context);");
     modelSpecifications.fields.forEach((field) {
-      switch (field.formFieldType()) {
-        case FormTypeField.EntryField:
-          codeBuffer.writeln(spaces(4) +
-              "_" +
-              field.fieldName +
-              "Controller.addListener(_on" +
-              firstUpperCase(field.fieldName) +
-              "Changed);");
-          break;
-        case FormTypeField.CheckBox:
-          codeBuffer.writeln(
-              spaces(4) + "_" + field.fieldName + "Selection = false;");
-          break;
-        case FormTypeField.Lookup:
-          break;
-        case FormTypeField.Selection:
-          codeBuffer.writeln(
-              spaces(4) + "_" + field.fieldName + "SelectedRadioTile = 0;");
-          break;
-        case FormTypeField.List:
-          break;
-        case FormTypeField.Unsupported:
+      if (field.bespokeFormField == null) {
+        switch (field.formFieldType()) {
+          case FormTypeField.EntryField:
+            codeBuffer.writeln(spaces(4) +
+                "_" +
+                field.fieldName +
+                "Controller.addListener(_on" +
+                firstUpperCase(field.fieldName) +
+                "Changed);");
+            break;
+          case FormTypeField.CheckBox:
+            codeBuffer.writeln(
+                spaces(4) + "_" + field.fieldName + "Selection = false;");
+            break;
+          case FormTypeField.Lookup:
+            break;
+          case FormTypeField.Selection:
+            codeBuffer.writeln(
+                spaces(4) + "_" + field.fieldName + "SelectedRadioTile = 0;");
+            break;
+          case FormTypeField.List:
+            break;
+          case FormTypeField.Unsupported:
           // Ignore
-          break;
+            break;
+        }
       }
     });
     codeBuffer.writeln(spaces(2) + "}");
@@ -267,43 +271,46 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(
         spaces(6) + "if (state is " + modelSpecifications.id + "FormLoaded) {");
     modelSpecifications.fields.forEach((field) {
-      switch (field.formFieldType()) {
-        case FormTypeField.EntryField:
-          codeBuffer.writeln(spaces(8) +
-              "_" +
-              field.fieldName +
-              "Controller.text = state.value." +
-              field.fieldName +
-              ".toString();");
-          break;
-        case FormTypeField.CheckBox:
-          codeBuffer.writeln(spaces(8) +
-              "_" +
-              field.fieldName +
-              "Selection = state.value." +
-              field.fieldName +
-              ";");
-          break;
-        case FormTypeField.Lookup:
-          codeBuffer.writeln(
-              spaces(8) + "if (state.value." + field.fieldName + " != null)");
-          codeBuffer.writeln(
-              spaces(10) + "_" + field.fieldName + "= state.value." + field.fieldName + ".documentID;");
-          break;
-        case FormTypeField.Selection:
-          codeBuffer.writeln(spaces(8) +
-              "_" +
-              field.fieldName +
-              "SelectedRadioTile = state.value." +
-              field.fieldName +
-              ".index;");
-          break;
-        case FormTypeField.List:
+      if (field.bespokeFormField == null) {
+        switch (field.formFieldType()) {
+          case FormTypeField.EntryField:
+            codeBuffer.writeln(spaces(8) +
+                "_" +
+                field.fieldName +
+                "Controller.text = state.value." +
+                field.fieldName +
+                ".toString();");
+            break;
+          case FormTypeField.CheckBox:
+            codeBuffer.writeln(spaces(8) +
+                "_" +
+                field.fieldName +
+                "Selection = state.value." +
+                field.fieldName +
+                ";");
+            break;
+          case FormTypeField.Lookup:
+            codeBuffer.writeln(
+                spaces(8) + "if (state.value." + field.fieldName + " != null)");
+            codeBuffer.writeln(
+                spaces(10) + "_" + field.fieldName + "= state.value." +
+                    field.fieldName + ".documentID;");
+            break;
+          case FormTypeField.Selection:
+            codeBuffer.writeln(spaces(8) +
+                "_" +
+                field.fieldName +
+                "SelectedRadioTile = state.value." +
+                field.fieldName +
+                ".index;");
+            break;
+          case FormTypeField.List:
           // Initialise support private data members for list
-          break;
-        case FormTypeField.Unsupported:
+            break;
+          case FormTypeField.Unsupported:
           // Ignore
-          break;
+            break;
+        }
       }
     });
     codeBuffer.writeln(spaces(6) + "}");
@@ -535,14 +542,18 @@ class FormCodeGenerator extends CodeGenerator {
           break;
       }
     } else {
-      codeBuffer.writeln(spaces(16) +
-          field.bespokeFormField +
-          "(" +
-          "state.value." +
-          field.fieldName +
-          ", _on" +
-          firstUpperCase(field.fieldName) +
-          "Changed),");
+      if (field.bespokeFormField.contains("(")) {
+        codeBuffer.writeln(spaces(16) + field.bespokeFormField + ",");
+      } else {
+        codeBuffer.writeln(spaces(16) +
+            field.bespokeFormField +
+            "(" +
+            "state.value." +
+            field.fieldName +
+            ", _on" +
+            firstUpperCase(field.fieldName) +
+            "Changed),");
+      }
     }
     return codeBuffer.toString();
   }
@@ -667,9 +678,11 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "void dispose() {");
     modelSpecifications.fields.forEach((field) {
-      if (field.formFieldType() == FormTypeField.EntryField) {
-        codeBuffer.writeln(
-            spaces(4) + "_" + field.fieldName + "Controller.dispose();");
+      if (field.bespokeFormField == null) {
+        if (field.formFieldType() == FormTypeField.EntryField) {
+          codeBuffer.writeln(
+              spaces(4) + "_" + field.fieldName + "Controller.dispose();");
+        }
       }
     });
     codeBuffer.writeln(spaces(4) + "super.dispose();");
