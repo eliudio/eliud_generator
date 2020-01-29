@@ -56,29 +56,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(18) + "return BlocProvider.value(");
     codeBuffer.writeln(spaces(22) + "value: BlocProvider.of<" + modelSpecifications.id + "ListBloc" + ">(context),");
     codeBuffer.writeln(spaces(22) + "child: " + modelSpecifications.formClassName() + "(");
-    codeBuffer.writeln(spaces(24) + "value: " + modelSpecifications.modelClassName() + "(");
-    modelSpecifications.fields.forEach((field) {
-      if (field.defaultValue != null) {
-        codeBuffer.write(spaces(33) + field.fieldName + ": ");
-        if ((field.isInt()) || (field.isDouble())) {
-          codeBuffer.write(field.defaultValue);
-        } else if (field.isString()) {
-          codeBuffer.write("\"" + field.defaultValue + "\"");
-        }
-        codeBuffer.writeln(", ");
-      } else {
-        if (field.array)
-          codeBuffer.writeln(spaces(33) + field.fieldName + ": [],");
-        if (field.isInt()) {
-          codeBuffer.writeln(spaces(33) + field.fieldName + ": 0,");
-        } else if (field.isDouble()) {
-            codeBuffer.writeln(spaces(33) + field.fieldName + ": 0.0,");
-        } else if (field.isString()) {
-          codeBuffer.writeln(spaces(33) + field.fieldName + ": \"\",");
-        }
-      }
-    });
-    codeBuffer.writeln(spaces(31) + "), ");
+    codeBuffer.writeln(spaces(24) + "value: null,");
     codeBuffer.writeln(spaces(24) + "formAction: FormAction.AddAction)");
     codeBuffer.writeln(spaces(22) + ");");
     codeBuffer.writeln(spaces(16) + "}),");

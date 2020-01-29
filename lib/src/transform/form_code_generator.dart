@@ -46,7 +46,8 @@ class \${id}Form extends StatelessWidget {
       body: BlocProvider<\${id}FormBloc >(
           create: (context) => \${id}FormBloc(
                                      \${constructorParameters}
-                                              )..add((Initialise\${id}FormEvent(value: value))),
+                                              )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
+
       child: My\${id}Form(formAction: formAction),
         ));
   }

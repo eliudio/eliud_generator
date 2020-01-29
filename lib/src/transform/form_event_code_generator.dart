@@ -3,6 +3,12 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
+const String _initialiseNewMenuFormEvent = """
+class InitialiseNew\${id}FormEvent extends \${id}FormEvent {
+}
+
+""";
+
 class FormEventCodeGenerator extends CodeGenerator {
   FormEventCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -35,6 +41,8 @@ class FormEventCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "List<Object> get props => [];");
     codeBuffer.writeln("}");
     codeBuffer.writeln();
+
+    codeBuffer.writeln(process(_initialiseNewMenuFormEvent, parameters: <String, String> { '\${id}': modelSpecifications.id }));
 
     codeBuffer.writeln("class Initialise" + modelSpecifications.id + "FormEvent extends " + modelSpecifications.id + "FormEvent {");
     codeBuffer.writeln(spaces(2) + "final " + modelClassName + " value;");

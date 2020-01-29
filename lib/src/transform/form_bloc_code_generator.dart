@@ -4,6 +4,18 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
+const String _evaluateNewMenuFormEvent = """
+      if (event is InitialiseNew\${id}FormEvent) {
+        \${id}FormLoaded loaded = \${id}FormLoaded(value: \${id}Model(
+              \${newModelValue}
+        ));
+        yield loaded;
+        return;
+
+      }
+
+""";
+
 class FormBlocCodeGenerator extends CodeGenerator {
   FormBlocCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -58,6 +70,36 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.formStateClassName() + "> mapEventToState(" + modelSpecifications.formEventClassName() + " event) async* {");
     codeBuffer.writeln(spaces(4) + "final currentState = state;");
     codeBuffer.writeln(spaces(4) + "if (currentState is " + modelSpecifications.id + "FormUninitialized) {");
+
+
+    StringBuffer newModelBuffer = StringBuffer();
+    modelSpecifications.fields.forEach((field) {
+      if (field.defaultValue != null) {
+        newModelBuffer.write(spaces(33) + field.fieldName + ": ");
+        if ((field.isInt()) || (field.isDouble())) {
+          newModelBuffer.write(field.defaultValue);
+        } else if (field.isString()) {
+          newModelBuffer.write("\"" + field.defaultValue + "\"");
+        }
+        newModelBuffer.writeln(", ");
+      } else {
+        if (field.array)
+          newModelBuffer.writeln(spaces(33) + field.fieldName + ": [],");
+        if (field.isInt()) {
+          newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0,");
+        } else if (field.isDouble()) {
+          newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0.0,");
+        } else if (field.isString()) {
+          newModelBuffer.writeln(spaces(33) + field.fieldName + ": \"\",");
+        }
+      }
+    });
+
+    codeBuffer.writeln(process(_evaluateNewMenuFormEvent, parameters: <String, String> {
+      '\${id}': modelSpecifications.id,
+      '\${newModelValue}': newModelBuffer.toString()
+    }));
+
     codeBuffer.writeln(spaces(6) + "if (event is Initialise" + modelSpecifications.id + "FormEvent) {");
     if (_withRepository())
       codeBuffer.writeln(spaces(8) + "// Need to re-retrieve the document from the repository so that I get all associated types");
