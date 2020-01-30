@@ -29,6 +29,7 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
       if (state is \${id}ListLoading) {
         return Center(

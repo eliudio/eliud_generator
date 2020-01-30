@@ -68,4 +68,9 @@ class GenerateSpecification {
     Map<String, dynamic> generationSpecificationMap = jsonDecode(json);
     return fromJson(generationSpecificationMap);
   }
+
+  bool isExtension() {
+    // Not generate internal component, which means, must be extension
+    return !generateInternalComponent;
+  }
 }

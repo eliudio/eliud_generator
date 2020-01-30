@@ -19,8 +19,6 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln();
       }
     });
-    codeBuffer.writeln("import '../shared/image.repository.dart';");
-    codeBuffer.writeln("import '../shared/image.firestore.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if (spec.modelSpecification.uniqueAssociationTypes().isNotEmpty) {
@@ -34,7 +32,6 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln(spaces(2) + "static final " + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository = new " + spec.modelSpecification.id + "Firestore();");
       }
     });
-    codeBuffer.writeln(spaces(2) + "static final ImageRepository imageRepository = new ImageFirestore();");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "static initApp() {");
     modelSpecificationPlus.forEach((spec) {

@@ -19,8 +19,6 @@ class RepositoryExportGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln();
       }
     });
-    codeBuffer.writeln("export '../shared/image.repository.dart';");
-    codeBuffer.writeln("export '../shared/image.firestore.dart';");
     return codeBuffer.toString();
 
   }

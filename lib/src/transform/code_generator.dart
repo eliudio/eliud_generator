@@ -1,3 +1,4 @@
+import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/transform/code_generator_base.dart';
 import 'package:json_schema/json_schema.dart';
@@ -5,6 +6,13 @@ import 'package:json_schema/json_schema.dart';
 abstract class CodeGenerator extends CodeGeneratorBase {
   final ModelSpecification modelSpecifications;
   final List<String> uniqueAssociationTypes;
+  
+  Field field(String fieldName) {
+    for (Field f in modelSpecifications.fields) {
+      if (f.fieldName == fieldName) return f;
+    }
+    return null;
+  }
 
   CodeGenerator({this.modelSpecifications})
       : uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();

@@ -1,3 +1,4 @@
+import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
@@ -12,6 +13,7 @@ class ListCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:flutter/material.dart';");
     headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
+    headerBuffer.writeln("import 'package:eliud_model/tools/etc.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.listBlocFileName()) + "';");
@@ -63,7 +65,10 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14) + ");");
     codeBuffer.writeln(spaces(12) + "},");
     codeBuffer.writeln(spaces(10) + "),");
-    codeBuffer.writeln(spaces(10) + "body: ListView.builder(");
+    codeBuffer.writeln(spaces(10) + "body: ListView.separated(");
+    codeBuffer.writeln(spaces(14) + "separatorBuilder: (context, index) => Divider(");
+    codeBuffer.writeln(spaces(16) + "color: Colors.red, // should get this color from the app");
+    codeBuffer.writeln(spaces(14) + "),");
     codeBuffer.writeln(spaces(14) + "itemCount: values.length,");
     codeBuffer.writeln(spaces(14) + "itemBuilder: (context, index) {");
     codeBuffer.writeln(spaces(16) + "final value = values[index];");
@@ -147,22 +152,32 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(10) + "tag: '\${value.documentID}__heroTag',");
     codeBuffer.writeln(spaces(10) + "child: Container(");
     codeBuffer.writeln(spaces(12) + "width: MediaQuery.of(context).size.width,");
-    codeBuffer.writeln(spaces(12) + "child: Text(");
-    codeBuffer.writeln(spaces(14) + "value." + title + ",");
-    codeBuffer.writeln(spaces(14) + "style: Theme.of(context).textTheme.title,");
-    codeBuffer.writeln(spaces(12) + "),");
+    if (modelSpecifications.listFields.imageTitle) {
+      codeBuffer.writeln(spaces(12) + "child: Center( child: ImageHelper.getImageFromImageModel(imageModel: value, width: MediaQuery.of(context).size.width))");
+    } else {
+      codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
+      codeBuffer.writeln(spaces(14) + "value." + title + ",");
+      codeBuffer.writeln(
+          spaces(14) + "style: Theme.of(context).textTheme.title,");
+      codeBuffer.writeln(spaces(12) + ")),");
+    }
     codeBuffer.writeln(spaces(10) + "),");
     codeBuffer.writeln(spaces(8) + "),");
     String subTitle = modelSpecifications.listFields.subTitle;
     if (subTitle != null) {
       codeBuffer.writeln(spaces(8) + "subtitle: (value." + subTitle + " != null) && (value." + subTitle + ".isNotEmpty)");
-      codeBuffer.writeln(spaces(12) + "? Text(");
-      codeBuffer.writeln(spaces(10) + "value." + subTitle + ",");
-      codeBuffer.writeln(spaces(10) + "maxLines: 1,");
-      codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
-      codeBuffer.writeln(
-          spaces(10) + "style: Theme.of(context).textTheme.subhead,");
-      codeBuffer.writeln(spaces(8) + ")");
+      codeBuffer.write(spaces(12) + "? ");
+      if (modelSpecifications.listFields.imageSubTitle) {
+        codeBuffer.writeln("Center: child: ImageHelper.getImageFromImageModel(imageModel: value, width: MediaQuery.of(context).size.width))");
+      } else {
+        codeBuffer.writeln("Center: child: Text(");
+        codeBuffer.writeln(spaces(10) + "value." + subTitle + ",");
+        codeBuffer.writeln(spaces(10) + "maxLines: 1,");
+        codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
+        codeBuffer.writeln(
+            spaces(10) + "style: Theme.of(context).textTheme.subhead,");
+        codeBuffer.writeln(spaces(8) + "))");
+      }
       codeBuffer.writeln(spaces(12) + ": null,");
     }
     codeBuffer.writeln(spaces(6) + "),");

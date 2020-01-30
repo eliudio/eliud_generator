@@ -4,9 +4,6 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
-import '../component/carousel.dropdown_button.dart';
-import '../component/divider.dropdown_button.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -19,7 +16,7 @@ const String _code = """
 typedef Changed(String value);
 
 class CrossComponent extends StatelessWidget {
-  static const List<String> extensions = [ "carousels", "dividers", "markDowns", "internalWidget" ];
+  static const List<String> extensions = [ \${extensions} ];
   final String extension;
   final String value;
   final Changed trigger;
@@ -60,8 +57,14 @@ class CrossComponentCodeGenerator extends CodeGeneratorMulti {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(header());
     codeBuffer.writeln(process(_imports));
-    codeBuffer.writeln(process(_code));
-
+    StringBuffer extensions = StringBuffer();
+    modelSpecificationPlus.forEach((spec) {
+      if (spec.modelSpecification.generate.isExtension()) {
+        extensions.write("\"" + spec.modelSpecification.id + "\", ");
+      }
+    });
+    extensions.write("\"internalWidget\"");
+    codeBuffer.writeln(process(_code, parameters: <String, String> { "\${extensions}": extensions.toString()}));
     return codeBuffer.toString();
 
   }
