@@ -89,14 +89,26 @@ class EntityCodeGenerator extends DataCodeGenerator {
               spaces(8) + field.fieldType + "Entity.fromMap(item as Map))");
           codeBuffer.writeln(spaces(8) + ".toList();");
         } else {
+
           codeBuffer.writeln(spaces(4) +
-              "final " +
+              "var " +
+              fieldName(field) +
+              "FromMap;");
+          codeBuffer.writeln(spaces(4) +
+              fieldName(field) +
+              "FromMap = map['" +
+              fieldName(field) +
+              "'];");
+          codeBuffer.writeln(spaces(4) +
+              "if (" + fieldName(field) +
+              "FromMap != null)");
+          codeBuffer.writeln(spaces(6) +
               fieldName(field) +
               "FromMap = " +
               field.fieldType +
-              "Entity.fromMap(map['" +
+              "Entity.fromMap(" +
               fieldName(field) +
-              "']);");
+              "FromMap);");
         }
       }
     });
