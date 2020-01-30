@@ -12,13 +12,15 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(header());
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
-        String path = spec.path;
+      String path = spec.path;
+      if (spec.modelSpecification.generate.generateFirestoreRepository) {
         codeBuffer.writeln("import '../" + path + ".firestore.dart';");
+      }
+      if (spec.modelSpecification.generate.generateRepository) {
         codeBuffer.writeln("import '../" + path + ".repository.dart';");
-        codeBuffer.writeln();
       }
     });
+    codeBuffer.writeln("import '../shared/image.firestore.bespoke.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if (spec.modelSpecification.uniqueAssociationTypes().isNotEmpty) {
@@ -32,6 +34,7 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln(spaces(2) + "static final " + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository = new " + spec.modelSpecification.id + "Firestore();");
       }
     });
+    codeBuffer.writeln(spaces(2) + "static final ImageRepository imageRepository = new ImageFirestore();");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "static initApp() {");
     modelSpecificationPlus.forEach((spec) {

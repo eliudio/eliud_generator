@@ -12,13 +12,15 @@ class RepositoryExportGenerator extends CodeGeneratorMulti {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(header());
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
-        String path = spec.path;
+      String path = spec.path;
+      if (spec.modelSpecification.generate.generateFirestoreRepository) {
         codeBuffer.writeln("export '../" + path + ".firestore.dart';");
+      }
+      if (spec.modelSpecification.generate.generateRepository) {
         codeBuffer.writeln("export '../" + path + ".repository.dart';");
-        codeBuffer.writeln();
       }
     });
+    codeBuffer.writeln("export '../shared/image.firestore.bespoke.dart';");
     return codeBuffer.toString();
 
   }
