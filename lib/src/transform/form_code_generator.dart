@@ -275,7 +275,9 @@ class FormCodeGenerator extends CodeGenerator {
       if (field.bespokeFormField == null) {
         switch (field.formFieldType()) {
           case FormTypeField.EntryField:
-            codeBuffer.writeln(spaces(8) +
+            codeBuffer.writeln(
+                spaces(8) + "if (state.value." + field.fieldName + " != null)");
+            codeBuffer.writeln(spaces(10) +
                 "_" +
                 field.fieldName +
                 "Controller.text = state.value." +
@@ -298,7 +300,9 @@ class FormCodeGenerator extends CodeGenerator {
                     field.fieldName + ".documentID;");
             break;
           case FormTypeField.Selection:
-            codeBuffer.writeln(spaces(8) +
+            codeBuffer.writeln(
+                spaces(8) + "if (state.value." + field.fieldName + " != null)");
+            codeBuffer.writeln(spaces(10) +
                 "_" +
                 field.fieldName +
                 "SelectedRadioTile = state.value." +

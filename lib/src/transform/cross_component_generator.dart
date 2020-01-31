@@ -25,8 +25,11 @@ class CrossComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (value == null) return null;
-    if (value == "internalWidget") {
+    if ((extension == null) || (extension == ""))
+      return Container(
+        color: Colors.white
+      );
+    if (extension == "internalWidgets") {
       var dropDownItems = allInternalComponents
           .map((widgetName) => new DropdownMenuItem(value: widgetName, child: new Text(widgetName)))
           .toList();
@@ -36,7 +39,7 @@ class CrossComponent extends StatelessWidget {
         choice = value;
 
       return new DropdownButton(
-          value: value,
+          value: choice,
           items: dropDownItems,
           hint: Text("Select internal widget"),
           onChanged: trigger);
@@ -59,11 +62,11 @@ class CrossComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(process(_imports));
     StringBuffer extensions = StringBuffer();
     modelSpecificationPlus.forEach((spec) {
-      if (spec.modelSpecification.generate.isExtension()) {
-        extensions.write("\"" + spec.modelSpecification.id + "\", ");
+      if (spec.modelSpecification.generate.isExtension) {
+        extensions.write("\"" + firstLowerCase(spec.modelSpecification.id) + "s\", ");
       }
     });
-    extensions.write("\"internalWidget\"");
+    extensions.write("\"internalWidgets\"");
     codeBuffer.writeln(process(_code, parameters: <String, String> { "\${extensions}": extensions.toString()}));
     return codeBuffer.toString();
 
