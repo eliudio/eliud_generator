@@ -27,6 +27,8 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
 
   \${id}DropdownButtonWidget({ this.value, this.trigger, Key key }): super(key: key);
 
+\${childCode}
+
   @override
   Widget build(BuildContext context) {
 
@@ -39,16 +41,28 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
         String valueChosen;
         if (state.values.indexWhere((v) => (v.documentID == value)) >= 0)
           valueChosen = value;
-
+          
         final values = state.values;
-        return DropdownButton<String>(
-            items: state.values.isNotEmpty
-                ? state.values.map((\${id}Model pm) => DropdownMenuItem(value: pm.documentID, child: Text(pm.documentID))).toList()
-                : const [],
-            value: valueChosen,
-            hint: Text('Select a \${lid}'),
-            onChanged: _onChange,
-          );
+        return Center(
+            child: DropdownButton<String>(
+                      items: state.values.isNotEmpty
+                          ? state.values.map((\${id}Model pm) => DropdownMenuItem(value: pm.documentID, 
+                            child: 
+                              new Container(
+                                padding: const EdgeInsets.only(bottom: 5.0),
+                                height: 100.0,
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: widgets(pm),
+                                ),
+                              )
+                            )).toList()
+                          : const [],
+                      value: valueChosen,
+                      hint: Text('Select a \${lid}'),
+                      onChanged: _onChange,
+                    )
+              );
       } else {
         return Center(
           child: CircularProgressIndicator(),
@@ -78,7 +92,36 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(process(_code, parameters: <String, String> { '\${id}': modelSpecifications.id, '\${lid}': firstLowerCase(modelSpecifications.id) }));
+    String title;
+    String subTitle;
+    StringBuffer childCodeBuffer = StringBuffer();
+
+    childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model pm) {");
+    childCodeBuffer.writeln("List<Widget> widgets = List();");
+    childCodeBuffer.write("if (pm." + modelSpecifications.listFields.title + " != null) ");
+    childCodeBuffer.write("widgets.add(");
+    if (modelSpecifications.listFields.imageTitle) {
+      childCodeBuffer.write("Image.network(pm." + modelSpecifications.listFields.title + ", fit: BoxFit.fill, )");
+    } else {
+      childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + ")");
+    }
+    childCodeBuffer.writeln(");");
+    childCodeBuffer.write("if (pm." + modelSpecifications.listFields.subTitle + " != null) ");
+    childCodeBuffer.write("widgets.add(");
+    if (modelSpecifications.listFields.imageSubTitle) {
+      childCodeBuffer.write("Image.network(pm." + modelSpecifications.listFields.subTitle + ", fit: BoxFit.fill, )");
+    } else {
+      childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + ")");
+    }
+    childCodeBuffer.writeln(");");
+    childCodeBuffer.writeln("return widgets;");
+    childCodeBuffer.writeln("}");
+    codeBuffer.writeln(process(_code,
+        parameters: <String, String> {
+          '\${id}': modelSpecifications.id,
+          '\${lid}': firstLowerCase(modelSpecifications.id),
+          '\${childCode}' : childCodeBuffer.toString(),
+        }));
     return codeBuffer.toString();
   }
 
