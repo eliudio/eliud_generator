@@ -128,11 +128,18 @@ class FormCodeGenerator extends CodeGenerator {
 
   String _xyzFrom() {
     StringBuffer constructorParameters = StringBuffer();
-    if (modelSpecifications.generate.generateFirestoreRepository && modelSpecifications.generate.generateRepository) {
-      constructorParameters.writeln(firstLowerCase(modelSpecifications.id) + "Repository: RepositorySingleton." + firstLowerCase(modelSpecifications.id) + "Repository, ");
+    if (modelSpecifications.generate.generateFirestoreRepository &&
+        modelSpecifications.generate.generateRepository) {
+      constructorParameters.writeln(firstLowerCase(modelSpecifications.id) +
+          "Repository: RepositorySingleton." +
+          firstLowerCase(modelSpecifications.id) +
+          "Repository, ");
     }
     modelSpecifications.uniqueAssociationTypes().forEach((field) {
-      constructorParameters.writeln(firstLowerCase(field) + "Repository: RepositorySingleton." + firstLowerCase(field) + "Repository, ");
+      constructorParameters.writeln(firstLowerCase(field) +
+          "Repository: RepositorySingleton." +
+          firstLowerCase(field) +
+          "Repository, ");
     });
 
     return process(_xyzFormString, parameters: <String, String>{
@@ -173,18 +180,17 @@ class FormCodeGenerator extends CodeGenerator {
                 .writeln(spaces(2) + "bool _" + field.fieldName + "Selection;");
             break;
           case FormTypeField.Lookup:
-            codeBuffer
-                .writeln(spaces(2) + "String _" + field.fieldName + ";");
+            codeBuffer.writeln(spaces(2) + "String _" + field.fieldName + ";");
             break;
           case FormTypeField.Selection:
             codeBuffer.writeln(
                 spaces(2) + "int _" + field.fieldName + "SelectedRadioTile;");
             break;
           case FormTypeField.List:
-          // Support private data members for list
+            // Support private data members for list
             break;
           case FormTypeField.Unsupported:
-          // Ignore
+            // Ignore
             break;
         }
       }
@@ -235,7 +241,7 @@ class FormCodeGenerator extends CodeGenerator {
           case FormTypeField.List:
             break;
           case FormTypeField.Unsupported:
-          // Ignore
+            // Ignore
             break;
         }
       }
@@ -283,21 +289,44 @@ class FormCodeGenerator extends CodeGenerator {
                 "Controller.text = state.value." +
                 field.fieldName +
                 ".toString();");
+            codeBuffer.writeln(
+                spaces(8) + "else");
+            codeBuffer.writeln(spaces(10) +
+                "_" +
+                field.fieldName +
+                "Controller.text = \"\";");
             break;
           case FormTypeField.CheckBox:
+            codeBuffer.writeln(
+                spaces(8) + "if (state.value." + field.fieldName + " != null)");
             codeBuffer.writeln(spaces(8) +
                 "_" +
                 field.fieldName +
                 "Selection = state.value." +
                 field.fieldName +
                 ";");
+            codeBuffer.writeln(
+                spaces(8) + "else");
+            codeBuffer.writeln(spaces(8) +
+                "_" +
+                field.fieldName +
+                "Selection = false;");
             break;
           case FormTypeField.Lookup:
             codeBuffer.writeln(
                 spaces(8) + "if (state.value." + field.fieldName + " != null)");
+            codeBuffer.writeln(spaces(10) +
+                "_" +
+                field.fieldName +
+                "= state.value." +
+                field.fieldName +
+                ".documentID;");
             codeBuffer.writeln(
-                spaces(10) + "_" + field.fieldName + "= state.value." +
-                    field.fieldName + ".documentID;");
+                spaces(8) + "else");
+            codeBuffer.writeln(spaces(10) +
+                "_" +
+                field.fieldName +
+                "= \"\";");
             break;
           case FormTypeField.Selection:
             codeBuffer.writeln(
@@ -308,12 +337,18 @@ class FormCodeGenerator extends CodeGenerator {
                 "SelectedRadioTile = state.value." +
                 field.fieldName +
                 ".index;");
+            codeBuffer.writeln(
+                spaces(8) + "else");
+            codeBuffer.writeln(spaces(10) +
+                "_" +
+                field.fieldName +
+                "SelectedRadioTile = 0;");
             break;
           case FormTypeField.List:
-          // Initialise support private data members for list
+            // Initialise support private data members for list
             break;
           case FormTypeField.Unsupported:
-          // Ignore
+            // Ignore
             break;
         }
       }
@@ -498,11 +533,16 @@ class FormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(20) + "}),");
           break;
         case FormTypeField.Lookup:
-          codeBuffer.writeln(spaces(16) + "DropdownButtonComponentFactory().createNew(id: \""
-              + firstLowerCase(field.fieldType) + "s\", value: _"
-              + firstLowerCase(field.fieldName) + ", trigger: " + "_on" +
+          codeBuffer.writeln(spaces(16) +
+              "DropdownButtonComponentFactory().createNew(id: \"" +
+              firstLowerCase(field.fieldType) +
+              "s\", value: _" +
+              firstLowerCase(field.fieldName) +
+              ", trigger: " +
+              "_on" +
               firstUpperCase(field.fieldName) +
-              "Selected)" + ",");
+              "Selected)" +
+              ",");
 
           break;
         case FormTypeField.Selection:

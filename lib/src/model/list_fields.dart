@@ -44,4 +44,8 @@ class ListFields {
     Map<String, dynamic> generationSpecificationMap = jsonDecode(json);
     return fromJson(generationSpecificationMap);
   }
+
+  bool hasImage() {
+    return imageTitle || imageSubTitle;
+  }
 }

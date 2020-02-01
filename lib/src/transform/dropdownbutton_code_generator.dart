@@ -9,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '../tools/etc.dart';
+
 """;
 
 const String _specificImports = """
@@ -43,8 +45,10 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
           valueChosen = value;
           
         final values = state.values;
-        return Center(
-            child: DropdownButton<String>(
+        DropdownButton button = 
+                    DropdownButton<String>(
+                      isDense: false,
+                      isExpanded: \${withImages},
                       items: state.values.isNotEmpty
                           ? state.values.map((\${id}Model pm) => DropdownMenuItem(value: pm.documentID, 
                             child: 
@@ -61,8 +65,12 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
                       value: valueChosen,
                       hint: Text('Select a \${lid}'),
                       onChanged: _onChange,
-                    )
-              );
+                    );
+        if (\${withImages}) {
+          return Container(height:48, child: Center(child: button));
+        } else {
+          return Center(child: button);
+        }
       } else {
         return Center(
           child: CircularProgressIndicator(),
@@ -101,7 +109,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.title + " != null) ");
     childCodeBuffer.write("widgets.add(");
     if (modelSpecifications.listFields.imageTitle) {
-      childCodeBuffer.write("Image.network(pm." + modelSpecifications.listFields.title + ", fit: BoxFit.fill, )");
+      childCodeBuffer.write("ImageHelper.getImageFromURL(url: pm." + modelSpecifications.listFields.title + ", fit: BoxFit.fill, )");
     } else {
       childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + ")");
     }
@@ -109,7 +117,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.subTitle + " != null) ");
     childCodeBuffer.write("widgets.add(");
     if (modelSpecifications.listFields.imageSubTitle) {
-      childCodeBuffer.write("Image.network(pm." + modelSpecifications.listFields.subTitle + ", fit: BoxFit.fill, )");
+      childCodeBuffer.write("ImageHelper.getImageFromURL(url: pm." + modelSpecifications.listFields.subTitle + ", fit: BoxFit.fill, )");
     } else {
       childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + ")");
     }
@@ -121,6 +129,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
           '\${id}': modelSpecifications.id,
           '\${lid}': firstLowerCase(modelSpecifications.id),
           '\${childCode}' : childCodeBuffer.toString(),
+          "\${withImages}": modelSpecifications.listFields.hasImage().toString()
         }));
     return codeBuffer.toString();
   }
