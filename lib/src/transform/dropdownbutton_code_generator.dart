@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '../tools/etc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 """;
 
@@ -85,6 +85,15 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
 }
 """;
 
+const _imageString = """
+  Center(
+    child: CachedNetworkImage(
+      placeholder: (context, url) => CircularProgressIndicator(),
+      imageUrl:pm.\${fieldName},
+    ),
+  )
+""";
+
 class DropdownButtonCodeGenerator extends CodeGenerator {
   DropdownButtonCodeGenerator ({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -100,8 +109,6 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    String title;
-    String subTitle;
     StringBuffer childCodeBuffer = StringBuffer();
 
     childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model pm) {");
@@ -109,7 +116,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.title + " != null) ");
     childCodeBuffer.write("widgets.add(");
     if (modelSpecifications.listFields.imageTitle) {
-      childCodeBuffer.write("ImageHelper.getImageFromURL(url: pm." + modelSpecifications.listFields.title + ", fit: BoxFit.fill, )");
+      childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.title }));
     } else {
       childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + ")");
     }
@@ -117,7 +124,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.subTitle + " != null) ");
     childCodeBuffer.write("widgets.add(");
     if (modelSpecifications.listFields.imageSubTitle) {
-      childCodeBuffer.write("ImageHelper.getImageFromURL(url: pm." + modelSpecifications.listFields.subTitle + ", fit: BoxFit.fill, )");
+      childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.subTitle }));
     } else {
       childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + ")");
     }
