@@ -1,4 +1,5 @@
 import 'package:build/build.dart';
+import 'package:eliud_generator/src/gen/component_registry_builder.dart';
 import 'package:eliud_generator/src/gen/cross_component_builder.dart';
 
 import 'package:eliud_generator/src/gen/entity_code_builder.dart';
@@ -94,4 +95,7 @@ Builder repository_singleton(BuilderOptions options) =>
 
 Builder repository_export(BuilderOptions options) =>
     RepositoryExportBuilder();
+
+Builder component_registry(BuilderOptions options) =>
+    ComponentRegistryBuilder();
 

@@ -21,6 +21,8 @@ targets:
         enabled: true
       eliud_generator|repository_singleton:
         enabled: true
+      eliud_generator|component_registry:
+        enabled: true
 
 builders:
   model:
@@ -196,6 +198,14 @@ builders:
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["repository_export"]
     build_extensions: {r"$lib$": ["repository_export.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  component_registry:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["component_registry"]
+    build_extensions: {r"$lib$": ["component_registry.dart"]}
     build_to: source
     auto_apply: all_packages
 
