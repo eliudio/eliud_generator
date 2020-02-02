@@ -28,6 +28,7 @@ class ListCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.listStateFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln("import '../tools/enums.dart';");
+    headerBuffer.writeln("import '../core/eliud.dart';");
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -49,8 +50,8 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "final values = state.values;");
     codeBuffer.writeln(spaces(8) + "return new Scaffold(");
     codeBuffer.writeln(spaces(10) + "floatingActionButton: FloatingActionButton(");
-    codeBuffer.writeln(spaces(12) + "foregroundColor: Colors.white,");
-    codeBuffer.writeln(spaces(12) + "backgroundColor: Colors.black,");
+    codeBuffer.writeln(spaces(12) + "foregroundColor: RgbHelper.color(rgbo: Eliud.appModel.floatingButtonForegroundColor),");
+    codeBuffer.writeln(spaces(12) + "backgroundColor: RgbHelper.color(rgbo: Eliud.appModel.floatingButtonBackgroundColor),");
     codeBuffer.writeln(spaces(12) + "child: Icon(Icons.add),");
     codeBuffer.writeln(spaces(14) + "onPressed: () {");
     codeBuffer.writeln(spaces(14) + "Navigator.of(context).push(");
@@ -67,7 +68,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(10) + "),");
     codeBuffer.writeln(spaces(10) + "body: ListView.separated(");
     codeBuffer.writeln(spaces(14) + "separatorBuilder: (context, index) => Divider(");
-    codeBuffer.writeln(spaces(16) + "color: Colors.red, // should get this color from the app");
+    codeBuffer.writeln(spaces(16) + "color: RgbHelper.color(rgbo: Eliud.appModel.dividerColor)");
     codeBuffer.writeln(spaces(14) + "),");
     codeBuffer.writeln(spaces(14) + "itemCount: values.length,");
     codeBuffer.writeln(spaces(14) + "itemBuilder: (context, index) {");
@@ -158,7 +159,7 @@ class ListCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
       codeBuffer.writeln(spaces(14) + "value." + title + ",");
       codeBuffer.writeln(
-          spaces(14) + "style: Theme.of(context).textTheme.title,");
+          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.listTextItemColor)),");
       codeBuffer.writeln(spaces(12) + ")),");
     }
     codeBuffer.writeln(spaces(10) + "),");
