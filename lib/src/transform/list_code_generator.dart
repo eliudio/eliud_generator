@@ -169,7 +169,7 @@ class ListCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(8) + "subtitle: (value." + subTitle + " != null) && (value." + subTitle + ".isNotEmpty)");
       codeBuffer.write(spaces(12) + "? ");
       if (modelSpecifications.listFields.imageSubTitle) {
-        codeBuffer.writeln("Center( child: ImageHelper.getImageFromImageModel(imageModel: value, width: MediaQuery.of(context).size.width))");
+        codeBuffer.writeln("Center( child: ImageHelper.getThumbnailFromImageModel(imageModel: value, width: MediaQuery.of(context).size.width))");
       } else {
         codeBuffer.writeln("Center( child: Text(");
         codeBuffer.writeln(spaces(10) + "value." + subTitle + ",");
