@@ -29,6 +29,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
+    headerBuffer.writeln("import '../shared/rgb.model.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln();
@@ -80,6 +81,8 @@ class FormBlocCodeGenerator extends CodeGenerator {
           newModelBuffer.write(field.defaultValue);
         } else if (field.isString()) {
           newModelBuffer.write("\"" + field.defaultValue + "\"");
+        } else {
+          newModelBuffer.write(field.defaultValue);
         }
         newModelBuffer.writeln(", ");
       } else {

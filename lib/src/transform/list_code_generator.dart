@@ -66,7 +66,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14) + ");");
     codeBuffer.writeln(spaces(12) + "},");
     codeBuffer.writeln(spaces(10) + "),");
-    codeBuffer.writeln(spaces(10) + "body: ListView.separated(");
+    codeBuffer.writeln(spaces(10) + "body: Container(color: RgbHelper.color(rgbo: Eliud.appModel.listBackgroundColor), child: ListView.separated(");
     codeBuffer.writeln(spaces(14) + "separatorBuilder: (context, index) => Divider(");
     codeBuffer.writeln(spaces(16) + "color: RgbHelper.color(rgbo: Eliud.appModel.dividerColor)");
     codeBuffer.writeln(spaces(14) + "),");
@@ -117,7 +117,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(18) + "},");
     codeBuffer.writeln(spaces(16) + ");");
     codeBuffer.writeln(spaces(14) + "}),");
-    codeBuffer.writeln(spaces(8) + ");");
+    codeBuffer.writeln(spaces(8) + "));");
 
     codeBuffer.writeln(spaces(6) + "} else {");
     codeBuffer.writeln(spaces(8) + "return Center(");
@@ -176,7 +176,7 @@ class ListCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(10) + "maxLines: 1,");
         codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
         codeBuffer.writeln(
-            spaces(10) + "style: Theme.of(context).textTheme.subhead,");
+            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.listTextItemColor)),");
         codeBuffer.writeln(spaces(8) + "))");
       }
       codeBuffer.writeln(spaces(12) + ": null,");

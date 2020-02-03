@@ -371,6 +371,7 @@ class FormCodeGenerator extends CodeGenerator {
         modelSpecifications.id +
         "FormInitialized) {");
     codeBuffer.writeln(spaces(8) + "return Container(");
+    codeBuffer.writeln(spaces(8) + "color: RgbHelper.color(rgbo: Eliud.appModel.formBackgroundColor),");
     codeBuffer.writeln(spaces(10) + "padding:");
     codeBuffer.writeln(spaces(10) +
         "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
