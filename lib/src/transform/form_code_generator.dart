@@ -90,6 +90,7 @@ const _groupFieldHeaderString = """
 const _otherChangedString = """
   void _on\${upperFieldName}Changed(value) {
     _myFormBloc.add(Changed\${id}\${upperFieldName}(value: value));
+    \${setState}
   }
 
 """;
@@ -676,9 +677,14 @@ class FormCodeGenerator extends CodeGenerator {
   }
 
   String _otherChanged(Field field) {
+    String setState = "";
+    if (field.formFieldType() == FormTypeField.List) {
+      setState = "setState(() {});";
+    }
     return process(_otherChangedString, parameters: <String, String>{
       "\${upperFieldName}": firstUpperCase(field.fieldName),
-      "\${id}": modelSpecifications.id
+      "\${id}": modelSpecifications.id,
+      "\${setState}": setState
     });
   }
 
