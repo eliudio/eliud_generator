@@ -134,10 +134,11 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     });
     codeBuffer.writeln(process(_imports, parameters: <String, String> { '\${import}': _import.toString() }));
     StringBuffer register = StringBuffer();
+    register .writeln("register(componentName: \"internalWidgets\", componentConstructor: ListComponentFactory());");
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
       if (spec.modelSpecification.generate.isExtension) {
-        register .writeln("register(componentName: \"" + firstLowerCase(spec.modelSpecification.id) + "\", componentConstructor: " + spec.modelSpecification.id + "ComponentConstructorDefault());");
+        register .writeln("register(componentName: \"" + firstLowerCase(spec.modelSpecification.id) + "s\", componentConstructor: " + spec.modelSpecification.id + "ComponentConstructorDefault());");
       }
     });
     codeBuffer.writeln(process(_code, parameters: <String, String> { '\${register}': register.toString() }));
