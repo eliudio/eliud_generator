@@ -20,5 +20,6 @@ class ListBlocCodeBuilder extends CodeBuilder {
           modelSpecifications: modelSpecification);
       return repositoryCodeGenerator;
     }
+
   }
 }

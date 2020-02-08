@@ -154,7 +154,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(10) + "child: Container(");
     codeBuffer.writeln(spaces(12) + "width: MediaQuery.of(context).size.width,");
     if (modelSpecifications.listFields.imageTitle) {
-      codeBuffer.writeln(spaces(12) + "child: Center( child: ImageHelper.getImageFromImageModel(imageModel: value, width: MediaQuery.of(context).size.width))");
+      codeBuffer.writeln(spaces(12) + "child: Center( child: ImageHelper.getImageFromImageModel(imageModel: value." + title + ", width: MediaQuery.of(context).size.width))");
     } else {
       codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
       codeBuffer.writeln(spaces(14) + "value." + title + ",");

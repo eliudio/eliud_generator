@@ -593,8 +593,8 @@ class FormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(20) + "height: (fullSize.height / 2.5), ");
           codeBuffer.writeln(spaces(20) +
               "child: EmbeddedComponentFactory." +
-              firstLowerCase(field.fieldName) +
-              "List(state.value." +
+              firstLowerCase(field.fieldType) +
+              "sList(state.value." +
               field.fieldName +
               ", _on" +
               firstUpperCase(field.fieldName) +

@@ -15,7 +15,7 @@ class DropdownButtonCodeBuilder extends CodeBuilder {
   @override
   CodeGenerator generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
-    if (modelSpecification.generate.generateList) {
+    if (modelSpecification.generate.generateDropDownButton) {
       DropdownButtonCodeGenerator dropdownButtonCodeGenerator = DropdownButtonCodeGenerator(
           modelSpecifications: modelSpecification);
       return dropdownButtonCodeGenerator;
