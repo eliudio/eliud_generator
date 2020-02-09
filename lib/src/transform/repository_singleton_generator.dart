@@ -20,6 +20,8 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln("import '../" + path + ".repository.dart';");
       }
     });
+    codeBuffer.writeln("import '../auth/user_repository.dart';");
+    codeBuffer.writeln();
     codeBuffer.writeln("import '../shared/image.firestore.bespoke.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
@@ -35,6 +37,7 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       }
     });
     codeBuffer.writeln(spaces(2) + "static final ImageRepository imageRepository = new ImageFirestore();");
+    codeBuffer.writeln(spaces(2) + "static final UserRepository userRepository = new UserRepository();");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "static initApp() {");
     modelSpecificationPlus.forEach((spec) {
@@ -46,6 +49,5 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("}");
 
     return codeBuffer.toString();
-
   }
 }
