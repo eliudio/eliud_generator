@@ -49,6 +49,14 @@ builders:
     build_to: source
     auto_apply: all_packages
 
+  cache:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["cache"]
+    build_extensions: {".spec": [".cache.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
   firestore:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"

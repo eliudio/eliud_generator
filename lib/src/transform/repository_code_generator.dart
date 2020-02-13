@@ -23,6 +23,9 @@ class RepositoryCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     String className = modelSpecifications.repositoryClassName();
     String modelClassName = modelSpecifications.modelClassName();
+    if (modelSpecifications.generate.generateCache)
+      codeBuffer.writeln("typedef " + modelClassName + "Trigger();");
+
     codeBuffer.writeln("abstract class $className {");
 
     codeBuffer.writeln(spaces(2) + "Future<void> add(" + modelClassName + " value);");
@@ -30,6 +33,8 @@ class RepositoryCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "Future<" + modelClassName + "> get(String id);");
     codeBuffer.writeln(spaces(2) + "Future<void> update(" + modelClassName + " value);");
     codeBuffer.writeln(spaces(2) + "Stream<List<" + modelClassName + ">> values();");
+    if (modelSpecifications.generate.generateCache)
+      codeBuffer.writeln(spaces(2) + "void listen(" + modelClassName + "Trigger trigger);");
 
     codeBuffer.writeln("}");
     codeBuffer.writeln();

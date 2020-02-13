@@ -7,6 +7,7 @@ import 'field.dart';
 class GenerateSpecification {
   final bool generateComponent;       // includes bloc, state and event
   final bool generateRepository;
+  final bool generateCache;
   final bool generateFirestoreRepository;
   final bool generateModel;
   final bool generateEntity;
@@ -17,7 +18,7 @@ class GenerateSpecification {
   final bool generateEmbeddedComponent; // is this an embedded internal component?
   final bool isExtension;               // is this an extension, is this a component that can be added to a page
 
-  GenerateSpecification({ this.generateComponent, this.generateRepository,
+  GenerateSpecification({ this.generateComponent, this.generateRepository, this.generateCache,
     this.generateFirestoreRepository, this.generateModel, this.generateEntity,
     this.generateForm, this.generateList, this.generateDropDownButton, this.generateInternalComponent,
     this.generateEmbeddedComponent, this.isExtension
@@ -27,6 +28,7 @@ class GenerateSpecification {
     return <String, dynamic>{
       "generateComponent": generateComponent,
       "generateRepository": generateRepository,
+      "generateCache": generateCache,
       "generateFirestoreRepository": generateFirestoreRepository,
       "generateModel": generateModel,
       "generateEntity": generateEntity,
@@ -46,18 +48,19 @@ class GenerateSpecification {
   }
 
   @override
-  List<Object> get props => [generateComponent, generateRepository, generateFirestoreRepository, generateModel,
+  List<Object> get props => [generateComponent, generateRepository, generateCache, generateFirestoreRepository, generateModel,
     generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension];
 
   @override
   String toString() {
-    return 'GenerateSpecification { generateComponent: $generateComponent, generateRepository: $generateRepository, generateFirestoreRepository: $generateFirestoreRepository, generateModel: $generateModel, generateEntity: $generateEntity, generateForm: $generateForm, generateList: $generateList, generateDropDownButton: $generateDropDownButton, generateInternalComponent: $generateInternalComponent, generateEmbeddedComponent: $generateEmbeddedComponent, isExtension:$isExtension }';
+    return 'GenerateSpecification { generateComponent: $generateComponent, generateRepository: $generateCache: generateCache, $generateRepository, generateFirestoreRepository: $generateFirestoreRepository, generateModel: $generateModel, generateEntity: $generateEntity, generateForm: $generateForm, generateList: $generateList, generateDropDownButton: $generateDropDownButton, generateInternalComponent: $generateInternalComponent, generateEmbeddedComponent: $generateEmbeddedComponent, isExtension:$isExtension }';
   }
 
   static GenerateSpecification fromJson(Map<String, Object> json) {
     return GenerateSpecification(
       generateComponent: json["generateComponent"] as bool ?? false,
       generateRepository: json["generateRepository"] as bool ?? false,
+      generateCache: json["generateCache"] as bool ?? false,
       generateFirestoreRepository: json["generateFirestoreRepository"] as bool ?? false,
       generateModel: json["generateModel"] as bool ?? false,
       generateEntity: json["generateEntity"] as bool ?? false,

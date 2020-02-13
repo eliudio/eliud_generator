@@ -1,4 +1,5 @@
 import 'package:build/build.dart';
+import 'package:eliud_generator/src/gen/cache_code_builder.dart';
 import 'package:eliud_generator/src/gen/component_registry_builder.dart';
 import 'package:eliud_generator/src/gen/cross_component_builder.dart';
 
@@ -38,6 +39,9 @@ Builder entity(BuilderOptions options) =>
 
 Builder repository(BuilderOptions options) =>
     RepositoryCodeBuilder();
+
+Builder cache(BuilderOptions options) =>
+    CacheCodeBuilder();
 
 Builder firestore(BuilderOptions options) =>
     FirestoreCodeBuilder();

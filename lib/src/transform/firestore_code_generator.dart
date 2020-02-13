@@ -102,6 +102,17 @@ class FirestoreCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
+  String _listen() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) + "void listen(" + modelSpecifications.modelClassName() + "Trigger trigger) {");
+    codeBuffer.writeln(spaces(4) + _collectionName() + ".snapshots().listen((event) {");
+    codeBuffer.writeln(spaces(6) + "trigger();");
+    codeBuffer.writeln(spaces(4) + "});");
+    codeBuffer.writeln(spaces(2) + "}");
+
+    return codeBuffer.toString();
+  }
+
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
@@ -115,6 +126,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(_populateDoc());
     codeBuffer.writeln(_populateDocPlus());
     codeBuffer.writeln(_get());
+    codeBuffer.writeln(_listen());
     codeBuffer.writeln(_values());
 
     codeBuffer.writeln("}");

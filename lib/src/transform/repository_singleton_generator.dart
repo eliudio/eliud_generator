@@ -19,10 +19,14 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       if (spec.modelSpecification.generate.generateRepository) {
         codeBuffer.writeln("import '../" + path + ".repository.dart';");
       }
+      if (spec.modelSpecification.generate.generateCache) {
+        codeBuffer.writeln("import '../" + path + ".cache.dart';");
+      }
     });
     codeBuffer.writeln("import '../auth/user_repository.dart';");
     codeBuffer.writeln();
     codeBuffer.writeln("import '../shared/image.firestore.bespoke.dart';");
+    codeBuffer.writeln("import '../shared/image.cache.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if (spec.modelSpecification.uniqueAssociationTypes().isNotEmpty) {
@@ -33,10 +37,15 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("class RepositorySingleton {");
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
-        codeBuffer.writeln(spaces(2) + "static final " + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository = new " + spec.modelSpecification.id + "Firestore();");
+        codeBuffer.write(spaces(2) + "static final " + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository = new ");
+        if (spec.modelSpecification.generate.generateCache) {
+          codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "Firestore());");
+        } else {
+          codeBuffer.writeln(spec.modelSpecification.id + "Firestore();");
+        }
       }
     });
-    codeBuffer.writeln(spaces(2) + "static final ImageRepository imageRepository = new ImageFirestore();");
+    codeBuffer.writeln(spaces(2) + "static final ImageRepository imageRepository = new ImageCache(ImageFirestore());");
     codeBuffer.writeln(spaces(2) + "static final UserRepository userRepository = new UserRepository();");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "static initApp() {");
@@ -46,6 +55,20 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       });
     });
     codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln();
+
+    codeBuffer.writeln(spaces(2) + "static void flush() {");
+    modelSpecificationPlus.forEach((spec) {
+      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
+        if (spec.modelSpecification.generate.generateCache) {
+          codeBuffer.writeln(
+              spaces(4) + "(" + firstLowerCase(spec.modelSpecification.id) + "Repository as " + spec.modelSpecification.id +
+                  "Cache).flush();");
+        }
+      }
+    });
+    codeBuffer.writeln(spaces(2) + "}");
+
     codeBuffer.writeln("}");
 
     return codeBuffer.toString();
