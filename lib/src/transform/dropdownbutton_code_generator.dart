@@ -4,6 +4,8 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 const String _imports = """
+import 'package:eliud_model/core/eliud.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -64,7 +66,7 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
                           : const [],
                       value: valueChosen,
                       hint: Text('Select a \${lid}'),
-                      onChanged: _onChange,
+                      onChanged: !Eliud.isAdmin() ? null : _onChange,
                     );
         if (\${withImages}) {
           return Container(height:48, child: Center(child: button));

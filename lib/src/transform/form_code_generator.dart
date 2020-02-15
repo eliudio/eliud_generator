@@ -395,7 +395,7 @@ class FormCodeGenerator extends CodeGenerator {
     }
     codeBuffer.writeln(spaces(16) + "RaisedButton(");
     codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: Eliud.appModel.formSubmitButtonColor),");
-    codeBuffer.writeln(spaces(18) + "onPressed: () {");
+    codeBuffer.writeln(spaces(18) + "onPressed: !Eliud.isAdmin() ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
         "if (state is " +
         modelSpecifications.id +
@@ -490,6 +490,8 @@ class FormCodeGenerator extends CodeGenerator {
           if (field.fieldName == "documentID") {
             codeBuffer.writeln(spaces(18) +
                 "readOnly: (formAction == FormAction.UpdateAction),");
+          } else {
+            codeBuffer.writeln(spaces(18) + "readOnly: !Eliud.isAdmin(),");
           }
           codeBuffer.writeln(
               spaces(18) + "controller: _" + field.fieldName + "Controller,");
@@ -543,7 +545,7 @@ class FormCodeGenerator extends CodeGenerator {
               "value: _" +
               firstLowerCase(field.fieldName) +
               "Selection,");
-          codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
+          codeBuffer.writeln(spaces(20) + "onChanged: !Eliud.isAdmin() ? null : (val) {");
           //      codeBuffer.writeln(spaces(22) + "setState(() => print());");
           codeBuffer.writeln(spaces(22) +
               "setSelection" +
@@ -578,7 +580,7 @@ class FormCodeGenerator extends CodeGenerator {
                 .writeln(spaces(20) + "title: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formFieldTextColor))),");
             codeBuffer
                 .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formFieldTextColor))),");
-            codeBuffer.writeln(spaces(20) + "onChanged: (val) {");
+            codeBuffer.writeln(spaces(20) + "onChanged: !Eliud.isAdmin() ? null : (val) {");
             codeBuffer.writeln(spaces(22) +
                 "setSelection" +
                 firstUpperCase(field.fieldName) +

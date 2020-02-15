@@ -49,7 +49,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(6) + "} else if (state is " + modelSpecifications.id + "ListLoaded) {");
     codeBuffer.writeln(spaces(8) + "final values = state.values;");
     codeBuffer.writeln(spaces(8) + "return new Scaffold(");
-    codeBuffer.writeln(spaces(10) + "floatingActionButton: FloatingActionButton(");
+    codeBuffer.writeln(spaces(10) + "floatingActionButton: !Eliud.isAdmin() ? null : FloatingActionButton(");
     codeBuffer.writeln(spaces(12) + "foregroundColor: RgbHelper.color(rgbo: Eliud.appModel.floatingButtonForegroundColor),");
     codeBuffer.writeln(spaces(12) + "backgroundColor: RgbHelper.color(rgbo: Eliud.appModel.floatingButtonBackgroundColor),");
     codeBuffer.writeln(spaces(12) + "child: Icon(Icons.add),");
