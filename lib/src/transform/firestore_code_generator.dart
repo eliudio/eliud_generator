@@ -5,6 +5,15 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 import 'data_code_generator.dart';
 
+const String _wipeCode = """
+  Future<void> deleteAll() {
+    return \${lid}Collection.getDocuments().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.documents){
+        ds.reference.delete();
+      }});
+  }
+""";
+
 class FirestoreCodeGenerator extends CodeGenerator {
   FirestoreCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -52,6 +61,12 @@ class FirestoreCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.documentID).delete();");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
+  }
+
+  String _wipe() {
+    return process(_wipeCode, parameters: <String, String>{
+      '\${lid}': firstLowerCase(modelSpecifications.id),
+    });
   }
 
   String _update() {
@@ -123,6 +138,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(_add());
     codeBuffer.writeln(_delete());
     codeBuffer.writeln(_update());
+    codeBuffer.writeln(_wipe());
     codeBuffer.writeln(_populateDoc());
     codeBuffer.writeln(_populateDocPlus());
     codeBuffer.writeln(_get());

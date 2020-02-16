@@ -92,6 +92,8 @@ class \${id}InMemoryRepository implements \${id}Repository {
     Stream<List<\${id}Model>> values() {
       return theValues;
     }
+    
+    Future<void> deleteAll() {}
 }
 """;
 

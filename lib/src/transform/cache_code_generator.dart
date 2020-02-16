@@ -53,6 +53,10 @@ class \${id}Cache implements \${id}Repository {
   void flush() {
     fullCache.clear();
   }
+  
+  Future<void> deleteAll() {
+    return reference.deleteAll();
+  }
 }
 
 """;

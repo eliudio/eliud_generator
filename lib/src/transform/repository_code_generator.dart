@@ -5,6 +5,21 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 import 'data_code_generator.dart';
 
+const String _code = """
+\${typeDef}
+
+abstract class \${id}Repository {
+  Future<void> add(\${id}Model value);
+  Future<void> delete(\${id}Model value);
+  Future<\${id}Model> get(String id);
+  Future<void> update(\${id}Model value);
+  Stream<List<\${id}Model>> values();
+  \${listen}
+  Future<void> deleteAll();
+}
+
+""";
+
 class RepositoryCodeGenerator extends CodeGenerator {
   RepositoryCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -13,7 +28,9 @@ class RepositoryCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:async';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
+    headerBuffer.writeln("import '" +
+        resolveImport(importThis: modelSpecifications.modelFileName()) +
+        "';");
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -21,23 +38,22 @@ class RepositoryCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    String className = modelSpecifications.repositoryClassName();
     String modelClassName = modelSpecifications.modelClassName();
+
+    String typeDef = "";
     if (modelSpecifications.generate.generateCache)
-      codeBuffer.writeln("typedef " + modelClassName + "Trigger();");
+      typeDef = "typedef " + modelClassName + "Trigger();";
 
-    codeBuffer.writeln("abstract class $className {");
-
-    codeBuffer.writeln(spaces(2) + "Future<void> add(" + modelClassName + " value);");
-    codeBuffer.writeln(spaces(2) + "Future<void> delete(" + modelClassName + " value);");
-    codeBuffer.writeln(spaces(2) + "Future<" + modelClassName + "> get(String id);");
-    codeBuffer.writeln(spaces(2) + "Future<void> update(" + modelClassName + " value);");
-    codeBuffer.writeln(spaces(2) + "Stream<List<" + modelClassName + ">> values();");
+    String listen = "";
     if (modelSpecifications.generate.generateCache)
-      codeBuffer.writeln(spaces(2) + "void listen(" + modelClassName + "Trigger trigger);");
+      listen = "void listen(" + modelClassName + "Trigger trigger);";
 
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
+    codeBuffer.writeln(process(_code, parameters: <String, String>{
+      '\${id}': modelSpecifications.id,
+      '\${listen}': listen,
+      '\${typeDef}': typeDef
+    }));
+
     return codeBuffer.toString();
   }
 
