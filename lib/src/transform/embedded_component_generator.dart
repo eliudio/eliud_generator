@@ -63,7 +63,7 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return -1;
     }
 
-    Future<void> add(\${id}Model value) {
+    Future<\${id}Model> add(\${id}Model value) {
         items.add(value.copyWith(documentID: newRandomKey()));
         trigger(items);
     }
@@ -74,7 +74,7 @@ class \${id}InMemoryRepository implements \${id}Repository {
       trigger(items);
     }
 
-    Future<void> update(\${id}Model value) {
+    Future<\${id}Model> update(\${id}Model value) {
       int index = _index(value.documentID);
       if (index >= 0) {
         items.replaceRange(index, index+1, [value]);

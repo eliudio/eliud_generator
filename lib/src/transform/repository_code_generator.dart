@@ -9,10 +9,10 @@ const String _code = """
 \${typeDef}
 
 abstract class \${id}Repository {
-  Future<void> add(\${id}Model value);
+  Future<\${id}Model> add(\${id}Model value);
   Future<void> delete(\${id}Model value);
   Future<\${id}Model> get(String id);
-  Future<void> update(\${id}Model value);
+  Future<\${id}Model> update(\${id}Model value);
   Stream<List<\${id}Model>> values();
   \${listen}
   Future<void> deleteAll();

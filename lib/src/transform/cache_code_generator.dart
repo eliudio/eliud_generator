@@ -17,10 +17,11 @@ class \${id}Cache implements \${id}Repository {
 
   \${id}Cache(this.reference);
 
-  Future<void> add(\${id}Model value) {
-    fullCache[value.documentID] = value;
-    reference.add(value);
-    return Future.value();
+  Future<\${id}Model> add(\${id}Model value) {
+    return reference.add(value).then((newValue) {
+      fullCache[value.documentID] = newValue;
+      return newValue;
+    });
   }
 
   Future<void> delete(\${id}Model value){
@@ -38,10 +39,11 @@ class \${id}Cache implements \${id}Repository {
     });
   }
 
-  Future<void> update(\${id}Model value) {
-    fullCache[value.documentID] = value;
-    reference.update(value);
-    return Future.value();
+  Future<\${id}Model> update(\${id}Model value) {
+    reference.update(value).then((newValue) {
+      fullCache[value.documentID] = newValue;
+      return newValue;
+    });
   }
 
   Stream<List<\${id}Model>> values() {

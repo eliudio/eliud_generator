@@ -49,8 +49,8 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
   String _add() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "Future<void> add(" + modelSpecifications.modelClassName() + " value) {");
-    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.documentID).setData(value.toEntity().toDocument());");
+    codeBuffer.writeln(spaces(2) + "Future<" + modelSpecifications.modelClassName() + "> add(" + modelSpecifications.modelClassName() + " value) {");
+    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.documentID).setData(value.toEntity().toDocument()).then((_) => value);");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
@@ -71,8 +71,8 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
   String _update() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "Future<void> update(" + modelSpecifications.modelClassName() + " value) {");
-    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.documentID).updateData(value.toEntity().toDocument());");
+    codeBuffer.writeln(spaces(2) + "Future<" + modelSpecifications.modelClassName() + "> update(" + modelSpecifications.modelClassName() + " value) {");
+    codeBuffer.writeln(spaces(4) + "return " + _collectionName() + ".document(value.documentID).updateData(value.toEntity().toDocument()).then((_) => value);");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
