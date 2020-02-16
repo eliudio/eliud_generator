@@ -94,6 +94,10 @@ class \${id}InMemoryRepository implements \${id}Repository {
     }
     
     Future<void> deleteAll() {}
+
+    @override
+    void listen(trigger) {
+    }
 }
 """;
 
