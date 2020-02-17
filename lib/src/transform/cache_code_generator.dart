@@ -89,9 +89,9 @@ const String _refreshRelationsModel = """
 """;
 
 const String _refreshRelationsEmbeddedArray = """
-    List<\${fieldType}Model> \${fieldName}Holder = await Future.wait(await model.\${fieldName}.map((element) async {
+    List<\${fieldType}Model> \${fieldName}Holder = List<\${fieldType}Model>.from(await Future.wait(await model.\${fieldName}.map((element) async {
       return await \${fieldType}Cache.refreshRelations(element);
-    }));
+    }))).toList();
 """;
 
 const String _refreshRelationsAssignField = """
