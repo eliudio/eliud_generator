@@ -10,6 +10,8 @@ String firstLowerCase(String s) => s[0].toLowerCase() + s.substring(1);
 
 String firstUpperCase(String s) => s[0].toUpperCase() + s.substring(1);
 
+String allUpperCase(String s) => s.toUpperCase();
+
 String process(String template, { Map<String, String> parameters }) {
   if (parameters != null) {
     String processed = template;
