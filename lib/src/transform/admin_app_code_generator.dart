@@ -80,7 +80,7 @@ const String _page = """
   PageModel _\${lid}sPages() {
     List<BodyComponentModel> components = List();
     components.add(BodyComponentModel(
-        componentName: "internalWidgets", componentId: "\${id}s"));
+        componentName: "internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
         documentID: "\${capsid}SPAGE",
         readAccess: PageAccess.admin,
