@@ -50,6 +50,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "final values = state.values;");
     codeBuffer.writeln(spaces(8) + "return new Scaffold(");
     codeBuffer.writeln(spaces(10) + "floatingActionButton: !Eliud.isAdmin() ? null : FloatingActionButton(");
+    codeBuffer.writeln(spaces(12) + "heroTag: \"" + modelSpecifications.id + "FloatBtnTag\",");
     codeBuffer.writeln(spaces(12) + "foregroundColor: RgbHelper.color(rgbo: Eliud.appModel.floatingButtonForegroundColor),");
     codeBuffer.writeln(spaces(12) + "backgroundColor: RgbHelper.color(rgbo: Eliud.appModel.floatingButtonBackgroundColor),");
     codeBuffer.writeln(spaces(12) + "child: Icon(Icons.add),");
@@ -150,7 +151,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");
     codeBuffer.writeln(spaces(8) + "title: Hero(");
     String title = modelSpecifications.listFields?.title ?? "documentID";
-    codeBuffer.writeln(spaces(10) + "tag: '\${value.documentID}__heroTag',");
+    codeBuffer.writeln(spaces(10) + "tag: '\${value.documentID}__" + modelSpecifications.id + "heroTag',");
     codeBuffer.writeln(spaces(10) + "child: Container(");
     codeBuffer.writeln(spaces(12) + "width: MediaQuery.of(context).size.width,");
     if (modelSpecifications.listFields.imageTitle) {

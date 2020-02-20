@@ -21,6 +21,8 @@ abstract class CodeGenerator extends CodeGeneratorBase {
     if ((importThis.startsWith("action.")) ||
         (importThis.startsWith("image.")) ||
         (importThis.startsWith("rgb.")) ||
+        (importThis.startsWith("background_decoration.")) ||
+        (importThis.startsWith("decoration_color.")) ||
         (importThis.startsWith("icon.")))
       return "package:eliud_model/shared/" + importThis;
     return importThis;
