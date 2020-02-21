@@ -98,18 +98,20 @@ class ModelCodeGenerator extends DataCodeGenerator {
     return codeBuffer.toString();
   }
 
+  bool hasDocumentID() {
+    return modelSpecifications.fields.where((element) => element.fieldName == "documentID").length > 0;
+  }
+
   String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(getConstructor(removeDocumentID: false, name: modelSpecifications.modelClassName(), terminate: uniqueAssociationTypes.isEmpty));
-    if (uniqueAssociationTypes.isNotEmpty) {
-      codeBuffer.writeln(" {");
-    }
+    codeBuffer.write(getConstructor(removeDocumentID: false, name: modelSpecifications.modelClassName(), terminate: false));
+    codeBuffer.writeln(spaces(2) + "{");
     uniqueAssociationTypes.forEach((type) {
       codeBuffer.writeln(spaces(4) + "assert("+ firstLowerCase(type) + "Repository != null);");
     });
-    if (uniqueAssociationTypes.isNotEmpty) {
-      codeBuffer.writeln(spaces(2) + "}");
-    }
+    if (hasDocumentID())
+      codeBuffer.writeln(spaces(4) + "assert(documentID != null);");
+    codeBuffer.writeln(spaces(2) + "}");
 
     return codeBuffer.toString();
   }
