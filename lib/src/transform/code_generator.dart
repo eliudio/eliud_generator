@@ -47,4 +47,13 @@ abstract class CodeGenerator extends CodeGeneratorBase {
     codeBuffer.write(body());
     return codeBuffer.toString();
   }
+
+  bool hasDocumentID() {
+    return modelSpecifications.fields.where((element) => element.fieldName == "documentID").length > 0;
+  }
+
+  bool withRepository() {
+    return (modelSpecifications.generate.generateRepository) &&  (modelSpecifications.generate.generateFirestoreRepository);
+  }
+
 }

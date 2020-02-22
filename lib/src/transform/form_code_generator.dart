@@ -140,6 +140,10 @@ class FormCodeGenerator extends CodeGenerator {
 
   String _xyzFrom() {
     StringBuffer constructorParameters = StringBuffer();
+    if (withRepository()) {
+      constructorParameters.writeln("formAction: formAction,");
+    }
+
     if (modelSpecifications.generate.generateFirestoreRepository &&
         modelSpecifications.generate.generateRepository) {
       constructorParameters.writeln(firstLowerCase(modelSpecifications.id) +

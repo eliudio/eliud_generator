@@ -98,10 +98,6 @@ class ModelCodeGenerator extends DataCodeGenerator {
     return codeBuffer.toString();
   }
 
-  bool hasDocumentID() {
-    return modelSpecifications.fields.where((element) => element.fieldName == "documentID").length > 0;
-  }
-
   String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(getConstructor(removeDocumentID: false, name: modelSpecifications.modelClassName(), terminate: false));

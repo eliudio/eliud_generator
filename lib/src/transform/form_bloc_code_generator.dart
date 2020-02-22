@@ -16,13 +16,27 @@ const String _evaluateNewMenuFormEvent = """
 
 """;
 
+const String _isDocumentIDValid = """
+  DocumentID\${id}FormError error(String message, \${id}Model newValue) => DocumentID\${id}FormError(message: message, value: newValue);
+
+  Future<\${id}FormState> _isDocumentIDValid(String value, \${id}Model newValue) async {
+    if (value == null) return Future.value(error("Provide value for documentID", newValue));
+    if (value.length == 0) return Future.value(error("Provide value for documentID", newValue));
+    Future<\${id}Model> findDocument = _\${lid}Repository.get(value);
+    return await findDocument.then((documentFound) {
+      if (documentFound == null) {
+        return Submittable\${id}Form(value: newValue);
+      } else {
+        return error("Invalid documentID: already exists", newValue);
+      }
+    });
+  }
+
+""";
+
 class FormBlocCodeGenerator extends CodeGenerator {
   FormBlocCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
-
-  bool _withRepository() {
-    return (modelSpecifications.generate.generateRepository) &&  (modelSpecifications.generate.generateFirestoreRepository);
-  }
 
   @override
   String commonImports() {
@@ -30,6 +44,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln("import '../shared/rgb.model.dart';");
+    headerBuffer.writeln("import 'package:eliud_model/tools/enums.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln();
@@ -52,7 +67,16 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
   String _yield(int amountOfSpaces, Field field) {
     StringBuffer codeBuffer = StringBuffer();
-    if (field.fieldValidation != null) {
+    if (field.fieldName == "documentID") {
+      if (modelSpecifications.generate.generateFirestoreRepository) {
+        codeBuffer.writeln(spaces(amountOfSpaces) + "if (formAction == FormAction.AddAction) {");
+        codeBuffer.writeln(spaces(amountOfSpaces + 2) +
+            "yield* _isDocumentIDValid(event.value, newValue).asStream();");
+        codeBuffer.writeln(spaces(amountOfSpaces) + "} else {");
+        codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
+        codeBuffer.writeln(spaces(amountOfSpaces) + "}");
+      }
+    } else if (field.fieldValidation != null) {
       codeBuffer.writeln(spaces(amountOfSpaces) + "if (!_is" + firstUpperCase(field.fieldName) + "Valid(event.value)) {");
       String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Invalid value\", value: newValue);";
       codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield " + errorClassName + "");
@@ -104,10 +128,10 @@ class FormBlocCodeGenerator extends CodeGenerator {
     }));
 
     codeBuffer.writeln(spaces(6) + "if (event is Initialise" + modelSpecifications.id + "FormEvent) {");
-    if (_withRepository())
+    if (withRepository())
       codeBuffer.writeln(spaces(8) + "// Need to re-retrieve the document from the repository so that I get all associated types");
     codeBuffer.write(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: ");
-    if (_withRepository())
+    if (withRepository())
       codeBuffer.writeln("await _" + firstLowerCase(modelSpecifications.id) + "Repository.get(event.value.documentID));");
     else
       codeBuffer.writeln("event.value);");
@@ -178,29 +202,34 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
   String _memberData() {
     StringBuffer codeBuffer = StringBuffer();
-    if (_withRepository())
-      codeBuffer.writeln(spaces(4) + "final " + modelSpecifications.id + "Repository _" + firstLowerCase(modelSpecifications.id) + "Repository;");
+    if (withRepository()) {
+      codeBuffer.writeln(
+          spaces(2) + "final " + modelSpecifications.id + "Repository _" +
+              firstLowerCase(modelSpecifications.id) + "Repository;");
+      codeBuffer.writeln(spaces(2) + "final FormAction formAction;");
+    }
     modelSpecifications.uniqueAssociationTypes().forEach((field) {
-        codeBuffer.writeln(spaces(4) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository;");
+        codeBuffer.writeln(spaces(2) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository;");
     });
     return codeBuffer.toString();
   }
 
   String _constructor() {
     List<String> uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
-    if (!_withRepository() && uniqueAssociationTypes.isEmpty) {
+    if (!withRepository() && uniqueAssociationTypes.isEmpty) {
       return spaces(2) + modelSpecifications.id + "FormBloc();";
     }
 
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "FormBloc({");
-    if (_withRepository())
+    if (withRepository())
+      codeBuffer.writeln(spaces(16) + "this.formAction, ");
       codeBuffer.writeln(spaces(16) + "@required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository, ");
     uniqueAssociationTypes.forEach((field) {
         codeBuffer.writeln(spaces(16) + "@required " + field + "Repository " + firstLowerCase(field) + "Repository, ");
     });
     codeBuffer.writeln(spaces(14) + "}): ");
-    if (_withRepository()) {
+    if (withRepository()) {
       codeBuffer.writeln(
           spaces(10) + "assert(" + firstLowerCase(modelSpecifications.id) +
               "Repository != null),");
@@ -235,10 +264,17 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(_mapEventToState());
     codeBuffer.writeln(_validations());
 
+    if (modelSpecifications.generate.generateFirestoreRepository) {
+      codeBuffer.writeln(
+          process(_isDocumentIDValid, parameters: <String, String>{
+            '\${id}': modelSpecifications.id,
+            '\${lid}': firstLowerCase(modelSpecifications.id)
+          }));
+    }
+
     codeBuffer.writeln("}");
     codeBuffer.writeln();
 
-    codeBuffer.writeln();
     return codeBuffer.toString();
   }
 
