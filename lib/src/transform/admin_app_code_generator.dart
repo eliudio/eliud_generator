@@ -42,6 +42,7 @@ const String _headerAdminMenu = """
 const String _menuItem = """
     menuItems.add(
       MenuItemModel(
+        documentID: "\${id}s",
         text: "\${id}s",
         description: "\${id}s",
         icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
@@ -53,6 +54,7 @@ const String _menuItem = """
 const String _footerAdminMenu = """
     menuItems.add(
       MenuItemModel(
+        documentID: "Logout",
         text: "Logout",
         description: "Logout",
         icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
@@ -80,7 +82,7 @@ const String _page = """
   PageModel _\${lid}sPages() {
     List<BodyComponentModel> components = List();
     components.add(BodyComponentModel(
-        componentName: "internalWidgets", componentId: "\${lid}s"));
+      documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
         documentID: "\${capsid}SPAGE",
         readAccess: PageAccess.admin,

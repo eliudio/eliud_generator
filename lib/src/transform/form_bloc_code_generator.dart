@@ -75,6 +75,8 @@ class FormBlocCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(amountOfSpaces) + "} else {");
         codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
         codeBuffer.writeln(spaces(amountOfSpaces) + "}");
+      } else {
+        codeBuffer.writeln(spaces(amountOfSpaces) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
       }
     } else if (field.fieldValidation != null) {
       codeBuffer.writeln(spaces(amountOfSpaces) + "if (!_is" + firstUpperCase(field.fieldName) + "Valid(event.value)) {");
