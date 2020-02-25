@@ -19,6 +19,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
+    headerBuffer.writeln("import 'package:eliud_model/shared/abstract_repository_singleton.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
     modelSpecifications.fields.forEach((field) {
@@ -76,15 +77,6 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
   String _fieldDefinitions() {
     StringBuffer codeBuffer = StringBuffer();
-    if (uniqueAssociationTypes.isNotEmpty) {
-      codeBuffer.writeln(spaces(2) + "// Need to initialise these:");
-    }
-    uniqueAssociationTypes.forEach((type) {
-      codeBuffer.writeln(spaces(2) + "static " + type + "Repository "+ firstLowerCase(type) + "Repository;");
-    });
-    if (uniqueAssociationTypes.isNotEmpty) {
-      codeBuffer.writeln();
-    }
     modelSpecifications.fields.forEach((field) {
       if ((field.remark != null) && (field.remark.length > 0)) {
         codeBuffer.writeln();
@@ -102,9 +94,6 @@ class ModelCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(getConstructor(removeDocumentID: false, name: modelSpecifications.modelClassName(), terminate: false));
     codeBuffer.writeln(spaces(2) + "{");
-    uniqueAssociationTypes.forEach((type) {
-      codeBuffer.writeln(spaces(4) + "assert("+ firstLowerCase(type) + "Repository != null);");
-    });
     if (hasDocumentID())
       codeBuffer.writeln(spaces(4) + "assert(documentID != null);");
     codeBuffer.writeln(spaces(2) + "}");
@@ -257,7 +246,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.writeln(spaces(4) + field.fieldType + "Model " + field.fieldName + "Holder;");
         codeBuffer.writeln(spaces(4) + "if (entity." + field.fieldName + "Id != null) {");
         codeBuffer.writeln(spaces(6) + "try {");
-        codeBuffer.writeln(spaces(8) + "await " + firstLowerCase(field.fieldType) + "Repository.get(entity." + field.fieldName + "Id" + ").then((val) {");
+        codeBuffer.writeln(spaces(8) + "await AbstractRepositorySingleton.singleton." + firstLowerCase(field.fieldType) + "Repository().get(entity." + field.fieldName + "Id" + ").then((val) {");
         codeBuffer.writeln(spaces(10) + field.fieldName + "Holder" + " = val;");
         codeBuffer.writeln(spaces(8) + "}).catchError((error) {});");
         codeBuffer.writeln(spaces(6) + "} catch (_) {}");

@@ -5,7 +5,7 @@ import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
-import 'package:eliud_model/shared/repository_singleton.dart';
+import 'package:eliud_model/shared/abstract_repository_singleton.dart';
 import 'package:eliud_model/shared/action.model.dart';
 import 'package:eliud_model/shared/rgb.model.dart';
 import 'package:eliud_model/shared/icon.model.dart';
@@ -72,7 +72,7 @@ const String _footerAdminMenu = """
   }
 
   Future<PopupMenuModel> _setupMenu() {
-    return RepositorySingleton.popupMenuRepository.add(_adminMenu());
+    return AbstractRepositorySingleton.singleton.popupMenuRepository().add(_adminMenu());
   }
 
 """;
@@ -103,11 +103,11 @@ const String _setupAdminPagesHeader = """
 """;
 
 const String _setupAdminPagesFirstPage = """
-    return RepositorySingleton.pageRepository.add(_\${lid}sPages())
+    return AbstractRepositorySingleton.singleton.pageRepository().add(_\${lid}sPages())
 """;
 
 const String _setupAdminPagesOtherPages = """
-        .then((_) => RepositorySingleton.pageRepository.add(_\${lid}sPages()))
+        .then((_) => AbstractRepositorySingleton.singleton.pageRepository().add(_\${lid}sPages()))
 """;
 
 const String _setupAdminPagesFooter = """
@@ -118,11 +118,11 @@ const String _setupAdminPagesFooter = """
 // run
 const String _headerRun = """
   Future<PopupMenuModel> run() async {
-    return await RepositorySingleton.imageRepository.deleteAll()
+    return await AbstractRepositorySingleton.singleton.imageRepository().deleteAll()
 """;
 
 const String _footerOther = """
-        .then((_) => RepositorySingleton.\${lid}Repository.deleteAll())
+        .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll())
 """;
 
 const String _footerRun = """

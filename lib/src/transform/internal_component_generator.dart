@@ -4,7 +4,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
-import '../shared/repository_singleton.dart';
+import '../shared/abstract_repository_singleton.dart';
 
 import 'component_constructor.dart';
 
@@ -73,7 +73,7 @@ const String _SpecificListComponentCode = """
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
-            \${lowerSpecific}Repository: RepositorySingleton.\${lowerSpecific}Repository,
+            \${lowerSpecific}Repository:  AbstractRepositorySingleton.singleton.\${lowerSpecific}Repository(),
           )..add(Load\${upperSpecific}List()),
         )
       ],
@@ -88,7 +88,7 @@ const String _SpecificDropdownButtonComponentCode = """
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
-            \${lowerSpecific}Repository: RepositorySingleton.\${lowerSpecific}Repository,
+            \${lowerSpecific}Repository: AbstractRepositorySingleton.singleton.\${lowerSpecific}Repository(),
           )..add(Load\${upperSpecific}List()),
         )
       ],

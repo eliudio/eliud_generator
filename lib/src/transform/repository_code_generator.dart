@@ -16,6 +16,7 @@ abstract class \${id}Repository {
   Stream<List<\${id}Model>> values();
   \${listen}
   Future<void> deleteAll();
+  void flush();
 }
 
 """;

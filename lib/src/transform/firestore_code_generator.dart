@@ -59,6 +59,7 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
+  void flush() {}
 }
 """;
 

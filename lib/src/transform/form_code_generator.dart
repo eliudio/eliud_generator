@@ -5,6 +5,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 const String _imports = """
+import 'package:eliud_model/shared/abstract_repository_singleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -18,7 +19,7 @@ import '../tools/enums.dart';
 import '../shared/internal_component.dart';
 import '../shared/embedded_component.dart';
 import '../shared/bespoke_formfields.dart';
-import '../shared/repository_singleton.dart';
+import '../shared/abstract_repository_singleton.dart';
 
 import '../core/eliud.dart';
 import '../tools/etc.dart';
@@ -147,15 +148,15 @@ class FormCodeGenerator extends CodeGenerator {
     if (modelSpecifications.generate.generateFirestoreRepository &&
         modelSpecifications.generate.generateRepository) {
       constructorParameters.writeln(firstLowerCase(modelSpecifications.id) +
-          "Repository: RepositorySingleton." +
+          "Repository: AbstractRepositorySingleton.singleton." +
           firstLowerCase(modelSpecifications.id) +
-          "Repository, ");
+          "Repository(), ");
     }
     modelSpecifications.uniqueAssociationTypes().forEach((field) {
       constructorParameters.writeln(firstLowerCase(field) +
-          "Repository: RepositorySingleton." +
+          "Repository: AbstractRepositorySingleton.singleton." +
           firstLowerCase(field) +
-          "Repository, ");
+          "Repository(), ");
     });
 
     return process(_xyzFormString, parameters: <String, String>{

@@ -4,8 +4,8 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
-class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
-  RepositorySingletonCodeGenerator(String fileName): super(fileName: fileName);
+class JsRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
+  JsRepositorySingletonCodeGenerator(String fileName): super(fileName: fileName);
 
   @override
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
@@ -15,7 +15,7 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
       if (spec.modelSpecification.generate.generateFirestoreRepository) {
-        codeBuffer.writeln("import '../" + path + ".firestore.dart';");
+        codeBuffer.writeln("import '../" + path + ".js_firestore.dart';");
       }
       if (spec.modelSpecification.generate.generateRepository) {
         codeBuffer.writeln("import '../" + path + ".repository.dart';");
@@ -27,7 +27,7 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("import '../auth/user_repository.dart';");
     codeBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
     codeBuffer.writeln();
-    codeBuffer.writeln("import '../shared/image.firestore.bespoke.dart';");
+    codeBuffer.writeln("import '../shared/image.js_firestore.bespoke.dart';");
     codeBuffer.writeln("import '../shared/image.cache.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
@@ -36,20 +36,20 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       }
     });
     codeBuffer.writeln();
-    codeBuffer.writeln("class RepositorySingleton extends AbstractRepositorySingleton {");
+    codeBuffer.writeln("class JsRepositorySingleton extends AbstractRepositorySingleton {");
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
         codeBuffer.writeln(spaces(2) + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository() => _" + firstLowerCase(spec.modelSpecification.id) + "Repository;");
         codeBuffer.write(spaces(2) + spec.modelSpecification.id + "Repository _" + firstLowerCase(spec.modelSpecification.id) + "Repository = ");
         if (spec.modelSpecification.generate.generateCache) {
-          codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "Firestore());");
+          codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "JsFirestore());");
         } else {
-          codeBuffer.writeln(spec.modelSpecification.id + "Firestore();");
+          codeBuffer.writeln(spec.modelSpecification.id + "JsFirestore();");
         }
       }
     });
     codeBuffer.writeln(spaces(2) + "ImageRepository imageRepository() => _imageRepository;");
-    codeBuffer.writeln(spaces(2) + "ImageRepository _imageRepository = new ImageCache(ImageFirestore());");
+    codeBuffer.writeln(spaces(2) + "ImageRepository _imageRepository = new ImageCache(ImageJsFirestore());");
     codeBuffer.writeln(spaces(2) + "UserRepository userRepository() => _userRepository;");
     codeBuffer.writeln(spaces(2) + "UserRepository _userRepository = new UserRepository();");
     codeBuffer.writeln();

@@ -7,7 +7,7 @@ const String _imports = """
 import 'dart:async';
 import '\${filename}.model.dart';
 import '\${filename}.repository.dart';
-import 'package:eliud_model/shared/repository_singleton.dart';
+import 'package:eliud_model/shared/abstract_repository_singleton.dart';
 
 """;
 
@@ -81,7 +81,7 @@ const String _refreshRelationsModel = """
     \${fieldType}Model \${fieldName}Holder;
     if (model.\${fieldName} != null) {
       try {
-        await RepositorySingleton.\${lfieldType}Repository.get(model.\${fieldName}.documentID).then((val) {
+        await AbstractRepositorySingleton.singleton.\${lfieldType}Repository().get(model.\${fieldName}.documentID).then((val) {
           \${fieldName}Holder = val;
         }).catchError((error) {});
       } catch (_) {}
