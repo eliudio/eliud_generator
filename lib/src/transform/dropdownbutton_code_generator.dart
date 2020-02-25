@@ -28,8 +28,9 @@ typedef \${id}Changed(String value);
 class \${id}DropdownButtonWidget extends StatelessWidget {
   final String value;
   final \${id}Changed trigger;
+  final bool optional;
 
-  \${id}DropdownButtonWidget({ this.value, this.trigger, Key key }): super(key: key);
+  \${id}DropdownButtonWidget({ this.value, this.trigger, this.optional, Key key }): super(key: key);
 
 \${childCode}
 
@@ -45,25 +46,42 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
         String valueChosen;
         if (state.values.indexWhere((v) => (v.documentID == value)) >= 0)
           valueChosen = value;
+        else
+          if (optional) valueChosen = null;
           
         final values = state.values;
+        final List<DropdownMenuItem<String>> items = List();
+        if (state.values.isNotEmpty) {
+          if (optional) {
+            items.add(new DropdownMenuItem<String>(
+                value: null,
+                child: new Container(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  height: 100.0,
+                  child: new Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget> [ new Text("None") ],
+                  ),
+                )));
+          }
+          state.values.forEach((element) {
+            items.add(new DropdownMenuItem<String>(
+                value: element.documentID,
+                child: new Container(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  height: 100.0,
+                  child: new Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: widgets(element),
+                  ),
+                )));
+          });
+        }
         DropdownButton button = 
                     DropdownButton<String>(
                       isDense: false,
                       isExpanded: \${withImages},
-                      items: state.values.isNotEmpty
-                          ? state.values.map((\${id}Model pm) => DropdownMenuItem(value: pm.documentID, 
-                            child: 
-                              new Container(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                height: 100.0,
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: widgets(pm),
-                                ),
-                              )
-                            )).toList()
-                          : const [],
+                      items: items,
                       value: valueChosen,
                       hint: Text('Select a \${lid}'),
                       onChanged: !Eliud.isAdmin() ? null : _onChange,

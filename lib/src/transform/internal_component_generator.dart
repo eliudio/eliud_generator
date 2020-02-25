@@ -34,8 +34,8 @@ const String _DropdownButtonFactoryCode = """
 typedef DropdownButtonChanged(String value);
 
 class DropdownButtonComponentFactory implements ComponentConstructor {
-  Widget createNew({String id, String value, DropdownButtonChanged trigger}) {
-    return DropdownButtonComponent(componentId: id, value: value, trigger: trigger);
+  Widget createNew({String id, String value, DropdownButtonChanged trigger, bool optional}) {
+    return DropdownButtonComponent(componentId: id, value: value, trigger: trigger, optional: optional);
   }
 }
 
@@ -58,8 +58,9 @@ class DropdownButtonComponent extends StatelessWidget {
   final String componentId;
   final String value;
   final Changed trigger;
+  final bool optional;
 
-  DropdownButtonComponent({this.componentId, this.value, this.trigger});
+  DropdownButtonComponent({this.componentId, this.value, this.trigger, this.optional});
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +92,7 @@ const String _SpecificDropdownButtonComponentCode = """
           )..add(Load\${upperSpecific}List()),
         )
       ],
-      child: \${upperSpecific}DropdownButtonWidget(value: value, trigger: trigger, ),
+      child: \${upperSpecific}DropdownButtonWidget(value: value, trigger: trigger, optional: optional),
     );
   }
 """;

@@ -15,6 +15,7 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       String path = spec.path;
       if (spec.modelSpecification.generate.generateFirestoreRepository) {
         codeBuffer.writeln("import '../" + path + ".firestore.dart';");
+        codeBuffer.writeln("//import '../" + path + ".js_firestore.dart';");
       }
       if (spec.modelSpecification.generate.generateRepository) {
         codeBuffer.writeln("import '../" + path + ".repository.dart';");
@@ -24,8 +25,10 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       }
     });
     codeBuffer.writeln("import '../auth/user_repository.dart';");
+    codeBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
     codeBuffer.writeln();
     codeBuffer.writeln("import '../shared/image.firestore.bespoke.dart';");
+    codeBuffer.writeln("//import '../shared/image.js_firestore.bespoke.dart';");
     codeBuffer.writeln("import '../shared/image.cache.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
@@ -37,7 +40,21 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("class RepositorySingleton {");
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
-        codeBuffer.write(spaces(2) + "static final " + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository = new ");
+        codeBuffer.writeln(spaces(2) + "static " + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository;");
+      }
+    });
+    codeBuffer.writeln(spaces(2) + "static ImageRepository imageRepository;");
+    codeBuffer.writeln(spaces(2) + "static UserRepository userRepository;");
+    codeBuffer.writeln();
+    codeBuffer.writeln(spaces(2) + "static initApp(DeviceType deviceType) {");
+
+    codeBuffer.writeln(spaces(4) + "if ((deviceType == DeviceType.Android) || (deviceType == DeviceType.iPhone)) {");
+    codeBuffer.writeln(spaces(6) + "imageRepository = new ImageCache(ImageFirestore());");
+    codeBuffer.writeln(spaces(6) + "userRepository = new UserRepository();");
+
+    modelSpecificationPlus.forEach((spec) {
+      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
+        codeBuffer.write(spaces(6) + firstLowerCase(spec.modelSpecification.id) + "Repository = new ");
         if (spec.modelSpecification.generate.generateCache) {
           codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "Firestore());");
         } else {
@@ -45,10 +62,24 @@ class RepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         }
       }
     });
-    codeBuffer.writeln(spaces(2) + "static final ImageRepository imageRepository = new ImageCache(ImageFirestore());");
-    codeBuffer.writeln(spaces(2) + "static final UserRepository userRepository = new UserRepository();");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "static initApp() {");
+
+    codeBuffer.writeln(spaces(4) + "} else {");
+/*
+    codeBuffer.writeln(spaces(6) + "//imageRepository = new ImageCache(ImageJsFirestore());");
+    codeBuffer.writeln(spaces(6) + "userRepository = new UserRepository();");
+    modelSpecificationPlus.forEach((spec) {
+      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
+        codeBuffer.write(spaces(6) + firstLowerCase(spec.modelSpecification.id) + "Repository = new ");
+        if (spec.modelSpecification.generate.generateCache) {
+          codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "JsFirestore());");
+        } else {
+          codeBuffer.writeln(spec.modelSpecification.id + "JsFirestore();");
+        }
+      }
+    });
+*/
+    codeBuffer.writeln(spaces(4) + "}");
+
     modelSpecificationPlus.forEach((spec) {
       spec.modelSpecification.uniqueAssociationTypes().forEach((type) {
         codeBuffer.writeln(spaces(4) + spec.modelSpecification.id + "Model." + firstLowerCase(type) + "Repository = " + firstLowerCase(type) + "Repository;");

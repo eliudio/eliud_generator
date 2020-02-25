@@ -45,6 +45,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln("import '../shared/rgb.model.dart';");
     headerBuffer.writeln("import 'package:eliud_model/tools/enums.dart';");
+    headerBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln();
@@ -172,7 +173,20 @@ class FormBlocCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
         codeBuffer.writeln(spaces(8) + "}");
       } else if (field.association) {
-        codeBuffer.writeln(spaces(8) + "newValue = currentState.value.copyWith(" + field.fieldName + ": await _" + firstLowerCase(field.fieldType) + "Repository.get(event.value));");
+        codeBuffer.writeln(spaces(8) + "if (event.value != null)");
+        codeBuffer.writeln(spaces(10) + "newValue = currentState.value.copyWith(" + field.fieldName + ": await _" + firstLowerCase(field.fieldType) + "Repository.get(event.value));");
+        codeBuffer.writeln(spaces(8) + "else");
+        codeBuffer.writeln(spaces(10) + "newValue = new " + modelSpecifications.id + "Model(");
+        modelSpecifications.fields.forEach((otherField) {
+          if (otherField != field) {
+            codeBuffer.writeln(spaces(33) + otherField.fieldName + ": currentState.value." +
+                    otherField.fieldName + ",");
+          } else {
+            codeBuffer.writeln(spaces(33) + otherField.fieldName + ": null,");
+          }
+        });
+        codeBuffer.writeln(spaces(10) + ");");
+
         codeBuffer.writeln(_yield(8, field));
       } else {
         codeBuffer.writeln(spaces(8) + "newValue = currentState.value.copyWith(" +

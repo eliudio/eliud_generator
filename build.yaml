@@ -9,6 +9,8 @@ targets:
         enabled: true
       eliud_generator|firestore:
         enabled: true
+      #eliud_generator|js_firestore:
+      #  enabled: true
       eliud_generator|component_event:
         enabled: true
       eliud_generator|component_state:
@@ -66,6 +68,14 @@ builders:
     build_extensions: {".spec": [".firestore.dart"]}
     build_to: source
     auto_apply: all_packages
+
+#  js_firestore:
+#    target: ":eliud_generator"
+#    import: "package:eliud_generator/builder.dart"
+#    builder_factories: ["js_firestore"]
+#    build_extensions: {".spec": [".js_firestore.dart"]}
+#    build_to: source
+#    auto_apply: all_packages
 
   component_event:
     target: ":eliud_generator"

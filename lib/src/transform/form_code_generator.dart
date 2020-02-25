@@ -558,17 +558,14 @@ class FormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(20) + "}),");
           break;
         case FormTypeField.Lookup:
+          bool optionalValue = field.optional;
           codeBuffer.writeln(spaces(16) +
               "DropdownButtonComponentFactory().createNew(id: \"" +
               firstLowerCase(field.fieldType) +
               "s\", value: _" +
               firstLowerCase(field.fieldName) +
-              ", trigger: " +
-              "_on" +
-              firstUpperCase(field.fieldName) +
-              "Selected)" +
-              ",");
-
+              ", trigger: " + "_on" + firstUpperCase(field.fieldName) + "Selected" +
+              ", optional: $optionalValue),");
           break;
         case FormTypeField.Selection:
           int i = 0;

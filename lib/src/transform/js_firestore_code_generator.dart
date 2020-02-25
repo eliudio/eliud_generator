@@ -6,71 +6,71 @@ import 'code_generator.dart';
 import 'data_code_generator.dart';
 
 const String _code = """
-class \${id}Firestore implements \${id}Repository {
-  final \${id}Collection = Firestore.instance.collection('\${id}s');
+class \${id}JsFirestore implements \${id}Repository {
+  final \${lid}Collection = firestore().collection('\${id}s');
 
-  \${id}Firestore();
+  \${id}JsFirestore();
 
   Future<\${id}Model> add(\${id}Model value) {
-    return \${id}Collection.document(value.documentID).setData(value.toEntity().toDocument()).then((_) => value);
+    return \${lid}Collection.add(value.toEntity().toDocument()).then((_) => value);
   }
 
   Future<void> delete(\${id}Model value) {
-    return \${id}Collection.document(value.documentID).delete();
+    return \${lid}Collection.doc(value.documentID).delete();
   }
 
   Future<\${id}Model> update(\${id}Model value) {
-    return \${id}Collection.document(value.documentID).updateData(value.toEntity().toDocument()).then((_) => value);
+    return \${lid}Collection.doc(value.documentID)
+        .update(data: value.toEntity().toDocument())
+        .then((_) => value);
   }
 
   Future<void> deleteAll() {
-    return \${id}Collection.getDocuments().then((snapshot) {
-      for (DocumentSnapshot ds in snapshot.documents){
-        ds.reference.delete();
-      }});
+    return \${lid}Collection.get().then((snapshot) => snapshot.docs
+        .forEach((element) => \${lid}Collection.doc(element.id).delete()));
   }
 
   \${id}Model _populateDoc(DocumentSnapshot doc) {
-    return \${id}Model.fromEntity(doc.documentID, \${id}Entity.fromMap(doc.data));
+    return \${id}Model.fromEntity(doc.id, \${id}Entity.fromMap(doc.data()));
   }
 
   Future<\${id}Model> _populateDocPlus(DocumentSnapshot doc) async {
-    return \${id}Model.fromEntityPlus(doc.documentID, \${id}Entity.fromMap(doc.data));  }
+    return \${id}Model.fromEntityPlus(doc.id, \${id}Entity.fromMap(doc.data()));
+  }
 
   Future<\${id}Model> get(String id) {
-    return \${id}Collection.document(id).get().then((doc) {
-      if (doc.data != null)
-        return _populateDocPlus(doc);
-      else
+    return \${lid}Collection.doc(id).get().then((data) {
+      if (data.data() != null) {
+        return _populateDocPlus(data);
+      } else {
         return null;
+      }
     });
   }
 
   void listen(\${id}ModelTrigger trigger) {
-    \${id}Collection.snapshots().listen((event) {
+    \${lid}Collection.onSnapshot.listen((event) {
       trigger();
     });
   }
 
   Stream<List<\${id}Model>> values() {
-    return \${id}Collection.snapshots().map((snapshot) {
-      return snapshot.documents
-            .map((doc) => _populateDoc(doc)).toList();
-    });
+    return \${lid}Collection.onSnapshot
+        .map((data) => data.docs.map((doc) => _populateDoc(doc)).toList());
   }
-
 }
 """;
 
-class FirestoreCodeGenerator extends CodeGenerator {
-  FirestoreCodeGenerator({ModelSpecification modelSpecifications})
+class JsFirestoreCodeGenerator extends CodeGenerator {
+  JsFirestoreCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:async';");
-    headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
+    headerBuffer.writeln("import 'package:firebase/firebase.dart';");
+    headerBuffer.writeln("import 'package:firebase/firestore.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
