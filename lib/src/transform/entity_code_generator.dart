@@ -183,7 +183,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(4) + "Map<String, Object> theDocument = HashMap();");
     modelSpecifications.fields.forEach((field) {
       if (field.fieldName != "documentID") {
-        codeBuffer.write(spaces(6) + "if (" + fieldName(field) + " != null) " +
+        codeBuffer.write(spaces(4) + "if (" + fieldName(field) + " != null) " +
             "theDocument[\"" + fieldName(field) + "\"] = ");
         if ((field.association) || (field.isEnum())) {
           codeBuffer.writeln(fieldName(field) + ";");
@@ -202,6 +202,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
             }
           }
         }
+        codeBuffer.writeln(spaces(6) + "else theDocument[\"" + fieldName(field) + "\"] = null;");
       }
     });
     codeBuffer.writeln(spaces(4) + "return theDocument;");
