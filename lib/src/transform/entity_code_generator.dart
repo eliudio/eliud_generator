@@ -4,6 +4,17 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'data_code_generator.dart';
 
+const String _jsonMethods = """
+  static \${id}Entity fromJsonString(String json) {
+    Map<String, dynamic> generationSpecificationMap = jsonDecode(json);
+    return fromMap(generationSpecificationMap);
+  }
+
+  String toJsonString() {
+    return jsonEncode(toDocument());
+  }
+""";
+
 class EntityCodeGenerator extends DataCodeGenerator {
   EntityCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -26,6 +37,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
+    headerBuffer.writeln("import 'dart:convert';");
 
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
@@ -89,19 +101,15 @@ class EntityCodeGenerator extends DataCodeGenerator {
               spaces(8) + field.fieldType + "Entity.fromMap(item as Map))");
           codeBuffer.writeln(spaces(8) + ".toList();");
         } else {
-
-          codeBuffer.writeln(spaces(4) +
-              "var " +
-              fieldName(field) +
-              "FromMap;");
+          codeBuffer
+              .writeln(spaces(4) + "var " + fieldName(field) + "FromMap;");
           codeBuffer.writeln(spaces(4) +
               fieldName(field) +
               "FromMap = map['" +
               fieldName(field) +
               "'];");
-          codeBuffer.writeln(spaces(4) +
-              "if (" + fieldName(field) +
-              "FromMap != null)");
+          codeBuffer.writeln(
+              spaces(4) + "if (" + fieldName(field) + "FromMap != null)");
           codeBuffer.writeln(spaces(6) +
               fieldName(field) +
               "FromMap = " +
@@ -129,8 +137,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
             }
           } else {
             if (field.array) {
-              codeBuffer.writeln(
-                  "List.from(map['" + fieldName(field) + "']), ");
+              codeBuffer
+                  .writeln("List.from(map['" + fieldName(field) + "']), ");
             } else {
               codeBuffer.writeln("map['" + fieldName(field) + "'], ");
             }
@@ -180,11 +188,17 @@ class EntityCodeGenerator extends DataCodeGenerator {
       }
     });
     if (extraLine) codeBuffer.writeln();
-    codeBuffer.writeln(spaces(4) + "Map<String, Object> theDocument = HashMap();");
+    codeBuffer
+        .writeln(spaces(4) + "Map<String, Object> theDocument = HashMap();");
     modelSpecifications.fields.forEach((field) {
       if (field.fieldName != "documentID") {
-        codeBuffer.write(spaces(4) + "if (" + fieldName(field) + " != null) " +
-            "theDocument[\"" + fieldName(field) + "\"] = ");
+        codeBuffer.write(spaces(4) +
+            "if (" +
+            fieldName(field) +
+            " != null) " +
+            "theDocument[\"" +
+            fieldName(field) +
+            "\"] = ");
         if ((field.association) || (field.isEnum())) {
           codeBuffer.writeln(fieldName(field) + ";");
         } else {
@@ -202,7 +216,10 @@ class EntityCodeGenerator extends DataCodeGenerator {
             }
           }
         }
-        codeBuffer.writeln(spaces(6) + "else theDocument[\"" + fieldName(field) + "\"] = null;");
+        codeBuffer.writeln(spaces(6) +
+            "else theDocument[\"" +
+            fieldName(field) +
+            "\"] = null;");
       }
     });
     codeBuffer.writeln(spaces(4) + "return theDocument;");
@@ -218,11 +235,19 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln("class $className {");
 
     codeBuffer.writeln(_fieldDefinitions());
-    codeBuffer.write(getConstructor(removeDocumentID: true, name: modelSpecifications.entityClassName(), terminate: true));
+    codeBuffer.write(getConstructor(
+        removeDocumentID: true,
+        name: modelSpecifications.entityClassName(),
+        terminate: true));
     codeBuffer.writeln(_getProps());
-    codeBuffer.writeln(toStringCode(true, modelSpecifications.entityClassName()));
+    codeBuffer
+        .writeln(toStringCode(true, modelSpecifications.entityClassName()));
     codeBuffer.writeln(_fromMap());
     codeBuffer.writeln(_toDocument());
+
+    codeBuffer.writeln(process(_jsonMethods, parameters: <String, String>{
+      '\${id}': modelSpecifications.id,
+    }));
 
     codeBuffer.writeln("}");
     codeBuffer.writeln();

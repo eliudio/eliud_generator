@@ -12,7 +12,9 @@ class \${id}JsFirestore implements \${id}Repository {
   \${id}JsFirestore();
 
   Future<\${id}Model> add(\${id}Model value) {
-    return \${lid}Collection.add(value.toEntity().toDocument()).then((_) => value);
+    return \${lid}Collection.doc(value.documentID)
+        .set(value.toEntity().toDocument())
+        .then((_) => value);
   }
 
   Future<void> delete(\${id}Model value) {
