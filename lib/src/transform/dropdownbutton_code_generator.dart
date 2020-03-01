@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:eliud_model/platform/platform.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -107,10 +108,7 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
 
 const _imageString = """
   Center(
-    child: CachedNetworkImage(
-      placeholder: (context, url) => CircularProgressIndicator(),
-      imageUrl:pm.\${fieldName},
-    ),
+    child: AbstractPlatform.platform.getImage(imageUrl:pm.\${fieldName})
   )
 """;
 
