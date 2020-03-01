@@ -43,8 +43,8 @@ class \${id}ListWidget extends StatelessWidget {
         return new Scaffold(
           floatingActionButton: !Eliud.isAdmin() ? null : FloatingActionButton(
             heroTag: "\${id}FloatBtnTag",
-            foregroundColor: RgbHelper.color(rgbo: Eliud.appModel.floatingButtonForegroundColor),
-            backgroundColor: RgbHelper.color(rgbo: Eliud.appModel.floatingButtonBackgroundColor),
+            foregroundColor: RgbHelper.color(rgbo: Eliud.appModel().floatingButtonForegroundColor),
+            backgroundColor: RgbHelper.color(rgbo: Eliud.appModel().floatingButtonBackgroundColor),
             child: Icon(Icons.add),
               onPressed: () {
               Navigator.of(context).push(
@@ -57,9 +57,9 @@ class \${id}ListWidget extends StatelessWidget {
               );
             },
           ),
-          body: Container(color: RgbHelper.color(rgbo: Eliud.appModel.listBackgroundColor), child: ListView.separated(
+          body: Container(color: RgbHelper.color(rgbo: Eliud.appModel().listBackgroundColor), child: ListView.separated(
               separatorBuilder: (context, index) => Divider(
-                color: RgbHelper.color(rgbo: Eliud.appModel.dividerColor)
+                color: RgbHelper.color(rgbo: Eliud.appModel().dividerColor)
               ),
               itemCount: values.length,
               itemBuilder: (context, index) {
@@ -159,7 +159,7 @@ class ListCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
       codeBuffer.writeln(spaces(14) + "value." + title + ",");
       codeBuffer.writeln(
-          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.listTextItemColor)),");
+          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().listTextItemColor)),");
       codeBuffer.writeln(spaces(12) + ")),");
     }
     codeBuffer.writeln(spaces(10) + "),");
@@ -176,7 +176,7 @@ class ListCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(10) + "maxLines: 1,");
         codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
         codeBuffer.writeln(
-            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.listTextItemColor)),");
+            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().listTextItemColor)),");
         codeBuffer.writeln(spaces(8) + "))");
       }
       codeBuffer.writeln(spaces(12) + ": null,");

@@ -48,12 +48,12 @@ class \${id}Form extends StatelessWidget {
     return Scaffold(
       appBar: formAction == FormAction.UpdateAction ?
               AppBar(
-                  title: Text("Update \${id}", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formAppBarTextColor))),
-                  backgroundColor: RgbHelper.color(rgbo: Eliud.appModel.formAppBarBackgroundColor),
+                  title: Text("Update \${id}", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formAppBarTextColor))),
+                  backgroundColor: RgbHelper.color(rgbo: Eliud.appModel().formAppBarBackgroundColor),
                 ) :
               AppBar(
-                  title: Text("Add \${id}", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formAppBarTextColor))),
-                  backgroundColor: RgbHelper.color(rgbo: Eliud.appModel.formAppBarBackgroundColor),
+                  title: Text("Add \${id}", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formAppBarTextColor))),
+                  backgroundColor: RgbHelper.color(rgbo: Eliud.appModel().formAppBarBackgroundColor),
               ),
       body: BlocProvider<\${id}FormBloc >(
           create: (context) => \${id}FormBloc(
@@ -84,7 +84,7 @@ const _groupFieldHeaderString = """
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                   child: Text('\${label}',
                       style: TextStyle(
-                          color: RgbHelper.color(rgbo: Eliud.appModel.formGroupTitleColor), fontWeight: FontWeight.bold)),
+                          color: RgbHelper.color(rgbo: Eliud.appModel().formGroupTitleColor), fontWeight: FontWeight.bold)),
                 ),
 """;
 
@@ -377,7 +377,7 @@ class FormCodeGenerator extends CodeGenerator {
         modelSpecifications.id +
         "FormInitialized) {");
     codeBuffer.writeln(spaces(8) + "return Container(");
-    codeBuffer.writeln(spaces(8) + "color: RgbHelper.color(rgbo: Eliud.appModel.formBackgroundColor),");
+    codeBuffer.writeln(spaces(8) + "color: RgbHelper.color(rgbo: Eliud.appModel().formBackgroundColor),");
     codeBuffer.writeln(spaces(10) + "padding:");
     codeBuffer.writeln(spaces(10) +
         "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
@@ -399,7 +399,7 @@ class FormCodeGenerator extends CodeGenerator {
       });
     }
     codeBuffer.writeln(spaces(16) + "RaisedButton(");
-    codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: Eliud.appModel.formSubmitButtonColor),");
+    codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: Eliud.appModel().formSubmitButtonColor),");
     codeBuffer.writeln(spaces(18) + "onPressed: !Eliud.isAdmin() ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
         "if (state is " +
@@ -452,7 +452,7 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14 + 6) + "}");
 
     codeBuffer.writeln(spaces(18) + "},");
-    codeBuffer.writeln(spaces(18) + "child: Text('Submit', style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formSubmitButtonTextColor))),");
+    codeBuffer.writeln(spaces(18) + "child: Text('Submit', style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formSubmitButtonTextColor))),");
     codeBuffer.writeln(spaces(16) + "),");
     codeBuffer.writeln(spaces(14) + "],");
     codeBuffer.writeln(spaces(12) + "),");
@@ -481,7 +481,7 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(16) +
         "Container(height: 20.0),");
     codeBuffer.writeln(spaces(16) +
-        "Divider(height: 1.0, thickness: 1.0, color: RgbHelper.color(rgbo: Eliud.appModel.dividerColor)),");
+        "Divider(height: 1.0, thickness: 1.0, color: RgbHelper.color(rgbo: Eliud.appModel().dividerColor)),");
     return codeBuffer.toString();
   }
 
@@ -491,7 +491,7 @@ class FormCodeGenerator extends CodeGenerator {
       switch (field.formFieldType()) {
         case FormTypeField.EntryField:
           codeBuffer.writeln(spaces(16) + "TextFormField(");
-          codeBuffer.writeln(spaces(16) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formFieldTextColor)),");
+          codeBuffer.writeln(spaces(16) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formFieldTextColor)),");
           if (field.fieldName == "documentID") {
             codeBuffer.writeln(spaces(18) +
                 "readOnly: (formAction == FormAction.UpdateAction),");
@@ -501,14 +501,14 @@ class FormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(
               spaces(18) + "controller: _" + field.fieldName + "Controller,");
           codeBuffer.writeln(spaces(18) + "decoration: InputDecoration(");
-          codeBuffer.write(spaces(20) + "enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: Eliud.appModel.formFieldTextColor))),");
-          codeBuffer.write(spaces(20) + "focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: Eliud.appModel.formFieldFocusColor))),");
+          codeBuffer.write(spaces(20) + "enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: Eliud.appModel().formFieldTextColor))),");
+          codeBuffer.write(spaces(20) + "focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: Eliud.appModel().formFieldFocusColor))),");
           codeBuffer.write(spaces(20) + "icon: Icon(Icons.");
           if (field.iconName != null)
             codeBuffer.write(field.iconName);
           else
             codeBuffer.write("text_format");
-          codeBuffer.writeln(", color: RgbHelper.color(rgbo: Eliud.appModel.formFieldHeaderColor)),");
+          codeBuffer.writeln(", color: RgbHelper.color(rgbo: Eliud.appModel().formFieldHeaderColor)),");
           codeBuffer.write(spaces(20) + "labelText: '");
           if (field.displayName == null)
             codeBuffer.write(field.fieldName);
@@ -545,7 +545,7 @@ class FormCodeGenerator extends CodeGenerator {
             codeBuffer.write(field.fieldName);
           else
             codeBuffer.write(field.displayName);
-          codeBuffer.writeln("', style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formFieldTextColor))),");
+          codeBuffer.writeln("', style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formFieldTextColor))),");
           codeBuffer.writeln(spaces(20) +
               "value: _" +
               firstLowerCase(field.fieldName) +
@@ -573,15 +573,15 @@ class FormCodeGenerator extends CodeGenerator {
           field.enumValues.forEach((enumField) {
             codeBuffer.writeln(spaces(16) + "RadioListTile(");
             codeBuffer.writeln(spaces(20) + "value: $i,");
-            codeBuffer.writeln(spaces(20) + "activeColor: RgbHelper.color(rgbo: Eliud.appModel.formFieldTextColor),");
+            codeBuffer.writeln(spaces(20) + "activeColor: RgbHelper.color(rgbo: Eliud.appModel().formFieldTextColor),");
             codeBuffer.writeln(spaces(20) +
                 "groupValue: _" +
                 firstLowerCase(field.fieldName) +
                 "SelectedRadioTile,");
             codeBuffer
-                .writeln(spaces(20) + "title: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formFieldTextColor))),");
+                .writeln(spaces(20) + "title: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formFieldTextColor))),");
             codeBuffer
-                .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel.formFieldTextColor))),");
+                .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formFieldTextColor))),");
             codeBuffer.writeln(spaces(20) + "onChanged: !Eliud.isAdmin() ? null : (val) {");
             codeBuffer.writeln(spaces(22) +
                 "setSelection" +
