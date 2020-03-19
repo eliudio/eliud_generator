@@ -20,6 +20,8 @@ abstract class CodeGenerator extends CodeGeneratorBase {
   String resolveImport({String importThis}) {
     if ((importThis.startsWith("action.")) ||
         (importThis.startsWith("image.")) ||
+        (importThis.startsWith("grid_view_type.")) ||
+        (importThis.startsWith("tile_type.")) ||
         (importThis.startsWith("rgb.")) ||
         (importThis.startsWith("background_decoration.")) ||
         (importThis.startsWith("decoration_color.")) ||

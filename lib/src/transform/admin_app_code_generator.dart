@@ -9,6 +9,7 @@ import 'package:eliud_model/shared/abstract_repository_singleton.dart';
 import 'package:eliud_model/shared/action.model.dart';
 import 'package:eliud_model/shared/rgb.model.dart';
 import 'package:eliud_model/shared/icon.model.dart';
+import 'package:eliud_model/shared/grid_view_type.model.dart';
 
 import 'package:eliud_model/model/page.model.dart';
 import 'package:eliud_model/model/app_bar.model.dart';
@@ -17,6 +18,7 @@ import 'package:eliud_model/model/drawer.model.dart';
 import 'package:eliud_model/model/menu_item.model.dart';
 import 'package:eliud_model/model/popup_menu.model.dart';
 import 'package:eliud_model/model/home_menu.model.dart';
+import 'package:eliud_model/shared/tile_type.model.dart';
 
 """;
 
@@ -80,9 +82,10 @@ const String _footerAdminMenu = """
 // Page
 const String _page = """
   PageModel _\${lid}sPages() {
+    TileTypeModel tileType = new TileExtent(crossAxisCellCount: 1, mainCrossAxisExtentType: MainCrossAxisExtentType.AxisRatio, mainCrossAxisExtentRatio: 1.0);
     List<BodyComponentModel> components = List();
     components.add(BodyComponentModel(
-      documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s"));
+      documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s", tileType: tileType));
     PageModel page = PageModel(
         documentID: "\${capsid}SPAGE",
         readAccess: PageAccess.admin,
@@ -91,7 +94,10 @@ const String _page = """
         appBar: _appBar,
         homeMenu: _homeMenu,
         bodyComponents: components,
-        container: PageContainerType.OnlyFirstComponent);
+        scrollDirection: PageScrollDirection.Vertical,
+        mainAxisSpacing: 0,
+        crossAxisSpacing: 0,
+        gridViewType: StaggeredGridViewExtent(maxCrossAxisExtentType: MaxCrossAxisExtentType.AxisRatio, maxCrossAxisExtentRatio: 1.0));
     return page;
   }
 
