@@ -48,12 +48,12 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
         if (state.values.indexWhere((v) => (v.documentID == value)) >= 0)
           valueChosen = value;
         else
-          if (optional) valueChosen = null;
+          if (optional != null && optional) valueChosen = null;
           
         final values = state.values;
         final List<DropdownMenuItem<String>> items = List();
         if (state.values.isNotEmpty) {
-          if (optional) {
+          if (optional != null && optional) {
             items.add(new DropdownMenuItem<String>(
                 value: null,
                 child: new Container(
