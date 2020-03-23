@@ -140,7 +140,13 @@ class EntityCodeGenerator extends DataCodeGenerator {
               codeBuffer
                   .writeln("List.from(map['" + fieldName(field) + "']), ");
             } else {
-              codeBuffer.writeln("map['" + fieldName(field) + "'], ");
+              if (field.isDouble())
+                codeBuffer.writeln("double.tryParse(map['" + fieldName(field) + "'].toString()), ");
+              else if (field.isInt())
+                codeBuffer.writeln("int.tryParse(map['" + fieldName(field) + "'].toString()), ");
+              else
+                codeBuffer.writeln("map['" + fieldName(field) + "'], ");
+
             }
           }
         }
