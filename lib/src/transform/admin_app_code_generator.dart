@@ -10,6 +10,7 @@ import 'package:eliud_model/shared/action.model.dart';
 import 'package:eliud_model/shared/rgb.model.dart';
 import 'package:eliud_model/shared/icon.model.dart';
 import 'package:eliud_model/shared/grid_view_type.model.dart';
+import 'package:eliud_model/model/menu_def.model.dart';
 
 import 'package:eliud_model/model/page.model.dart';
 import 'package:eliud_model/model/app_bar.model.dart';
@@ -36,12 +37,12 @@ class SetupAdmin {
 """;
 
 // Admin menu
-const String _headerAdminMenu = """
-  PopupMenuModel _adminMenu() {
+const String _headerAdminMenuDef = """
+  MenuDefModel _adminMenuDef() {
     List<MenuItemModel> menuItems = List<MenuItemModel>();
 """;
 
-const String _menuItem = """
+const String _menuItemDef = """
     menuItems.add(
       MenuItemModel(
         documentID: "\${id}s",
@@ -53,7 +54,7 @@ const String _menuItem = """
 
 """;
 
-const String _footerAdminMenu = """
+const String _footerAdminMenuDef = """
     menuItems.add(
       MenuItemModel(
         documentID: "Logout",
@@ -62,15 +63,31 @@ const String _footerAdminMenu = """
         icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
         action: InternalAction(internalActionEnum: InternalActionEnum.Logout)
       ));
-    PopupMenuModel menu = PopupMenuModel(
+      
+    MenuDefModel menu = MenuDefModel(
+      documentID: "ADMIN_MENU_DEF_1",
+      name: "Menu Definition 1",
+      menuItems: menuItems
+    );
+    return menu;
+  }
+
+  Future<MenuDefModel> _setupMenuDef() {
+    return AbstractRepositorySingleton.singleton.menuDefRepository().add(_adminMenuDef());
+  }
+
+""";
+
+const String _adminMenu = """
+  PopupMenuModel _adminMenu() {
+    return PopupMenuModel(
       documentID: "ADMIN_POPUP_MENU_1",
       name: "Admin menu",
-      menuItems: menuItems,
+      menuDef: _adminMenuDef(),
       menuItemColor: menuItemColor,
       selectedMenuItemColor: selectedMenuItemColor,
       backgroundColor: backgroundColor,
     );
-    return menu;
   }
 
   Future<PopupMenuModel> _setupMenu() {
@@ -133,6 +150,7 @@ const String _footerOther = """
 
 const String _footerRun = """
         .then((_) => _setupAdminPages())
+        .then((_) => _setupMenuDef())
         .then((_) => _setupMenu());
   }
 """;
@@ -152,17 +170,20 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(process(_imports));
     codeBuffer.writeln(process(_header));
 
-    // Menu
-    codeBuffer.writeln(process(_headerAdminMenu));
+    // MenuDef
+    codeBuffer.writeln(process(_headerAdminMenuDef));
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
-        codeBuffer.writeln(process(_menuItem, parameters: <String, String>{
+        codeBuffer.writeln(process(_menuItemDef, parameters: <String, String>{
           '\${id}': spec.modelSpecification.id,
           '\${capsid}': allUpperCase(spec.modelSpecification.id)
         }));
       }
     });
-    codeBuffer.writeln(process(_footerAdminMenu));
+    codeBuffer.writeln(process(_footerAdminMenuDef));
+
+    // MenuDef
+    codeBuffer.writeln(process(_adminMenu));
 
     // Pages
     modelSpecificationPlus.forEach((spec) {
