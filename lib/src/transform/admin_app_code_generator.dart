@@ -1,7 +1,6 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
-import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
@@ -17,7 +16,6 @@ import 'package:eliud_model/model/app_bar.model.dart';
 import 'package:eliud_model/model/body_component.model.dart';
 import 'package:eliud_model/model/drawer.model.dart';
 import 'package:eliud_model/model/menu_item.model.dart';
-import 'package:eliud_model/model/popup_menu.model.dart';
 import 'package:eliud_model/model/home_menu.model.dart';
 import 'package:eliud_model/shared/tile_type.model.dart';
 
@@ -78,23 +76,6 @@ const String _footerAdminMenuDef = """
 
 """;
 
-const String _adminMenu = """
-  PopupMenuModel _adminMenu() {
-    return PopupMenuModel(
-      documentID: "ADMIN_POPUP_MENU_1",
-      name: "Admin menu",
-      menuDef: _adminMenuDef(),
-      menuItemColor: menuItemColor,
-      selectedMenuItemColor: selectedMenuItemColor,
-      backgroundColor: backgroundColor,
-    );
-  }
-
-  Future<PopupMenuModel> _setupMenu() {
-    return AbstractRepositorySingleton.singleton.popupMenuRepository().add(_adminMenu());
-  }
-
-""";
 
 // Page
 const String _page = """
@@ -140,7 +121,7 @@ const String _setupAdminPagesFooter = """
 
 // run
 const String _headerRun = """
-  Future<PopupMenuModel> run() async {
+  Future<MenuDefModel> run() async {
     return await AbstractRepositorySingleton.singleton.imageRepository().deleteAll()
 """;
 
@@ -150,8 +131,7 @@ const String _footerOther = """
 
 const String _footerRun = """
         .then((_) => _setupAdminPages())
-        .then((_) => _setupMenuDef())
-        .then((_) => _setupMenu());
+        .then((_) => _setupMenuDef());
   }
 """;
 
@@ -181,9 +161,6 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
       }
     });
     codeBuffer.writeln(process(_footerAdminMenuDef));
-
-    // MenuDef
-    codeBuffer.writeln(process(_adminMenu));
 
     // Pages
     modelSpecificationPlus.forEach((spec) {
