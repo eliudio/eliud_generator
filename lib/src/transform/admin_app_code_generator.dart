@@ -121,7 +121,7 @@ const String _setupAdminPagesFooter = """
 
 // run
 const String _headerRun = """
-  Future<MenuDefModel> run() async {
+  static Future<void> deleteAll() async {
     return await AbstractRepositorySingleton.singleton.imageRepository().deleteAll()
 """;
 
@@ -130,8 +130,11 @@ const String _footerOther = """
 """;
 
 const String _footerRun = """
-        .then((_) => _setupAdminPages())
-        .then((_) => _setupMenuDef());
+    ;
+  }
+
+  Future<MenuDefModel> run() async {
+    return _setupAdminPages().then((_) => _setupMenuDef());
   }
 """;
 
@@ -196,10 +199,10 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(process(_setupAdminPagesFooter));
 
     // run
-    codeBuffer.writeln(process(_headerRun));
+    codeBuffer.write(process(_headerRun));
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
-        codeBuffer.writeln(process(_footerOther, parameters: <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) }));
+        codeBuffer.write(process(_footerOther, parameters: <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) }));
       }
     });
     codeBuffer.writeln(process(_footerRun));
