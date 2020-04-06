@@ -12,6 +12,8 @@ String firstUpperCase(String s) => s[0].toUpperCase() + s.substring(1);
 
 String allUpperCase(String s) => s.toUpperCase();
 
+String allLowerCase(String s) => s.toLowerCase();
+
 String process(String template, { Map<String, String> parameters }) {
   if (parameters != null) {
     String processed = template;
@@ -23,4 +25,3 @@ String process(String template, { Map<String, String> parameters }) {
     return template;
   }
 }
-

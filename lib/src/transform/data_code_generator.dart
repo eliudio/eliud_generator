@@ -12,12 +12,23 @@ abstract class DataCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     // Constructor
     codeBuffer.write(spaces(2) + name + "({");
+    bool addInit = false;
     modelSpecifications.fields.forEach((field) {
-      if (!((removeDocumentID) && (field.fieldName == "documentID")))
+      if (field.fieldName == "documentID") {
+        if (!removeDocumentID) {
+          codeBuffer.write(
+              "String " + fieldName(field) + ", ");
+          addInit = true;
+        }
+      } else {
         codeBuffer.write(
             "this." + fieldName(field) + ", ");
+      }
     });
     codeBuffer.write("})");
+    if (addInit) {
+      codeBuffer.write(" : this.documentID = documentID.toLowerCase()");
+    }
     if (terminate) {
       codeBuffer.writeln(";");
       codeBuffer.writeln();

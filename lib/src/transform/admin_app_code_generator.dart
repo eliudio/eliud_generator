@@ -24,13 +24,14 @@ import 'package:eliud_model/shared/tile_type.model.dart';
 const String _header = """
 class SetupAdmin {
   final DrawerModel _drawer;
+  final DrawerModel _endDrawer;
   final AppBarModel _appBar;
   final HomeMenuModel _homeMenu;
   final RgbModel menuItemColor;
   final RgbModel selectedMenuItemColor;
   final RgbModel backgroundColor;
 
-  SetupAdmin(this._drawer, this._appBar, this._homeMenu, this.menuItemColor, this.selectedMenuItemColor, this.backgroundColor);
+  SetupAdmin(this._drawer, this._endDrawer, this._appBar, this._homeMenu, this.menuItemColor, this.selectedMenuItemColor, this.backgroundColor);
 
 """;
 
@@ -47,7 +48,7 @@ const String _menuItemDef = """
         text: "\${id}s",
         description: "\${id}s",
         icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
-        action: GotoPage(pageID: "\${capsid}SPAGE"))
+        action: GotoPage(pageID: "\${lowid}spage"))
     );
 
 """;
@@ -76,10 +77,11 @@ const String _page = """
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s", tileType: tileType));
     PageModel page = PageModel(
-        documentID: "\${capsid}SPAGE",
+        documentID: "\${lowid}spage",
         readAccess: PageAccess.admin,
         title: "\${id}s",
         drawer: _drawer,
+        endDrawer: _endDrawer,
         appBar: _appBar,
         homeMenu: _homeMenu,
         bodyComponents: components,
@@ -150,7 +152,7 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
       if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
         codeBuffer.writeln(process(_menuItemDef, parameters: <String, String>{
           '\${id}': spec.modelSpecification.id,
-          '\${capsid}': allUpperCase(spec.modelSpecification.id)
+          '\${lowid}': allLowerCase(spec.modelSpecification.id)
         }));
       }
     });
@@ -162,7 +164,7 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln(process(_page, parameters: <String, String>{
           '\${id}': spec.modelSpecification.id,
           '\${lid}': firstLowerCase(spec.modelSpecification.id),
-          '\${capsid}': allUpperCase(spec.modelSpecification.id)
+          '\${lowid}': allLowerCase(spec.modelSpecification.id)
         }));
       }
     });
@@ -176,13 +178,13 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
           codeBuffer.writeln(process(_setupAdminPagesFirstPage, parameters: <String, String>{
             '\${id}': spec.modelSpecification.id,
             '\${lid}': firstLowerCase(spec.modelSpecification.id),
-            '\${capsid}': allUpperCase(spec.modelSpecification.id)
+            '\${lowid}': allLowerCase(spec.modelSpecification.id)
           }));
         else
           codeBuffer.writeln(process(_setupAdminPagesOtherPages, parameters: <String, String>{
             '\${id}': spec.modelSpecification.id,
             '\${lid}': firstLowerCase(spec.modelSpecification.id),
-            '\${capsid}': allUpperCase(spec.modelSpecification.id)
+            '\${lowid}': allLowerCase(spec.modelSpecification.id)
           }));
         first = false;
       }

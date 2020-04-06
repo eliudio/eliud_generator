@@ -23,7 +23,7 @@ abstract class CodeGenerator extends CodeGeneratorBase {
         (importThis.startsWith("grid_view_type.")) ||
         (importThis.startsWith("tile_type.")) ||
         (importThis.startsWith("rgb.")) ||
-        (importThis.startsWith("background_decoration.")) ||
+        (importThis.startsWith("background.")) ||
         (importThis.startsWith("decoration_color.")) ||
         (importThis.startsWith("icon.")))
       return "package:eliud_model/shared/" + importThis;
