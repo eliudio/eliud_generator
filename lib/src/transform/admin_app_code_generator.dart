@@ -53,15 +53,6 @@ const String _menuItemDef = """
 """;
 
 const String _footerAdminMenuDef = """
-    menuItems.add(
-      MenuItemModel(
-        documentID: "Logout",
-        text: "Logout",
-        description: "Logout",
-        icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
-        action: InternalAction(internalActionEnum: InternalActionEnum.Logout)
-      ));
-      
     MenuDefModel menu = MenuDefModel(
       documentID: "ADMIN_MENU_DEF_1",
       name: "Menu Definition 1",
