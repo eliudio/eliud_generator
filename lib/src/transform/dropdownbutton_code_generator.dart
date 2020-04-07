@@ -108,7 +108,7 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
 
 const _imageString = """
   Center(
-    child: AbstractPlatform.platform.getImage(imageUrl:pm.\${fieldName})
+    child: AbstractPlatform.platform.getThumbnail(image:pm)
   )
 """;
 
