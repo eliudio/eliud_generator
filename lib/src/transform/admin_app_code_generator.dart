@@ -37,7 +37,7 @@ class SetupAdmin {
 
 // Admin menu
 const String _headerAdminMenuDef = """
-  MenuDefModel _adminMenuDef() {
+  static MenuDefModel _adminMenuDef() {
     List<MenuItemModel> menuItems = List<MenuItemModel>();
 """;
 
@@ -62,7 +62,7 @@ const String _footerAdminMenuDef = """
     return menu;
   }
 
-  Future<MenuDefModel> _setupMenuDef() {
+  static Future<MenuDefModel> _setupMenuDef() {
     return AbstractRepositorySingleton.singleton.menuDefRepository().add(_adminMenuDef());
   }
 
@@ -126,9 +126,14 @@ const String _footerRun = """
     ;
   }
 
-  Future<MenuDefModel> run() async {
-    return _setupAdminPages().then((_) => _setupMenuDef());
+  static Future<MenuDefModel> menu() async {
+    return _setupMenuDef();
   }
+
+  Future<_> run() async {
+    return _setupAdminPages();
+  }
+
 """;
 
 // footer
