@@ -65,6 +65,12 @@ const String _code = """
   Future<void> deleteAll() {
     return reference.deleteAll();
   }
+  
+  @override
+  Future<List<\${id}Model>> valuesList() {
+    return reference.valuesList();
+  }
+  
 """;
 
 const String _listen = """

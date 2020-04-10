@@ -130,7 +130,7 @@ const String _footerRun = """
     return _setupMenuDef();
   }
 
-  Future<_> run() async {
+  Future<void> run() async {
     return _setupAdminPages();
   }
 

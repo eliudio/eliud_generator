@@ -98,6 +98,10 @@ class \${id}InMemoryRepository implements \${id}Repository {
     void listen(trigger) {}
     
     void flush() {}
+
+    Future<List<\${id}Model>> valuesList() {
+      return Future.value(items);
+    }
 }
 """;
 

@@ -61,6 +61,14 @@ class \${id}JsFirestore implements \${id}Repository {
         .map((data) => data.docs.map((doc) => _populateDoc(doc)).toList());
   }
 
+  @override
+  Future<List<\${id}Model>> valuesList() {
+    return \${lid}Collection.get().then((value) {
+      var list = value.docs;
+      return list.map((doc) => _populateDoc(doc)).toList();
+    });
+  }
+
   void flush() {}
 }
 """;

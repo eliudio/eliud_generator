@@ -59,6 +59,13 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
+  Future<List<\${id}Model>> valuesList() async {
+    return await \${id}Collection.getDocuments().then((value) {
+      var list = value.documents;
+      return list.map((doc) => _populateDoc(doc)).toList();
+    });
+  }
+
   void flush() {}
 }
 """;
