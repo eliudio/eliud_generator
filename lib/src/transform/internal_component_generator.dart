@@ -13,10 +13,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 """;
 
 const String _componentImports = """
-import '../\${path}.list.bloc.dart';
-import '../\${path}.list.dart';
-import '../\${path}.dropdown_button.dart';
-import '../\${path}.list.event.dart';
+import '../\${path}_list_bloc.dart';
+import '../\${path}_list.dart';
+import '../\${path}_dropdown_button.dart';
+import '../\${path}_list_event.dart';
 
 """;
 

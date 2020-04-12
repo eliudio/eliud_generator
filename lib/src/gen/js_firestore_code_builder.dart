@@ -8,7 +8,7 @@ import 'code_builder.dart';
 class JsFirestoreCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.js_firestore.dart'],
+      '.spec': const ['_js_firestore.dart'],
     };
   }
 

@@ -27,12 +27,12 @@ import '../tools/etc.dart';
 """;
 
 const String _specificImports = """
-import '\${path}.list.bloc.dart';
-import '\${path}.list.event.dart';
-import '\${path}.model.dart';
-import '\${path}.form.bloc.dart';
-import '\${path}.form.event.dart';
-import '\${path}.form.state.dart';
+import '\${path}_list_bloc.dart';
+import '\${path}_list_event.dart';
+import '\${path}_model.dart';
+import '\${path}_form_bloc.dart';
+import '\${path}_form_event.dart';
+import '\${path}_form_state.dart';
 
 """;
 

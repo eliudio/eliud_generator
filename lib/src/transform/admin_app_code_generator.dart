@@ -5,19 +5,19 @@ import 'code_generator_multi.dart';
 
 const String _imports = """
 import 'package:eliud_model/shared/abstract_repository_singleton.dart';
-import 'package:eliud_model/shared/action.model.dart';
-import 'package:eliud_model/shared/rgb.model.dart';
-import 'package:eliud_model/shared/icon.model.dart';
-import 'package:eliud_model/shared/grid_view_type.model.dart';
-import 'package:eliud_model/model/menu_def.model.dart';
+import 'package:eliud_model/shared/action_model.dart';
+import 'package:eliud_model/shared/rgb_model.dart';
+import 'package:eliud_model/shared/icon_model.dart';
+import 'package:eliud_model/shared/grid_view_type_model.dart';
+import 'package:eliud_model/model/menu_def_model.dart';
 
-import 'package:eliud_model/model/page.model.dart';
-import 'package:eliud_model/model/app_bar.model.dart';
-import 'package:eliud_model/model/body_component.model.dart';
-import 'package:eliud_model/model/drawer.model.dart';
-import 'package:eliud_model/model/menu_item.model.dart';
-import 'package:eliud_model/model/home_menu.model.dart';
-import 'package:eliud_model/shared/tile_type.model.dart';
+import 'package:eliud_model/model/page_model.dart';
+import 'package:eliud_model/model/app_bar_model.dart';
+import 'package:eliud_model/model/body_component_model.dart';
+import 'package:eliud_model/model/drawer_model.dart';
+import 'package:eliud_model/model/menu_item_model.dart';
+import 'package:eliud_model/model/home_menu_model.dart';
+import 'package:eliud_model/shared/tile_type_model.dart';
 
 """;
 

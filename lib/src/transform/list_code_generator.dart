@@ -18,12 +18,12 @@ import '../tools/etc.dart';
 import '../tools/enums.dart';
 import '../core/eliud.dart';
 
-import '\${importprefix}.list.event.dart';
-import '\${importprefix}.list.state.dart';
-import '\${importprefix}.list.bloc.dart';
-import '\${importprefix}.form.dart';
-import '\${importprefix}.model.dart';
-import '\${importprefix}.form.dart';
+import '\${importprefix}_list_event.dart';
+import '\${importprefix}_list_state.dart';
+import '\${importprefix}_list_bloc.dart';
+import '\${importprefix}_form.dart';
+import '\${importprefix}_model.dart';
+import '\${importprefix}_form.dart';
 
 """;
 

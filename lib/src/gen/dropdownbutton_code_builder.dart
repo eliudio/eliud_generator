@@ -8,7 +8,7 @@ import 'code_builder.dart';
 class DropdownButtonCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.dropdown_button.dart'],
+      '.spec': const ['_dropdown_button.dart'],
     };
   }
 

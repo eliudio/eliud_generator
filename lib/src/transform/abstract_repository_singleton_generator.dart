@@ -14,7 +14,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
       if (spec.modelSpecification.generate.generateRepository) {
-        codeBuffer.writeln("import '../" + path + ".repository.dart';");
+        codeBuffer.writeln("import '../" + path + "_repository.dart';");
       }
     });
     codeBuffer.writeln("import '../auth/user_repository.dart';");

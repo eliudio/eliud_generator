@@ -9,7 +9,7 @@ import 'code_builder.dart';
 class RepositoryCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.repository.dart'],
+      '.spec': const ['_repository.dart'],
     };
   }
 

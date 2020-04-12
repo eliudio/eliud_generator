@@ -8,7 +8,7 @@ import 'code_builder.dart';
 class ComponentCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.component.dart'],
+      '.spec': const ['_component.dart'],
     };
   }
 

@@ -8,7 +8,7 @@ import 'code_builder.dart';
 class EntityCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.entity.dart'],
+      '.spec': const ['_entity.dart'],
     };
   }
 

@@ -8,7 +8,7 @@ import 'code_builder.dart';
 class ModelCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.model.dart'],
+      '.spec': const ['_model.dart'],
     };
   }
 

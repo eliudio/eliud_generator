@@ -17,9 +17,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 """;
 
 const String _specificImports = """
-import '\${path}.list.bloc.dart';
-import '\${path}.list.state.dart';
-import '\${path}.model.dart';
+import '\${path}_list_bloc.dart';
+import '\${path}_list_state.dart';
+import '\${path}_model.dart';
 
 """;
 

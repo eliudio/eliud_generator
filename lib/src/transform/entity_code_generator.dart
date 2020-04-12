@@ -45,7 +45,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
         headerBuffer.writeln("import '" +
             resolveImport(
                 importThis:
-                    camelcaseToUnderscore(field.fieldType) + ".entity.dart") +
+                    camelcaseToUnderscore(field.fieldType) + "_entity.dart") +
             "';");
         extraLine = true;
       }

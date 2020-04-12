@@ -21,7 +21,7 @@ class FormEventCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:meta/meta.dart';");
     modelSpecifications.fields.forEach((field) {
       if ((!field.isEnum()) && (!field.isNativeType())) {
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + ".model.dart") + "';");
+        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_model.dart") + "';");
       }
     });
     headerBuffer.writeln();

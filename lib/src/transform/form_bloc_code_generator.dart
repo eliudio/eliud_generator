@@ -43,7 +43,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
-    headerBuffer.writeln("import '../shared/rgb.model.dart';");
+    headerBuffer.writeln("import '../shared/rgb_model.dart';");
     headerBuffer.writeln("import 'package:eliud_model/tools/enums.dart';");
     headerBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
     headerBuffer.writeln();

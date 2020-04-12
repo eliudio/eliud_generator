@@ -8,7 +8,7 @@ import 'code_builder.dart';
 class FormStateCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.form.state.dart'],
+      '.spec': const ['_form_state.dart'],
     };
   }
 

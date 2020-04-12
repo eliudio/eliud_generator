@@ -18,14 +18,14 @@ abstract class CodeGenerator extends CodeGeneratorBase {
       : uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
 
   String resolveImport({String importThis}) {
-    if ((importThis.startsWith("action.")) ||
-        (importThis.startsWith("image.")) ||
-        (importThis.startsWith("grid_view_type.")) ||
-        (importThis.startsWith("tile_type.")) ||
-        (importThis.startsWith("rgb.")) ||
-        (importThis.startsWith("background.")) ||
-        (importThis.startsWith("decoration_color.")) ||
-        (importThis.startsWith("icon.")))
+    if ((importThis.startsWith("action_")) ||
+        (importThis.startsWith("image_")) ||
+        (importThis.startsWith("grid_view_type_")) ||
+        (importThis.startsWith("tile_type_")) ||
+        (importThis.startsWith("rgb_")) ||
+        (importThis.startsWith("background_")) ||
+        (importThis.startsWith("decoration_color_")) ||
+        (importThis.startsWith("icon_")))
       return "package:eliud_model/shared/" + importThis;
     return importThis;
   }

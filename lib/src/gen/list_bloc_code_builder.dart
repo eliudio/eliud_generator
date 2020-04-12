@@ -8,7 +8,7 @@ import 'code_builder.dart';
 class ListBlocCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.list.bloc.dart'],
+      '.spec': const ['_list_bloc.dart'],
     };
   }
 

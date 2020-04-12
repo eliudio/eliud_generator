@@ -5,8 +5,8 @@ import 'code_generator.dart';
 
 const String _imports = """
 import 'dart:async';
-import '\${filename}.model.dart';
-import '\${filename}.repository.dart';
+import '\${filename}_model.dart';
+import '\${filename}_repository.dart';
 import 'package:eliud_model/shared/abstract_repository_singleton.dart';
 
 """;
@@ -131,14 +131,14 @@ class CacheCodeGenerator extends CodeGenerator {
 
     modelSpecifications.fields.forEach((field) {
       if ((!field.isEnum()) && (!field.isNativeType())) {
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + ".model.dart") + "';");
+        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_model.dart") + "';");
       }
     });
     modelSpecifications.fields.forEach((field) {
       if (!field.isEnum()) {
         if (!field.isNativeType()) {
           if (field.array) {
-            headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + ".cache.dart") + "';");
+            headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_cache.dart") + "';");
           } else {
             // This might be or become a case to handle as well
           }

@@ -15,24 +15,24 @@ class JsRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
       if (spec.modelSpecification.generate.generateFirestoreRepository) {
-        codeBuffer.writeln("import '../" + path + ".js_firestore.dart';");
+        codeBuffer.writeln("import '../" + path + "_js_firestore.dart';");
       }
       if (spec.modelSpecification.generate.generateRepository) {
-        codeBuffer.writeln("import '../" + path + ".repository.dart';");
+        codeBuffer.writeln("import '../" + path + "_repository.dart';");
       }
       if (spec.modelSpecification.generate.generateCache) {
-        codeBuffer.writeln("import '../" + path + ".cache.dart';");
+        codeBuffer.writeln("import '../" + path + "_cache.dart';");
       }
     });
     codeBuffer.writeln("import '../auth/user_repository.dart';");
     codeBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
     codeBuffer.writeln();
-    codeBuffer.writeln("import '../shared/image.js_firestore.bespoke.dart';");
-    codeBuffer.writeln("import '../shared/image.cache.dart';");
+    codeBuffer.writeln("import '../shared/image_js_firestore_bespoke.dart';");
+    codeBuffer.writeln("import '../shared/image_cache.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if (spec.modelSpecification.uniqueAssociationTypes().isNotEmpty) {
-        codeBuffer.writeln("import '../" + spec.path + ".model.dart';");
+        codeBuffer.writeln("import '../" + spec.path + "_model.dart';");
       }
     });
     codeBuffer.writeln();

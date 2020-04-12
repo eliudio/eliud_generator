@@ -37,7 +37,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["model"]
-    build_extensions: {".spec": [".model.dart"]}
+    build_extensions: {".spec": ["_model.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -45,7 +45,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["entity"]
-    build_extensions: {".spec": [".entity.dart"]}
+    build_extensions: {".spec": ["_entity.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -53,7 +53,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["repository"]
-    build_extensions: {".spec": [".repository.dart"]}
+    build_extensions: {".spec": ["_repository.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -61,7 +61,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["cache"]
-    build_extensions: {".spec": [".cache.dart"]}
+    build_extensions: {".spec": ["_cache.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -69,7 +69,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["firestore"]
-    build_extensions: {".spec": [".firestore.dart"]}
+    build_extensions: {".spec": ["_firestore.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -77,7 +77,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["js_firestore"]
-    build_extensions: {".spec": [".js_firestore.dart"]}
+    build_extensions: {".spec": ["_js_firestore.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -85,7 +85,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["component_event"]
-    build_extensions: {".spec": [".component.event.dart"]}
+    build_extensions: {".spec": ["_component.event.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -93,7 +93,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["component_state"]
-    build_extensions: {".spec": [".component.state.dart"]}
+    build_extensions: {".spec": ["_component_state.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -101,7 +101,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["component_bloc"]
-    build_extensions: {".spec": [".component.bloc.dart"]}
+    build_extensions: {".spec": ["_component_bloc.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -109,7 +109,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["component"]
-    build_extensions: {".spec": [".component.dart"]}
+    build_extensions: {".spec": ["_component.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -117,7 +117,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["list_event"]
-    build_extensions: {".spec": [".list.event.dart"]}
+    build_extensions: {".spec": ["_list_event.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -125,7 +125,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["list_state"]
-    build_extensions: {".spec": [".list.state.dart"]}
+    build_extensions: {".spec": ["_list_state.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -133,7 +133,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["list_bloc"]
-    build_extensions: {".spec": [".list.bloc.dart"]}
+    build_extensions: {".spec": ["_list_bloc.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -141,7 +141,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["list"]
-    build_extensions: {".spec": [".list.dart"]}
+    build_extensions: {".spec": ["_list.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -149,7 +149,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["dropdown_button"]
-    build_extensions: {".spec": [".dropdown_button.dart"]}
+    build_extensions: {".spec": ["_dropdown_button.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -157,7 +157,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["form_event"]
-    build_extensions: {".spec": [".form.event.dart"]}
+    build_extensions: {".spec": ["_form_event.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -165,7 +165,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["form_state"]
-    build_extensions: {".spec": [".form.state.dart"]}
+    build_extensions: {".spec": ["_form_state.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -173,7 +173,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["form_bloc"]
-    build_extensions: {".spec": [".form.bloc.dart"]}
+    build_extensions: {".spec": ["_form_bloc.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -181,7 +181,7 @@ builders:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["form"]
-    build_extensions: {".spec": [".form.dart"]}
+    build_extensions: {".spec": ["_form.dart"]}
     build_to: source
     auto_apply: all_packages
 

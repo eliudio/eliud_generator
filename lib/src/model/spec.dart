@@ -50,66 +50,66 @@ abstract class Specification extends Equatable {
   }
 
   String modelFileName() {
-    return camelcaseToUnderscore(id) + ".model.dart";
+    return camelcaseToUnderscore(id) + "_model.dart";
   }
 
   String entityFileName() {
-    return camelcaseToUnderscore(id) + ".entity.dart";
+    return camelcaseToUnderscore(id) + "_entity.dart";
   }
 
   String repositoryFileName() {
-    return camelcaseToUnderscore(id) + ".repository.dart";
+    return camelcaseToUnderscore(id) + "_repository.dart";
   }
 
   String firestoreFileName() {
-    return camelcaseToUnderscore(id) + ".firestore.dart";
+    return camelcaseToUnderscore(id) + "_firestore.dart";
   }
 
   String componentStateFileName() {
-    return camelcaseToUnderscore(id) + ".component.state.dart";
+    return camelcaseToUnderscore(id) + "_component_state.dart";
   }
 
   String componentEventFileName() {
-    return camelcaseToUnderscore(id) + ".component.event.dart";
+    return camelcaseToUnderscore(id) + "_component_event.dart";
   }
 
   String componentBlocFileName() {
-    return camelcaseToUnderscore(id) + ".component.bloc.dart";
+    return camelcaseToUnderscore(id) + "_component_bloc.dart";
   }
 
   String componentFileName() {
-    return camelcaseToUnderscore(id) + ".component.dart";
+    return camelcaseToUnderscore(id) + "_component.dart";
   }
 
   String listStateFileName() {
-    return camelcaseToUnderscore(id) + ".list.state.dart";
+    return camelcaseToUnderscore(id) + "_list_state.dart";
   }
 
   String listEventFileName() {
-    return camelcaseToUnderscore(id) + ".list.event.dart";
+    return camelcaseToUnderscore(id) + "_list_event.dart";
   }
 
   String listBlocFileName() {
-    return camelcaseToUnderscore(id) + ".list.bloc.dart";
+    return camelcaseToUnderscore(id) + "_list_bloc.dart";
   }
 
   String listFileName() {
-    return camelcaseToUnderscore(id) + ".list.dart";
+    return camelcaseToUnderscore(id) + "_list.dart";
   }
 
   String formStateFileName() {
-    return camelcaseToUnderscore(id) + ".form.state.dart";
+    return camelcaseToUnderscore(id) + "_form_state.dart";
   }
 
   String formEventFileName() {
-    return camelcaseToUnderscore(id) + ".form.event.dart";
+    return camelcaseToUnderscore(id) + "_form_event.dart";
   }
 
   String formBlocFileName() {
-    return camelcaseToUnderscore(id) + ".form.bloc.dart";
+    return camelcaseToUnderscore(id) + "_form_bloc.dart";
   }
 
   String formFileName() {
-    return camelcaseToUnderscore(id) + ".form.dart";
+    return camelcaseToUnderscore(id) + "_form.dart";
   }
 }

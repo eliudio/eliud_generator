@@ -10,7 +10,7 @@ import 'code_builder.dart';
 class CacheCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
     return  {
-      '.spec': const ['.cache.dart'],
+      '.spec': const ['_cache.dart'],
     };
   }
 
