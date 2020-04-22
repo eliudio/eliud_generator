@@ -6,6 +6,7 @@ import 'code_generator.dart';
 
 const String _imports = """
 import 'package:eliud_model/shared/abstract_repository_singleton.dart';
+import 'package:eliud_model/tools/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -290,8 +291,6 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln();
 
     // state is ...FormLoaded
-    codeBuffer
-        .writeln(spaces(6) + "Size fullSize = MediaQuery.of(context).size;");
     codeBuffer.writeln(
         spaces(6) + "if (state is " + modelSpecifications.id + "FormLoaded) {");
     modelSpecifications.fields.forEach((field) {
@@ -594,7 +593,7 @@ class FormCodeGenerator extends CodeGenerator {
           break;
         case FormTypeField.List:
           codeBuffer.writeln(spaces(16) + "new Container(");
-          codeBuffer.writeln(spaces(20) + "height: (fullSize.height / 2.5), ");
+          codeBuffer.writeln(spaces(20) + "height: (fullScreenHeight(context) / 2.5), ");
           codeBuffer.writeln(spaces(20) +
               "child: EmbeddedComponentFactory." +
               firstLowerCase(field.fieldType) +

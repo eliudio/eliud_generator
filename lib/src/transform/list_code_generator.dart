@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:eliud_model/tools/screen_size.dart';
 
 import '../tools/delete_snackbar.dart';
 import '../tools/router_builders.dart';
@@ -152,9 +153,9 @@ class ListCodeGenerator extends CodeGenerator {
     String title = modelSpecifications.listFields?.title ?? "documentID";
     codeBuffer.writeln(spaces(10) + "tag: '\${value.documentID}__" + modelSpecifications.id + "heroTag',");
     codeBuffer.writeln(spaces(10) + "child: Container(");
-    codeBuffer.writeln(spaces(12) + "width: MediaQuery.of(context).size.width,");
+    codeBuffer.writeln(spaces(12) + "width: fullScreenWidth(context),");
     if (modelSpecifications.listFields.imageTitle) {
-      codeBuffer.writeln(spaces(12) + "child: Center( child: ImageHelper.getImageFromImageModel(imageModel: value." + title + ", width: MediaQuery.of(context).size.width))");
+      codeBuffer.writeln(spaces(12) + "child: Center( child: ImageHelper.getImageFromImageModel(imageModel: value." + title + ", width: fullScreenWidth(context)))");
     } else {
       codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
       codeBuffer.writeln(spaces(14) + "value." + title + ",");
@@ -169,7 +170,7 @@ class ListCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(8) + "subtitle: (value." + subTitle + " != null) && (value." + subTitle + ".isNotEmpty)");
       codeBuffer.write(spaces(12) + "? ");
       if (modelSpecifications.listFields.imageSubTitle) {
-        codeBuffer.writeln("Center( child: ImageHelper.getThumbnailFromImageModel(imageModel: value, width: MediaQuery.of(context).size.width))");
+        codeBuffer.writeln("Center( child: ImageHelper.getThumbnailFromImageModel(imageModel: value, width: fullScreenWidth(context)))");
       } else {
         codeBuffer.writeln("Center( child: Text(");
         codeBuffer.writeln(spaces(10) + "value." + subTitle + ",");
