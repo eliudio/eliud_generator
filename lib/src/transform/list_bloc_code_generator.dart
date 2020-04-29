@@ -24,7 +24,12 @@ class ListBlocCodeGenerator extends CodeGenerator {
   String _dataMembers() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.id + "Repository _" + firstLowerCase(modelSpecifications.id) + "Repository;");
-    codeBuffer.writeln(spaces(2) + "StreamSubscription _" + firstLowerCase(modelSpecifications.id) + "sListSubscription;");
+    codeBuffer.writeln(spaces(2) + "// I've made this a static so that we have access to this variable the next time we open this bloc and want to unsubscribe.");
+    codeBuffer.writeln(spaces(2) + "// The close is never called, given there's no widget dispose implemented. I don't know how to cause the dispose / deactivate / ...");
+    codeBuffer.writeln(spaces(2) + "// of the widget to be called. So, because that's not called, the bloc close() is never called, and the cancel on the subscription is never");
+    codeBuffer.writeln(spaces(2) + "// called. The best way out of this pickle is to fix it so that the close / cancel is called. However, until then, I made it static");
+    codeBuffer.writeln(spaces(2) + "// and the cancel is called at the point where the second subscription is called, preventing that to fail.");
+    codeBuffer.writeln(spaces(2) + "static StreamSubscription _" + firstLowerCase(modelSpecifications.id) + "sListSubscription;");
     return codeBuffer.toString();
   }
 
