@@ -55,6 +55,7 @@ const String _menuItemDef = """
 
 const String _footerAdminMenuDef = """
     MenuDefModel menu = MenuDefModel(
+      appID: "ADMIN",
       documentID: "ADMIN_MENU_DEF_1",
       name: "Menu Definition 1",
       menuItems: menuItems
@@ -77,6 +78,7 @@ const String _page = """
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s", tileType: tileType));
     PageModel page = PageModel(
+        appID: "ADMIN",
         documentID: "\${lowid}spage",
         readAccess: PageAccess.admin,
         title: "\${id}s",
