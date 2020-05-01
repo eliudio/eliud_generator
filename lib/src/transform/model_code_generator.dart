@@ -166,7 +166,11 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.write(
             ": (" + field.fieldName + " != null) ? " + field.fieldName);
         if (field.isEnum()) {
-          codeBuffer.write(".index");
+          if (field.isMap()) {
+            codeBuffer.write(".map((key, value) => MapEntry(key, value.index))");
+          } else {
+            codeBuffer.write(".index");
+          }
         } else if (field.association) {
           codeBuffer.write(".documentID");
         } else {
@@ -202,7 +206,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
       if (!field.association) {
         codeBuffer.write(spaces(10) + field.fieldName + ": ");
         if (field.isEnum()) {
-          codeBuffer.write("to" + field.enumName + "(entity." + field.fieldName + ")");
+          if (field.isMap()) {
+            codeBuffer.write(
+                "entity." + field.fieldName + ".map((key, value) => MapEntry(key, to" + field.enumName + "(value)))");
+          } else {
+            codeBuffer.write(
+                "to" + field.enumName + "(entity." + field.fieldName + ")");
+          }
         } else if (!field.isNativeType()) {
           if (field.array) {
             codeBuffer.writeln();
@@ -258,8 +268,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(spaces(10) + field.fieldName + ": ");
       if (field.isEnum()) {
-        codeBuffer.write(
-            "to" + field.enumName + "(entity." + field.fieldName + ")");
+        if (field.isMap()) {
+          codeBuffer.write(
+              "entity." + field.fieldName + ".map((key, value) => MapEntry(key, to" + field.enumName + "(value)))");
+        } else {
+          codeBuffer.write(
+              "to" + field.enumName + "(entity." + field.fieldName + ")");
+        }
       } else if (field.association) {
         codeBuffer.write(field.fieldName + "Holder");
       } else {

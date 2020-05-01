@@ -41,6 +41,11 @@ class FormBlocCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
+    if (modelSpecifications.extraImports != null) {
+      if (modelSpecifications.extraImports[ModelSpecification.IMPORT_KEY_FORM_BLOC] != null) {
+        headerBuffer.writeln(modelSpecifications.extraImports[ModelSpecification.IMPORT_KEY_FORM_BLOC]);
+      }
+    }
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln("import '../shared/rgb_model.dart';");

@@ -15,6 +15,15 @@ const String _jsonMethods = """
   }
 """;
 
+const String _convertToMap = """
+    final \${fieldType} \${fieldId} = Map();
+    if (map['\${fieldId}'] != null) {
+      map['\${fieldId}'].forEach((k, v) {
+        \${fieldId}[k] = v;
+      });
+    }
+""";
+
 class EntityCodeGenerator extends DataCodeGenerator {
   EntityCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -118,6 +127,11 @@ class EntityCodeGenerator extends DataCodeGenerator {
               fieldName(field) +
               "FromMap);");
         }
+      } else if (field.isMap()) {
+        codeBuffer.writeln(process(_convertToMap, parameters: <String, String>{
+          '\${fieldId}': fieldName(field),
+          '\${fieldType}': field.dartEntityType(),
+        }));
       }
     });
     if (extraLine) codeBuffer.writeln();
@@ -127,7 +141,10 @@ class EntityCodeGenerator extends DataCodeGenerator {
       if (field.fieldName != "documentID") {
         codeBuffer.write(spaces(6) + fieldName(field) + ": ");
         if ((field.association) || (field.isEnum())) {
-          codeBuffer.writeln("map['" + fieldName(field) + "'], ");
+          if (field.isMap())
+            codeBuffer.writeln(fieldName(field) + ", ");
+          else
+            codeBuffer.writeln("map['" + fieldName(field) + "'], ");
         } else {
           if (!field.isNativeType()) {
             if (field.array) {

@@ -108,7 +108,10 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
 
 const _imageString = """
   Center(
-    child: AbstractPlatform.platform.getThumbnail(image:pm)
+    // This causes the app to crash
+    // child: AbstractPlatform.platform.getThumbnail(image:pm)
+    // Alternative for now...
+    child: Image.network(pm.imageURLThumbnail,)
   )
 """;
 

@@ -21,7 +21,10 @@ class ModelSpecification extends Specification {
   final ListFields listFields;
   final String displayOnDelete; // field to be displayed when item is deleted
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete }) : super(id: id);
+  static String IMPORT_KEY_FORM_BLOC = "form_bloc";
+  final Map<String, String> extraImports;
+
+  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports }) : super(id: id);
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -39,6 +42,7 @@ class ModelSpecification extends Specification {
       'groups': jsonGroups,
       'listFields': listFields.toJson(),
       "displayOnDelete": displayOnDelete,
+      "extraImports": extraImports,
     };
   }
 
@@ -49,11 +53,11 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, generate, fields, groups, displayOnDelete];
+  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -76,13 +80,22 @@ class ModelSpecification extends Specification {
     if (jsonListFields != null)
       theListFields = ListFields.fromJson(jsonListFields);
 
+    Map<String, String> extraImports = Map();
+    if (json['extraImports'] != null) {
+      (json['extraImports'] as Map).forEach((k, v) {
+        extraImports[k] = v;
+      });
+
+    }
+
     return ModelSpecification(
         id: json["id"] as String,
         generate: GenerateSpecification.fromJson(json["generate"]),
         fields: theItems,
         groups: theGroups,
         listFields: theListFields,
-        displayOnDelete: json["displayOnDelete"] as String
+        displayOnDelete: json["displayOnDelete"] as String,
+        extraImports: extraImports,
     );
   }
 
