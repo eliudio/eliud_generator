@@ -29,8 +29,29 @@ import '\${importprefix}_form.dart';
 """;
 
 String _listBody = """
-class \${id}ListWidget extends StatelessWidget {
+class \${id}ListWidget extends StatefulWidget {
   \${id}ListWidget({ Key key }): super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return \${id}ListWidgetState();
+  }
+}
+
+class \${id}ListWidgetState extends State<\${id}ListWidget> {
+  \${id}ListBloc bloc;
+
+  @override
+  void didChangeDependencies() {
+    bloc = BlocProvider.of<\${id}ListBloc>(context);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose () {
+    if (bloc != null) bloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

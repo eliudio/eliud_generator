@@ -30,6 +30,8 @@ class ComponentRegistry {
   ApplicationComponentConstructor _applicationComponentConstructor;
 
   static ComponentRegistry _instance;
+  
+  Map<String, ComponentConstructor> registryMap() => _registryMap;
 
   ComponentRegistry._internal() {
     _init();

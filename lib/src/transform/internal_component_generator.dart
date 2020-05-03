@@ -30,12 +30,19 @@ class ListComponentFactory implements ComponentConstructor {
 
 """;
 
-const String _DropdownButtonFactoryCode = """
+const String _DropdownButtonFactoryCodeHeader = """
 typedef DropdownButtonChanged(String value);
 
 class DropdownButtonComponentFactory implements ComponentConstructor {
   Widget createNew({String id, String value, DropdownButtonChanged trigger, bool optional}) {
-    return DropdownButtonComponent(componentId: id, value: value, trigger: trigger, optional: optional);
+  """;
+
+const String _DropdownButtonFactoryCodeComponent = """
+      return DropdownButtonComponent(componentId: id, value: value, trigger: trigger, optional: optional);
+""";
+
+const String _DropdownButtonFactoryCodeFooter = """
+    return null;
   }
 }
 
@@ -130,7 +137,15 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
 
     codeBuffer.writeln(process(_ListFactoryCode));
-    codeBuffer.writeln(process(_DropdownButtonFactoryCode));
+    codeBuffer.writeln(process(_DropdownButtonFactoryCodeHeader));
+    modelSpecificationPlus.forEach((spec) {
+      ModelSpecification ms = spec.modelSpecification;
+      if (ms.generate.generateInternalComponent) {
+        codeBuffer.writeln(spaces(4) + "if (id == \"" + firstLowerCase(ms.id) + "s\")");
+        codeBuffer.writeln(_DropdownButtonFactoryCodeComponent);
+      }
+    });
+    codeBuffer.writeln(process(_DropdownButtonFactoryCodeFooter));
 
     codeBuffer.writeln(_code(modelSpecificationPlus, true));
     codeBuffer.writeln(_code(modelSpecificationPlus, false));

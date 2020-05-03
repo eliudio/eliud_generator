@@ -26,12 +26,35 @@ import '\${path}_model.dart';
 const String _code = """
 typedef \${id}Changed(String value);
 
-class \${id}DropdownButtonWidget extends StatelessWidget {
+class \${id}DropdownButtonWidget extends StatefulWidget {
   final String value;
   final \${id}Changed trigger;
   final bool optional;
 
   \${id}DropdownButtonWidget({ this.value, this.trigger, this.optional, Key key }): super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return \${id}DropdownButtonWidgetState();
+  }
+}
+
+class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> {
+  \${id}ListBloc bloc;
+
+  \${id}DropdownButtonWidgetState();
+
+  @override
+  void didChangeDependencies() {
+    bloc = BlocProvider.of<\${id}ListBloc>(context);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    if (bloc != null) bloc.close();
+    super.dispose();
+  }
 
 \${childCode}
 
@@ -45,15 +68,15 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
         );
       } else if (state is \${id}ListLoaded) {
         String valueChosen;
-        if (state.values.indexWhere((v) => (v.documentID == value)) >= 0)
-          valueChosen = value;
+        if (state.values.indexWhere((v) => (v.documentID == widget.value)) >= 0)
+          valueChosen = widget.value;
         else
-          if (optional != null && optional) valueChosen = null;
+          if (widget.optional != null && widget.optional) valueChosen = null;
           
         final values = state.values;
         final List<DropdownMenuItem<String>> items = List();
         if (state.values.isNotEmpty) {
-          if (optional != null && optional) {
+          if (widget.optional != null && widget.optional) {
             items.add(new DropdownMenuItem<String>(
                 value: null,
                 child: new Container(
@@ -101,7 +124,7 @@ class \${id}DropdownButtonWidget extends StatelessWidget {
   }
 
   void _onChange(String value) {
-    trigger(value);
+    widget.trigger(value);
   }
 }
 """;

@@ -15,37 +15,52 @@ import 'internal_component.dart';
 const String _code = """
 typedef Changed(String value);
 
-class CrossComponent extends StatelessWidget {
-  static const List<String> extensions = [ \${extensions} ];
+class CrossComponent extends StatefulWidget {
   final String extension;
-  final String value;
+  String value;
   final Changed trigger;
 
-  const CrossComponent({Key key, this.extension, this.value, this.trigger}) : super(key: key);
+  CrossComponent({this.extension, this.value, this.trigger});
+
+  @override
+  State<StatefulWidget> createState() {
+    return new CrossComponentState();
+  }
+}
+
+class CrossComponentState extends State<CrossComponent> {
+
+  CrossComponentState();
 
   @override
   Widget build(BuildContext context) {
-    if ((extension == null) || (extension == ""))
+    if ((widget.extension == null) || (widget.extension == ""))
       return Container(
         color: Colors.white
       );
-    if (extension == "internalWidgets") {
+    if (widget.extension == "internalWidgets") {
       var dropDownItems = allInternalComponents
           .map((widgetName) => new DropdownMenuItem(value: widgetName, child: new Text(widgetName)))
           .toList();
 
       String choice;
-      if (allInternalComponents.indexWhere((widgetName) => (widgetName == value)) >= 0)
-        choice = value;
+      if (allInternalComponents.indexWhere((widgetName) => (widgetName == widget.value)) >= 0)
+        choice = widget.value;
 
-      return new DropdownButton(
+      return Center(child: new DropdownButton(
           value: choice,
           items: dropDownItems,
           hint: Text("Select internal widget"),
-          onChanged: trigger);
+          onChanged: widget.trigger));
     } else {
-      return DropdownButtonComponentFactory().createNew(
-          id: extension, value: value, trigger: trigger);
+      Widget selection = DropdownButtonComponentFactory().createNew(
+          id: widget.extension, value: widget.value, trigger: widget.trigger);
+      if (selection == null) {
+        widget.value = null;
+        widget.trigger(null);
+        return Text("No selection available");
+      }
+      else return selection;
     }
   }
 }
@@ -60,14 +75,7 @@ class CrossComponentCodeGenerator extends CodeGeneratorMulti {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(header());
     codeBuffer.writeln(process(_imports));
-    StringBuffer extensions = StringBuffer();
-    modelSpecificationPlus.forEach((spec) {
-      if (spec.modelSpecification.generate.isExtension) {
-        extensions.write("\"" + firstLowerCase(spec.modelSpecification.id) + "s\", ");
-      }
-    });
-    extensions.write("\"internalWidgets\"");
-    codeBuffer.writeln(process(_code, parameters: <String, String> { "\${extensions}": extensions.toString()}));
+    codeBuffer.writeln(process(_code));
     return codeBuffer.toString();
 
   }
