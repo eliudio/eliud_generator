@@ -62,15 +62,23 @@ const String _code = """
     fullCache.clear();
   }
   
-  Future<void> deleteAll() {
-    return reference.deleteAll();
-  }
-  
   @override
   Future<List<\${id}Model>> valuesList() {
     return reference.valuesList();
   }
   
+""";
+
+const String _deleteAll = """
+  Future<void> deleteAll(String appID) {
+    return reference.deleteAll(appID);
+  }
+""";
+
+const String _deleteAllWithoutAppID = """
+  Future<void> deleteAll() {
+    return reference.deleteAll();
+  }
 """;
 
 const String _listen = """
@@ -157,6 +165,13 @@ class CacheCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(process(_header, parameters: parameters));
     codeBuffer.writeln(process(_code, parameters: parameters));
+
+    bool hasAppId = (modelSpecifications.fields.indexWhere((element) => element.fieldName == "appID") >= 0);
+    if (hasAppId)
+      codeBuffer.writeln(process(_deleteAll, parameters: parameters));
+    else
+      codeBuffer.writeln(process(_deleteAllWithoutAppID, parameters: parameters));
+
     if (modelSpecifications.generate.generateCache) {
       codeBuffer.writeln(process(_listen, parameters: parameters));
     }

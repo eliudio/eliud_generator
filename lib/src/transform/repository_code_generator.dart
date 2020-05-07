@@ -15,9 +15,18 @@ abstract class \${id}Repository {
   Future<\${id}Model> update(\${id}Model value);
   Stream<List<\${id}Model>> values();
   \${listen}
-  Future<void> deleteAll();
   void flush();
   Future<List<\${id}Model>> valuesList();
+""";
+
+const String _codeWithArg = """
+  Future<void> deleteAll(String appID);
+}
+
+""";
+
+const String _codeWithArgNoAppID = """
+  Future<void> deleteAll();
 }
 
 """;
@@ -50,11 +59,18 @@ class RepositoryCodeGenerator extends CodeGenerator {
     if (modelSpecifications.generate.generateCache)
       listen = "void listen(" + modelClassName + "Trigger trigger);";
 
-    codeBuffer.writeln(process(_code, parameters: <String, String>{
+    Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
       '\${listen}': listen,
       '\${typeDef}': typeDef
-    }));
+    };
+    codeBuffer.writeln(process(_code, parameters: parameters));
+
+    bool hasAppId = (modelSpecifications.fields.indexWhere((element) => element.fieldName == "appID") >= 0);
+    if (hasAppId)
+      codeBuffer.writeln(process(_codeWithArg, parameters: parameters));
+    else
+      codeBuffer.writeln(process(_codeWithArgNoAppID, parameters: parameters));
 
     return codeBuffer.toString();
   }

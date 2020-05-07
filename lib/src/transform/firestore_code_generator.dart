@@ -23,13 +23,6 @@ class \${id}Firestore implements \${id}Repository {
     return \${id}Collection.document(value.documentID).updateData(value.toEntity().toDocument()).then((_) => value);
   }
 
-  Future<void> deleteAll() {
-    return \${id}Collection.getDocuments().then((snapshot) {
-      for (DocumentSnapshot ds in snapshot.documents){
-        ds.reference.delete();
-      }});
-  }
-
   \${id}Model _populateDoc(DocumentSnapshot doc) {
     return \${id}Model.fromEntity(doc.documentID, \${id}Entity.fromMap(doc.data));
   }
@@ -67,6 +60,27 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   void flush() {}
+""";
+
+const String _footer = """
+  Future<void> deleteAll(String appID) {
+    return \${id}Collection.where("appID", isEqualTo: appID).getDocuments().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.documents){
+        ds.reference.delete();
+      }});
+  }
+
+}
+""";
+
+const String _footerWithoutAppID = """
+  Future<void> deleteAll() {
+    return \${id}Collection.getDocuments().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.documents){
+        ds.reference.delete();
+      }});
+  }
+
 }
 """;
 
@@ -90,10 +104,20 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
   @override
   String body() {
-    return process(_code, parameters: <String, String>{
+    Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
-    });
+    };
+    StringBuffer headerBuffer = StringBuffer();
+
+    headerBuffer.writeln(process(_code, parameters: parameters));
+    bool hasAppId = (modelSpecifications.fields.indexWhere((element) => element.fieldName == "appID") >= 0);
+    if (hasAppId)
+      headerBuffer.writeln(process(_footer, parameters: parameters));
+    else
+      headerBuffer.writeln(process(_footerWithoutAppID, parameters: parameters));
+
+    return headerBuffer.toString();
   }
 
   @override

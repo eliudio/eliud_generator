@@ -135,6 +135,7 @@ class Field extends Equatable {
     if (isMap()) return false;
     if (isString()) return false;
     if (isDouble()) return false;
+    if (isBool()) return false;
     if (isInt()) return false;
     return true;
   }

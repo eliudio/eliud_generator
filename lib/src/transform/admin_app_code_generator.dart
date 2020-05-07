@@ -22,7 +22,8 @@ import 'package:eliud_model/shared/tile_type_model.dart';
 """;
 
 const String _header = """
-class SetupAdmin {
+class AdminApp {
+  final String appID;
   final DrawerModel _drawer;
   final DrawerModel _endDrawer;
   final AppBarModel _appBar;
@@ -30,14 +31,14 @@ class SetupAdmin {
   final RgbModel menuItemColor;
   final RgbModel selectedMenuItemColor;
   final RgbModel backgroundColor;
-
-  SetupAdmin(this._drawer, this._endDrawer, this._appBar, this._homeMenu, this.menuItemColor, this.selectedMenuItemColor, this.backgroundColor);
+  
+  AdminApp(this.appID, this._drawer, this._endDrawer, this._appBar, this._homeMenu, this.menuItemColor, this.selectedMenuItemColor, this.backgroundColor);
 
 """;
 
 // Admin menu
 const String _headerAdminMenuDef = """
-  static MenuDefModel _adminMenuDef() {
+  static MenuDefModel _adminMenuDef(String appID) {
     List<MenuItemModel> menuItems = List<MenuItemModel>();
 """;
 
@@ -55,7 +56,8 @@ const String _menuItemDef = """
 
 const String _footerAdminMenuDef = """
     MenuDefModel menu = MenuDefModel(
-      appID: "ADMIN_APP",
+      appID: appID,
+      admin: true,
       documentID: "ADMIN_MENU_DEF_1",
       name: "Menu Definition 1",
       menuItems: menuItems
@@ -63,8 +65,8 @@ const String _footerAdminMenuDef = """
     return menu;
   }
 
-  static Future<MenuDefModel> _setupMenuDef() {
-    return AbstractRepositorySingleton.singleton.menuDefRepository().add(_adminMenuDef());
+  static Future<MenuDefModel> _setupMenuDef(String appID) {
+    return AbstractRepositorySingleton.singleton.menuDefRepository().add(_adminMenuDef(appID));
   }
 
 """;
@@ -78,7 +80,8 @@ const String _page = """
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s", tileType: tileType));
     PageModel page = PageModel(
-        appID: "ADMIN_APP",
+        appID: appID,
+        admin: true,
         documentID: "\${lowid}spage",
         readAccess: PageAccess.admin,
         title: "\${id}s",
@@ -116,20 +119,32 @@ const String _setupAdminPagesFooter = """
 
 // run
 const String _headerRun = """
-  static Future<void> deleteAll() async {
-    return await AbstractRepositorySingleton.singleton.imageRepository().deleteAll()
+  static Future<void> deleteAll(String appID) async {
+    return await AbstractRepositorySingleton.singleton.imageRepository().deleteAll(appID)
 """;
 
 const String _footerOther = """
+        .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll(appID))
+""";
+
+const String _footerOtherWithoutAppID = """
         .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll())
+""";
+
+const String _footerApp = """
+        .then((_) => AbstractRepositorySingleton.singleton.appRepository().get(appID))
+        .then((appModel) {
+          if (appModel != null) return AbstractRepositorySingleton.singleton.appRepository().delete(appModel);
+          return Future.value();
+        })
 """;
 
 const String _footerRun = """
     ;
   }
 
-  static Future<MenuDefModel> menu() async {
-    return _setupMenuDef();
+  static Future<MenuDefModel> menu(String appID) async {
+    return _setupMenuDef(appID);
   }
 
   Future<void> run() async {
@@ -198,11 +213,24 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
     });
     codeBuffer.writeln(process(_setupAdminPagesFooter));
 
-    // run
     codeBuffer.write(process(_headerRun));
+
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
-        codeBuffer.write(process(_footerOther, parameters: <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) }));
+        Map<String, String> parameters = <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) };
+        if (spec.modelSpecification.id != "Member") {
+          if (spec.modelSpecification.id == "App") {
+            codeBuffer.write(process(_footerApp, parameters: parameters));
+          } else {
+            bool hasAppId = (spec.modelSpecification.fields.indexWhere((
+                element) => element.fieldName == "appID") >= 0);
+            if (hasAppId)
+              codeBuffer.write(process(_footerOther, parameters: parameters));
+            else
+              codeBuffer.write(
+                  process(_footerOtherWithoutAppID, parameters: parameters));
+          }
+        }
       }
     });
     codeBuffer.writeln(process(_footerRun));

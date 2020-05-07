@@ -93,8 +93,6 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return theValues;
     }
     
-    Future<void> deleteAll() {}
-
     void listen(trigger) {}
     
     void flush() {}
@@ -102,6 +100,15 @@ class \${id}InMemoryRepository implements \${id}Repository {
     Future<List<\${id}Model>> valuesList() {
       return Future.value(items);
     }
+""";
+
+const String _InMemoryRepositoryTemplateFooter = """
+    Future<void> deleteAll(String appID) {}
+}
+""";
+
+const String _InMemoryRepositoryTemplateFooterNoAppID = """
+    Future<void> deleteAll() {}
 }
 """;
 
@@ -142,7 +149,14 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        codeBuffer.writeln(process(_InMemoryRepositoryTemplate, parameters: <String, String> { '\${id}': ms.id,  '\${triggerSignature}': ms.id + "ListChanged"}));
+        Map<String, String> parameters = <String, String> { '\${id}': ms.id,  '\${triggerSignature}': ms.id + "ListChanged"};
+
+        codeBuffer.writeln(process(_InMemoryRepositoryTemplate, parameters: parameters));
+        bool hasAppId = (ms.fields.indexWhere((element) => element.fieldName == "appID") >= 0);
+        if (hasAppId)
+          codeBuffer.writeln(process(_InMemoryRepositoryTemplateFooter, parameters: parameters));
+        else
+          codeBuffer.writeln(process(_InMemoryRepositoryTemplateFooterNoAppID, parameters: parameters));
       }
     });
     return codeBuffer.toString();

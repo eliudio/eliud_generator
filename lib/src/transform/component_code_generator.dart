@@ -25,7 +25,7 @@ class ComponentCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    String idTag = firstLowerCase(modelSpecifications.id) + "Id";
+    String idTag = firstLowerCase(modelSpecifications.id) + "ID";
     String className = modelSpecifications.componentClassName();
     codeBuffer.writeln("abstract class " + className + " extends StatelessWidget {");
     codeBuffer.writeln(spaces(2) + "final String " + idTag + ";");
@@ -37,7 +37,7 @@ class ComponentCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(4) + "return BlocProvider<" + modelSpecifications.id + "Bloc> (");
     codeBuffer.writeln(spaces(10) + "create: (context) => " + modelSpecifications.id + "Bloc(");
     codeBuffer.writeln(spaces(12) + firstLowerCase(modelSpecifications.id) + "Repository: get" + modelSpecifications.id + "Repository())");
-    codeBuffer.writeln(spaces(8) + "..add(Fetch" + modelSpecifications.id + "(id: " + firstLowerCase(modelSpecifications.id) + "Id)),");
+    codeBuffer.writeln(spaces(8) + "..add(Fetch" + modelSpecifications.id + "(id: " + firstLowerCase(modelSpecifications.id) + "ID)),");
     codeBuffer.writeln(spaces(6) + "child: _" + firstLowerCase(modelSpecifications.id) + "BlockBuilder(context),");
     codeBuffer.writeln(spaces(4) + ");");
     codeBuffer.writeln(spaces(2) + "}");
