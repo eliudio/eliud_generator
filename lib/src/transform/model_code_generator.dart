@@ -83,8 +83,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.writeln(spaces(2) + "// " + field.remark);
       }
       codeBuffer.write(spaces(2));
-      if (!field.association)
-        codeBuffer.write("final ");
+//      if (!field.association)
+//        codeBuffer.write("final ");
       codeBuffer.writeln(field.dartModelType() + " " + field.fieldName + ";");
     });
     return codeBuffer.toString();
@@ -158,6 +158,11 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _toEntity() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + modelSpecifications.entityClassName() + " toEntity() {");
+    if (modelSpecifications.preToEntityCode != null) {
+      codeBuffer.writeln(
+          spaces(4) + modelSpecifications.preToEntityCode);
+    }
+
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       if (field.fieldName != "documentID") {

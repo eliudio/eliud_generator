@@ -21,10 +21,12 @@ class Field extends Equatable {
   final bool hidden;
   final String bespokeFormField;
   final bool optional;  // is optional?
+/*
   final String mapKeyType;
   final String mapValueType;
+*/
 
-  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.map = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden, this.bespokeFormField, this.optional, this.mapKeyType, this.mapValueType});
+  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.map = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden, this.bespokeFormField, this.optional/*, this.mapKeyType, this.mapValueType*/});
 
   Map<String, Object> toJson() {
     return {
@@ -44,13 +46,15 @@ class Field extends Equatable {
       "hidden": hidden,
       "bespokeFormField": bespokeFormField,
       "optional": optional,
+/*
       "mapKeyType": mapKeyType,
       "mapValueType": mapValueType
+*/
     };
   }
 
   @override
-  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, map, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden, bespokeFormField, optional, ];
+  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, map, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden, bespokeFormField, optional ];
 
   @override
   String toString() {

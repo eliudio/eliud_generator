@@ -20,12 +20,14 @@ class ModelSpecification extends Specification {
   final GenerateSpecification generate;
   final ListFields listFields;
   final String displayOnDelete; // field to be displayed when item is deleted
+  // is this a appModel, i.e is this data that's specific to the app and hence will we have seperate specific collection for it?
   final bool isAppModel;
+  final String preToEntityCode;
 
   static String IMPORT_KEY_FORM_BLOC = "form_bloc";
   final Map<String, String> extraImports;
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode }) : super(id: id);
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -44,7 +46,8 @@ class ModelSpecification extends Specification {
       'listFields': listFields.toJson(),
       "displayOnDelete": displayOnDelete,
       "extraImports": extraImports,
-      "isAppModel": isAppModel
+      "isAppModel": isAppModel,
+      "preToEntityCode": preToEntityCode
     };
   }
 
@@ -55,11 +58,11 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports];
+  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports, preToEntityCode];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -104,7 +107,8 @@ class ModelSpecification extends Specification {
         listFields: theListFields,
         displayOnDelete: json["displayOnDelete"] as String,
         extraImports: extraImports,
-        isAppModel: bIsAppModel
+        isAppModel: bIsAppModel,
+        preToEntityCode: json["preToEntityCode"] as String,
     );
   }
 
