@@ -20,11 +20,12 @@ class ModelSpecification extends Specification {
   final GenerateSpecification generate;
   final ListFields listFields;
   final String displayOnDelete; // field to be displayed when item is deleted
+  final bool isAppModel;
 
   static String IMPORT_KEY_FORM_BLOC = "form_bloc";
   final Map<String, String> extraImports;
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel }) : super(id: id);
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -43,6 +44,7 @@ class ModelSpecification extends Specification {
       'listFields': listFields.toJson(),
       "displayOnDelete": displayOnDelete,
       "extraImports": extraImports,
+      "isAppModel": isAppModel
     };
   }
 
@@ -57,7 +59,7 @@ class ModelSpecification extends Specification {
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -73,6 +75,12 @@ class ModelSpecification extends Specification {
           .map((dynamic item) =>
           Group.fromJson(item as Map<String, dynamic>))
           .toList();
+    }
+
+    var myIsAppModel = json['isAppModel'];
+    bool bIsAppModel = false;
+    if (myIsAppModel != null) {
+      bIsAppModel = myIsAppModel as bool;
     }
 
     var theListFields;
@@ -96,6 +104,7 @@ class ModelSpecification extends Specification {
         listFields: theListFields,
         displayOnDelete: json["displayOnDelete"] as String,
         extraImports: extraImports,
+        isAppModel: bIsAppModel
     );
   }
 

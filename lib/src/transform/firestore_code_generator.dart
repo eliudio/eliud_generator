@@ -7,10 +7,6 @@ import 'data_code_generator.dart';
 
 const String _code = """
 class \${id}Firestore implements \${id}Repository {
-  final \${id}Collection = Firestore.instance.collection('\${id}s');
-
-  \${id}Firestore();
-
   Future<\${id}Model> add(\${id}Model value) {
     return \${id}Collection.document(value.documentID).setData(value.toEntity().toDocument()).then((_) => value);
   }
@@ -60,26 +56,29 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   void flush() {}
-""";
 
-const String _footer = """
-  Future<void> deleteAll(String appID) {
-    return \${id}Collection.where("appID", isEqualTo: appID).getDocuments().then((snapshot) {
-      for (DocumentSnapshot ds in snapshot.documents){
-        ds.reference.delete();
-      }});
-  }
-
-}
-""";
-
-const String _footerWithoutAppID = """
   Future<void> deleteAll() {
     return \${id}Collection.getDocuments().then((snapshot) {
       for (DocumentSnapshot ds in snapshot.documents){
         ds.reference.delete();
       }});
   }
+
+""";
+
+const String _footerWithoutAppID = """
+  \${id}Firestore();
+
+  final CollectionReference \${id}Collection = Firestore.instance.collection('\${id}s');
+
+}
+""";
+
+const String _footer = """
+  final String appID;
+  final CollectionReference \${id}Collection;
+
+  \${id}Firestore(this.appID) : \${id}Collection = Firestore.instance.collection('\${appID}-\${id}s');
 
 }
 """;
@@ -111,8 +110,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
 
     headerBuffer.writeln(process(_code, parameters: parameters));
-    bool hasAppId = (modelSpecifications.fields.indexWhere((element) => element.fieldName == "appID") >= 0);
-    if (hasAppId)
+    if (modelSpecifications.isAppModel)
       headerBuffer.writeln(process(_footer, parameters: parameters));
     else
       headerBuffer.writeln(process(_footerWithoutAppID, parameters: parameters));

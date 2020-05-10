@@ -56,7 +56,6 @@ const String _menuItemDef = """
 
 const String _footerAdminMenuDef = """
     MenuDefModel menu = MenuDefModel(
-      appID: appID,
       admin: true,
       documentID: "ADMIN_MENU_DEF_1",
       name: "Menu Definition 1",
@@ -80,7 +79,6 @@ const String _page = """
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s", tileType: tileType));
     PageModel page = PageModel(
-        appID: appID,
         admin: true,
         documentID: "\${lowid}spage",
         readAccess: PageAccess.admin,
@@ -120,9 +118,14 @@ const String _setupAdminPagesFooter = """
 // run
 const String _headerRun = """
   static Future<void> deleteAll(String appID) async {
-    return await AbstractRepositorySingleton.singleton.imageRepository().deleteAll(appID)
+    return await AbstractRepositorySingleton.singleton.imageRepository().deleteAll()
 """;
 
+const String _footerOther = """
+        .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll())
+""";
+
+/*
 const String _footerOther = """
         .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll(appID))
 """;
@@ -131,6 +134,7 @@ const String _footerOtherWithoutAppID = """
         .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll())
 """;
 
+*/
 const String _footerApp = """
         .then((_) => AbstractRepositorySingleton.singleton.appRepository().get(appID))
         .then((appModel) {
@@ -222,13 +226,7 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
           if (spec.modelSpecification.id == "App") {
             codeBuffer.write(process(_footerApp, parameters: parameters));
           } else {
-            bool hasAppId = (spec.modelSpecification.fields.indexWhere((
-                element) => element.fieldName == "appID") >= 0);
-            if (hasAppId)
-              codeBuffer.write(process(_footerOther, parameters: parameters));
-            else
-              codeBuffer.write(
-                  process(_footerOtherWithoutAppID, parameters: parameters));
+            codeBuffer.write(process(_footerOther, parameters: parameters));
           }
         }
       }

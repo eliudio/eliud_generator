@@ -103,11 +103,6 @@ class \${id}InMemoryRepository implements \${id}Repository {
 """;
 
 const String _InMemoryRepositoryTemplateFooter = """
-    Future<void> deleteAll(String appID) {}
-}
-""";
-
-const String _InMemoryRepositoryTemplateFooterNoAppID = """
     Future<void> deleteAll() {}
 }
 """;
@@ -152,11 +147,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
         Map<String, String> parameters = <String, String> { '\${id}': ms.id,  '\${triggerSignature}': ms.id + "ListChanged"};
 
         codeBuffer.writeln(process(_InMemoryRepositoryTemplate, parameters: parameters));
-        bool hasAppId = (ms.fields.indexWhere((element) => element.fieldName == "appID") >= 0);
-        if (hasAppId)
-          codeBuffer.writeln(process(_InMemoryRepositoryTemplateFooter, parameters: parameters));
-        else
-          codeBuffer.writeln(process(_InMemoryRepositoryTemplateFooterNoAppID, parameters: parameters));
+        codeBuffer.writeln(process(_InMemoryRepositoryTemplateFooter, parameters: parameters));
       }
     });
     return codeBuffer.toString();
