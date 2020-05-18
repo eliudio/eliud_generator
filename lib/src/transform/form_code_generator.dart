@@ -80,13 +80,13 @@ class My\${id}Form extends StatefulWidget {
 """;
 
 const _groupFieldHeaderString = """
-                Container(
+        children.add(Container(
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                   child: Text('\${label}',
                       style: TextStyle(
                           color: RgbHelper.color(rgbo: Eliud.appModel().formGroupTitleColor), fontWeight: FontWeight.bold)),
-                ),
+                ));
 """;
 
 const _otherChangedString = """
@@ -375,16 +375,9 @@ class FormCodeGenerator extends CodeGenerator {
         "if (state is " +
         modelSpecifications.id +
         "FormInitialized) {");
-    codeBuffer.writeln(spaces(8) + "return Container(");
-    codeBuffer.writeln(spaces(8) + "color: RgbHelper.color(rgbo: Eliud.appModel().formBackgroundColor),");
-    codeBuffer.writeln(spaces(10) + "padding:");
-    codeBuffer.writeln(spaces(10) +
-        "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
-    codeBuffer.writeln(spaces(12) + "child: Form(");
 
-    codeBuffer.writeln(spaces(12) + "child: ListView(");
-    codeBuffer.writeln(spaces(14) + "padding: const EdgeInsets.all(8),");
-    codeBuffer.writeln(spaces(14) + "children: <Widget>[");
+    codeBuffer.writeln(spaces(8) + "List<Widget> children = List();");
+
     if (modelSpecifications.groups == null) {
       codeBuffer.writeln(_fields(modelSpecifications.fields));
     } else {
@@ -397,7 +390,7 @@ class FormCodeGenerator extends CodeGenerator {
             modelSpecifications.fieldsForGroups(group)));
       });
     }
-    codeBuffer.writeln(spaces(16) + "RaisedButton(");
+    codeBuffer.writeln(spaces(8) + "children.add(RaisedButton(");
     codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: Eliud.appModel().formSubmitButtonColor),");
     codeBuffer.writeln(spaces(18) + "onPressed: !Eliud.isAdmin() ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
@@ -452,10 +445,20 @@ class FormCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(spaces(18) + "},");
     codeBuffer.writeln(spaces(18) + "child: Text('Submit', style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formSubmitButtonTextColor))),");
-    codeBuffer.writeln(spaces(16) + "),");
-    codeBuffer.writeln(spaces(14) + "],");
-    codeBuffer.writeln(spaces(12) + "),");
+    codeBuffer.writeln(spaces(16) + "));");
 
+    codeBuffer.writeln();
+    codeBuffer.writeln(spaces(8) + "return Container(");
+    codeBuffer.writeln(spaces(8) + "color: RgbHelper.color(rgbo: Eliud.appModel().formBackgroundColor),");
+    codeBuffer.writeln(spaces(10) + "padding:");
+    codeBuffer.writeln(spaces(10) +
+        "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
+    codeBuffer.writeln(spaces(12) + "child: Form(");
+
+    codeBuffer.writeln(spaces(12) + "child: ListView(");
+    codeBuffer.writeln(spaces(14) + "padding: const EdgeInsets.all(8),");
+    codeBuffer.writeln(spaces(14) + "children: children");
+    codeBuffer.writeln(spaces(12) + "),");
     codeBuffer.writeln(spaces(10) + ")");
     codeBuffer.writeln(spaces(8) + ");");
 
@@ -477,11 +480,26 @@ class FormCodeGenerator extends CodeGenerator {
 
   String _groupedFieldFooter() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(16) +
-        "Container(height: 20.0),");
-    codeBuffer.writeln(spaces(16) +
-        "Divider(height: 1.0, thickness: 1.0, color: RgbHelper.color(rgbo: Eliud.appModel().dividerColor)),");
+    codeBuffer.writeln(spaces(8) +
+        "children.add(Container(height: 20.0));");
+    codeBuffer.writeln(spaces(8) +
+        "children.add(Divider(height: 1.0, thickness: 1.0, color: RgbHelper.color(rgbo: Eliud.appModel().dividerColor)));");
     return codeBuffer.toString();
+  }
+
+  String _fieldStart(Field field) {
+    StringBuffer codeBuffer = StringBuffer();
+    if (field.conditional != null) {
+      codeBuffer.writeln(
+          spaces(8) + "if (" + field.conditional + ") children.add(");
+    } else {
+      codeBuffer.writeln(spaces(8) + "children.add(");
+    }
+    return codeBuffer.toString();
+  }
+
+  String _fieldEnd() {
+    return spaces(10) + ");";
   }
 
   String _field(Field field) {
@@ -489,6 +507,7 @@ class FormCodeGenerator extends CodeGenerator {
     if (field.bespokeFormField == null) {
       switch (field.formFieldType()) {
         case FormTypeField.EntryField:
+          codeBuffer.writeln(_fieldStart(field));
           codeBuffer.writeln(spaces(16) + "TextFormField(");
           codeBuffer.writeln(spaces(16) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formFieldTextColor)),");
           if (field.fieldName == "documentID") {
@@ -536,8 +555,10 @@ class FormCodeGenerator extends CodeGenerator {
               "FormError ? state.message : null;");
           codeBuffer.writeln(spaces(18) + "},");
           codeBuffer.writeln(spaces(16) + "),");
+          codeBuffer.writeln(_fieldEnd());
           break;
         case FormTypeField.CheckBox:
+          codeBuffer.writeln(_fieldStart(field));
           codeBuffer.writeln(spaces(16) + "CheckboxListTile(");
           codeBuffer.write(spaces(20) + "title: Text('");
           if (field.displayName == null)
@@ -556,8 +577,10 @@ class FormCodeGenerator extends CodeGenerator {
               firstUpperCase(field.fieldName) +
               "(val);");
           codeBuffer.writeln(spaces(20) + "}),");
+          codeBuffer.writeln(_fieldEnd());
           break;
         case FormTypeField.Lookup:
+          codeBuffer.writeln(_fieldStart(field));
           bool optionalValue = field.optional;
           codeBuffer.writeln(spaces(16) +
               "DropdownButtonComponentFactory().createNew(id: \"" +
@@ -566,10 +589,12 @@ class FormCodeGenerator extends CodeGenerator {
               firstLowerCase(field.fieldName) +
               ", trigger: " + "_on" + firstUpperCase(field.fieldName) + "Selected" +
               ", optional: $optionalValue),");
+          codeBuffer.writeln(_fieldEnd());
           break;
         case FormTypeField.Selection:
           int i = 0;
           field.enumValues.forEach((enumField) {
+            codeBuffer.writeln(_fieldStart(field));
             codeBuffer.writeln(spaces(16) + "RadioListTile(");
             codeBuffer.writeln(spaces(20) + "value: $i,");
             codeBuffer.writeln(spaces(20) + "activeColor: RgbHelper.color(rgbo: Eliud.appModel().formFieldTextColor),");
@@ -588,10 +613,12 @@ class FormCodeGenerator extends CodeGenerator {
                 "(val);");
             codeBuffer.writeln(spaces(20) + "},");
             codeBuffer.writeln(spaces(16) + "),");
+            codeBuffer.writeln(_fieldEnd());
             i++;
           });
           break;
         case FormTypeField.List:
+          codeBuffer.writeln(_fieldStart(field));
           codeBuffer.writeln(spaces(16) + "new Container(");
           codeBuffer.writeln(spaces(20) + "height: (fullScreenHeight(context) / 2.5), ");
           codeBuffer.writeln(spaces(20) +
@@ -602,7 +629,8 @@ class FormCodeGenerator extends CodeGenerator {
               ", _on" +
               firstUpperCase(field.fieldName) +
               "Changed)");
-          codeBuffer.writeln(spaces(16) + "),");
+          codeBuffer.writeln(spaces(16) + ")");
+          codeBuffer.writeln(_fieldEnd());
           break;
 
           break;
@@ -611,8 +639,11 @@ class FormCodeGenerator extends CodeGenerator {
       }
     } else {
       if (field.bespokeFormField.contains("(")) {
-        codeBuffer.writeln(spaces(16) + field.bespokeFormField + ",");
+        codeBuffer.writeln(_fieldStart(field));
+        codeBuffer.writeln(spaces(16) + field.bespokeFormField + "");
+        codeBuffer.writeln(_fieldEnd());
       } else {
+        codeBuffer.writeln(_fieldStart(field));
         codeBuffer.writeln(spaces(16) +
             field.bespokeFormField +
             "(" +
@@ -620,7 +651,8 @@ class FormCodeGenerator extends CodeGenerator {
             field.fieldName +
             ", _on" +
             firstUpperCase(field.fieldName) +
-            "Changed),");
+            "Changed)");
+        codeBuffer.writeln(_fieldEnd());
       }
     }
     return codeBuffer.toString();

@@ -63,8 +63,8 @@ const String _code = """
   }
   
   @override
-  Future<List<\${id}Model>> valuesList() {
-    return reference.valuesList();
+  Future<List<\${id}Model>> valuesList() async {
+    return await reference.valuesList();
   }
   
 """;

@@ -19,12 +19,6 @@ abstract class \${id}Repository {
   Future<List<\${id}Model>> valuesList();
 """;
 
-const String _codeWithArg = """
-  Future<void> deleteAll(String appID);
-}
-
-""";
-
 const String _codeWithArgNoAppID = """
   Future<void> deleteAll();
 }
@@ -66,11 +60,7 @@ class RepositoryCodeGenerator extends CodeGenerator {
     };
     codeBuffer.writeln(process(_code, parameters: parameters));
 
-    bool hasAppId = (modelSpecifications.fields.indexWhere((element) => element.fieldName == "appID") >= 0);
-    if (hasAppId)
-      codeBuffer.writeln(process(_codeWithArg, parameters: parameters));
-    else
-      codeBuffer.writeln(process(_codeWithArgNoAppID, parameters: parameters));
+    codeBuffer.writeln(process(_codeWithArgNoAppID, parameters: parameters));
 
     return codeBuffer.toString();
   }

@@ -21,12 +21,9 @@ class Field extends Equatable {
   final bool hidden;
   final String bespokeFormField;
   final bool optional;  // is optional?
-/*
-  final String mapKeyType;
-  final String mapValueType;
-*/
+  final String conditional; // field is visible in form when this condition is true
 
-  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.map = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden, this.bespokeFormField, this.optional/*, this.mapKeyType, this.mapValueType*/});
+  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.map = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden, this.bespokeFormField, this.optional, this.conditional });
 
   Map<String, Object> toJson() {
     return {
@@ -46,19 +43,16 @@ class Field extends Equatable {
       "hidden": hidden,
       "bespokeFormField": bespokeFormField,
       "optional": optional,
-/*
-      "mapKeyType": mapKeyType,
-      "mapValueType": mapValueType
-*/
+      "conditional": conditional,
     };
   }
 
   @override
-  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, map, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden, bespokeFormField, optional ];
+  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, map, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden, bespokeFormField, optional, conditional ];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, map: $map, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName, hidden: $hidden, bespokeFormField: $bespokeFormField, optional: $optional }';
+    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, map: $map, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName, hidden: $hidden, bespokeFormField: $bespokeFormField, optional: $optional, conditional: $conditional }';
   }
 
   static Field fromJson(Map<String, Object> json) {
@@ -92,6 +86,7 @@ class Field extends Equatable {
       hidden: hidden,
       bespokeFormField: json["bespokeFormField"] as String,
       optional: optional,
+      conditional: json["conditional"] as String,
     );
   }
 

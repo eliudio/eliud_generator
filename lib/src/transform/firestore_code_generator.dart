@@ -4,6 +4,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 import 'data_code_generator.dart';
+import 'firestore_helper.dart';
 
 const String _code = """
 class \${id}Firestore implements \${id}Repository {
@@ -69,7 +70,7 @@ class \${id}Firestore implements \${id}Repository {
 const String _footerWithoutAppID = """
   \${id}Firestore();
 
-  final CollectionReference \${id}Collection = Firestore.instance.collection('\${id}s');
+  final CollectionReference \${id}Collection = Firestore.instance.collection('\${COLLECTION_ID}');
 
 }
 """;
@@ -78,8 +79,7 @@ const String _footer = """
   final String appID;
   final CollectionReference \${id}Collection;
 
-  \${id}Firestore(this.appID) : \${id}Collection = Firestore.instance.collection('\${appID}-\${id}s');
-
+  \${id}Firestore(this.appID) : \${id}Collection = Firestore.instance.collection('\${COLLECTION_ID}-\${appID}');
 }
 """;
 
@@ -106,6 +106,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
+      "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications)
     };
     StringBuffer headerBuffer = StringBuffer();
 

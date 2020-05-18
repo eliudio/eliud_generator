@@ -58,6 +58,7 @@ const String _footerAdminMenuDef = """
     MenuDefModel menu = MenuDefModel(
       admin: true,
       documentID: "ADMIN_MENU_DEF_1",
+      appId: appID,
       name: "Menu Definition 1",
       menuItems: menuItems
     );
@@ -80,8 +81,8 @@ const String _page = """
       documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s", tileType: tileType));
     PageModel page = PageModel(
         admin: true,
+        appId: appID,
         documentID: "\${lowid}spage",
-        readAccess: PageAccess.admin,
         title: "\${id}s",
         drawer: _drawer,
         endDrawer: _endDrawer,
@@ -222,15 +223,13 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
         Map<String, String> parameters = <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) };
-        if (spec.modelSpecification.id != "Member") {
-          if (spec.modelSpecification.id == "App") {
-            codeBuffer.write(process(_footerApp, parameters: parameters));
-          } else {
+        if ((spec.modelSpecification.id != "Member") && (spec.modelSpecification.id != "App")) {
             codeBuffer.write(process(_footerOther, parameters: parameters));
-          }
         }
       }
     });
+    Map<String, String> parameters = <String, String>{ '\${lid}': 'app' };
+    codeBuffer.write(process(_footerApp, parameters: parameters));
     codeBuffer.writeln(process(_footerRun));
 
     codeBuffer.writeln(process(_footer));

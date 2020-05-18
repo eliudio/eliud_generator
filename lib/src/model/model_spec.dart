@@ -47,7 +47,7 @@ class ModelSpecification extends Specification {
       "displayOnDelete": displayOnDelete,
       "extraImports": extraImports,
       "isAppModel": isAppModel,
-      "preToEntityCode": preToEntityCode
+      "preToEntityCode": preToEntityCode,
     };
   }
 
