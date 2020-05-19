@@ -21,7 +21,6 @@ abstract class CodeGenerator extends CodeGeneratorBase {
     if ((importThis.startsWith("action_")) ||
         (importThis.startsWith("image_")) ||
         (importThis.startsWith("grid_view_type_")) ||
-        (importThis.startsWith("tile_type_")) ||
         (importThis.startsWith("rgb_")) ||
         (importThis.startsWith("pos_size_")) ||
         (importThis.startsWith("background_")) ||

@@ -80,7 +80,7 @@ class My\${id}Form extends StatefulWidget {
 """;
 
 const _groupFieldHeaderString = """
-        children.add(Container(
+        \${condition} children.add(Container(
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                   child: Text('\${label}',
@@ -383,10 +383,10 @@ class FormCodeGenerator extends CodeGenerator {
     } else {
       if (modelSpecifications.hasUngroupedFields()) {
         codeBuffer.writeln(_groupedFieldsFor(
-            "General", modelSpecifications.unGroupedFields()));
+            "General", null, modelSpecifications.unGroupedFields()));
       }
       modelSpecifications.groups.forEach((group) {
-        codeBuffer.writeln(_groupedFieldsFor(group.description ?? group.group,
+        codeBuffer.writeln(_groupedFieldsFor(group.description ?? group.group, group.conditional,
             modelSpecifications.fieldsForGroups(group)));
       });
     }
@@ -473,9 +473,15 @@ class FormCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _groupedFieldHeader(String groupLabel) {
+  String _groupedFieldHeader(String groupLabel, String condition) {
+    String conditionStr = "";
+    if (condition != null) conditionStr = "if " + condition;
     return process(_groupFieldHeaderString,
-        parameters: <String, String>{"\${label}": groupLabel});
+        parameters: <String, String> {
+          "\${label}": groupLabel,
+          "\${condition}": conditionStr
+          }
+        );
   }
 
   String _groupedFieldFooter() {
@@ -658,9 +664,9 @@ class FormCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _groupedFieldsFor(String groupLabel, List<Field> fields) {
+  String _groupedFieldsFor(String groupLabel, String condition, List<Field> fields) {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(_groupedFieldHeader(groupLabel));
+    codeBuffer.writeln(_groupedFieldHeader(groupLabel, condition ));
     codeBuffer.writeln(_fields(fields));
     codeBuffer.writeln(_groupedFieldFooter());
     return codeBuffer.toString();
