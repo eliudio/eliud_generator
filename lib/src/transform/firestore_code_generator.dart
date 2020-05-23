@@ -43,14 +43,14 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   Stream<List<\${id}Model>> values() {
-    return \${id}Collection.snapshots().map((snapshot) {
+    return \${id}Collection.\${where}snapshots().map((snapshot) {
       return snapshot.documents
             .map((doc) => _populateDoc(doc)).toList();
     });
   }
 
   Future<List<\${id}Model>> valuesList() async {
-    return await \${id}Collection.getDocuments().then((value) {
+    return await \${id}Collection.\${where}getDocuments().then((value) {
       var list = value.documents;
       return list.map((doc) => _populateDoc(doc)).toList();
     });
@@ -93,6 +93,8 @@ class FirestoreCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
     headerBuffer.writeln();
+    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FIRESTORE);
+    headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.entityFileName()) + "';");
@@ -103,9 +105,13 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
   @override
   String body() {
+    String where = "";
+    if (modelSpecifications.where != null)
+      where = modelSpecifications.where + ".";
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
+      "\${where}": where,
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications)
     };
     StringBuffer headerBuffer = StringBuffer();

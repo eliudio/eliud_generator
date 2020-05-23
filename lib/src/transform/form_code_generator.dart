@@ -1,4 +1,5 @@
 import 'package:eliud_generator/src/model/field.dart';
+import 'package:eliud_generator/src/model/group.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
@@ -38,43 +39,54 @@ import '\${path}_form_state.dart';
 """;
 
 const String _xyzFormString = """
-class \${id}Form extends StatelessWidget {
+class \${className}Form extends StatelessWidget {
   FormAction formAction;
   \${id}Model value;
+  bool excludeScaffold;
 
-  \${id}Form({Key key, @required this.formAction, @required this.value}) : super(key: key);
+  \${className}Form({bool excludeScaffold, Key key, @required this.formAction, @required this.value}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: formAction == FormAction.UpdateAction ?
-              AppBar(
-                  title: Text("Update \${id}", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formAppBarTextColor))),
-                  backgroundColor: RgbHelper.color(rgbo: Eliud.appModel().formAppBarBackgroundColor),
-                ) :
-              AppBar(
-                  title: Text("Add \${id}", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formAppBarTextColor))),
-                  backgroundColor: RgbHelper.color(rgbo: Eliud.appModel().formAppBarBackgroundColor),
-              ),
-      body: BlocProvider<\${id}FormBloc >(
-          create: (context) => \${id}FormBloc(
-                                     \${constructorParameters}
-                                              )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
-
-      child: My\${id}Form(formAction: formAction),
-        ));
+    if ((excludeScaffold) != null && excludeScaffold) {
+      return BlocProvider<\${id}FormBloc >(
+            create: (context) => \${id}FormBloc(
+                                       \${constructorParameters}
+                                                )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
+  
+        child: My\${className}Form(formAction: formAction),
+          );
+    } else {
+      return Scaffold(
+        appBar: formAction == FormAction.UpdateAction ?
+                AppBar(
+                    title: Text("Update \${id}", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formAppBarTextColor))),
+                    backgroundColor: RgbHelper.color(rgbo: Eliud.appModel().formAppBarBackgroundColor),
+                  ) :
+                AppBar(
+                    title: Text("Add \${id}", style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().formAppBarTextColor))),
+                    backgroundColor: RgbHelper.color(rgbo: Eliud.appModel().formAppBarBackgroundColor),
+                ),
+        body: BlocProvider<\${id}FormBloc >(
+            create: (context) => \${id}FormBloc(
+                                       \${constructorParameters}
+                                                )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
+  
+        child: My\${className}Form(formAction: formAction),
+          ));
+    }
   }
 }
 
 """;
 
 const String _myXyzFormString = """
-class My\${id}Form extends StatefulWidget {
+class My\${className}Form extends StatefulWidget {
   final FormAction formAction;
 
-  My\${id}Form({this.formAction});
+  My\${className}Form({this.formAction});
 
-  _My\${id}FormState createState() => _My\${id}FormState(this.formAction);
+  _My\${className}FormState createState() => _My\${className}FormState(this.formAction);
 }
 
 """;
@@ -126,8 +138,10 @@ const _xyzLookupChangedString = """
 
 """;
 
-class FormCodeGenerator extends CodeGenerator {
-  FormCodeGenerator({ModelSpecification modelSpecifications})
+class RealFormCodeGenerator extends CodeGenerator {
+  final String className;
+
+  RealFormCodeGenerator(this.className, {ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -146,21 +160,8 @@ class FormCodeGenerator extends CodeGenerator {
       constructorParameters.writeln("formAction: formAction,");
     }
 
-    if (modelSpecifications.generate.generateFirestoreRepository &&
-        modelSpecifications.generate.generateRepository) {
-      constructorParameters.writeln(firstLowerCase(modelSpecifications.id) +
-          "Repository: AbstractRepositorySingleton.singleton." +
-          firstLowerCase(modelSpecifications.id) +
-          "Repository(), ");
-    }
-    modelSpecifications.uniqueAssociationTypes().forEach((field) {
-      constructorParameters.writeln(firstLowerCase(field) +
-          "Repository: AbstractRepositorySingleton.singleton." +
-          firstLowerCase(field) +
-          "Repository(), ");
-    });
-
     return process(_xyzFormString, parameters: <String, String>{
+      "\${className}": className,
       "\${id}": modelSpecifications.id,
       "\${lid}": firstLowerCase(modelSpecifications.id),
       "\${constructorParameters}": constructorParameters.toString(),
@@ -169,6 +170,7 @@ class FormCodeGenerator extends CodeGenerator {
 
   String _myXyzForm() {
     return process(_myXyzFormString, parameters: <String, String>{
+      "\${className}": className,
       "\${id}": modelSpecifications.id,
       "\${lid}": firstLowerCase(modelSpecifications.id)
     });
@@ -221,7 +223,7 @@ class FormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) +
         "_My" +
-        modelSpecifications.id +
+        className +
         "FormState(this.formAction);");
     return codeBuffer.toString();
   }
@@ -408,9 +410,7 @@ class FormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14 + 12) +
         "Update" +
         modelSpecifications.id +
-        "List(value: " +
-        modelSpecifications.modelClassName() +
-        "(");
+        "List(value: state.value.copyWith(");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.writeln(spaces(14 + 16) +
           field.fieldName +
@@ -683,9 +683,9 @@ class FormCodeGenerator extends CodeGenerator {
   String _xyzFormState() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln("class _My" +
-        modelSpecifications.id +
+        className +
         "FormState extends State<My" +
-        modelSpecifications.id +
+        className +
         "Form> {");
     codeBuffer.writeln(_xyzFormStateMemberData());
     codeBuffer.writeln(_xyzFormStateFieldMemberData());
@@ -813,5 +813,61 @@ class FormCodeGenerator extends CodeGenerator {
   @override
   String theFileName() {
     return modelSpecifications.formFileName();
+  }
+}
+
+class FormCodeGenerator extends CodeGenerator {
+  final RealFormCodeGenerator realFormCodeGenerator;
+
+  FormCodeGenerator({ModelSpecification modelSpecifications})
+      : realFormCodeGenerator = RealFormCodeGenerator(modelSpecifications.id, modelSpecifications: modelSpecifications),
+        super(modelSpecifications: modelSpecifications);
+
+  @override
+  String body() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(realFormCodeGenerator.body());
+    if (modelSpecifications.views != null) {
+      modelSpecifications.views.forEach((view) {
+        List<Field> fields = List();
+        view.fields.forEach((fieldName) {
+          // search in the list of view.
+          Field newField = modelSpecifications.fields.firstWhere((field) => field.fieldName == fieldName);
+          if (newField != null) {
+            fields.add(newField);
+          }
+        });
+
+        List<Group> groups = List();
+        view.groups.forEach((groupName) {
+          // search in the list of view.
+          Group newGroup = modelSpecifications.groups.firstWhere((group) => group.group == groupName);
+          if (newGroup != null) {
+            groups.add(newGroup);
+          }
+        });
+
+        if (fields.length > 0) {
+          ModelSpecification newModelSpec = modelSpecifications.copyWith(
+              fields: fields, groups: groups);
+          codeBuffer.writeln(RealFormCodeGenerator(
+              modelSpecifications.id + view.name,
+              modelSpecifications: newModelSpec).body());
+        } else {
+          print("view " + view.name + " has no fields matching the specifications");
+        }
+      });
+    }
+    return codeBuffer.toString();
+  }
+
+  @override
+  String theFileName() {
+    return modelSpecifications.formFileName();
+  }
+
+  @override
+  String commonImports() {
+    return realFormCodeGenerator.commonImports();
   }
 }

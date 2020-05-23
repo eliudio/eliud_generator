@@ -41,12 +41,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    if (modelSpecifications.extraImports != null) {
-      if (modelSpecifications.extraImports[ModelSpecification.IMPORT_KEY_FORM_BLOC] != null) {
-        headerBuffer.writeln(modelSpecifications.extraImports[ModelSpecification.IMPORT_KEY_FORM_BLOC]);
-      }
-    }
+    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FORM_BLOC);
     headerBuffer.writeln("import 'dart:async';");
+    headerBuffer.writeln("import 'package:eliud_model/shared/abstract_repository_singleton.dart';");
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln("import '../shared/rgb_model.dart';");
     headerBuffer.writeln("import 'package:eliud_model/tools/enums.dart';");
@@ -118,9 +115,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
         }
         newModelBuffer.writeln(", ");
       } else {
-        if (field.array)
+        if (field.array) {
           newModelBuffer.writeln(spaces(33) + field.fieldName + ": [],");
-        if (field.isInt()) {
+        } else if (field.isInt()) {
           newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0,");
         } else if (field.isDouble()) {
           newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0.0,");
@@ -149,57 +146,72 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(4) + "} else if (currentState is " + modelSpecifications.id + "FormInitialized) {");
     codeBuffer.writeln(spaces(6) + modelSpecifications.modelClassName() + " newValue = null;");
     modelSpecifications.fields.forEach((field) {
-      String className = "Changed" + modelSpecifications.id + firstUpperCase(field.fieldName);
-      codeBuffer.writeln(spaces(6) + "if (event is " + className + ") {");
-      if (field.isInt()) {
-        codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
-        codeBuffer.writeln(
-            spaces(10) + "newValue = currentState.value.copyWith(" +
-                field.fieldName + ": int.parse(event.value));");
-        codeBuffer.writeln(_yield(10, field));
-        codeBuffer.writeln(spaces(8) + "} else {");
-        codeBuffer.writeln(
-            spaces(10) + "newValue = currentState.value.copyWith(" +
-                field.fieldName + ": 0);");
-        String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Value should be a number\", value: newValue);";
-        codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
-        codeBuffer.writeln(spaces(8) + "}");
-      } else if (field.isDouble()) {
-        codeBuffer.writeln(spaces(8) + "if (isDouble(event.value)) {");
-        codeBuffer.writeln(
-            spaces(10) + "newValue = currentState.value.copyWith(" +
-                field.fieldName + ": double.parse(event.value));");
-        codeBuffer.writeln(_yield(10, field));
-        codeBuffer.writeln(spaces(8) + "} else {");
-        codeBuffer.writeln(
-            spaces(10) + "newValue = currentState.value.copyWith(" +
-                field.fieldName + ": 0.0);");
-        String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Value should be a number or decimal number\", value: newValue);";
-        codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
-        codeBuffer.writeln(spaces(8) + "}");
-      } else if (field.association) {
-        codeBuffer.writeln(spaces(8) + "if (event.value != null)");
-        codeBuffer.writeln(spaces(10) + "newValue = currentState.value.copyWith(" + field.fieldName + ": await _" + firstLowerCase(field.fieldType) + "Repository.get(event.value));");
-        codeBuffer.writeln(spaces(8) + "else");
-        codeBuffer.writeln(spaces(10) + "newValue = new " + modelSpecifications.id + "Model(");
-        modelSpecifications.fields.forEach((otherField) {
-          if (otherField != field) {
-            codeBuffer.writeln(spaces(33) + otherField.fieldName + ": currentState.value." +
-                    otherField.fieldName + ",");
-          } else {
-            codeBuffer.writeln(spaces(33) + otherField.fieldName + ": null,");
-          }
-        });
-        codeBuffer.writeln(spaces(10) + ");");
+      if (!field.hidden) {
+        String className = "Changed" + modelSpecifications.id +
+            firstUpperCase(field.fieldName);
+        codeBuffer.writeln(spaces(6) + "if (event is " + className + ") {");
+        if (field.isInt()) {
+          codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
+          codeBuffer.writeln(
+              spaces(10) + "newValue = currentState.value.copyWith(" +
+                  field.fieldName + ": int.parse(event.value));");
+          codeBuffer.writeln(_yield(10, field));
+          codeBuffer.writeln(spaces(8) + "} else {");
+          codeBuffer.writeln(
+              spaces(10) + "newValue = currentState.value.copyWith(" +
+                  field.fieldName + ": 0);");
+          String errorClassName = firstUpperCase(field.fieldName) +
+              modelSpecifications.id +
+              "FormError(message: \"Value should be a number\", value: newValue);";
+          codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
+          codeBuffer.writeln(spaces(8) + "}");
+        } else if (field.isDouble()) {
+          codeBuffer.writeln(spaces(8) + "if (isDouble(event.value)) {");
+          codeBuffer.writeln(
+              spaces(10) + "newValue = currentState.value.copyWith(" +
+                  field.fieldName + ": double.parse(event.value));");
+          codeBuffer.writeln(_yield(10, field));
+          codeBuffer.writeln(spaces(8) + "} else {");
+          codeBuffer.writeln(
+              spaces(10) + "newValue = currentState.value.copyWith(" +
+                  field.fieldName + ": 0.0);");
+          String errorClassName = firstUpperCase(field.fieldName) +
+              modelSpecifications.id +
+              "FormError(message: \"Value should be a number or decimal number\", value: newValue);";
+          codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
+          codeBuffer.writeln(spaces(8) + "}");
+        } else if (field.association) {
+          codeBuffer.writeln(spaces(8) + "if (event.value != null)");
+          codeBuffer.writeln(
+              spaces(10) + "newValue = currentState.value.copyWith(" +
+                  field.fieldName + ": await _" +
+                  firstLowerCase(field.fieldType) +
+                  "Repository.get(event.value));");
+          codeBuffer.writeln(spaces(8) + "else");
+          codeBuffer.writeln(
+              spaces(10) + "newValue = new " + modelSpecifications.id +
+                  "Model(");
+          modelSpecifications.fields.forEach((otherField) {
+            if (otherField != field) {
+              codeBuffer.writeln(
+                  spaces(33) + otherField.fieldName + ": currentState.value." +
+                      otherField.fieldName + ",");
+            } else {
+              codeBuffer.writeln(spaces(33) + otherField.fieldName + ": null,");
+            }
+          });
+          codeBuffer.writeln(spaces(10) + ");");
 
-        codeBuffer.writeln(_yield(8, field));
-      } else {
-        codeBuffer.writeln(spaces(8) + "newValue = currentState.value.copyWith(" +
-            field.fieldName + ": event.value);");
-        codeBuffer.writeln(_yield(8, field));
+          codeBuffer.writeln(_yield(8, field));
+        } else {
+          codeBuffer.writeln(
+              spaces(8) + "newValue = currentState.value.copyWith(" +
+                  field.fieldName + ": event.value);");
+          codeBuffer.writeln(_yield(8, field));
+        }
+        codeBuffer.writeln(spaces(8) + "return;");
+        codeBuffer.writeln(spaces(6) + "}");
       }
-      codeBuffer.writeln(spaces(8) + "return;");
-      codeBuffer.writeln(spaces(6) + "}");
     });
 
     codeBuffer.writeln(spaces(4) + "}");
@@ -226,52 +238,22 @@ class FormBlocCodeGenerator extends CodeGenerator {
     if (withRepository()) {
       codeBuffer.writeln(
           spaces(2) + "final " + modelSpecifications.id + "Repository _" +
-              firstLowerCase(modelSpecifications.id) + "Repository;");
+              firstLowerCase(modelSpecifications.id) + "Repository = AbstractRepositorySingleton.singleton." + firstLowerCase(modelSpecifications.id) + "Repository();");
+
       codeBuffer.writeln(spaces(2) + "final FormAction formAction;");
     }
     modelSpecifications.uniqueAssociationTypes().forEach((field) {
-        codeBuffer.writeln(spaces(2) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository;");
+        codeBuffer.writeln(spaces(2) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository = AbstractRepositorySingleton.singleton." + firstLowerCase(field) + "Repository();");
     });
     return codeBuffer.toString();
   }
 
   String _constructor() {
-    List<String> uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
-    if (!withRepository() && uniqueAssociationTypes.isEmpty) {
+    if (withRepository()) {
+      return spaces(2) + modelSpecifications.id + "FormBloc({ this.formAction });";
+    } else {
       return spaces(2) + modelSpecifications.id + "FormBloc();";
     }
-
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "FormBloc({");
-    if (withRepository())
-      codeBuffer.writeln(spaces(16) + "this.formAction, ");
-      codeBuffer.writeln(spaces(16) + "@required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository, ");
-    uniqueAssociationTypes.forEach((field) {
-        codeBuffer.writeln(spaces(16) + "@required " + field + "Repository " + firstLowerCase(field) + "Repository, ");
-    });
-    codeBuffer.writeln(spaces(14) + "}): ");
-    if (withRepository()) {
-      codeBuffer.writeln(
-          spaces(10) + "assert(" + firstLowerCase(modelSpecifications.id) +
-              "Repository != null),");
-      codeBuffer.write(
-          spaces(10) + "_" + firstLowerCase(modelSpecifications.id) +
-              "Repository" + " = " + firstLowerCase(modelSpecifications.id) +
-              "Repository");
-      if (uniqueAssociationTypes.isEmpty)
-        codeBuffer.writeln();
-      else
-        codeBuffer.writeln(",");
-    }
-    int i = 0;
-    uniqueAssociationTypes.forEach((field) {
-        codeBuffer.writeln(spaces(10) + "assert(" + firstLowerCase(field) + "Repository != null),");
-        codeBuffer.write(spaces(10) + "_" + firstLowerCase(field) + "Repository" + " = " + firstLowerCase(field) + "Repository");
-        i++;
-        if (i < uniqueAssociationTypes.length) codeBuffer.writeln(",");
-    });
-    codeBuffer.writeln(";");
-    return codeBuffer.toString();
   }
 
   @override

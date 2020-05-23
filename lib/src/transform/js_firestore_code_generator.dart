@@ -49,13 +49,13 @@ class \${id}JsFirestore implements \${id}Repository {
   }
 
   Stream<List<\${id}Model>> values() {
-    return \${lid}Collection.onSnapshot
+    return \${lid}Collection.\${where}onSnapshot
         .map((data) => data.docs.map((doc) => _populateDoc(doc)).toList());
   }
 
   @override
   Future<List<\${id}Model>> valuesList() {
-    return \${lid}Collection.get().then((value) {
+    return \${lid}Collection.\${where}get().then((value) {
       var list = value.docs;
       return list.map((doc) => _populateDoc(doc)).toList();
     });
@@ -96,6 +96,8 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:firebase/firebase.dart';");
     headerBuffer.writeln("import 'package:firebase/firestore.dart';");
     headerBuffer.writeln();
+    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FIRESTORE);
+    headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.entityFileName()) + "';");
@@ -106,9 +108,14 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
 
   @override
   String body() {
+    String where = "";
+    if (modelSpecifications.whereJs != null)
+      where = modelSpecifications.whereJs + ".";
+
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
+      "\${where}": where,
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications)
     };
 

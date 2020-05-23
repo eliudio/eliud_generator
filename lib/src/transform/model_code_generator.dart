@@ -28,6 +28,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
       }
     });
 
+    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_MODEL);
+
     uniqueAssociationTypes.forEach((type) {
       headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(type) + "_repository.dart") + "';");
     });

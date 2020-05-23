@@ -14,6 +14,30 @@ class ModelSpecificationPlus {
   ModelSpecificationPlus({ this.modelSpecification, this.path });
 }
 
+class View {
+  final String name;
+  final List<String> fields;
+  final List<String> groups;
+
+  View({this.name, this.fields, this.groups});
+
+  Map<String, Object> toJson() {
+    return {
+      "name": name,
+    };
+  }
+
+  static View fromJson(Map<String, Object> json) {
+    var jsonFields = json["fields"];
+    var jsonGroups = json["groups"];
+    return View(
+      name: json["name"] as String,
+      fields: jsonFields != null ? List.from(jsonFields) : null,
+      groups: jsonGroups != null ? List.from(jsonGroups) : null,
+    );
+  }
+}
+
 class ModelSpecification extends Specification {
   final List<Field> fields;
   final List<Group> groups;
@@ -23,11 +47,37 @@ class ModelSpecification extends Specification {
   // is this a appModel, i.e is this data that's specific to the app and hence will we have seperate specific collection for it?
   final bool isAppModel;
   final String preToEntityCode;
+  final List<View> views;
 
   static String IMPORT_KEY_FORM_BLOC = "form_bloc";
+  static String IMPORT_KEY_MODEL = "model";
+  static String IMPORT_KEY_FIRESTORE = "firestore";
   final Map<String, String> extraImports;
+  final String where;
+  final String whereJs;
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.views, this.where, this.whereJs }) : super(id: id);
+
+  ModelSpecification copyWith({ String id, GenerateSpecification generate, List<Field> fields, List<Group> groups,
+    ListFields listFields, String displayOnDelete, Map<String, String> extraImports, bool isAppModel,
+    String preToEntityCode, List<View> views }) {
+    ModelSpecification newModelSpecification = ModelSpecification(
+      id: id ?? this.id,
+      generate: generate ?? this.generate ,
+      fields: fields ?? this.fields,
+      groups: groups ?? this.groups,
+      listFields: listFields ?? this.listFields,
+      displayOnDelete: displayOnDelete ?? this.displayOnDelete,
+      extraImports: extraImports ?? this.extraImports,
+      isAppModel: isAppModel ?? this.isAppModel,
+      preToEntityCode: preToEntityCode ?? this.preToEntityCode,
+      views: views ?? this.views,
+      where: where ?? this.where,
+      whereJs: whereJs ?? this.whereJs,
+    );
+    return newModelSpecification;
+  }
+
 
   Map<String, Object> toJson() {
     List<Map<String, dynamic>> jsonFields = fields != null
@@ -37,6 +87,10 @@ class ModelSpecification extends Specification {
     List<Map<String, dynamic>> jsonGroups = groups != null
         ? groups.map((i) => i.toJson()).toList()
         : null;
+
+    List<Map<String, Object>> jsonViews = views != null
+        ? views.map((view) => view.toJson()).toList()
+        :null;
 
     return <String, dynamic>{
       "id": id,
@@ -48,6 +102,9 @@ class ModelSpecification extends Specification {
       "extraImports": extraImports,
       "isAppModel": isAppModel,
       "preToEntityCode": preToEntityCode,
+      "alternativeViews": jsonViews,
+      "where": where,
+      "whereJs": whereJs
     };
   }
 
@@ -58,25 +115,34 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports, preToEntityCode];
+  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports, preToEntityCode, views, where, whereJs ];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, views: $views, where: $where, whereJs: $whereJs }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
-    final theItems = (json['fields'] as List<dynamic>)
+    List<Field> theItems = (json['fields'] as List<dynamic>)
         .map((dynamic item) =>
         Field.fromJson(item as Map<String, dynamic>))
         .toList();
 
-    var theGroups;
+    List<Group> theGroups;
     var jsonGroups = json['groups'];
     if (jsonGroups != null) {
-      theGroups = (json['groups'] as List<dynamic>)
+      theGroups = (jsonGroups as List<dynamic>)
           .map((dynamic item) =>
           Group.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
+
+    List<View> theViews;
+    var jsonViews = json['alternativeViews'];
+    if (jsonViews != null) {
+      theViews = (jsonViews as List<dynamic>)
+          .map((dynamic item) =>
+          View.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
@@ -100,15 +166,18 @@ class ModelSpecification extends Specification {
     }
 
     return ModelSpecification(
-        id: json["id"] as String,
-        generate: GenerateSpecification.fromJson(json["generate"]),
-        fields: theItems,
-        groups: theGroups,
-        listFields: theListFields,
-        displayOnDelete: json["displayOnDelete"] as String,
-        extraImports: extraImports,
-        isAppModel: bIsAppModel,
-        preToEntityCode: json["preToEntityCode"] as String,
+      id: json["id"] as String,
+      generate: GenerateSpecification.fromJson(json["generate"]),
+      fields: theItems,
+      groups: theGroups,
+      listFields: theListFields,
+      displayOnDelete: json["displayOnDelete"] as String,
+      extraImports: extraImports,
+      isAppModel: bIsAppModel,
+      preToEntityCode: json["preToEntityCode"] as String,
+      views: theViews,
+      where: json["where"] as String,
+      whereJs: json["whereJs"] as String,
     );
   }
 

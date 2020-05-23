@@ -58,4 +58,12 @@ abstract class CodeGenerator extends CodeGeneratorBase {
     return (modelSpecifications.generate.generateRepository) &&  (modelSpecifications.generate.generateFirestoreRepository);
   }
 
+  void extraImports(StringBuffer headerBuffer, String key) {
+    if (modelSpecifications.extraImports != null) {
+      if (modelSpecifications.extraImports[key] != null) {
+        headerBuffer.writeln(modelSpecifications.extraImports[key]);
+      }
+    }
+  }
+
 }
