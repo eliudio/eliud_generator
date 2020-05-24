@@ -6,7 +6,7 @@ import 'code_generator_multi.dart';
 
 const String _imports = """
 import 'dart:collection';
-import 'package:eliud_model/core/auth/user_repository.dart';
+import 'package:eliud_model/core/access/bloc/user_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../core/components/application_component.dart';
@@ -97,13 +97,11 @@ class ComponentRegistry {
   void _init() {
     final GlobalKey<NavigatorState> navigatorKey =
     new GlobalKey<NavigatorState>();
-    final UserRepository userRepository = UserRepository();
     initialize(
       pageComponentConstructor: PageComponentConstructorDefault(
           navigatorKey: navigatorKey),
       applicationComponentConstructor: ApplicationComponentConstructorDefault(
-          navigatorKey: navigatorKey,
-          userRepository: userRepository),
+          navigatorKey: navigatorKey),
     );
     
     \${register}

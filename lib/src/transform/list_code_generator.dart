@@ -5,6 +5,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports = """
+import 'package:eliud_model/core/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
@@ -63,10 +64,10 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
       } else if (state is \${id}ListLoaded) {
         final values = state.values;
         return new Scaffold(
-          floatingActionButton: !Eliud.isAdmin() ? null : FloatingActionButton(
+          floatingActionButton: !GlobalData.memberIsOwner() ? null : FloatingActionButton(
             heroTag: "\${id}FloatBtnTag",
-            foregroundColor: RgbHelper.color(rgbo: Eliud.appModel().floatingButtonForegroundColor),
-            backgroundColor: RgbHelper.color(rgbo: Eliud.appModel().floatingButtonBackgroundColor),
+            foregroundColor: RgbHelper.color(rgbo: GlobalData.app.floatingButtonForegroundColor),
+            backgroundColor: RgbHelper.color(rgbo: GlobalData.app.floatingButtonBackgroundColor),
             child: Icon(Icons.add),
               onPressed: () {
               Navigator.of(context).push(
@@ -79,9 +80,9 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
               );
             },
           ),
-          body: Container(color: RgbHelper.color(rgbo: Eliud.appModel().listBackgroundColor), child: ListView.separated(
+          body: Container(color: RgbHelper.color(rgbo: GlobalData.app.listBackgroundColor), child: ListView.separated(
               separatorBuilder: (context, index) => Divider(
-                color: RgbHelper.color(rgbo: Eliud.appModel().dividerColor)
+                color: RgbHelper.color(rgbo: GlobalData.app.dividerColor)
               ),
               itemCount: values.length,
               itemBuilder: (context, index) {
@@ -181,7 +182,7 @@ class ListCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
       codeBuffer.writeln(spaces(14) + "value." + title + ",");
       codeBuffer.writeln(
-          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().listTextItemColor)),");
+          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.listTextItemColor)),");
       codeBuffer.writeln(spaces(12) + ")),");
     }
     codeBuffer.writeln(spaces(10) + "),");
@@ -198,7 +199,7 @@ class ListCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(10) + "maxLines: 1,");
         codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
         codeBuffer.writeln(
-            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: Eliud.appModel().listTextItemColor)),");
+            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.listTextItemColor)),");
         codeBuffer.writeln(spaces(8) + "))");
       }
       codeBuffer.writeln(spaces(12) + ": null,");

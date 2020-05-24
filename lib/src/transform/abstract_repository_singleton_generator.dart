@@ -17,7 +17,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln("import '../" + path + "_repository.dart';");
       }
     });
-    codeBuffer.writeln("import 'package:eliud_model/core/auth/user_repository.dart';");
+    codeBuffer.writeln("import 'package:eliud_model/core/access/bloc/user_repository.dart';");
     codeBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
     codeBuffer.writeln();
     codeBuffer.writeln("abstract class AbstractRepositorySingleton {");

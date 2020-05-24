@@ -48,7 +48,7 @@ const String _code = """
   }
 
   Future<\${id}Model> update(\${id}Model value) {
-    reference.update(value).then((newValue) {
+    return reference.update(value).then((newValue) {
       fullCache[value.documentID] = newValue;
       return newValue;
     });
