@@ -66,8 +66,8 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         return new Scaffold(
           floatingActionButton: !GlobalData.memberIsOwner() ? null : FloatingActionButton(
             heroTag: "\${id}FloatBtnTag",
-            foregroundColor: RgbHelper.color(rgbo: GlobalData.app.floatingButtonForegroundColor),
-            backgroundColor: RgbHelper.color(rgbo: GlobalData.app.floatingButtonBackgroundColor),
+            foregroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonForegroundColor),
+            backgroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonBackgroundColor),
             child: Icon(Icons.add),
               onPressed: () {
               Navigator.of(context).push(
@@ -80,9 +80,9 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
               );
             },
           ),
-          body: Container(color: RgbHelper.color(rgbo: GlobalData.app.listBackgroundColor), child: ListView.separated(
+          body: Container(color: RgbHelper.color(rgbo: GlobalData.app().listBackgroundColor), child: ListView.separated(
               separatorBuilder: (context, index) => Divider(
-                color: RgbHelper.color(rgbo: GlobalData.app.dividerColor)
+                color: RgbHelper.color(rgbo: GlobalData.app().dividerColor)
               ),
               itemCount: values.length,
               itemBuilder: (context, index) {
@@ -182,7 +182,7 @@ class ListCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
       codeBuffer.writeln(spaces(14) + "value." + title + ",");
       codeBuffer.writeln(
-          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.listTextItemColor)),");
+          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().listTextItemColor)),");
       codeBuffer.writeln(spaces(12) + ")),");
     }
     codeBuffer.writeln(spaces(10) + "),");
@@ -199,7 +199,7 @@ class ListCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(10) + "maxLines: 1,");
         codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
         codeBuffer.writeln(
-            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.listTextItemColor)),");
+            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().listTextItemColor)),");
         codeBuffer.writeln(spaces(8) + "))");
       }
       codeBuffer.writeln(spaces(12) + ": null,");

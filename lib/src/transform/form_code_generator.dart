@@ -61,12 +61,12 @@ class \${className}Form extends StatelessWidget {
       return Scaffold(
         appBar: formAction == FormAction.UpdateAction ?
                 AppBar(
-                    title: Text("Update \${id}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.formAppBarTextColor))),
-                    backgroundColor: RgbHelper.color(rgbo: GlobalData.app.formAppBarBackgroundColor),
+                    title: Text("Update \${id}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formAppBarTextColor))),
+                    backgroundColor: RgbHelper.color(rgbo: GlobalData.app().formAppBarBackgroundColor),
                   ) :
                 AppBar(
-                    title: Text("Add \${id}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.formAppBarTextColor))),
-                    backgroundColor: RgbHelper.color(rgbo: GlobalData.app.formAppBarBackgroundColor),
+                    title: Text("Add \${id}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formAppBarTextColor))),
+                    backgroundColor: RgbHelper.color(rgbo: GlobalData.app().formAppBarBackgroundColor),
                 ),
         body: BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(
@@ -98,7 +98,7 @@ const _groupFieldHeaderString = """
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                   child: Text('\${label}',
                       style: TextStyle(
-                          color: RgbHelper.color(rgbo: GlobalData.app.formGroupTitleColor), fontWeight: FontWeight.bold)),
+                          color: RgbHelper.color(rgbo: GlobalData.app().formGroupTitleColor), fontWeight: FontWeight.bold)),
                 ));
 """;
 
@@ -394,7 +394,7 @@ class RealFormCodeGenerator extends CodeGenerator {
       });
     }
     codeBuffer.writeln(spaces(8) + "children.add(RaisedButton(");
-    codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: GlobalData.app.formSubmitButtonColor),");
+    codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: GlobalData.app().formSubmitButtonColor),");
     codeBuffer.writeln(spaces(18) + "onPressed: !GlobalData.memberIsOwner() ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
         "if (state is " +
@@ -445,12 +445,12 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14 + 6) + "}");
 
     codeBuffer.writeln(spaces(18) + "},");
-    codeBuffer.writeln(spaces(18) + "child: Text('Submit', style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.formSubmitButtonTextColor))),");
+    codeBuffer.writeln(spaces(18) + "child: Text('Submit', style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formSubmitButtonTextColor))),");
     codeBuffer.writeln(spaces(16) + "));");
 
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(8) + "return Container(");
-    codeBuffer.writeln(spaces(8) + "color: RgbHelper.color(rgbo: GlobalData.app.formBackgroundColor),");
+    codeBuffer.writeln(spaces(8) + "color: RgbHelper.color(rgbo: GlobalData.app().formBackgroundColor),");
     codeBuffer.writeln(spaces(10) + "padding:");
     codeBuffer.writeln(spaces(10) +
         "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
@@ -490,7 +490,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) +
         "children.add(Container(height: 20.0));");
     codeBuffer.writeln(spaces(8) +
-        "children.add(Divider(height: 1.0, thickness: 1.0, color: RgbHelper.color(rgbo: GlobalData.app.dividerColor)));");
+        "children.add(Divider(height: 1.0, thickness: 1.0, color: RgbHelper.color(rgbo: GlobalData.app().dividerColor)));");
     return codeBuffer.toString();
   }
 
@@ -516,7 +516,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         case FormTypeField.EntryField:
           codeBuffer.writeln(_fieldStart(field));
           codeBuffer.writeln(spaces(16) + "TextFormField(");
-          codeBuffer.writeln(spaces(16) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.formFieldTextColor)),");
+          codeBuffer.writeln(spaces(16) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formFieldTextColor)),");
           if (field.fieldName == "documentID") {
             codeBuffer.writeln(spaces(18) +
                 "readOnly: (formAction == FormAction.UpdateAction),");
@@ -526,14 +526,14 @@ class RealFormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(
               spaces(18) + "controller: _" + field.fieldName + "Controller,");
           codeBuffer.writeln(spaces(18) + "decoration: InputDecoration(");
-          codeBuffer.write(spaces(20) + "enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: GlobalData.app.formFieldTextColor))),");
-          codeBuffer.write(spaces(20) + "focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: GlobalData.app.formFieldFocusColor))),");
+          codeBuffer.write(spaces(20) + "enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: GlobalData.app().formFieldTextColor))),");
+          codeBuffer.write(spaces(20) + "focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: GlobalData.app().formFieldFocusColor))),");
           codeBuffer.write(spaces(20) + "icon: Icon(Icons.");
           if (field.iconName != null)
             codeBuffer.write(field.iconName);
           else
             codeBuffer.write("text_format");
-          codeBuffer.writeln(", color: RgbHelper.color(rgbo: GlobalData.app.formFieldHeaderColor)),");
+          codeBuffer.writeln(", color: RgbHelper.color(rgbo: GlobalData.app().formFieldHeaderColor)),");
           codeBuffer.write(spaces(20) + "labelText: '");
           if (field.displayName == null)
             codeBuffer.write(field.fieldName);
@@ -572,7 +572,7 @@ class RealFormCodeGenerator extends CodeGenerator {
             codeBuffer.write(field.fieldName);
           else
             codeBuffer.write(field.displayName);
-          codeBuffer.writeln("', style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.formFieldTextColor))),");
+          codeBuffer.writeln("', style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formFieldTextColor))),");
           codeBuffer.writeln(spaces(20) +
               "value: _" +
               firstLowerCase(field.fieldName) +
@@ -604,15 +604,15 @@ class RealFormCodeGenerator extends CodeGenerator {
             codeBuffer.writeln(_fieldStart(field));
             codeBuffer.writeln(spaces(16) + "RadioListTile(");
             codeBuffer.writeln(spaces(20) + "value: $i,");
-            codeBuffer.writeln(spaces(20) + "activeColor: RgbHelper.color(rgbo: GlobalData.app.formFieldTextColor),");
+            codeBuffer.writeln(spaces(20) + "activeColor: RgbHelper.color(rgbo: GlobalData.app().formFieldTextColor),");
             codeBuffer.writeln(spaces(20) +
                 "groupValue: _" +
                 firstLowerCase(field.fieldName) +
                 "SelectedRadioTile,");
             codeBuffer
-                .writeln(spaces(20) + "title: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.formFieldTextColor))),");
+                .writeln(spaces(20) + "title: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formFieldTextColor))),");
             codeBuffer
-                .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app.formFieldTextColor))),");
+                .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formFieldTextColor))),");
             codeBuffer.writeln(spaces(20) + "onChanged: !GlobalData.memberIsOwner() ? null : (val) {");
             codeBuffer.writeln(spaces(22) +
                 "setSelection" +
