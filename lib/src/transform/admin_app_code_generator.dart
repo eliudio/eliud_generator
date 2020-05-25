@@ -132,11 +132,6 @@ const String _footerOtherWithoutAppID = """
 
 */
 const String _footerApp = """
-        .then((_) => AbstractRepositorySingleton.singleton.appRepository().get(appID))
-        .then((appModel) {
-          if (appModel != null) return AbstractRepositorySingleton.singleton.appRepository().delete(appModel);
-          return Future.value();
-        })
 """;
 
 const String _footerRun = """

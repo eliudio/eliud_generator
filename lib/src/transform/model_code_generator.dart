@@ -167,7 +167,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     }
 
     if (modelSpecifications.fields.where((field) => field.fieldName == "appId").length > 0) {
-      codeBuffer.writeln(spaces(4) +"if (appId == null) appId = GlobalData.app().documentID;");
+      codeBuffer.writeln(spaces(4) +"appId = GlobalData.app().documentID;");
     }
 
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
