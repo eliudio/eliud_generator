@@ -43,17 +43,16 @@ const String _xyzFormString = """
 class \${className}Form extends StatelessWidget {
   FormAction formAction;
   \${id}Model value;
-  bool excludeScaffold;
 
-  \${className}Form({bool excludeScaffold, Key key, @required this.formAction, @required this.value}) : super(key: key);
+  \${className}Form({Key key, @required this.formAction, @required this.value}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if ((excludeScaffold) != null && excludeScaffold) {
+    if (formAction == FormAction.ShowData) {
       return BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(
                                        \${constructorParameters}
-                                                )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
+                                                )..add(Initialise\${id}FormEvent(value: value)),
   
         child: My\${className}Form(formAction: formAction),
           );
@@ -137,6 +136,20 @@ const _xyzLookupChangedString = """
     _myFormBloc.add(Changed\${id}\${upperFieldName}(value: val));
   }
 
+""";
+
+const String _readOnlyMethodMember = """
+  bool _readOnly(\${id}FormInitialized state) {
+    return (formAction == FormAction.ShowData) || (state.value.documentID != GlobalData.member().documentID);
+  }
+  
+""";
+
+const String _readOnlyMethod = """
+  bool _readOnly(\${id}FormInitialized state) {
+    return (formAction == FormAction.ShowData) || (!GlobalData.memberIsOwner());
+  }
+  
 """;
 
 class RealFormCodeGenerator extends CodeGenerator {
@@ -393,9 +406,10 @@ class RealFormCodeGenerator extends CodeGenerator {
             modelSpecifications.fieldsForGroups(group)));
       });
     }
-    codeBuffer.writeln(spaces(8) + "children.add(RaisedButton(");
+    codeBuffer.writeln(spaces(8) + "if (formAction != FormAction.ShowData)");
+    codeBuffer.writeln(spaces(10) + "children.add(RaisedButton(");
     codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: GlobalData.app().formSubmitButtonColor),");
-    codeBuffer.writeln(spaces(18) + "onPressed: !GlobalData.memberIsOwner() ? null : () {");
+    codeBuffer.writeln(spaces(18) + "onPressed: _readOnly(state) ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
         "if (state is " +
         modelSpecifications.id +
@@ -450,7 +464,7 @@ class RealFormCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(8) + "return Container(");
-    codeBuffer.writeln(spaces(8) + "color: RgbHelper.color(rgbo: GlobalData.app().formBackgroundColor),");
+    codeBuffer.writeln(spaces(8) + "color: formAction == FormAction.ShowData ? Colors.transparent : RgbHelper.color(rgbo: GlobalData.app().formBackgroundColor),");
     codeBuffer.writeln(spaces(10) + "padding:");
     codeBuffer.writeln(spaces(10) +
         "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
@@ -458,6 +472,8 @@ class RealFormCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(spaces(12) + "child: ListView(");
     codeBuffer.writeln(spaces(14) + "padding: const EdgeInsets.all(8),");
+    codeBuffer.writeln(spaces(14) + "physics: formAction == FormAction.ShowData ? NeverScrollableScrollPhysics() : null,");
+    codeBuffer.writeln(spaces(14) + "shrinkWrap: formAction == FormAction.ShowData,");
     codeBuffer.writeln(spaces(14) + "children: children");
     codeBuffer.writeln(spaces(12) + "),");
     codeBuffer.writeln(spaces(10) + ")");
@@ -518,10 +534,14 @@ class RealFormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(16) + "TextFormField(");
           codeBuffer.writeln(spaces(16) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formFieldTextColor)),");
           if (field.fieldName == "documentID") {
-            codeBuffer.writeln(spaces(18) +
-                "readOnly: (formAction == FormAction.UpdateAction),");
+            if (modelSpecifications.id == "Member")
+              codeBuffer.writeln(spaces(18) +
+                  "readOnly: true,");
+            else
+              codeBuffer.writeln(spaces(18) +
+                  "readOnly: (formAction == FormAction.UpdateAction),");
           } else {
-            codeBuffer.writeln(spaces(18) + "readOnly: !GlobalData.memberIsOwner(),");
+            codeBuffer.writeln(spaces(18) + "readOnly: _readOnly(state),");
           }
           codeBuffer.writeln(
               spaces(18) + "controller: _" + field.fieldName + "Controller,");
@@ -695,9 +715,21 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(_xyzFormStateBuild());
     codeBuffer.writeln(_xyzChangeds());
     codeBuffer.writeln(_dispose());
+    codeBuffer.writeln(_readOnly());
     codeBuffer.writeln("}");
     codeBuffer.writeln();
     return codeBuffer.toString();
+  }
+
+  String _readOnly() {
+    if (modelSpecifications.id == "Member")
+      return process(_readOnlyMethodMember, parameters: <String, String>{
+        "\${id}": modelSpecifications.id,
+      });
+    else
+      return process(_readOnlyMethod, parameters: <String, String>{
+        "\${id}": modelSpecifications.id,
+      });
   }
 
   String _xyzOnChanged(Field field) {

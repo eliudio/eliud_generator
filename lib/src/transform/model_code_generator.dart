@@ -19,6 +19,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
+    headerBuffer.writeln("import 'package:eliud_model/core/global_data.dart';");
     headerBuffer.writeln("import 'package:eliud_model/shared/abstract_repository_singleton.dart';");
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
@@ -163,6 +164,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
     if (modelSpecifications.preToEntityCode != null) {
       codeBuffer.writeln(
           spaces(4) + modelSpecifications.preToEntityCode);
+    }
+
+    if (modelSpecifications.fields.where((field) => field.fieldName == "appId").length > 0) {
+      codeBuffer.writeln(spaces(4) +"if (appId == null) appId = GlobalData.app().documentID;");
     }
 
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.entityClassName() + "(");

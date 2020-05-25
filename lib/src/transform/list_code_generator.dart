@@ -64,7 +64,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
       } else if (state is \${id}ListLoaded) {
         final values = state.values;
         return new Scaffold(
-          floatingActionButton: !GlobalData.memberIsOwner() ? null : FloatingActionButton(
+          floatingActionButton: !GlobalData.memberIsOwner() \${allowAddItemsCondition} ? null : FloatingActionButton(
             heroTag: "\${id}FloatBtnTag",
             foregroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonForegroundColor),
             backgroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonBackgroundColor),
@@ -144,6 +144,7 @@ class ListCodeGenerator extends CodeGenerator {
     return process(_listBody, parameters: <String, String>{
       "\${id}": modelSpecifications.id,
       "\${displayOnDelete}": modelSpecifications?.displayOnDelete ?? "documentID",
+      "\${allowAddItemsCondition}" : modelSpecifications.id != "Member" ? "" : "&& false",
     });
   }
 
