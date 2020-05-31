@@ -155,7 +155,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
           } else {
             if (field.array) {
               codeBuffer
-                  .writeln("List.from(map['" + fieldName(field) + "']), ");
+                  .writeln("map['" + fieldName(field) + "'] == null ? null : " + "List.from(map['" + fieldName(field) + "']), ");
             } else {
               if (field.isDouble())
                 codeBuffer.writeln("double.tryParse(map['" + fieldName(field) + "'].toString()), ");
