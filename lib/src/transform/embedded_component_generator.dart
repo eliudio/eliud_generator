@@ -93,11 +93,19 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return theValues;
     }
     
+    Stream<List<\${id}Model>> valuesWithDetails() {
+      return theValues;
+    }
+    
     void listen(trigger) {}
     
     void flush() {}
 
     Future<List<\${id}Model>> valuesList() {
+      return Future.value(items);
+    }
+    
+    Future<List<\${id}Model>> valuesListWithDetails() {
       return Future.value(items);
     }
 """;

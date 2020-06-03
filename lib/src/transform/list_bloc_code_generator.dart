@@ -50,6 +50,8 @@ class ListBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(4) + "final currentState = state;");
     codeBuffer.writeln(spaces(4) + "if (event is Load" + modelSpecifications.id + "List) {");
     codeBuffer.writeln(spaces(6) + "yield* _mapLoad" + modelSpecifications.id + "ListToState();");
+    codeBuffer.writeln(spaces(4) + "} if (event is Load" + modelSpecifications.id + "ListWithDetails) {");
+    codeBuffer.writeln(spaces(6) + "yield* _mapLoad" + modelSpecifications.id + "ListWithDetailsToState();");
     codeBuffer.writeln(spaces(4) + "} else if (event is Add" + modelSpecifications.id + "List) {");
     codeBuffer.writeln(spaces(6) + "yield* _mapAdd" + modelSpecifications.id + "ListToState(event);");
     codeBuffer.writeln(spaces(4) + "} else if (event is Update" + modelSpecifications.id + "List) {");
@@ -68,6 +70,13 @@ class ListBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListToState() async* {");
     codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
     codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.values().listen(");
+    codeBuffer.writeln(spaces(6) + "(value) => add(" + modelSpecifications.id + "ListUpdated(value: value)),");
+    codeBuffer.writeln(spaces(4) + ");");
+    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln();
+    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListWithDetailsToState() async* {");
+    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
+    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.valuesWithDetails().listen(");
     codeBuffer.writeln(spaces(6) + "(value) => add(" + modelSpecifications.id + "ListUpdated(value: value)),");
     codeBuffer.writeln(spaces(4) + ");");
     codeBuffer.writeln(spaces(2) + "}");

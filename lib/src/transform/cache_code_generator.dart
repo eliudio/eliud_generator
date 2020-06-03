@@ -54,17 +54,28 @@ const String _code = """
     });
   }
 
+  @override
   Stream<List<\${id}Model>> values() {
     return reference.values();
   }
 
-  void flush() {
-    fullCache.clear();
+  @override
+  Stream<List<\${id}Model>> valuesWithDetails() {
+    return reference.valuesWithDetails();
   }
-  
+
   @override
   Future<List<\${id}Model>> valuesList() async {
     return await reference.valuesList();
+  }
+  
+  @override
+  Future<List<\${id}Model>> valuesListWithDetails() async {
+    return await reference.valuesListWithDetails();
+  }
+
+  void flush() {
+    fullCache.clear();
   }
   
 """;

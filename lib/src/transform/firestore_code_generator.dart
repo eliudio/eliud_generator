@@ -49,10 +49,24 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
+  Stream<List<\${id}Model>> valuesWithDetails() {
+    return \${id}Collection.\${where}snapshots().asyncMap((snapshot) {
+      return Future.wait(snapshot.documents
+          .map((doc) => _populateDocPlus(doc)).toList());
+    });
+  }
+
   Future<List<\${id}Model>> valuesList() async {
     return await \${id}Collection.\${where}getDocuments().then((value) {
       var list = value.documents;
       return list.map((doc) => _populateDoc(doc)).toList();
+    });
+  }
+
+  Future<List<\${id}Model>> valuesListWithDetails() async {
+    return await \${id}Collection.\${where}getDocuments().then((value) {
+      var list = value.documents;
+      return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
     });
   }
 

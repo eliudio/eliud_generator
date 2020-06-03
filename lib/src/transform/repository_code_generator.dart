@@ -14,9 +14,11 @@ abstract class \${id}Repository {
   Future<\${id}Model> get(String id);
   Future<\${id}Model> update(\${id}Model value);
   Stream<List<\${id}Model>> values();
+  Stream<List<\${id}Model>> valuesWithDetails();
   \${listen}
   void flush();
   Future<List<\${id}Model>> valuesList();
+  Future<List<\${id}Model>> valuesListWithDetails();
 """;
 
 const String _codeWithArgNoAppID = """

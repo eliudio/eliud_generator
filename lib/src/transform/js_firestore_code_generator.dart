@@ -53,11 +53,24 @@ class \${id}JsFirestore implements \${id}Repository {
         .map((data) => data.docs.map((doc) => _populateDoc(doc)).toList());
   }
 
+  Stream<List<\${id}Model>> valuesWithDetails() {
+    return \${lid}Collection.\${where}onSnapshot
+        .asyncMap((data) => Future.wait(data.docs.map((doc) => _populateDocPlus(doc)).toList()));
+  }
+
   @override
   Future<List<\${id}Model>> valuesList() {
     return \${lid}Collection.\${where}get().then((value) {
       var list = value.docs;
       return list.map((doc) => _populateDoc(doc)).toList();
+    });
+  }
+
+  @override
+  Future<List<\${id}Model>> valuesListWithDetails() {
+    return \${lid}Collection.\${where}get().then((value) {
+      var list = value.docs;
+      return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
     });
   }
 

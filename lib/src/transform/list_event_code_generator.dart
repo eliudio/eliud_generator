@@ -49,6 +49,7 @@ class ListEventCodeGenerator extends CodeGenerator {
     codeBuffer.writeln();
 
     codeBuffer.writeln("class Load" + modelSpecifications.id + "List extends "+ modelSpecifications.id + "ListEvent {}");
+    codeBuffer.writeln("class Load" + modelSpecifications.id + "ListWithDetails extends "+ modelSpecifications.id + "ListEvent {}");
     codeBuffer.writeln();
 
     codeBuffer.writeln(_generateClass("Add" + modelSpecifications.id + "List", false));
