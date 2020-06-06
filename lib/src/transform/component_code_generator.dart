@@ -28,6 +28,7 @@ class ComponentCodeGenerator extends CodeGenerator {
     String idTag = firstLowerCase(modelSpecifications.id) + "ID";
     String className = modelSpecifications.componentClassName();
     codeBuffer.writeln("abstract class " + className + " extends StatelessWidget {");
+    codeBuffer.writeln(spaces(2) + "static String componentName = \"" + firstLowerCase(modelSpecifications.id) + "s\";");
     codeBuffer.writeln(spaces(2) + "final String " + idTag + ";");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + className + "({this." + idTag + "});");
