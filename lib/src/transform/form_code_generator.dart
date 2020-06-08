@@ -464,7 +464,8 @@ class RealFormCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(8) + "return Container(");
-    codeBuffer.writeln(spaces(8) + "color: formAction == FormAction.ShowData ? Colors.transparent : RgbHelper.color(rgbo: GlobalData.app().formBackgroundColor),");
+//    codeBuffer.writeln(spaces(8) + "color: formAction == FormAction.ShowData ? Colors.transparent : RgbHelper.color(rgbo: GlobalData.app().formBackgroundColor),");
+    codeBuffer.writeln(spaces(8) + "decoration: formAction == FormAction.ShowData ? Colors.transparent : BoxDecorationHelper.boxDecoration(GlobalData.app().formBackground),");
     codeBuffer.writeln(spaces(10) + "padding:");
     codeBuffer.writeln(spaces(10) +
         "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
