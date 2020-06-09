@@ -77,7 +77,7 @@ const String _page = """
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
-        admin: true,
+        conditional: PageCondition.AdminOnly,
         appId: appID,
         documentID: "\${lowid}spage",
         title: "\${id}s",
