@@ -87,9 +87,16 @@ const String _deleteAll = """
 """;
 
 const String _listen = """
-  void listen(\${id}ModelTrigger trigger) {
-    reference.listen(trigger);
+  @override
+  StreamSubscription<List<\${id}Model>> listen(trigger) {
+    return reference.listen(trigger);
   }
+
+  @override
+  StreamSubscription<List<\${id}Model>> listenWithDetails(trigger) {
+    return reference.listenWithDetails(trigger);
+  }
+
 """;
 
 const String _refreshRelationsHeader = """

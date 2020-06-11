@@ -97,7 +97,15 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return theValues;
     }
     
-    void listen(trigger) {}
+    @override
+    StreamSubscription<List<\${id}Model>> listen(trigger) {
+      return theValues.listen((theList) => trigger(theList));
+    }
+  
+    @override
+    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger) {
+      return theValues.listen((theList) => trigger(theList));
+    }
     
     void flush() {}
 

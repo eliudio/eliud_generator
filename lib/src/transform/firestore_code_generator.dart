@@ -36,11 +36,32 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
-  void listen(\${id}ModelTrigger trigger) {
-    \${id}Collection.snapshots().listen((event) {
-      trigger();
+  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger) {
+    Stream<List<\${id}Model>> stream = \${id}Collection.snapshots()
+        .map((data) {
+      Iterable<\${id}Model> \${lid}s  = data.documents.map((doc) {
+        \${id}Model value = _populateDoc(doc);
+        return value;
+      }).toList();
+      return \${lid}s;
+    });
+
+    return stream.listen((listOf\${id}Models) {
+      trigger(listOf\${id}Models);
     });
   }
+
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger) {
+    Stream<List<\${id}Model>> stream = \${id}Collection.snapshots()
+        .asyncMap((data) async {
+      return await Future.wait(data.documents.map((doc) =>  _populateDocPlus(doc)).toList());
+    });
+
+    return stream.listen((listOf\${id}Models) {
+      trigger(listOf\${id}Models);
+    });
+  }
+
 
   Stream<List<\${id}Model>> values() {
     return \${id}Collection.\${where}snapshots().map((snapshot) {

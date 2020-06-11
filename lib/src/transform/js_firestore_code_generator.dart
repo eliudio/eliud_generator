@@ -42,9 +42,31 @@ class \${id}JsFirestore implements \${id}Repository {
     });
   }
 
-  void listen(\${id}ModelTrigger trigger) {
-    \${lid}Collection.onSnapshot.listen((event) {
-      trigger();
+  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger) {
+    // If we use \${lid}Collection here, then the second subscription fails
+    Stream<List<\${id}Model>> stream = getCollection().\${where}onSnapshot
+        .map((data) {
+      Iterable<\${id}Model> \${lid}s  = data.docs.map((doc) {
+        \${id}Model value = _populateDoc(doc);
+        return value;
+      }).toList();
+      return \${lid}s;
+    });
+
+    return stream.listen((listOf\${id}Models) {
+      trigger(listOf\${id}Models);
+    });
+  }
+
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger) {
+    // If we use \${lid}Collection here, then the second subscription fails
+    Stream<List<\${id}Model>> stream = getCollection().\${where}onSnapshot
+        .asyncMap((data) async {
+      return await Future.wait(data.docs.map((doc) =>  _populateDocPlus(doc)).toList());
+    });
+
+    return stream.listen((listOf\${id}Models) {
+      trigger(listOf\${id}Models);
     });
   }
 
@@ -83,7 +105,10 @@ class \${id}JsFirestore implements \${id}Repository {
   }
 """;
 
+
 const String _codeFooterWithoutAppId = """
+  CollectionReference getCollection() => firestore().collection('\${COLLECTION_ID}');
+
   \${id}JsFirestore();
 
   final CollectionReference \${lid}Collection = firestore().collection('\${COLLECTION_ID}');
@@ -91,9 +116,12 @@ const String _codeFooterWithoutAppId = """
 """;
 
 const String _codeFooter = """
-  \${id}JsFirestore(this.appID) : \${lid}Collection = firestore().collection('\${COLLECTION_ID}-\${appID}');
+  CollectionReference getCollection() => firestore().collection('\${COLLECTION_ID}-\$appID');
 
   final String appID;
+  
+  \${id}JsFirestore(this.appID) : \${lid}Collection = firestore().collection('\${COLLECTION_ID}-\$appID');
+
   final CollectionReference \${lid}Collection;
 }
 """;
