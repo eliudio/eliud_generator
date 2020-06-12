@@ -61,11 +61,13 @@ class \${className}Form extends StatelessWidget {
         appBar: formAction == FormAction.UpdateAction ?
                 AppBar(
                     title: Text("Update \${id}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formAppBarTextColor))),
-                    backgroundColor: RgbHelper.color(rgbo: GlobalData.app().formAppBarBackgroundColor),
+                    flexibleSpace: Container(
+                        decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().formAppBarBackground)),
                   ) :
                 AppBar(
                     title: Text("Add \${id}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formAppBarTextColor))),
-                    backgroundColor: RgbHelper.color(rgbo: GlobalData.app().formAppBarBackgroundColor),
+                    flexibleSpace: Container(
+                        decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().formAppBarBackground)),
                 ),
         body: BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(

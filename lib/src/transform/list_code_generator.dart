@@ -80,43 +80,46 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
               );
             },
           ),
-          body: Container(color: RgbHelper.color(rgbo: GlobalData.app().listBackgroundColor), child: ListView.separated(
-              separatorBuilder: (context, index) => Divider(
-                color: RgbHelper.color(rgbo: GlobalData.app().dividerColor)
+          body: Container(
+              decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().listBackground),
+              child: ListView.separated(
+                separatorBuilder: (context, index) => Divider(
+                  color: RgbHelper.color(rgbo: GlobalData.app().dividerColor)
+                ),
+                itemCount: values.length,
+                itemBuilder: (context, index) {
+                  final value = values[index];
+                  return \${id}ListItem(
+                    value: value,
+                    onDismissed: (direction) {
+                      BlocProvider.of<\${id}ListBloc>(context)
+                          .add(Delete\${id}List(value: value));
+                      Scaffold.of(context).showSnackBar(DeleteSnackBar(
+                        message: "\${id} " + value.\${displayOnDelete},
+                        onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
+                            .add(Add\${id}List(value: value)),
+                      ));
+                    },
+                    onTap: () async {
+                      final removedItem = await Navigator.of(context).push(
+                        pageRouteBuilder(page: BlocProvider.value(
+                              value: BlocProvider.of<\${id}ListBloc>(context),
+                              child: \${id}Form(
+                                  value: value,
+                                  formAction: FormAction.UpdateAction))));
+                      if (removedItem != null) {
+                        Scaffold.of(context).showSnackBar(
+                          DeleteSnackBar(
+                        message: "\${id} " + value.\${displayOnDelete},
+                            onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
+                                .add(Add\${id}List(value: value)),
+                          ),
+                        );
+                      }
+                    },
+                  );
+                }
               ),
-              itemCount: values.length,
-              itemBuilder: (context, index) {
-                final value = values[index];
-                return \${id}ListItem(
-                  value: value,
-                  onDismissed: (direction) {
-                    BlocProvider.of<\${id}ListBloc>(context)
-                        .add(Delete\${id}List(value: value));
-                    Scaffold.of(context).showSnackBar(DeleteSnackBar(
-                      message: "\${id} " + value.\${displayOnDelete},
-                      onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
-                          .add(Add\${id}List(value: value)),
-                    ));
-                  },
-                  onTap: () async {
-                    final removedItem = await Navigator.of(context).push(
-                      pageRouteBuilder(page: BlocProvider.value(
-                            value: BlocProvider.of<\${id}ListBloc>(context),
-                            child: \${id}Form(
-                                value: value,
-                                formAction: FormAction.UpdateAction))));
-                    if (removedItem != null) {
-                      Scaffold.of(context).showSnackBar(
-                        DeleteSnackBar(
-                      message: "\${id} " + value.\${displayOnDelete},
-                          onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
-                              .add(Add\${id}List(value: value)),
-                        ),
-                      );
-                    }
-                  },
-                );
-              }),
         ));
       } else {
         return Center(
