@@ -8,6 +8,8 @@ import 'code_generator.dart';
 const String _imports = """
 import 'package:eliud_model/core/global_data.dart';
 import 'package:eliud_model/shared/abstract_repository_singleton.dart';
+import 'package:eliud_model/shared/action_model.dart';
+import 'package:eliud_model/core/navigate/router.dart';
 import 'package:eliud_model/tools/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,8 +45,9 @@ const String _xyzFormString = """
 class \${className}Form extends StatelessWidget {
   FormAction formAction;
   \${id}Model value;
+  ActionModel submitAction;
 
-  \${className}Form({Key key, @required this.formAction, @required this.value}) : super(key: key);
+  \${className}Form({Key key, @required this.formAction, @required this.value, this.submitAction}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,18 +57,18 @@ class \${className}Form extends StatelessWidget {
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormEvent(value: value)),
   
-        child: My\${className}Form(formAction: formAction),
+        child: My\${className}Form(submitAction: submitAction, formAction: formAction),
           );
     } else {
       return Scaffold(
         appBar: formAction == FormAction.UpdateAction ?
                 AppBar(
-                    title: Text("Update \${id}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formAppBarTextColor))),
+                    title: Text("\${updateTitle}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formAppBarTextColor))),
                     flexibleSpace: Container(
                         decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().formAppBarBackground)),
                   ) :
                 AppBar(
-                    title: Text("Add \${id}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formAppBarTextColor))),
+                    title: Text("\${addTitle}", style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formAppBarTextColor))),
                     flexibleSpace: Container(
                         decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().formAppBarBackground)),
                 ),
@@ -74,7 +77,7 @@ class \${className}Form extends StatelessWidget {
                                        \${constructorParameters}
                                                 )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
   
-        child: My\${className}Form(formAction: formAction),
+        child: My\${className}Form(submitAction: submitAction, formAction: formAction),
           ));
     }
   }
@@ -85,8 +88,9 @@ class \${className}Form extends StatelessWidget {
 const String _myXyzFormString = """
 class My\${className}Form extends StatefulWidget {
   final FormAction formAction;
+  final ActionModel submitAction;
 
-  My\${className}Form({this.formAction});
+  My\${className}Form({this.formAction, this.submitAction});
 
   _My\${className}FormState createState() => _My\${className}FormState(this.formAction);
 }
@@ -156,8 +160,10 @@ const String _readOnlyMethod = """
 
 class RealFormCodeGenerator extends CodeGenerator {
   final String className;
+  final String title;
+  final String buttonLabel;
 
-  RealFormCodeGenerator(this.className, {ModelSpecification modelSpecifications})
+  RealFormCodeGenerator(this.className, { this.title, this.buttonLabel, ModelSpecification modelSpecifications })
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -181,6 +187,8 @@ class RealFormCodeGenerator extends CodeGenerator {
       "\${id}": modelSpecifications.id,
       "\${lid}": firstLowerCase(modelSpecifications.id),
       "\${constructorParameters}": constructorParameters.toString(),
+      "\${updateTitle}": title == null ? "Update " + modelSpecifications.id : title,
+      "\${addTitle}": title == null ? "Add " + modelSpecifications.id : title,
     });
   }
 
@@ -456,12 +464,19 @@ class RealFormCodeGenerator extends CodeGenerator {
     });
     codeBuffer.writeln(spaces(14 + 12) + ")));");
     codeBuffer.writeln(spaces(14 + 8) + "}");
-    codeBuffer.writeln(spaces(14 + 8) + "Navigator.pop(context);");
+
+    codeBuffer.writeln(spaces(14 + 8) + "if (widget.submitAction != null) {");
+    codeBuffer.writeln(spaces(14 + 10) + "Router.navigateTo(context, widget.submitAction);");
+    codeBuffer.writeln(spaces(14 + 8) + "} else {");
+    codeBuffer.writeln(spaces(14 + 10) + "Navigator.pop(context);");
+    codeBuffer.writeln(spaces(14 + 8) + "}");
+
     codeBuffer.writeln(spaces(14 + 8) + "return true;");
     codeBuffer.writeln(spaces(14 + 6) + "}");
 
     codeBuffer.writeln(spaces(18) + "},");
-    codeBuffer.writeln(spaces(18) + "child: Text('Submit', style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formSubmitButtonTextColor))),");
+    String label = buttonLabel == null ? 'Submit' : buttonLabel;
+    codeBuffer.writeln(spaces(18) + "child: Text('" + label + "', style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formSubmitButtonTextColor))),");
     codeBuffer.writeln(spaces(16) + "));");
 
     codeBuffer.writeln();
@@ -888,7 +903,10 @@ class FormCodeGenerator extends CodeGenerator {
               fields: fields, groups: groups);
           codeBuffer.writeln(RealFormCodeGenerator(
               modelSpecifications.id + view.name,
-              modelSpecifications: newModelSpec).body());
+              modelSpecifications: newModelSpec,
+              title: view.title,
+              buttonLabel: view.buttonLabel,
+          ).body());
         } else {
           print("view " + view.name + " has no fields matching the specifications");
         }

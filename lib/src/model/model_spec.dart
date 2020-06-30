@@ -15,11 +15,13 @@ class ModelSpecificationPlus {
 }
 
 class View {
+  final String title;
+  final String buttonLabel;
   final String name;
   final List<String> fields;
   final List<String> groups;
 
-  View({this.name, this.fields, this.groups});
+  View({this.name, this.fields, this.groups, this.title, this.buttonLabel});
 
   Map<String, Object> toJson() {
     return {
@@ -34,6 +36,8 @@ class View {
       name: json["name"] as String,
       fields: jsonFields != null ? List.from(jsonFields) : null,
       groups: jsonGroups != null ? List.from(jsonGroups) : null,
+      title: json["title"] as String,
+      buttonLabel: json["buttonLabel"] as String,
     );
   }
 }
