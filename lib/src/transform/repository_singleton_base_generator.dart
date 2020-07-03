@@ -42,7 +42,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
 
     codeBuffer.writeln("  ${prefix}RepositorySingleton(String appID) {");
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
         codeBuffer.write(spaces(4) + "_" + firstLowerCase(spec.modelSpecification.id) + "Repository = ");
         String init;
         if (spec.modelSpecification.isAppModel) {
@@ -61,7 +61,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("  }");
 
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
         codeBuffer.writeln(spaces(2) + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository() => _" + firstLowerCase(spec.modelSpecification.id) + "Repository;");
         codeBuffer.writeln(spaces(2) + spec.modelSpecification.id + "Repository _" + firstLowerCase(spec.modelSpecification.id) + "Repository;");
       }

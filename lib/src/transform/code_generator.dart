@@ -34,7 +34,7 @@ abstract class CodeGenerator extends CodeGeneratorBase {
   bool hasArray() {
     bool returnMe = false;
     modelSpecifications.fields.forEach((field) {
-      if (field.array) returnMe = true;
+      if (field.isArray()) returnMe = true;
     });
     return returnMe;
   }

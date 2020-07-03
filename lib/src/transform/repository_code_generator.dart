@@ -21,6 +21,11 @@ abstract class \${id}Repository {
   Future<List<\${id}Model>> valuesListWithDetails();
 """;
 
+const String _collectionCode = """
+    \${collectionFieldType}Repository \${lCollectionFieldType}Repository(String documentID);
+  
+""";
+
 const String _codeWithArgNoAppID = """
   Future<void> deleteAll();
 }
@@ -39,6 +44,11 @@ class RepositoryCodeGenerator extends CodeGenerator {
         resolveImport(importThis: modelSpecifications.modelFileName()) +
         "';");
     headerBuffer.writeln();
+    modelSpecifications.fields.forEach((field) {
+      if (field.arrayType == ArrayType.CollectionArrayType) {
+        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_repository.dart") + "';");
+      }
+    });
     return headerBuffer.toString();
   }
 
@@ -63,6 +73,16 @@ class RepositoryCodeGenerator extends CodeGenerator {
       '\${typeDef}': typeDef
     };
     codeBuffer.writeln(process(_code, parameters: parameters));
+
+    modelSpecifications.fields.forEach((field) {
+      if (field.arrayType == ArrayType.CollectionArrayType) {
+        codeBuffer.writeln(process(_collectionCode,
+            parameters: <String, String>{
+              '\${collectionFieldType}': field.fieldType,
+              '\${lCollectionFieldType}': firstLowerCase(field.fieldType)
+            }));
+      }
+    });
 
     codeBuffer.writeln(process(_codeWithArgNoAppID, parameters: parameters));
 

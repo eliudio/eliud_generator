@@ -102,11 +102,26 @@ class \${id}Firestore implements \${id}Repository {
 
 """;
 
+const String _collectionCode = """
+  \${collectionFieldType}Repository \${lCollectionFieldType}Repository(String documentID) {
+    CollectionReference reference = \${id}Collection.document(documentID).collection("\${collectionFieldType}");
+    return \${collectionFieldType}Firestore(reference);
+  }
+  
+""";
+
 const String _footerWithoutAppID = """
   \${id}Firestore();
 
   final CollectionReference \${id}Collection = Firestore.instance.collection('\${COLLECTION_ID}');
 
+}
+""";
+
+const String _footerWithoutCollectionParameter = """
+  \${id}Firestore(this.\${id}Collection);
+
+  final CollectionReference \${id}Collection;
 }
 """;
 
@@ -134,6 +149,12 @@ class FirestoreCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.entityFileName()) + "';");
     headerBuffer.writeln();
+    modelSpecifications.fields.forEach((field) {
+      if (field.arrayType == ArrayType.CollectionArrayType) {
+        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_repository.dart") + "';");
+        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_firestore.dart") + "';");
+      }
+    });
 
     return headerBuffer.toString();
   }
@@ -152,10 +173,26 @@ class FirestoreCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
 
     headerBuffer.writeln(process(_code, parameters: parameters));
-    if (modelSpecifications.isAppModel)
+
+    modelSpecifications.fields.forEach((field) {
+      if (field.arrayType == ArrayType.CollectionArrayType) {
+        headerBuffer.writeln(process(_collectionCode,
+            parameters: <String, String>{
+              '\${collectionFieldType}': field.fieldType,
+              '\${lCollectionFieldType}': firstLowerCase(field.fieldType),
+              '\${id}': modelSpecifications.id,
+              '\${lid}': firstLowerCase(modelSpecifications.id),
+            }));
+      }
+    });
+
+    if (modelSpecifications.generate.isDocumentCollection)
+      headerBuffer.writeln(process(_footerWithoutCollectionParameter, parameters: parameters));
+    else if (modelSpecifications.isAppModel)
       headerBuffer.writeln(process(_footer, parameters: parameters));
     else
       headerBuffer.writeln(process(_footerWithoutAppID, parameters: parameters));
+
 
     return headerBuffer.toString();
   }

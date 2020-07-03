@@ -14,6 +14,7 @@ class ListEventCodeBuilder extends CodeBuilder {
 
   @override
   CodeGenerator generator(String specifications) {
+    print("ListEventCodeBuilder");
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateList) {
       ListEventCodeGenerator eventCodeGenerator = ListEventCodeGenerator(

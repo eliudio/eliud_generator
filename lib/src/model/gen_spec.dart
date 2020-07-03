@@ -17,11 +17,12 @@ class GenerateSpecification {
   final bool generateInternalComponent; // generate an administrative component
   final bool generateEmbeddedComponent; // is this an embedded internal component?
   final bool isExtension;               // is this an extension, is this a component that can be added to a page
+  final bool isDocumentCollection;      // is this a collection within a document, or is this a collection that stands on it's own, e.g. StripeCustomer (false) has Payments (true)
 
   GenerateSpecification({ this.generateComponent, this.generateRepository, this.generateCache,
     this.generateFirestoreRepository, this.generateModel, this.generateEntity,
     this.generateForm, this.generateList, this.generateDropDownButton, this.generateInternalComponent,
-    this.generateEmbeddedComponent, this.isExtension
+    this.generateEmbeddedComponent, this.isExtension, this.isDocumentCollection
   });
 
   Map<String, Object> toJson() {
@@ -38,6 +39,7 @@ class GenerateSpecification {
       "generateInternalComponent": generateInternalComponent,
       "generateEmbeddedComponent": generateEmbeddedComponent,
       "isExtension": isExtension,
+      "isDocumentCollection": isDocumentCollection,
     };
   }
 
@@ -49,7 +51,7 @@ class GenerateSpecification {
 
   @override
   List<Object> get props => [generateComponent, generateRepository, generateCache, generateFirestoreRepository, generateModel,
-    generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension];
+    generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension, isDocumentCollection];
 
   @override
   String toString() {
@@ -70,6 +72,7 @@ class GenerateSpecification {
       generateInternalComponent: json["generateInternalComponent"] as bool ?? false,
       generateEmbeddedComponent: json["generateEmbeddedComponent"] as bool ?? false,
       isExtension: json["isExtension"] as bool ?? false,
+      isDocumentCollection: json["isDocumentCollection"] as bool ?? false
     );
   }
 

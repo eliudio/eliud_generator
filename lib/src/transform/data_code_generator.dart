@@ -8,19 +8,21 @@ abstract class DataCodeGenerator extends CodeGenerator {
 
   String fieldName(Field field);
 
-  String getConstructor({bool removeDocumentID, String name, bool terminate}) {
+  String getConstructor({bool removeDocumentID, String name, bool terminate, bool excludeCollection}) {
     StringBuffer codeBuffer = StringBuffer();
     // Constructor
     codeBuffer.write(spaces(2) + name + "({");
     modelSpecifications.fields.forEach((field) {
-      if (field.fieldName == "documentID") {
-        if (!removeDocumentID) {
+      if (!(excludeCollection != null && excludeCollection && field.arrayType == ArrayType.CollectionArrayType)) {
+        if (field.fieldName == "documentID") {
+          if (!removeDocumentID) {
+            codeBuffer.write(
+                "this." + fieldName(field) + ", ");
+          }
+        } else {
           codeBuffer.write(
               "this." + fieldName(field) + ", ");
         }
-      } else {
-        codeBuffer.write(
-            "this." + fieldName(field) + ", ");
       }
     });
     codeBuffer.write("})");
@@ -31,30 +33,37 @@ abstract class DataCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String toStringCode(bool removeDocumentID, String name) {
+  String toStringCode(bool removeDocumentID, String name, { bool excludeCollection } ) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if (field.array) {
-        codeBuffer.writeln(spaces(4) + "String " + fieldName(field) + "Csv = (" + fieldName(field) + " == null) ? '' : " + fieldName(field) + ".join(', ');");
-        extraLine = true;
+      if (!(excludeCollection != null && excludeCollection && field.arrayType == ArrayType.CollectionArrayType)) {
+        if (field.isArray()) {
+          codeBuffer.writeln(
+              spaces(4) + "String " + fieldName(field) + "Csv = (" +
+                  fieldName(field) + " == null) ? '' : " + fieldName(field) +
+                  ".join(', ');");
+          extraLine = true;
+        }
       }
     });
     if (extraLine) codeBuffer.writeln();
     codeBuffer.write(spaces(4) + "return '" + name + "{");
     modelSpecifications.fields.forEach((field) {
-      if (!((removeDocumentID) && (field.fieldName == "documentID"))) {
-        codeBuffer.write(fieldName(field) + ": ");
-        if (field.array) {
-          codeBuffer.write(
-              field.fieldType + "[] { \$" + fieldName(field) + "Csv }");
-        } else {
-          codeBuffer.write("\$" + fieldName(field));
-        }
-        if (modelSpecifications.fields.last != field) {
-          codeBuffer.write(", ");
+      if (!(excludeCollection != null && excludeCollection && field.arrayType == ArrayType.CollectionArrayType)) {
+        if (!((removeDocumentID) && (field.fieldName == "documentID"))) {
+          codeBuffer.write(fieldName(field) + ": ");
+          if (field.isArray()) {
+            codeBuffer.write(
+                field.fieldType + "[] { \$" + fieldName(field) + "Csv }");
+          } else {
+            codeBuffer.write("\$" + fieldName(field));
+          }
+          if (modelSpecifications.fields.last != field) {
+            codeBuffer.write(", ");
+          }
         }
       }
     });

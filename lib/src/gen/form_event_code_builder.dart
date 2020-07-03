@@ -14,6 +14,7 @@ class FormEventCodeBuilder extends CodeBuilder {
 
   @override
   CodeGenerator generator(String specifications) {
+    print("FormEventCodeBuilder");
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateForm) {
       FormEventCodeGenerator eventCodeGenerator = FormEventCodeGenerator(

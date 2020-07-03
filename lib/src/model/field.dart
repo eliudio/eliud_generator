@@ -4,6 +4,12 @@ enum FormTypeField {
   EntryField, CheckBox, Selection, Lookup, List, Unsupported
 }
 
+enum ArrayType {
+  ListArrayType,        // ListArrayType is an embedded array []
+  CollectionArrayType,  // CollectionArrayType is a list which is actually a firestore sub collection of the document
+  NoArray
+}
+
 class Field extends Equatable {
   final String fieldName;
   final String displayName;
@@ -11,7 +17,7 @@ class Field extends Equatable {
   final String fieldValidation;
   final String enumName;
   final List<String> enumValues;
-  final bool array;
+  final ArrayType arrayType;
   final bool map;
   final bool association;
   final String remark;
@@ -23,7 +29,7 @@ class Field extends Equatable {
   final bool optional;  // is optional?
   final String conditional; // field is visible in form when this condition is true
 
-  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.array = false, this.map = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden, this.bespokeFormField, this.optional, this.conditional });
+  const Field({this.fieldName, this.displayName, this.fieldType, this.fieldValidation, this.arrayType = ArrayType.NoArray, this.map = false, this.association = false, this.enumName, this.enumValues, this.remark, this.group, this.defaultValue, this.iconName, this.hidden, this.bespokeFormField, this.optional, this.conditional });
 
   Map<String, Object> toJson() {
     return {
@@ -33,7 +39,7 @@ class Field extends Equatable {
       "fieldValidation": fieldValidation,
       "enumName": enumName,
       "enumValues": enumValues,
-      "array": array,
+      "arrayType": arrayType,
       "map": map,
       "association": association,
       "remark": remark,
@@ -48,15 +54,22 @@ class Field extends Equatable {
   }
 
   @override
-  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, array, map, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden, bespokeFormField, optional, conditional ];
+  List<Object> get props => [fieldName, displayName, fieldType, fieldValidation, arrayType, map, association, enumName, enumValues, remark, group, defaultValue, iconName, hidden, bespokeFormField, optional, conditional ];
 
   @override
   String toString() {
-    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, array: $array, map: $map, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName, hidden: $hidden, bespokeFormField: $bespokeFormField, optional: $optional, conditional: $conditional }';
+    return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, arrayType: $arrayType, map: $map, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName, hidden: $hidden, bespokeFormField: $bespokeFormField, optional: $optional, conditional: $conditional }';
   }
 
   static Field fromJson(Map<String, Object> json) {
-    bool array = json["array"] as bool ?? false;
+    String arrayTypeS = json["arrayType"] as String;
+    ArrayType arrayType = ArrayType.NoArray;
+    if (arrayTypeS != null) {
+      if (arrayTypeS.toLowerCase() == "array")
+        arrayType = ArrayType.ListArrayType;
+      if (arrayTypeS.toLowerCase() == "collection")
+        arrayType = ArrayType.CollectionArrayType;
+    }
     bool map = json["map"] as bool ?? false;
     bool association = json["association"] as bool ?? false;
     bool hidden = json["hidden"] as bool ?? false;
@@ -76,7 +89,7 @@ class Field extends Equatable {
       fieldValidation: json["fieldValidation"] as String,
       enumName: json["enumName"] as String,
       enumValues: myList,
-      array:  array,
+      arrayType:  arrayType,
       map: map,
       association: association,
       remark: json["remark"] as String,
@@ -115,7 +128,7 @@ class Field extends Equatable {
   }
 
   String dataType(String suffix) {
-    if (array) {
+    if (arrayType != ArrayType.NoArray) {
       if (isNativeType()) return "List<" + fieldType + ">";
       return "List<" + fieldType + suffix + ">";
     } else {
@@ -139,9 +152,11 @@ class Field extends Equatable {
     return true;
   }
 
+  bool isArray() => (arrayType != ArrayType.NoArray);
+
   String dartModelType() {
     if (isEnum()) {
-      if (array)
+      if (isArray())
         return "List<" + enumName + ">";
       else
         if (map)
@@ -155,7 +170,7 @@ class Field extends Equatable {
 
   String dartEntityType() {
     if (isEnum()) {
-      if (array)
+    if (isArray())
         return "List<int>";
       else
         if (map) {
@@ -181,7 +196,7 @@ class Field extends Equatable {
       // todo!
       return FormTypeField.Unsupported;
     } else {
-      if (array) {
+    if (isArray()) {
         if (!association) return FormTypeField.List;
       } else {
         if (association) return FormTypeField.Lookup;

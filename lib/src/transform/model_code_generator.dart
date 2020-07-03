@@ -143,7 +143,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(10) + "other is " + modelSpecifications.modelClassName() + " &&");
     codeBuffer.writeln(spaces(10) + "runtimeType == other.runtimeType && ");
     modelSpecifications.fields.forEach((field) {
-      if (field.array) {
+      if (field.isArray()) {
         codeBuffer.write(
             spaces(10) + "ListEquality().equals(" + field.fieldName + ", other." + field.fieldName + ")");
       } else {
@@ -172,32 +172,39 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      if (field.fieldName != "documentID") {
-        codeBuffer.write(spaces(10) + field.fieldName);
-        if (field.association) codeBuffer.write("Id");
-        codeBuffer.write(
-            ": (" + field.fieldName + " != null) ? " + field.fieldName);
-        if (field.isEnum()) {
-          if (field.isMap()) {
-            codeBuffer.write(".map((key, value) => MapEntry(key, value.index))");
-          } else {
-            codeBuffer.write(".index");
-          }
-        } else if (field.association) {
-          codeBuffer.write(".documentID");
-        } else {
-          if (!field.isNativeType()) {
-            if (field.array) {
-              codeBuffer.writeln();
-              codeBuffer.writeln(
-                  spaces(12) + ".map((item) => item.toEntity())");
-              codeBuffer.write(spaces(12) + ".toList()");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if (field.fieldName != "documentID") {
+          codeBuffer.write(spaces(10) + field.fieldName);
+          if (field.association) codeBuffer.write("Id");
+          codeBuffer.write(
+              ": (" + field.fieldName + " != null) ? " + field.fieldName);
+          if (field.isEnum()) {
+            if (field.isMap()) {
+              codeBuffer.write(
+                  ".map((key, value) => MapEntry(key, value.index))");
             } else {
-              codeBuffer.write(".toEntity()");
+              codeBuffer.write(".index");
+            }
+          } else if (field.association) {
+            codeBuffer.write(".documentID");
+          } else {
+            if (!field.isNativeType()) {
+              if (field.isArray()) {
+                if (field.arrayType != ArrayType.CollectionArrayType) {
+                  codeBuffer.writeln();
+                  codeBuffer.writeln(
+                      spaces(12) + ".map((item) => item.toEntity())");
+                  codeBuffer.write(spaces(12) + ".toList()");
+                } else {
+                  codeBuffer.write(spaces(12) + "what to do here?");
+                }
+              } else {
+                codeBuffer.write(".toEntity()");
+              }
             }
           }
+          codeBuffer.writeln(" : null, ");
         }
-        codeBuffer.writeln(" : null, ");
       }
     });
     codeBuffer.writeln(spaces(4) + ");");
@@ -215,38 +222,42 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      if (!field.association) {
-        codeBuffer.write(spaces(10) + field.fieldName + ": ");
-        if (field.isEnum()) {
-          if (field.isMap()) {
-            codeBuffer.write(
-                "entity." + field.fieldName + ".map((key, value) => MapEntry(key, to" + field.enumName + "(value)))");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if (!field.association) {
+          codeBuffer.write(spaces(10) + field.fieldName + ": ");
+          if (field.isEnum()) {
+            if (field.isMap()) {
+              codeBuffer.write(
+                  "entity." + field.fieldName +
+                      ".map((key, value) => MapEntry(key, to" + field.enumName +
+                      "(value)))");
+            } else {
+              codeBuffer.write(
+                  "to" + field.enumName + "(entity." + field.fieldName + ")");
+            }
+          } else if (!field.isNativeType()) {
+            if (field.isArray()) {
+              codeBuffer.writeln();
+              codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
+              codeBuffer.writeln(
+                  spaces(12) + ".map((item) => " + field.fieldType +
+                      "Model.fromEntity(newRandomKey(), item))");
+              codeBuffer.write(spaces(12) + ".toList()");
+            } else {
+              codeBuffer.writeln();
+              codeBuffer.write(
+                  spaces(12) + field.fieldType + "Model.fromEntity(entity." +
+                      field.fieldName + ")");
+            }
           } else {
-            codeBuffer.write(
-                "to" + field.enumName + "(entity." + field.fieldName + ")");
+            if (field.fieldName == "documentID") {
+              codeBuffer.write(field.fieldName);
+            } else {
+              codeBuffer.write("entity." + field.fieldName);
+            }
           }
-        } else if (!field.isNativeType()) {
-          if (field.array) {
-            codeBuffer.writeln();
-            codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
-            codeBuffer.writeln(
-                spaces(12) + ".map((item) => " + field.fieldType +
-                    "Model.fromEntity(newRandomKey(), item))");
-            codeBuffer.write(spaces(12) + ".toList()");
-          } else {
-            codeBuffer.writeln();
-            codeBuffer.write(
-                spaces(12) + field.fieldType + "Model.fromEntity(entity." +
-                    field.fieldName + ")");
-          }
-        } else {
-          if (field.fieldName == "documentID") {
-            codeBuffer.write(field.fieldName);
-          } else {
-            codeBuffer.write("entity." + field.fieldName);
-          }
+          codeBuffer.writeln(", ");
         }
-        codeBuffer.writeln(", ");
       }
     });
     codeBuffer.writeln(spaces(4) + ");");
@@ -291,16 +302,20 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.write(field.fieldName + "Holder");
       } else {
         if (!field.isNativeType()) {
-          if (field.array) {
-            codeBuffer.writeln();
-            // this construct of creating a list from a list is to make a dynamic list from a fixed sized list.
-            // The reason for requiring a non fixed sized list is because we need to be able to use replaceRange in XyzInMemoryRepository
-            codeBuffer.writeln(spaces(12) + "new List<" + field.fieldType +
-                "Model>.from(await Future.wait(entity. " + field.fieldName);
-            codeBuffer.writeln(
-                spaces(12) + ".map((item) => " + field.fieldType +
-                    "Model.fromEntityPlus(newRandomKey(), item))");
-            codeBuffer.write(spaces(12) + ".toList()))");
+          if (field.isArray()) {
+            if (field.arrayType != ArrayType.CollectionArrayType) {
+              codeBuffer.writeln();
+              // this construct of creating a list from a list is to make a dynamic list from a fixed sized list.
+              // The reason for requiring a non fixed sized list is because we need to be able to use replaceRange in XyzInMemoryRepository
+              codeBuffer.writeln(spaces(12) + "new List<" + field.fieldType +
+                  "Model>.from(await Future.wait(entity. " + field.fieldName);
+              codeBuffer.writeln(
+                  spaces(12) + ".map((item) => " + field.fieldType +
+                      "Model.fromEntityPlus(newRandomKey(), item))");
+              codeBuffer.write(spaces(12) + ".toList()))");
+            } else {
+              codeBuffer.write("await AbstractRepositorySingleton.singleton." + firstLowerCase(modelSpecifications.id) + "Repository()." + firstLowerCase(field.fieldType) + "Repository(documentID).valuesList()");
+            }
           } else {
             codeBuffer.writeln();
             codeBuffer.write(

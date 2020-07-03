@@ -14,6 +14,7 @@ class ListStateCodeBuilder extends CodeBuilder {
 
   @override
   CodeGenerator generator(String specifications) {
+    print("ListStateCodeBuilder");
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateList) {
       ListStateCodeGenerator stateCodeGenerator = ListStateCodeGenerator(

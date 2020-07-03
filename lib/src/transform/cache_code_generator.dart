@@ -1,3 +1,4 @@
+import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
@@ -131,6 +132,11 @@ const String _refreshRelationsFooter = """
   }
 """;
 
+const String _collectionCode = """
+    \${collectionFieldType}Repository \${lCollectionFieldType}Repository(String documentID) => reference.\${lCollectionFieldType}Repository(documentID);
+  
+""";
+
 /*
  * This class generates the cache repositories. Why a cache repository, when flutter comes with
  * a cache of its own? The reason is because we want to control this ourselves:
@@ -157,16 +163,17 @@ class CacheCodeGenerator extends CodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (!field.isEnum()) {
         if (!field.isNativeType()) {
-          if (field.array) {
+          if (field.isArray()) {
             headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_cache.dart") + "';");
+            if (field.arrayType == ArrayType.CollectionArrayType) {
+              headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_repository.dart") + "';");
+            }
           } else {
             // This might be or become a case to handle as well
           }
         }
       }
     });
-
-
 
     return headerBuffer.toString();
   }
@@ -210,17 +217,24 @@ class CacheCodeGenerator extends CodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (!field.isEnum()) {
         if (!field.isNativeType()) {
-          if (field.array) {
-            codeBuffer.writeln(process(_refreshRelationsEmbeddedArray,
-                parameters: <String, String>{
-                  '\${fieldName}': field.fieldName,
-                  '\${fieldType}': field.fieldType,
-                  '\${lfieldType}': firstLowerCase(field.fieldType)
-                }));
-            assignParametersBuffer.writeln(process(_refreshRelationsAssignField,
-                parameters: <String, String>{
-                  '\${fieldName}': field.fieldName
-                }));
+          if (field.isArray()) {
+//            if (field.arrayType != ArrayType.CollectionArrayType) {
+              codeBuffer.writeln(process(_refreshRelationsEmbeddedArray,
+                  parameters: <String, String>{
+                    '\${fieldName}': field.fieldName,
+                    '\${fieldType}': field.fieldType,
+                    '\${lfieldType}': firstLowerCase(field.fieldType)
+                  }));
+              assignParametersBuffer.writeln(
+                  process(_refreshRelationsAssignField,
+                      parameters: <String, String>{
+                        '\${fieldName}': field.fieldName
+                      }));
+/*
+            } else {
+              assignParametersBuffer.writeln("what to do here to refresh the relationship for " + field.fieldName);
+            }
+*/
           } else {
             // This might be or become a case to handle as well
           }
@@ -232,6 +246,16 @@ class CacheCodeGenerator extends CodeGenerator {
         parameters: <String, String>{
           '\${copyArguments}': assignParametersBuffer.toString()
         }));
+
+    modelSpecifications.fields.forEach((field) {
+      if (field.arrayType == ArrayType.CollectionArrayType) {
+        codeBuffer.writeln(process(_collectionCode,
+            parameters: <String, String>{
+              '\${collectionFieldType}': field.fieldType,
+              '\${lCollectionFieldType}': firstLowerCase(field.fieldType)
+            }));
+      }
+    });
 
     codeBuffer.writeln(process(_footer, parameters: parameters));
     return codeBuffer.toString();

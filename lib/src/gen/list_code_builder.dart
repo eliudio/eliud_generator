@@ -14,11 +14,13 @@ class ListCodeBuilder extends CodeBuilder {
 
   @override
   CodeGenerator generator(String specifications) {
+    print("ListCodeBuilder");
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateList) {
       ListCodeGenerator listCodeGenerator = ListCodeGenerator(
           modelSpecifications: modelSpecification);
       return listCodeGenerator;
     }
+    return null;
   }
 }

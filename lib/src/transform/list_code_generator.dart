@@ -23,10 +23,49 @@ import '../core/eliud.dart';
 import '\${importprefix}_list_event.dart';
 import '\${importprefix}_list_state.dart';
 import '\${importprefix}_list_bloc.dart';
-import '\${importprefix}_form.dart';
 import '\${importprefix}_model.dart';
-import '\${importprefix}_form.dart';
 
+""";
+
+String _importForms = """
+import '\${importprefix}_form.dart';
+""";
+
+String _floatingActionButton = """
+          !GlobalData.memberIsOwner() \${allowAddItemsCondition} ? null : FloatingActionButton(
+            heroTag: "\${id}FloatBtnTag",
+            foregroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonForegroundColor),
+            backgroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonBackgroundColor),
+            child: Icon(Icons.add),
+              onPressed: () {
+              Navigator.of(context).push(
+                pageRouteBuilder(page: BlocProvider.value(
+                    value: BlocProvider.of<\${id}ListBloc>(context),
+                    child: \${id}Form(
+                        value: null,
+                        formAction: FormAction.AddAction)
+                )),
+              );
+            },
+          )
+""";
+
+String _onTap = """
+                      final removedItem = await Navigator.of(context).push(
+                        pageRouteBuilder(page: BlocProvider.value(
+                              value: BlocProvider.of<\${id}ListBloc>(context),
+                              child: \${id}Form(
+                                  value: value,
+                                  formAction: FormAction.UpdateAction))));
+                      if (removedItem != null) {
+                        Scaffold.of(context).showSnackBar(
+                          DeleteSnackBar(
+                        message: "\${id} " + value.\${displayOnDelete},
+                            onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
+                                .add(Add\${id}List(value: value)),
+                          ),
+                        );
+                      }
 """;
 
 String _listBody = """
@@ -64,22 +103,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
       } else if (state is \${id}ListLoaded) {
         final values = state.values;
         return new Scaffold(
-          floatingActionButton: !GlobalData.memberIsOwner() \${allowAddItemsCondition} ? null : FloatingActionButton(
-            heroTag: "\${id}FloatBtnTag",
-            foregroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonForegroundColor),
-            backgroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonBackgroundColor),
-            child: Icon(Icons.add),
-              onPressed: () {
-              Navigator.of(context).push(
-                pageRouteBuilder(page: BlocProvider.value(
-                    value: BlocProvider.of<\${id}ListBloc>(context),
-                    child: \${id}Form(
-                        value: null,
-                        formAction: FormAction.AddAction)
-                )),
-              );
-            },
-          ),
+          floatingActionButton: \${floatingActionButton},
           body: Container(
               decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().listBackground),
               child: ListView.separated(
@@ -101,21 +125,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
                       ));
                     },
                     onTap: () async {
-                      final removedItem = await Navigator.of(context).push(
-                        pageRouteBuilder(page: BlocProvider.value(
-                              value: BlocProvider.of<\${id}ListBloc>(context),
-                              child: \${id}Form(
-                                  value: value,
-                                  formAction: FormAction.UpdateAction))));
-                      if (removedItem != null) {
-                        Scaffold.of(context).showSnackBar(
-                          DeleteSnackBar(
-                        message: "\${id} " + value.\${displayOnDelete},
-                            onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
-                                .add(Add\${id}List(value: value)),
-                          ),
-                        );
-                      }
+                    \${onTap}
                     },
                   );
                 }
@@ -140,15 +150,32 @@ class ListCodeGenerator extends CodeGenerator {
   String commonImports() {
     return process(_imports, parameters: <String, String>{
       "\${importprefix}": resolveImport(importThis: camelcaseToUnderscore(modelSpecifications.id)),
-    });
+    })
+    + (modelSpecifications.generate.generateForm ? process(_importForms, parameters: <String, String>{
+      "\${importprefix}": resolveImport(importThis: camelcaseToUnderscore(modelSpecifications.id)),
+    }) : "");
   }
 
   String mainClass() {
-    return process(_listBody, parameters: <String, String>{
+    Map<String, String> parameters = <String, String>{
       "\${id}": modelSpecifications.id,
       "\${displayOnDelete}": modelSpecifications?.displayOnDelete ?? "documentID",
       "\${allowAddItemsCondition}" : modelSpecifications.id != "Member" ? "" : "&& false",
-    });
+    };
+
+    String button;
+    String tap;
+    if (modelSpecifications.generate.generateForm) {
+      button = process(_floatingActionButton, parameters: parameters);
+      tap = process(_onTap, parameters: parameters);
+    } else {
+      button = "null";
+      tap = "";
+    }
+
+    parameters["\${floatingActionButton}"] = button;
+    parameters["\${onTap}"] = tap;
+    return process(_listBody, parameters: parameters);
   }
 
   @override

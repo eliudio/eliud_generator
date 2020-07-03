@@ -115,7 +115,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
         }
         newModelBuffer.writeln(", ");
       } else {
-        if (field.array) {
+        if (field.isArray()) {
           newModelBuffer.writeln(spaces(33) + field.fieldName + ": [],");
         } else if (field.isInt()) {
           newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0,");

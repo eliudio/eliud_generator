@@ -24,8 +24,10 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(spaces(2) + "static AbstractRepositorySingleton singleton;");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
-        codeBuffer.writeln(spaces(2) + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository();");
+      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+          codeBuffer.writeln(
+              spaces(2) + spec.modelSpecification.id + "Repository " +
+                  firstLowerCase(spec.modelSpecification.id) + "Repository();");
       }
     });
     codeBuffer.writeln(spaces(2) + "ImageRepository imageRepository();");
@@ -33,7 +35,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "void flush() {");
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
+      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
         codeBuffer.writeln(spaces(4) + firstLowerCase(spec.modelSpecification.id) + "Repository().flush();");
       }
     });

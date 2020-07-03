@@ -15,6 +15,7 @@ class RepositoryCodeBuilder extends CodeBuilder {
 
   @override
   CodeGenerator generator(String specifications) {
+    print("RepositoryCodeBuilder");
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateRepository) {
       RepositoryCodeGenerator repositoryCodeGenerator = RepositoryCodeGenerator(

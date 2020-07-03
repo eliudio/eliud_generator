@@ -213,7 +213,7 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
         Map<String, String> parameters = <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) };
-        if ((spec.modelSpecification.id != "Member") && (spec.modelSpecification.id != "App")) {
+        if ((spec.modelSpecification.id != "Member") && (spec.modelSpecification.id != "App") && (!spec.modelSpecification.generate.isDocumentCollection)) {
             codeBuffer.write(process(_footerOther, parameters: parameters));
         }
       }
