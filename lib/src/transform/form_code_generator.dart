@@ -59,6 +59,14 @@ class \${className}Form extends StatelessWidget {
   
         child: My\${className}Form(submitAction: submitAction, formAction: formAction),
           );
+    } if (formAction == FormAction.ShowPreloadedData) {
+      return BlocProvider<\${id}FormBloc >(
+            create: (context) => \${id}FormBloc(
+                                       \${constructorParameters}
+                                                )..add(Initialise\${id}FormNoLoadEvent(value: value)),
+  
+        child: My\${className}Form(submitAction: submitAction, formAction: formAction),
+          );
     } else {
       return Scaffold(
         appBar: formAction == FormAction.UpdateAction ?
@@ -146,14 +154,14 @@ const _xyzLookupChangedString = """
 
 const String _readOnlyMethodMember = """
   bool _readOnly(\${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (state.value.documentID != GlobalData.member().documentID);
+    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (state.value.documentID != GlobalData.member().documentID);
   }
   
 """;
 
 const String _readOnlyMethod = """
   bool _readOnly(\${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (!GlobalData.memberIsOwner());
+    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!GlobalData.memberIsOwner());
   }
   
 """;
@@ -416,7 +424,7 @@ class RealFormCodeGenerator extends CodeGenerator {
             modelSpecifications.fieldsForGroups(group)));
       });
     }
-    codeBuffer.writeln(spaces(8) + "if (formAction != FormAction.ShowData)");
+    codeBuffer.writeln(spaces(8) + "if ((formAction != FormAction.ShowData) && (formAction != FormAction.ShowPreloadedData))");
     codeBuffer.writeln(spaces(10) + "children.add(RaisedButton(");
     codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: GlobalData.app().formSubmitButtonColor),");
     codeBuffer.writeln(spaces(18) + "onPressed: _readOnly(state) ? null : () {");
@@ -481,8 +489,8 @@ class RealFormCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(8) + "return Container(");
-    codeBuffer.writeln(spaces(10) + "color: formAction == FormAction.ShowData ? Colors.transparent : null,");
-    codeBuffer.writeln(spaces(10) + "decoration: formAction == FormAction.ShowData ? null : BoxDecorationHelper.boxDecoration(GlobalData.app().formBackground),");
+    codeBuffer.writeln(spaces(10) + "color: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)) ? Colors.transparent : null,");
+    codeBuffer.writeln(spaces(10) + "decoration: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)) ? null : BoxDecorationHelper.boxDecoration(GlobalData.app().formBackground),");
     codeBuffer.writeln(spaces(10) + "padding:");
     codeBuffer.writeln(spaces(10) +
         "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
@@ -490,8 +498,8 @@ class RealFormCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(spaces(12) + "child: ListView(");
     codeBuffer.writeln(spaces(14) + "padding: const EdgeInsets.all(8),");
-    codeBuffer.writeln(spaces(14) + "physics: formAction == FormAction.ShowData ? NeverScrollableScrollPhysics() : null,");
-    codeBuffer.writeln(spaces(14) + "shrinkWrap: formAction == FormAction.ShowData,");
+    codeBuffer.writeln(spaces(14) + "physics: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)) ? NeverScrollableScrollPhysics() : null,");
+    codeBuffer.writeln(spaces(14) + "shrinkWrap: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)),");
     codeBuffer.writeln(spaces(14) + "children: children");
     codeBuffer.writeln(spaces(12) + "),");
     codeBuffer.writeln(spaces(10) + ")");
@@ -615,7 +623,7 @@ class RealFormCodeGenerator extends CodeGenerator {
               "value: _" +
               firstLowerCase(field.fieldName) +
               "Selection,");
-          codeBuffer.writeln(spaces(20) + "onChanged: !GlobalData.memberIsOwner() ? null : (val) {");
+          codeBuffer.writeln(spaces(20) + "onChanged: _readOnly(state) || !GlobalData.memberIsOwner() ? null : (val) {");
           //      codeBuffer.writeln(spaces(22) + "setState(() => print());");
           codeBuffer.writeln(spaces(22) +
               "setSelection" +

@@ -28,6 +28,19 @@ class FormEventCodeGenerator extends CodeGenerator {
     return headerBuffer.toString();
   }
 
+  String _eventWithModel(String name, String modelClassName) {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln("class " + name + " extends " + modelSpecifications.id + "FormEvent {");
+    codeBuffer.writeln(spaces(2) + "final " + modelClassName + " value;");
+    codeBuffer.writeln();
+    codeBuffer.writeln(spaces(2) + "@override");
+    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ value ];");
+    codeBuffer.writeln();
+    codeBuffer.writeln(spaces(2) + name + "({this.value});");
+    codeBuffer.writeln("}");
+    return codeBuffer.toString();
+  }
+
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
@@ -44,14 +57,8 @@ class FormEventCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(process(_initialiseNewMenuFormEvent, parameters: <String, String> { '\${id}': modelSpecifications.id }));
 
-    codeBuffer.writeln("class Initialise" + modelSpecifications.id + "FormEvent extends " + modelSpecifications.id + "FormEvent {");
-    codeBuffer.writeln(spaces(2) + "final " + modelClassName + " value;");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ value ];");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Initialise" + modelSpecifications.id + "FormEvent({this.value});");
-    codeBuffer.writeln("}");
+    codeBuffer.writeln(_eventWithModel("Initialise" + modelSpecifications.id + "FormEvent", modelClassName));
+    codeBuffer.writeln(_eventWithModel("Initialise" + modelSpecifications.id + "FormNoLoadEvent", modelClassName));
 
     modelSpecifications.fields.forEach((field) {
       String className = "Changed" + modelSpecifications.id + firstUpperCase(field.fieldName);

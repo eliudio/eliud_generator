@@ -142,7 +142,12 @@ class FormBlocCodeGenerator extends CodeGenerator {
       codeBuffer.writeln("event.value);");
     codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
     codeBuffer.writeln(spaces(8) + "return;");
+    codeBuffer.writeln(spaces(6) + "} else if (event is Initialise" + modelSpecifications.id + "FormNoLoadEvent) {");
+    codeBuffer.writeln(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: event.value);");
+    codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
+    codeBuffer.writeln(spaces(8) + "return;");
     codeBuffer.writeln(spaces(6) + "}");
+
     codeBuffer.writeln(spaces(4) + "} else if (currentState is " + modelSpecifications.id + "FormInitialized) {");
     codeBuffer.writeln(spaces(6) + modelSpecifications.modelClassName() + " newValue = null;");
     modelSpecifications.fields.forEach((field) {
