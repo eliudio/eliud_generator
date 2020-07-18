@@ -30,14 +30,7 @@ class ComponentBlocCodeGenerator extends CodeGenerator {
 
   String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(spaces(2) + modelSpecifications.id + "Bloc({ this." + firstLowerCase(modelSpecifications.id) + "Repository });");
-    return codeBuffer.toString();
-  }
-
-  String _initialState() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "get initialState => " + modelSpecifications.id + "Uninitialized();");
+    codeBuffer.write(spaces(2) + modelSpecifications.id + "Bloc({ this." + firstLowerCase(modelSpecifications.id) + "Repository }): super("  + modelSpecifications.id + "Uninitialized());");
     return codeBuffer.toString();
   }
 
@@ -91,7 +84,6 @@ class ComponentBlocCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(_dataMembers());
     codeBuffer.writeln(_constructor());
-    codeBuffer.writeln(_initialState());
     codeBuffer.writeln(_mapEventToState());
     codeBuffer.writeln(_fetch());
     codeBuffer.writeln(_close());

@@ -32,14 +32,8 @@ class ListBlocCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListBloc({ @required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository })");
     codeBuffer.writeln(spaces(6) + ": assert(" + firstLowerCase(modelSpecifications.id) + "Repository != null),");
-    codeBuffer.writeln(spaces(6) + "_" + firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository;");
-    return codeBuffer.toString();
-  }
-
-  String _initialState() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "get initialState => " + modelSpecifications.id + "ListLoading();");
+    codeBuffer.writeln(spaces(6) + "_" + firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository,");
+    codeBuffer.writeln(spaces(6) + "super(" + modelSpecifications.id + "ListLoading());");
     return codeBuffer.toString();
   }
 
@@ -113,7 +107,6 @@ class ListBlocCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(_dataMembers());
     codeBuffer.writeln(_constructor());
-    codeBuffer.writeln(_initialState());
     codeBuffer.writeln(_mappers());
     codeBuffer.writeln(_mapEventToState());
     codeBuffer.writeln(_close());

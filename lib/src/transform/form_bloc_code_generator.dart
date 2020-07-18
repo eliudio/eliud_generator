@@ -61,13 +61,6 @@ class FormBlocCodeGenerator extends CodeGenerator {
     return headerBuffer.toString();
   }
 
-  String _initialState() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "get initialState => " + modelSpecifications.id + "FormUninitialized();");
-    return codeBuffer.toString();
-  }
-
   String _yield(int amountOfSpaces, Field field) {
     StringBuffer codeBuffer = StringBuffer();
     if (field.fieldName == "documentID") {
@@ -255,9 +248,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
   String _constructor() {
     if (withRepository()) {
-      return spaces(2) + modelSpecifications.id + "FormBloc({ this.formAction });";
+      return spaces(2) + modelSpecifications.id + "FormBloc({ this.formAction }): super(" + modelSpecifications.id + "FormUninitialized());";
     } else {
-      return spaces(2) + modelSpecifications.id + "FormBloc();";
+      return spaces(2) + modelSpecifications.id + "FormBloc(): super(" + modelSpecifications.id + "FormUninitialized());";
     }
   }
 
@@ -268,7 +261,6 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(_memberData());
     codeBuffer.writeln(_constructor());
-    codeBuffer.writeln(_initialState());
     codeBuffer.writeln(_mapEventToState());
     codeBuffer.writeln(_validations());
 
