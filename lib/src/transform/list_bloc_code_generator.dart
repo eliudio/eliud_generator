@@ -18,6 +18,8 @@ class ListBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.listEventFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.listStateFileName()) + "';");
     headerBuffer.writeln();
+    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_LIST_BLOC);
+    headerBuffer.writeln();
     return headerBuffer.toString();
   }
 
@@ -76,6 +78,11 @@ class ListBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapUpdate" + modelSpecifications.id + "ListToState(Update" + modelSpecifications.id + "List event) async* {");
+
+    if (modelSpecifications.preMapUpdateCode != null) {
+      codeBuffer.writeln(modelSpecifications.preMapUpdateCode);
+    }
+
     codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "Repository.update(event.value);");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();

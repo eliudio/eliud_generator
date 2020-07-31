@@ -50,21 +50,30 @@ class ModelSpecification extends Specification {
   final String displayOnDelete; // field to be displayed when item is deleted
   // is this a appModel, i.e is this data that's specific to the app and hence will we have seperate specific collection for it?
   final bool isAppModel;
+
+  // inject code
+  // BEWARE: TO DO: CHANGE code injects and replace with same mechanism as "extraImports". This mechanism to inject code for extra import (key value pairs) allows to inject code much more efficient than using a specific property per inject type
   final String preToEntityCode;
+  final String preMapUpdateCode;  // at start of _mapUpdateXYZListToState in XYZListBloc
+  // BEWARE: BEFORE ADDING AN EXTRA, SEE ABOVE
+
+  // views
   final List<View> views;
 
   static String IMPORT_KEY_FORM_BLOC = "form_bloc";
   static String IMPORT_KEY_MODEL = "model";
   static String IMPORT_KEY_FIRESTORE = "firestore";
+  static String IMPORT_KEY_LIST_BLOC = "list_bloc";
+
   final Map<String, String> extraImports;
   final String where;
   final String whereJs;
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.views, this.where, this.whereJs }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.where, this.whereJs }) : super(id: id);
 
   ModelSpecification copyWith({ String id, GenerateSpecification generate, List<Field> fields, List<Group> groups,
     ListFields listFields, String displayOnDelete, Map<String, String> extraImports, bool isAppModel,
-    String preToEntityCode, List<View> views }) {
+    String preToEntityCode, String preMapUpdateCode, List<View> views }) {
     ModelSpecification newModelSpecification = ModelSpecification(
       id: id ?? this.id,
       generate: generate ?? this.generate ,
@@ -75,6 +84,7 @@ class ModelSpecification extends Specification {
       extraImports: extraImports ?? this.extraImports,
       isAppModel: isAppModel ?? this.isAppModel,
       preToEntityCode: preToEntityCode ?? this.preToEntityCode,
+      preMapUpdateCode: preMapUpdateCode ?? this.preMapUpdateCode,
       views: views ?? this.views,
       where: where ?? this.where,
       whereJs: whereJs ?? this.whereJs,
@@ -106,6 +116,7 @@ class ModelSpecification extends Specification {
       "extraImports": extraImports,
       "isAppModel": isAppModel,
       "preToEntityCode": preToEntityCode,
+      "preMapUpdateCode": preMapUpdateCode,
       "alternativeViews": jsonViews,
       "where": where,
       "whereJs": whereJs
@@ -119,11 +130,11 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports, preToEntityCode, views, where, whereJs ];
+  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, where, whereJs ];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, views: $views, where: $where, whereJs: $whereJs }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, where: $where, whereJs: $whereJs }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -179,6 +190,7 @@ class ModelSpecification extends Specification {
       extraImports: extraImports,
       isAppModel: bIsAppModel,
       preToEntityCode: json["preToEntityCode"] as String,
+      preMapUpdateCode: json["preMapUpdateCode"] as String,
       views: theViews,
       where: json["where"] as String,
       whereJs: json["whereJs"] as String,
