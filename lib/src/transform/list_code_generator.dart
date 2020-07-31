@@ -1,4 +1,3 @@
-import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
@@ -6,6 +5,7 @@ import 'code_generator.dart';
 
 String _imports = """
 import 'package:eliud_model/core/global_data.dart';
+import 'package:eliud_model/shared/has_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
@@ -31,32 +31,11 @@ String _importForms = """
 import '\${importprefix}_form.dart';
 """;
 
-String _floatingActionButton = """
-          !GlobalData.memberIsOwner() \${allowAddItemsCondition} ? null : FloatingActionButton(
-            heroTag: "\${id}FloatBtnTag",
-            foregroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonForegroundColor),
-            backgroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonBackgroundColor),
-            child: Icon(Icons.add),
-              onPressed: () {
-              Navigator.of(context).push(
-                pageRouteBuilder(page: BlocProvider.value(
-                    value: BlocProvider.of<\${id}ListBloc>(context),
-                    child: \${id}Form(
-                        value: null,
-                        formAction: FormAction.AddAction)
-                )),
-              );
-            },
-          )
-""";
-
 String _onTap = """
                       final removedItem = await Navigator.of(context).push(
                         pageRouteBuilder(page: BlocProvider.value(
                               value: BlocProvider.of<\${id}ListBloc>(context),
-                              child: \${id}Form(
-                                  value: value,
-                                  formAction: FormAction.UpdateAction))));
+                              child: getForm(value, FormAction.UpdateAction))));
                       if (removedItem != null) {
                         Scaffold.of(context).showSnackBar(
                           DeleteSnackBar(
@@ -68,13 +47,25 @@ String _onTap = """
                       }
 """;
 
+
 String _listBody = """
-class \${id}ListWidget extends StatefulWidget {
-  \${id}ListWidget({ Key key }): super(key: key);
+class \${id}ListWidget extends StatefulWidget with HasFab {
+  bool readOnly;
+  String form;
+  \${id}ListWidgetState state;
+
+  \${id}ListWidget({ Key key, this.readOnly, this.form }): super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return \${id}ListWidgetState();
+  \${id}ListWidgetState createState() {
+    state ??= \${id}ListWidgetState();
+    return state;
+  }
+
+  Widget fab(BuildContext context) {
+    if ((readOnly != null) && readOnly) return null;
+    state ??= \${id}ListWidgetState();
+    return state.fab(context);
   }
 }
 
@@ -94,6 +85,28 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
   }
 
   @override
+  Widget fab(BuildContext aContext) {
+    return !GlobalData.memberIsOwner() \${allowAddItemsCondition} 
+        ? null
+        :FloatingActionButton(
+      heroTag: "\${id}FloatBtnTag",
+      foregroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonForegroundColor),
+      backgroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonBackgroundColor),
+      child: Icon(Icons.add),
+      onPressed: () {
+        Navigator.of(context).push(
+          pageRouteBuilder(page: BlocProvider.value(
+              value: bloc,
+              child: \${id}Form(
+                  value: null,
+                  formAction: FormAction.AddAction)
+          )),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
       if (state is \${id}ListLoading) {
@@ -102,35 +115,34 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         );
       } else if (state is \${id}ListLoaded) {
         final values = state.values;
-        return new Scaffold(
-          floatingActionButton: \${floatingActionButton},
-          body: Container(
-              decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().listBackground),
-              child: ListView.separated(
-                separatorBuilder: (context, index) => Divider(
-                  color: RgbHelper.color(rgbo: GlobalData.app().dividerColor)
-                ),
-                itemCount: values.length,
-                itemBuilder: (context, index) {
-                  final value = values[index];
-                  return \${id}ListItem(
-                    value: value,
-                    onDismissed: (direction) {
-                      BlocProvider.of<\${id}ListBloc>(context)
-                          .add(Delete\${id}List(value: value));
-                      Scaffold.of(context).showSnackBar(DeleteSnackBar(
-                        message: "\${id} " + value.\${displayOnDelete},
-                        onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
-                            .add(Add\${id}List(value: value)),
-                      ));
-                    },
-                    onTap: () async {
-                    \${onTap}
-                    },
-                  );
-                }
-              ),
-        ));
+        return Container(
+                 decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().listBackground),
+                 child: ListView.separated(
+                   separatorBuilder: (context, index) => Divider(
+                     color: RgbHelper.color(rgbo: GlobalData.app().dividerColor)
+                   ),
+                   shrinkWrap: true,
+                   physics: ScrollPhysics(),
+                   itemCount: values.length,
+                   itemBuilder: (context, index) {
+                     final value = values[index];
+                     return \${id}ListItem(
+                       value: value,
+                       onDismissed: (direction) {
+                         BlocProvider.of<\${id}ListBloc>(context)
+                             .add(Delete\${id}List(value: value));
+                         Scaffold.of(context).showSnackBar(DeleteSnackBar(
+                           message: "\${id} " + value.\${displayOnDelete},
+                           onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
+                               .add(Add\${id}List(value: value)),
+                         ));
+                       },
+                       onTap: () async {
+                       \${onTap}
+                       },
+                     );
+                   }
+               ));
       } else {
         return Center(
           child: CircularProgressIndicator(),
@@ -138,6 +150,15 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
       }
     });
   }
+  
+  Widget getForm(value, action) {
+    if (widget.form == null) {
+      return \${id}Form(value: value, formAction: action);
+    } else {
+\${_formVariations}
+    }
+  }
+  
 }
 
 """;
@@ -163,18 +184,27 @@ class ListCodeGenerator extends CodeGenerator {
       "\${allowAddItemsCondition}" : modelSpecifications.id != "Member" ? "" : "&& false",
     };
 
-    String button;
     String tap;
     if (modelSpecifications.generate.generateForm) {
-      button = process(_floatingActionButton, parameters: parameters);
       tap = process(_onTap, parameters: parameters);
     } else {
-      button = "null";
       tap = "";
     }
 
-    parameters["\${floatingActionButton}"] = button;
+    String _formVariations = "";
+    if (modelSpecifications.views != null) {
+      modelSpecifications.views.forEach((element) {
+        _formVariations = _formVariations + spaces(6) + "if (widget.form == \"" +
+            modelSpecifications.id + element.name + "Form\") return " +
+            modelSpecifications.id + element.name +
+            "Form(value: value, formAction: action);\n";
+      });
+    }
+    _formVariations = _formVariations + spaces(6) + "return null;";
+
+
     parameters["\${onTap}"] = tap;
+    parameters["\${_formVariations}"] = _formVariations;
     return process(_listBody, parameters: parameters);
   }
 

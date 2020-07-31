@@ -10,6 +10,7 @@ import 'component_constructor.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'has_fab.dart';
 """;
 
 const String _componentImports = """
@@ -49,10 +50,22 @@ const String _DropdownButtonFactoryCodeFooter = """
 """;
 
 const String _ListComponentCodeHeader = """
-class ListComponent extends StatelessWidget {
+class ListComponent extends StatelessWidget with HasFab {
   final String componentId;
+  Widget widget;
 
-  ListComponent({this.componentId});
+  @override
+  Widget fab(BuildContext context){
+    if ((widget != null) && (widget is HasFab)) {
+      HasFab hasFab = widget as HasFab;
+      return hasFab.fab(context);
+    }
+    return null;
+  }
+
+  ListComponent({this.componentId}) {
+    initWidget();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +97,7 @@ const String _SpecificListComponentCode = """
           )..add(Load\${upperSpecific}List()),
         )
       ],
-      child: \${upperSpecific}ListWidget(),
+      child: widget,
     );
   }
 """;
@@ -163,12 +176,27 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(spaces(4) + "if (componentId == \"" + firstLowerCase(ms.id) + "s\") return _" + firstLowerCase(ms.id) + "Build();");
+        codeBuffer.writeln(spaces(4) + "if (componentId == '" + firstLowerCase(ms.id) + "s') return _" + firstLowerCase(ms.id) + "Build();");
       }
     });
     codeBuffer.writeln(spaces(4) + "return Image(image: AssetImage('assets/images/component_not_available.png'));");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
+
+    if (list) {
+      codeBuffer.writeln(spaces(2) + "Widget initWidget() {");
+      modelSpecificationPlus.forEach((spec) {
+        ModelSpecification ms = spec.modelSpecification;
+        if (ms.generate.generateInternalComponent) {
+          codeBuffer.writeln(
+              spaces(4) + "if (componentId == '" + firstLowerCase(ms.id) +
+                  "s') widget = " + firstUpperCase(ms.id) + "ListWidget();");
+        }
+      });
+      codeBuffer.writeln(spaces(2) + "}");
+    }
+
+
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
