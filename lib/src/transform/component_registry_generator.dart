@@ -41,10 +41,10 @@ class ComponentRegistry {
     return _instance;
   }
 
-  Widget page({String id}) {
+  Widget page({String id, Map<String, String> parameters }) {
     Widget returnThis;
     try {
-      returnThis = _pageComponentConstructor.createNew(id: id);
+      returnThis = _pageComponentConstructor.createNew(id: id, parameters: parameters);
     } catch (_) {}
     if (returnThis != null) return returnThis;
     return _missingPage();
@@ -54,12 +54,12 @@ class ComponentRegistry {
     return _applicationComponentConstructor.createNew(id: id);
   }
 
-  Widget component({String componentName, String id}) {
+  Widget component({String componentName, String id, Map<String, String> parameters}) {
     Widget returnThis;
     try {
       ComponentConstructor componentConstructor = _registryMap[componentName];
       if (componentConstructor != null)
-        returnThis = componentConstructor.createNew(id: id);
+        returnThis = componentConstructor.createNew(id: id, parameters: parameters);
     } catch (_) {}
     if (returnThis != null) return returnThis;
     return _missingComponent();
