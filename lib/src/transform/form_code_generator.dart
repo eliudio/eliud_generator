@@ -623,7 +623,7 @@ class RealFormCodeGenerator extends CodeGenerator {
               "value: _" +
               firstLowerCase(field.fieldName) +
               "Selection,");
-          codeBuffer.writeln(spaces(20) + "onChanged: _readOnly(state) || !GlobalData.memberIsOwner() ? null : (val) {");
+          codeBuffer.writeln(spaces(20) + "onChanged: _readOnly(state) ? null : (val) {");
           //      codeBuffer.writeln(spaces(22) + "setState(() => print());");
           codeBuffer.writeln(spaces(22) +
               "setSelection" +
