@@ -34,6 +34,30 @@ const String _isDocumentIDValid = """
 
 """;
 
+const String _imports = """
+import 'dart:async';
+
+import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
+
+// import the main repository
+import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
+// import the shared repository
+import 'package:eliud_model/shared/abstract_repository_singleton.dart';
+// import the repository of this package:
+import '../shared/abstract_repository_singleton.dart';
+
+import 'package:eliud_model/tools/enums.dart';
+import 'package:eliud_model/tools/types.dart';
+
+import 'package:eliud_model/shared/rgb_model.dart';
+
+import 'package:eliud_model/tools/string_validator.dart';
+import 'package:eliud_model/shared/repository_export.dart';
+import '../shared/repository_export.dart';
+
+""";
+
 class FormBlocCodeGenerator extends CodeGenerator {
   FormBlocCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -42,21 +66,10 @@ class FormBlocCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FORM_BLOC);
-    headerBuffer.writeln("import 'dart:async';");
-    headerBuffer.writeln("import 'package:eliud_model/shared/abstract_repository_singleton.dart';");
-    headerBuffer.writeln("import 'package:bloc/bloc.dart';");
-    headerBuffer.writeln("import '../shared/rgb_model.dart';");
-    headerBuffer.writeln("import 'package:eliud_model/tools/enums.dart';");
-    headerBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
-    headerBuffer.writeln();
+    headerBuffer.writeln(_imports);
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
-    headerBuffer.writeln();
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formEventFileName()) + "';");
     headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formStateFileName()) + "';");
-    headerBuffer.writeln("import '../tools/string_validator.dart';");
-    headerBuffer.writeln("import 'package:flutter/cupertino.dart';");
-    headerBuffer.writeln("import '../shared/repository_export.dart';");
-
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -236,12 +249,12 @@ class FormBlocCodeGenerator extends CodeGenerator {
     if (withRepository()) {
       codeBuffer.writeln(
           spaces(2) + "final " + modelSpecifications.id + "Repository _" +
-              firstLowerCase(modelSpecifications.id) + "Repository = AbstractRepositorySingleton.singleton." + firstLowerCase(modelSpecifications.id) + "Repository();");
+              firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository();");
 
       codeBuffer.writeln(spaces(2) + "final FormAction formAction;");
     }
     modelSpecifications.uniqueAssociationTypes().forEach((field) {
-        codeBuffer.writeln(spaces(2) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository = AbstractRepositorySingleton.singleton." + firstLowerCase(field) + "Repository();");
+        codeBuffer.writeln(spaces(2) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository = " + firstLowerCase(field) + "Repository();");
     });
     return codeBuffer.toString();
   }

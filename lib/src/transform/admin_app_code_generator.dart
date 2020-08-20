@@ -4,12 +4,19 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
+
+// import the main repository
+import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
+// import the shared repository
 import 'package:eliud_model/shared/abstract_repository_singleton.dart';
+// import the repository of this package:
+import '../shared/abstract_repository_singleton.dart';
+
 import 'package:eliud_model/shared/action_model.dart';
 import 'package:eliud_model/shared/rgb_model.dart';
 import 'package:eliud_model/shared/icon_model.dart';
-import 'package:eliud_model/model/menu_def_model.dart';
 
+import 'package:eliud_model/model/menu_def_model.dart';
 import 'package:eliud_model/model/page_model.dart';
 import 'package:eliud_model/model/app_bar_model.dart';
 import 'package:eliud_model/model/body_component_model.dart';
@@ -64,7 +71,7 @@ const String _footerAdminMenuDef = """
   }
 
   static Future<MenuDefModel> _setupMenuDef(String appID) {
-    return AbstractRepositorySingleton.singleton.menuDefRepository().add(_adminMenuDef(appID));
+    return menuDefRepository().add(_adminMenuDef(appID));
   }
 
 """;
@@ -99,11 +106,11 @@ const String _setupAdminPagesHeader = """
 """;
 
 const String _setupAdminPagesFirstPage = """
-    return AbstractRepositorySingleton.singleton.pageRepository().add(_\${lid}sPages())
+    return pageRepository().add(_\${lid}sPages())
 """;
 
 const String _setupAdminPagesOtherPages = """
-        .then((_) => AbstractRepositorySingleton.singleton.pageRepository().add(_\${lid}sPages()))
+        .then((_) => pageRepository().add(_\${lid}sPages()))
 """;
 
 const String _setupAdminPagesFooter = """
@@ -114,23 +121,13 @@ const String _setupAdminPagesFooter = """
 // run
 const String _headerRun = """
   static Future<void> deleteAll(String appID) async {
-    return await AbstractRepositorySingleton.singleton.imageRepository().deleteAll()
+    return await imageRepository().deleteAll()
 """;
 
 const String _footerOther = """
-        .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll())
+        .then((_) => \${lid}Repository().deleteAll())
 """;
 
-/*
-const String _footerOther = """
-        .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll(appID))
-""";
-
-const String _footerOtherWithoutAppID = """
-        .then((_) => AbstractRepositorySingleton.singleton.\${lid}Repository().deleteAll())
-""";
-
-*/
 const String _footerApp = """
 """;
 

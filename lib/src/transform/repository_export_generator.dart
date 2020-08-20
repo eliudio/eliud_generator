@@ -20,7 +20,7 @@ class RepositoryExportGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln("export '../" + path + "_repository.dart';");
       }
     });
-    codeBuffer.writeln("export '../shared/image_firestore_bespoke.dart';");
+    codeBuffer.writeln("export 'package:eliud_model/shared/image_firestore_bespoke.dart';");
     return codeBuffer.toString();
 
   }

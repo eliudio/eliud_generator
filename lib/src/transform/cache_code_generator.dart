@@ -8,7 +8,13 @@ const String _imports = """
 import 'dart:async';
 import '\${filename}_model.dart';
 import '\${filename}_repository.dart';
+
+// import the main repository
+import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
+// import the shared repository
 import 'package:eliud_model/shared/abstract_repository_singleton.dart';
+// import the repository of this package:
+import '../shared/abstract_repository_singleton.dart';
 
 """;
 
@@ -108,7 +114,7 @@ const String _refreshRelationsModel = """
     \${fieldType}Model \${fieldName}Holder;
     if (model.\${fieldName} != null) {
       try {
-        await AbstractRepositorySingleton.singleton.\${lfieldType}Repository().get(model.\${fieldName}.documentID).then((val) {
+        await \${lfieldType}Repository().get(model.\${fieldName}.documentID).then((val) {
           \${fieldName}Holder = val;
         }).catchError((error) {});
       } catch (_) {}
@@ -206,7 +212,7 @@ class CacheCodeGenerator extends CodeGenerator {
             parameters: <String, String>{
               '\${fieldName}': field.fieldName,
               '\${fieldType}': field.fieldType,
-              '\${lfieldType}': firstLowerCase(field.fieldType)
+              '\${lfieldType}': firstLowerCase(field.fieldType),
             }));
         assignParametersBuffer.writeln(process(_refreshRelationsAssignField,
             parameters: <String, String>{

@@ -20,22 +20,28 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("import 'package:eliud_model/core/access/bloc/user_repository.dart';");
     codeBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
     codeBuffer.writeln();
+    modelSpecificationPlus.forEach((spec) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+        codeBuffer.writeln(
+            spec.modelSpecification.id + "Repository " +
+                firstLowerCase(spec.modelSpecification.id) + "Repository() => AbstractRepositorySingleton.singleton." + firstLowerCase(spec.modelSpecification.id) + "Repository();");
+      }
+    });
+    codeBuffer.writeln();
     codeBuffer.writeln("abstract class AbstractRepositorySingleton {");
     codeBuffer.writeln(spaces(2) + "static AbstractRepositorySingleton singleton;");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
           codeBuffer.writeln(
               spaces(2) + spec.modelSpecification.id + "Repository " +
                   firstLowerCase(spec.modelSpecification.id) + "Repository();");
       }
     });
-    codeBuffer.writeln(spaces(2) + "ImageRepository imageRepository();");
-    codeBuffer.writeln(spaces(2) + "UserRepository userRepository();");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "void flush() {");
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
         codeBuffer.writeln(spaces(4) + firstLowerCase(spec.modelSpecification.id) + "Repository().flush();");
       }
     });

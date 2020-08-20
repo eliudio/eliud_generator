@@ -4,6 +4,19 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'data_code_generator.dart';
 
+const String _imports = """
+import 'package:eliud_model/core/global_data.dart';
+
+// import the main repository
+import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
+// import the shared repository
+import 'package:eliud_model/shared/abstract_repository_singleton.dart';
+// import the repository of this package:
+import '../shared/abstract_repository_singleton.dart';
+
+import '../shared/abstract_repository_singleton.dart';
+""";
+
 class ModelCodeGenerator extends DataCodeGenerator {
   ModelCodeGenerator({ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
 
@@ -19,8 +32,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
-    headerBuffer.writeln("import 'package:eliud_model/core/global_data.dart';");
-    headerBuffer.writeln("import 'package:eliud_model/shared/abstract_repository_singleton.dart';");
+    headerBuffer.writeln(_imports);
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
     modelSpecifications.fields.forEach((field) {
@@ -35,7 +47,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
       headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(type) + "_repository.dart") + "';");
     });
 
-    headerBuffer.writeln("import '../tools/random.dart';");
+    headerBuffer.writeln("import 'package:eliud_model/tools/random.dart';");
 
     headerBuffer.writeln();
     return headerBuffer.toString();
@@ -279,7 +291,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.writeln(spaces(4) + field.fieldType + "Model " + field.fieldName + "Holder;");
         codeBuffer.writeln(spaces(4) + "if (entity." + field.fieldName + "Id != null) {");
         codeBuffer.writeln(spaces(6) + "try {");
-        codeBuffer.writeln(spaces(8) + "await AbstractRepositorySingleton.singleton." + firstLowerCase(field.fieldType) + "Repository().get(entity." + field.fieldName + "Id" + ").then((val) {");
+
+        codeBuffer.writeln(spaces(8) + "await " + firstLowerCase(field.fieldType) + "Repository().get(entity." + field.fieldName + "Id" + ").then((val) {");
         codeBuffer.writeln(spaces(10) + field.fieldName + "Holder" + " = val;");
         codeBuffer.writeln(spaces(8) + "}).catchError((error) {});");
         codeBuffer.writeln(spaces(6) + "} catch (_) {}");
@@ -314,7 +327,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
                       "Model.fromEntityPlus(newRandomKey(), item))");
               codeBuffer.write(spaces(12) + ".toList()))");
             } else {
-              codeBuffer.write("await AbstractRepositorySingleton.singleton." + firstLowerCase(modelSpecifications.id) + "Repository()." + firstLowerCase(field.fieldType) + "Repository(documentID).valuesList()");
+              codeBuffer.write("await " + firstLowerCase(field.fieldType) + "Repository(documentID).valuesList()");
             }
           } else {
             codeBuffer.writeln();

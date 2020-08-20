@@ -14,11 +14,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eliud_model/tools/screen_size.dart';
 
-import '../tools/delete_snackbar.dart';
-import '../tools/router_builders.dart';
-import '../tools/etc.dart';
-import '../tools/enums.dart';
-import '../core/eliud.dart';
+import 'package:eliud_model/tools/delete_snackbar.dart';
+import 'package:eliud_model/tools/router_builders.dart';
+import 'package:eliud_model/tools/etc.dart';
+import 'package:eliud_model/tools/enums.dart';
+import 'package:eliud_model/core/eliud.dart';
 
 import '\${importprefix}_list_event.dart';
 import '\${importprefix}_list_state.dart';

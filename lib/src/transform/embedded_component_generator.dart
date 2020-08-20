@@ -4,9 +4,8 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
-import '../tools/random.dart';
+import 'package:eliud_model/tools/random.dart';
 
-import 'component_constructor.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -143,6 +142,13 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
         codeBuffer.writeln("typedef " + ms.id + "ListChanged(List<" + ms.id + "Model> values);");
+      }
+    });
+    codeBuffer.writeln();
+    modelSpecificationPlus.forEach((spec) {
+      ModelSpecification ms = spec.modelSpecification;
+      if (ms.generate.generateEmbeddedComponent) {
+        codeBuffer.writeln(firstLowerCase(ms.id) + "sList(value, trigger) => EmbeddedComponentFactory." + firstLowerCase(ms.id) + "sList(value, trigger);");
       }
     });
     codeBuffer.writeln();

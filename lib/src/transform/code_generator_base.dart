@@ -36,4 +36,12 @@ abstract class CodeGeneratorBase {
   String spaces(int amount) {
     return ALL_SPACES.substring(0, amount);
   }
+
+  bool isMainRepository(String typeName) {
+    if (typeName == "Image") return true;
+    if (typeName == "App") return true;
+    if (typeName == "User") return true;
+    return false;
+  }
+
 }

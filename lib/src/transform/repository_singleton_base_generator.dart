@@ -29,8 +29,8 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("import 'package:eliud_model/core/access/bloc/user_repository.dart';");
     codeBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
     codeBuffer.writeln();
-    codeBuffer.writeln("import '../shared/image${file_prefix}_firestore_bespoke.dart';");
-    codeBuffer.writeln("import '../shared/image_cache.dart';");
+    codeBuffer.writeln("import 'package:eliud_model/shared/image${file_prefix}_firestore_bespoke.dart';");
+    codeBuffer.writeln("import 'package:eliud_model/shared/image_cache.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if (spec.modelSpecification.uniqueAssociationTypes().isNotEmpty) {
@@ -57,7 +57,6 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
         }
       }
     });
-    codeBuffer.writeln(spaces(4) + "_imageRepository = new ImageCache(Image${prefix}Firestore(appID));");
     codeBuffer.writeln("  }");
 
     modelSpecificationPlus.forEach((spec) {
@@ -66,12 +65,6 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln(spaces(2) + spec.modelSpecification.id + "Repository _" + firstLowerCase(spec.modelSpecification.id) + "Repository;");
       }
     });
-    codeBuffer.writeln(spaces(2) + "ImageRepository imageRepository() => _imageRepository;");
-    codeBuffer.writeln(spaces(2) + "ImageRepository _imageRepository;");
-    codeBuffer.writeln(spaces(2) + "AppRepository appRepository() => _appRepository;");
-    codeBuffer.writeln(spaces(2) + "AppRepository _appRepository = App${prefix}Firestore();");
-    codeBuffer.writeln(spaces(2) + "UserRepository userRepository() => _userRepository;");
-    codeBuffer.writeln(spaces(2) + "UserRepository _userRepository = new UserRepository();");
     codeBuffer.writeln();
 
     codeBuffer.writeln("}");

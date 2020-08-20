@@ -4,13 +4,20 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
+// import the main repository
+import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
+// import the shared repository
+import 'package:eliud_model/shared/abstract_repository_singleton.dart';
+// import the repository of this package:
 import '../shared/abstract_repository_singleton.dart';
 
-import 'component_constructor.dart';
+import 'package:eliud_model/tools/component_constructor.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'has_fab.dart';
+
+import 'package:eliud_model/shared/has_fab.dart';
+
 """;
 
 const String _componentImports = """
@@ -20,7 +27,6 @@ import '../\${path}_dropdown_button.dart';
 import '../\${path}_list_event.dart';
 
 """;
-
 
 const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {
@@ -86,14 +92,13 @@ class DropdownButtonComponent extends StatelessWidget {
   Widget build(BuildContext context) {
 """;
 
-
 const String _SpecificListComponentCode = """
   Widget _\${lowerSpecific}Build() {
     return MultiBlocProvider(
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
-            \${lowerSpecific}Repository:  AbstractRepositorySingleton.singleton.\${lowerSpecific}Repository(),
+            \${lowerSpecific}Repository: \${lowerSpecific}Repository(),
           )..add(Load\${upperSpecific}List()),
         )
       ],
@@ -108,7 +113,7 @@ const String _SpecificDropdownButtonComponentCode = """
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
-            \${lowerSpecific}Repository: AbstractRepositorySingleton.singleton.\${lowerSpecific}Repository(),
+            \${lowerSpecific}Repository: \${lowerSpecific}Repository(),
           )..add(Load\${upperSpecific}List()),
         )
       ],
@@ -122,7 +127,7 @@ const String _SpecificCodeFooter = """
 """;
 
 class InternalComponentCodeGenerator extends CodeGeneratorMulti {
-  InternalComponentCodeGenerator(String fileName): super(fileName: fileName);
+  InternalComponentCodeGenerator(String fileName) : super(fileName: fileName);
 
   @override
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
@@ -133,28 +138,18 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(process(_componentImports, parameters: <String, String> { "\${path}": spec.path }));
+        codeBuffer.writeln(process(_componentImports,
+            parameters: <String, String>{"\${path}": spec.path}));
       }
     });
-
-    codeBuffer.writeln("List<String> allInternalComponents = [");
-    codeBuffer.write(spaces(10));
-    modelSpecificationPlus.forEach((spec) {
-      ModelSpecification ms = spec.modelSpecification;
-      if (ms.generate.generateInternalComponent) {
-        codeBuffer.write("\"" + firstLowerCase(ms.id) + "s\", ");
-      }
-    });
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "];");
-    codeBuffer.writeln();
 
     codeBuffer.writeln(process(_ListFactoryCode));
     codeBuffer.writeln(process(_DropdownButtonFactoryCodeHeader));
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(spaces(4) + "if (id == \"" + firstLowerCase(ms.id) + "s\")");
+        codeBuffer.writeln(
+            spaces(4) + "if (id == \"" + firstLowerCase(ms.id) + "s\")");
         codeBuffer.writeln(_DropdownButtonFactoryCodeComponent);
       }
     });
@@ -164,7 +159,6 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(_code(modelSpecificationPlus, false));
 
     return codeBuffer.toString();
-
   }
 
   String _code(modelSpecificationPlus, list) {
@@ -176,10 +170,16 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(spaces(4) + "if (componentId == '" + firstLowerCase(ms.id) + "s') return _" + firstLowerCase(ms.id) + "Build();");
+        codeBuffer.writeln(spaces(4) +
+            "if (componentId == '" +
+            firstLowerCase(ms.id) +
+            "s') return _" +
+            firstLowerCase(ms.id) +
+            "Build();");
       }
     });
-    codeBuffer.writeln(spaces(4) + "return Image(image: AssetImage('assets/images/component_not_available.png'));");
+    codeBuffer.writeln(spaces(4) +
+        "return Image(image: AssetImage('assets/images/component_not_available.png'));");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
 
@@ -188,23 +188,33 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
       modelSpecificationPlus.forEach((spec) {
         ModelSpecification ms = spec.modelSpecification;
         if (ms.generate.generateInternalComponent) {
-          codeBuffer.writeln(
-              spaces(4) + "if (componentId == '" + firstLowerCase(ms.id) +
-                  "s') widget = " + firstUpperCase(ms.id) + "ListWidget();");
+          codeBuffer.writeln(spaces(4) +
+              "if (componentId == '" +
+              firstLowerCase(ms.id) +
+              "s') widget = " +
+              firstUpperCase(ms.id) +
+              "ListWidget();");
         }
       });
       codeBuffer.writeln(spaces(2) + "}");
     }
-
 
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
         if (list)
-          codeBuffer.writeln(process(_SpecificListComponentCode, parameters: <String, String> { "\${lowerSpecific}": firstLowerCase(ms.id), "\${upperSpecific}": ms.id }));
+          codeBuffer.writeln(process(_SpecificListComponentCode,
+              parameters: <String, String>{
+                "\${lowerSpecific}": firstLowerCase(ms.id),
+                "\${upperSpecific}": ms.id,
+              }));
         else
-          codeBuffer.writeln(process(_SpecificDropdownButtonComponentCode, parameters: <String, String> { "\${lowerSpecific}": firstLowerCase(ms.id), "\${upperSpecific}": ms.id }));
+          codeBuffer.writeln(process(_SpecificDropdownButtonComponentCode,
+              parameters: <String, String>{
+                "\${lowerSpecific}": firstLowerCase(ms.id),
+                "\${upperSpecific}": ms.id,
+              }));
       }
     });
     codeBuffer.writeln(process(_SpecificCodeFooter));

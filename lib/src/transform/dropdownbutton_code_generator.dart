@@ -152,6 +152,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
 
   @override
   String body() {
+    print("body()");
     StringBuffer codeBuffer = StringBuffer();
     StringBuffer childCodeBuffer = StringBuffer();
 
@@ -164,17 +165,23 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     } else {
       childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + ")");
     }
+    print("body() - 1");
     childCodeBuffer.writeln(");");
+    print("body() - 2a");
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.subTitle + " != null) ");
     childCodeBuffer.write("widgets.add(");
+    print("body() - 2b");
     if (modelSpecifications.listFields.imageSubTitle) {
+      print("body() - before process");
       childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.subTitle }));
     } else {
       childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + ")");
     }
+    print("body() - 2c");
     childCodeBuffer.writeln(");");
     childCodeBuffer.writeln("return widgets;");
     childCodeBuffer.writeln("}");
+    print("body() - 2");
     codeBuffer.writeln(process(_code,
         parameters: <String, String> {
           '\${id}': modelSpecifications.id,

@@ -7,7 +7,14 @@ import 'code_generator.dart';
 
 const String _imports = """
 import 'package:eliud_model/core/global_data.dart';
+
+// import the main repository
+import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
+// import the shared repository
 import 'package:eliud_model/shared/abstract_repository_singleton.dart';
+// import the repository of this package:
+import '../shared/abstract_repository_singleton.dart';
+
 import 'package:eliud_model/shared/action_model.dart';
 import 'package:eliud_model/core/navigate/router.dart';
 import 'package:eliud_model/tools/screen_size.dart';
@@ -19,15 +26,15 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 import 'package:intl/intl.dart';
 
-import '../tools/enums.dart';
+import 'package:eliud_model/core/eliud.dart';
 
-import '../shared/internal_component.dart';
+import 'package:eliud_model/shared/internal_component.dart';
+import 'package:eliud_model/shared/embedded_component.dart';
 import '../shared/embedded_component.dart';
-import '../shared/bespoke_formfields.dart';
-import '../shared/abstract_repository_singleton.dart';
+import 'package:eliud_model/shared/bespoke_formfields.dart';
 
-import '../core/eliud.dart';
-import '../tools/etc.dart';
+import 'package:eliud_model/tools/enums.dart';
+import 'package:eliud_model/tools/etc.dart';
 
 """;
 
@@ -675,7 +682,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(16) + "new Container(");
           codeBuffer.writeln(spaces(20) + "height: (fullScreenHeight(context) / 2.5), ");
           codeBuffer.writeln(spaces(20) +
-              "child: EmbeddedComponentFactory." +
+              "child: " +
               firstLowerCase(field.fieldType) +
               "sList(state.value." +
               field.fieldName +

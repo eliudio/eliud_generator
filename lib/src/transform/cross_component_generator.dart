@@ -5,8 +5,8 @@ import 'code_generator_multi.dart';
 
 const String _imports = """
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:eliud_model/tools/registry.dart';
 
 import 'internal_component.dart';
 
@@ -39,12 +39,12 @@ class CrossComponentState extends State<CrossComponent> {
         color: Colors.white
       );
     if (widget.extension == "internalWidgets") {
-      var dropDownItems = allInternalComponents
+      var dropDownItems = Registry.registry().allInternalComponents()
           .map((widgetName) => new DropdownMenuItem(value: widgetName, child: new Text(widgetName)))
           .toList();
 
       String choice;
-      if (allInternalComponents.indexWhere((widgetName) => (widgetName == widget.value)) >= 0)
+      if (Registry.registry().allInternalComponents().indexWhere((widgetName) => (widgetName == widget.value)) >= 0)
         choice = widget.value;
 
       return Center(child: new DropdownButton(

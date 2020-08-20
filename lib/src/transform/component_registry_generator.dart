@@ -5,15 +5,8 @@ import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
-import 'dart:collection';
-import 'package:eliud_model/core/access/bloc/user_repository.dart';
-import 'package:flutter/material.dart';
-
-import '../core/components/application_component.dart';
-import '../core/components/page_component.dart';
-
-import '../shared/component_constructor.dart';
-import '../shared/internal_component.dart';
+import 'package:eliud_model/shared/internal_component.dart';
+import 'package:eliud_model/tools/registry.dart';
 
 \${import}
 
@@ -21,90 +14,9 @@ import '../shared/internal_component.dart';
 
 const String _code = """
 class ComponentRegistry {
-  final Map<String, ComponentConstructor> _registryMap = new HashMap();
-  PageComponentConstructor _pageComponentConstructor;
-  ApplicationComponentConstructor _applicationComponentConstructor;
 
-  static ComponentRegistry _instance;
-  
-  Map<String, ComponentConstructor> registryMap() => _registryMap;
-
-  ComponentRegistry._internal() {
-    _init();
-  }
-
-  static ComponentRegistry registry() {
-    if (_instance == null) {
-      _instance = ComponentRegistry._internal();
-    }
-
-    return _instance;
-  }
-
-  Widget page({String id, Map<String, String> parameters }) {
-    Widget returnThis;
-    try {
-      returnThis = _pageComponentConstructor.createNew(id: id, parameters: parameters);
-    } catch (_) {}
-    if (returnThis != null) return returnThis;
-    return _missingPage();
-  }
-
-  Widget application({String id}) {
-    return _applicationComponentConstructor.createNew(id: id);
-  }
-
-  Widget component({String componentName, String id, Map<String, String> parameters}) {
-    Widget returnThis;
-    try {
-      ComponentConstructor componentConstructor = _registryMap[componentName];
-      if (componentConstructor != null)
-        returnThis = componentConstructor.createNew(id: id, parameters: parameters);
-    } catch (_) {}
-    if (returnThis != null) return returnThis;
-    return _missingComponent();
-  }
-
-  Widget _missingComponent() {
-    try {
-      return Image(
-          image: AssetImage('assets/images/component_not_available.png'));
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Widget _missingPage() {
-    try {
-      return Image(image: AssetImage('assets/images/page_not_available.png'));
-    } catch (_) {
-      return null;
-    }
-  }
-
-  void register(
-      {String componentName, ComponentConstructor componentConstructor}) {
-    _registryMap[componentName] = componentConstructor;
-  }
-
-  void initialize(
-      {ComponentConstructor pageComponentConstructor,
-        ComponentConstructor applicationComponentConstructor}) {
-    _pageComponentConstructor = pageComponentConstructor;
-    _applicationComponentConstructor = applicationComponentConstructor;
-  }
-
-  void _init() {
-    final GlobalKey<NavigatorState> navigatorKey =
-    new GlobalKey<NavigatorState>();
-    initialize(
-      pageComponentConstructor: PageComponentConstructorDefault(
-          navigatorKey: navigatorKey),
-      applicationComponentConstructor: ApplicationComponentConstructorDefault(
-          navigatorKey: navigatorKey),
-    );
-    
-    \${register}
+  void init() {
+\${register}
   }
 }
 
@@ -127,11 +39,22 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     });
     codeBuffer.writeln(process(_imports, parameters: <String, String> { '\${import}': _import.toString() }));
     StringBuffer register = StringBuffer();
-    register .writeln("register(componentName: \"internalWidgets\", componentConstructor: ListComponentFactory());");
+
+    register.write(spaces(4) + "Registry.registry().addInternalComponents([");
+    modelSpecificationPlus.forEach((spec) {
+      ModelSpecification ms = spec.modelSpecification;
+      if (ms.generate.generateInternalComponent) {
+        register.write("\"" + firstLowerCase(ms.id) + "s\", ");
+      }
+    });
+    register.writeln("]);");
+    register.writeln();
+
+    register .writeln(spaces(4) + "Registry.registry().register(componentName: \"internalWidgets\", componentConstructor: ListComponentFactory());");
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
       if (spec.modelSpecification.generate.isExtension) {
-        register .writeln("register(componentName: \"" + firstLowerCase(spec.modelSpecification.id) + "s\", componentConstructor: " + spec.modelSpecification.id + "ComponentConstructorDefault());");
+        register .writeln(spaces(4) + "Registry.registry().register(componentName: \"" + firstLowerCase(spec.modelSpecification.id) + "s\", componentConstructor: " + spec.modelSpecification.id + "ComponentConstructorDefault());");
       }
     });
     codeBuffer.writeln(process(_code, parameters: <String, String> { '\${register}': register.toString() }));
