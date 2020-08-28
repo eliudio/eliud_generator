@@ -1,15 +1,15 @@
 
 
 import 'package:eliud_generator/src/transform/code_generator_multi.dart';
-import 'package:eliud_generator/src/transform/component_registry_generator.dart';
+import 'package:eliud_generator/src/transform/model_export_generator.dart';
 import 'package:eliud_generator/src/transform/repository_export_generator.dart';
 
 import 'code_builder_multi.dart';
 
-class ComponentRegistryBuilder extends CodeBuilderMulti {
-  ComponentRegistryGenerator componentRegistryGenerator = ComponentRegistryGenerator(fileName);
+class ModelExportBuilder extends CodeBuilderMulti {
+  ModelExportGenerator modelExportGenerator = ModelExportGenerator(fileName);
 
-  static const String fileName = 'model/component_registry.dart';
+  static const String fileName = 'model/model_export.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {
@@ -20,7 +20,7 @@ class ComponentRegistryBuilder extends CodeBuilderMulti {
 
   @override
   CodeGeneratorMulti generator() {
-    return componentRegistryGenerator;
+    return modelExportGenerator;
   }
 
   @override

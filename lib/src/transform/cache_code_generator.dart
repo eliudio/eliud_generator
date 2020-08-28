@@ -4,19 +4,11 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-const String _imports = """
+String _imports = """
 import 'dart:async';
 import '\${filename}_model.dart';
 import '\${filename}_repository.dart';
-
-// import the main repository
-import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
-// import the shared repository
-import 'package:eliud_model/shared/abstract_repository_singleton.dart';
-// import the repository of this package:
-import '../shared/abstract_repository_singleton.dart';
-
-""";
+""" + base_imports(repo: true, model: true, entity: true, cache:true);
 
 const String _header = """
 class \${id}Cache implements \${id}Repository {
@@ -160,26 +152,6 @@ class CacheCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln(process(_imports, parameters: <String, String> { '\${filename}': camelcaseToUnderscore(modelSpecifications.id) }));
-
-    modelSpecifications.fields.forEach((field) {
-      if ((!field.isEnum()) && (!field.isNativeType())) {
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_model.dart") + "';");
-      }
-    });
-    modelSpecifications.fields.forEach((field) {
-      if (!field.isEnum()) {
-        if (!field.isNativeType()) {
-          if (field.isArray()) {
-            headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_cache.dart") + "';");
-            if (field.arrayType == ArrayType.CollectionArrayType) {
-              headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_repository.dart") + "';");
-            }
-          } else {
-            // This might be or become a case to handle as well
-          }
-        }
-      }
-    });
 
     return headerBuffer.toString();
   }

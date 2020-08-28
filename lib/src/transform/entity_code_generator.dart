@@ -47,19 +47,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
+    headerBuffer.writeln("import 'entity_export.dart';");
+    headerBuffer.writeln("import 'package:eliud_model/shared/action_entity.dart';");
 
-    bool extraLine = false;
-    modelSpecifications.fields.forEach((field) {
-      if ((!field.isEnum()) && (!field.isNativeType())) {
-        headerBuffer.writeln("import '" +
-            resolveImport(
-                importThis:
-                    camelcaseToUnderscore(field.fieldType) + "_entity.dart") +
-            "';");
-        extraLine = true;
-      }
-    });
-    if (extraLine) headerBuffer.writeln();
     return headerBuffer.toString();
   }
 

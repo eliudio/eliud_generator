@@ -9,7 +9,7 @@ import 'code_builder_multi.dart';
 class CrossComponentBuilder extends CodeBuilderMulti {
   CrossComponentCodeGenerator crossComponentCodeGenerator = CrossComponentCodeGenerator(fileName);
 
-  static const String fileName = 'shared/cross_component.dart';
+  static const String fileName = 'model/cross_component.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {

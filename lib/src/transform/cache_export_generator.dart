@@ -1,13 +1,12 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
+import 'package:eliud_generator/src/transform/export_generator.dart';
 
 import 'code_generator.dart';
 import 'code_generator_multi.dart';
-import 'export_generator.dart';
 
-class RepositoryExportGenerator extends ExportGenerator {
-  RepositoryExportGenerator(String fileName)
-      : super(fileName: fileName, extension: 'repository');
+class CacheExportGenerator extends ExportGenerator {
+  CacheExportGenerator(String fileName): super(fileName: fileName, extension: 'cache');
 
   @override
   bool shouldGenerate(ModelSpecification spec) {

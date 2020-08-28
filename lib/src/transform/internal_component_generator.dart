@@ -1,16 +1,10 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
+import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
-const String _imports = """
-// import the main repository
-import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
-// import the shared repository
-import 'package:eliud_model/shared/abstract_repository_singleton.dart';
-// import the repository of this package:
-import '../shared/abstract_repository_singleton.dart';
-
+String _imports = """
 import 'package:eliud_model/tools/component_constructor.dart';
 
 import 'package:flutter/material.dart';
@@ -20,13 +14,13 @@ import 'package:eliud_model/shared/has_fab.dart';
 
 """;
 
-const String _componentImports = """
+String _componentImports = """
 import '../\${path}_list_bloc.dart';
 import '../\${path}_list.dart';
 import '../\${path}_dropdown_button.dart';
 import '../\${path}_list_event.dart';
 
-""";
+""" + base_imports(repo: true, model: true, entity: true);
 
 const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {

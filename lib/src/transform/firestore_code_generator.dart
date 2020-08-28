@@ -144,17 +144,9 @@ class FirestoreCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
     headerBuffer.writeln();
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FIRESTORE);
+    headerBuffer.writeln(base_imports(repo: true, model: true, entity: true));
+
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.entityFileName()) + "';");
-    headerBuffer.writeln();
-    modelSpecifications.fields.forEach((field) {
-      if (field.arrayType == ArrayType.CollectionArrayType) {
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_repository.dart") + "';");
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_firestore.dart") + "';");
-      }
-    });
 
     return headerBuffer.toString();
   }

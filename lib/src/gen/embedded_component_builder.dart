@@ -9,7 +9,7 @@ import 'code_builder_multi.dart';
 class EmbeddedComponentBuilder extends CodeBuilderMulti {
   EmbeddedComponentCodeGenerator embeddedComponentCodeGenerator = EmbeddedComponentCodeGenerator(fileName);
 
-  static const String fileName = 'shared/embedded_component.dart';
+  static const String fileName = 'model/embedded_component.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {

@@ -5,7 +5,7 @@ import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
-import 'package:eliud_model/shared/internal_component.dart';
+import '../model/internal_component.dart';
 import 'package:eliud_model/tools/registry.dart';
 
 \${import}

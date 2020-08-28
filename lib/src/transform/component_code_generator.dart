@@ -12,12 +12,14 @@ class ComponentCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:flutter/material.dart';");
     headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
+
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.componentBlocFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.componentEventFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.componentStateFileName()) + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.componentBlocFileName() + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.componentEventFileName() + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.modelFileName() + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.componentStateFileName() + "';");
+
     headerBuffer.writeln();
     return headerBuffer.toString();
   }

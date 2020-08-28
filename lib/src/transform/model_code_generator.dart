@@ -2,20 +2,13 @@ import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
+import 'code_generator.dart';
 import 'data_code_generator.dart';
 
-const String _imports = """
+String _imports = """
 import 'package:eliud_model/core/global_data.dart';
 
-// import the main repository
-import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
-// import the shared repository
-import 'package:eliud_model/shared/abstract_repository_singleton.dart';
-// import the repository of this package:
-import '../shared/abstract_repository_singleton.dart';
-
-import '../shared/abstract_repository_singleton.dart';
-""";
+""" + base_imports(repo: true, model: true, entity: true);
 
 class ModelCodeGenerator extends DataCodeGenerator {
   ModelCodeGenerator({ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
@@ -35,18 +28,22 @@ class ModelCodeGenerator extends DataCodeGenerator {
     headerBuffer.writeln(_imports);
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
+/*
     modelSpecifications.fields.forEach((field) {
       if ((!field.isEnum()) && (!field.isNativeType())) {
         headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_model.dart") + "';");
       }
     });
+*/
 
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_MODEL);
 
+/*
     uniqueAssociationTypes.forEach((type) {
       headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(type) + "_repository.dart") + "';");
     });
 
+*/
     headerBuffer.writeln("import 'package:eliud_model/tools/random.dart';");
 
     headerBuffer.writeln();

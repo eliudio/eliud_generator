@@ -5,12 +5,11 @@ import 'code_generator.dart';
 import 'code_generator_multi.dart';
 import 'export_generator.dart';
 
-class RepositoryExportGenerator extends ExportGenerator {
-  RepositoryExportGenerator(String fileName)
-      : super(fileName: fileName, extension: 'repository');
+class EntityExportGenerator extends ExportGenerator {
+  EntityExportGenerator(String fileName): super(fileName: fileName, extension: 'entity');
 
   @override
   bool shouldGenerate(ModelSpecification spec) {
-    return (spec.generate.generateRepository);
+    return (spec.generate.generateEntity);
   }
 }

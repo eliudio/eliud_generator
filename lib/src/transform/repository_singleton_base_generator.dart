@@ -26,11 +26,6 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln("import '../" + path + "_cache.dart';");
       }
     });
-    codeBuffer.writeln("import 'package:eliud_model/core/access/bloc/user_repository.dart';");
-    codeBuffer.writeln("import 'package:eliud_model/tools/types.dart';");
-    codeBuffer.writeln();
-    codeBuffer.writeln("import 'package:eliud_model/shared/image${file_prefix}_firestore_bespoke.dart';");
-    codeBuffer.writeln("import 'package:eliud_model/shared/image_cache.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if (spec.modelSpecification.uniqueAssociationTypes().isNotEmpty) {

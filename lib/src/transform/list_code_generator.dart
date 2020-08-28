@@ -170,10 +170,10 @@ class ListCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     return process(_imports, parameters: <String, String>{
-      "\${importprefix}": resolveImport(importThis: camelcaseToUnderscore(modelSpecifications.id)),
+      "\${importprefix}": camelcaseToUnderscore(modelSpecifications.id)
     })
     + (modelSpecifications.generate.generateForm ? process(_importForms, parameters: <String, String>{
-      "\${importprefix}": resolveImport(importThis: camelcaseToUnderscore(modelSpecifications.id)),
+      "\${importprefix}": camelcaseToUnderscore(modelSpecifications.id),
     }) : "");
   }
 

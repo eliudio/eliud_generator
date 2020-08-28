@@ -2,6 +2,73 @@ import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/transform/code_generator_base.dart';
 
+String base_imports({bool repo, bool model, bool entity, bool cache}) {
+  String base = """
+// import the main classes
+import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
+
+// import the shared classes
+import 'package:eliud_model/model/abstract_repository_singleton.dart';
+""";
+
+  if ((repo != null) && (repo)) {
+    base = base + """
+import 'package:eliud_model/model/repository_export.dart';
+""";
+  }
+
+  if ((cache != null) && (cache)) {
+    base = base + """
+import 'package:eliud_model/model/cache_export.dart';
+""";
+  }
+
+  if ((model != null) && (model)) {
+    base = base + """
+import 'package:eliud_model/model/model_export.dart';
+import 'package:eliud_model/shared/action_model.dart';
+""";
+  }
+
+  if ((entity != null) && (entity)) {
+    base = base + """
+import 'package:eliud_model/model/entity_export.dart';
+""";
+  }
+
+  base = base + """
+  
+// import the classes of this package:
+import '../model/abstract_repository_singleton.dart';
+""";
+
+  if ((repo != null) && (repo)) {
+    base = base + """
+import '../model/repository_export.dart';
+""";
+  }
+
+  if ((cache != null) && (cache)) {
+    base = base + """
+import '../model/cache_export.dart';
+""";
+  }
+
+  if ((model != null) && (model)) {
+    base = base + """
+import '../model/model_export.dart';
+""";
+  }
+
+  if ((entity != null) && (entity)) {
+    base = base + """
+import '../model/entity_export.dart';
+""";
+  }
+
+  return base;
+}
+
 abstract class CodeGenerator extends CodeGeneratorBase {
   final ModelSpecification modelSpecifications;
   final List<String> uniqueAssociationTypes;
@@ -15,20 +82,6 @@ abstract class CodeGenerator extends CodeGeneratorBase {
 
   CodeGenerator({this.modelSpecifications})
       : uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
-
-  String resolveImport({String importThis}) {
-    if ((importThis.startsWith("action_")) ||
-        (importThis.startsWith("image_")) ||
-        (importThis.startsWith("grid_view_type_")) ||
-        (importThis.startsWith("rgb_")) ||
-        (importThis.startsWith("font_")) ||
-        (importThis.startsWith("pos_size_")) ||
-        (importThis.startsWith("background_")) ||
-        (importThis.startsWith("decoration_color_")) ||
-        (importThis.startsWith("icon_")))
-      return "package:eliud_model/shared/" + importThis;
-    return importThis;
-  }
 
   bool hasArray() {
     bool returnMe = false;

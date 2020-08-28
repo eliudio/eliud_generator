@@ -16,14 +16,11 @@ class FormEventCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
+
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
     headerBuffer.writeln("import 'package:meta/meta.dart';");
-    modelSpecifications.fields.forEach((field) {
-      if ((!field.isEnum()) && (!field.isNativeType())) {
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_model.dart") + "';");
-      }
-    });
+    headerBuffer.writeln(base_imports(repo: true, model: true, entity: true));
+
     headerBuffer.writeln();
     return headerBuffer.toString();
   }

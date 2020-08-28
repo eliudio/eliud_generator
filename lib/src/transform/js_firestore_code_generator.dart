@@ -156,16 +156,8 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
     headerBuffer.writeln();
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FIRESTORE);
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.entityFileName()) + "';");
+    headerBuffer.writeln(base_imports(repo: true, model: true, entity: true));
     headerBuffer.writeln();
-    modelSpecifications.fields.forEach((field) {
-      if (field.arrayType == ArrayType.CollectionArrayType) {
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_repository.dart") + "';");
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_js_firestore.dart") + "';");
-      }
-    });
 
     return headerBuffer.toString();
   }

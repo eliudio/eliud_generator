@@ -8,7 +8,7 @@ import 'code_builder_multi.dart';
 class InternalComponentBuilder extends CodeBuilderMulti {
   InternalComponentCodeGenerator internalComponentCodeGenerator = InternalComponentCodeGenerator(fileName);
 
-  static const String fileName = 'shared/internal_component.dart';
+  static const String fileName = 'model/internal_component.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {

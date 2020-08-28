@@ -14,10 +14,12 @@ class ListBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln("import 'package:meta/meta.dart';");
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.repositoryFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.listEventFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.listStateFileName()) + "';");
+
+    headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.listEventFileName() + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.listStateFileName() + "';");
     headerBuffer.writeln();
+
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_LIST_BLOC);
     headerBuffer.writeln();
     return headerBuffer.toString();

@@ -10,7 +10,7 @@ class ListStateCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.modelFileName() + "';");
     headerBuffer.writeln();
     return headerBuffer.toString();
   }

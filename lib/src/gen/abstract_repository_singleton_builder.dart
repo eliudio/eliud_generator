@@ -10,7 +10,7 @@ import 'code_builder_multi.dart';
 class AbstractRepositorySingletonBuilder extends CodeBuilderMulti {
   AbstractRepositorySingletonCodeGenerator abstractRepositorySingletonCodeGenerator = AbstractRepositorySingletonCodeGenerator(fileName);
 
-  static const String fileName = 'shared/abstract_repository_singleton.dart';
+  static const String fileName = 'model/abstract_repository_singleton.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {

@@ -1,14 +1,14 @@
 
 
+import 'package:eliud_generator/src/transform/cache_export_generator.dart';
 import 'package:eliud_generator/src/transform/code_generator_multi.dart';
-import 'package:eliud_generator/src/transform/repository_export_generator.dart';
 
 import 'code_builder_multi.dart';
 
-class RepositoryExportBuilder extends CodeBuilderMulti {
-  RepositoryExportGenerator repositoryExportGenerator = RepositoryExportGenerator(fileName);
+class CacheExportBuilder extends CodeBuilderMulti {
+  CacheExportGenerator cacheExportGenerator = CacheExportGenerator(fileName);
 
-  static const String fileName = 'model/repository_export.dart';
+  static const String fileName = 'model/cache_export.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {
@@ -19,7 +19,7 @@ class RepositoryExportBuilder extends CodeBuilderMulti {
 
   @override
   CodeGeneratorMulti generator() {
-    return repositoryExportGenerator;
+    return cacheExportGenerator;
   }
 
   @override

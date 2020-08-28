@@ -5,15 +5,8 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-const String _imports = """
+String _imports = """
 import 'package:eliud_model/core/global_data.dart';
-
-// import the main repository
-import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
-// import the shared repository
-import 'package:eliud_model/shared/abstract_repository_singleton.dart';
-// import the repository of this package:
-import '../shared/abstract_repository_singleton.dart';
 
 import 'package:eliud_model/shared/action_model.dart';
 import 'package:eliud_model/core/navigate/router.dart';
@@ -28,15 +21,15 @@ import 'package:intl/intl.dart';
 
 import 'package:eliud_model/core/eliud.dart';
 
-import 'package:eliud_model/shared/internal_component.dart';
-import 'package:eliud_model/shared/embedded_component.dart';
-import '../shared/embedded_component.dart';
+import 'package:eliud_model/model/internal_component.dart';
+import 'package:eliud_model/model/embedded_component.dart';
+import '../model/embedded_component.dart';
 import 'package:eliud_model/shared/bespoke_formfields.dart';
 
 import 'package:eliud_model/tools/enums.dart';
 import 'package:eliud_model/tools/etc.dart';
 
-""";
+""" + base_imports(repo: true, model: true, entity: true);
 
 const String _specificImports = """
 import '\${path}_list_bloc.dart';

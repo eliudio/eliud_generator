@@ -1,20 +1,12 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
+import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
-const String _imports = """
-
-// import the main repository
-import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
-// import the shared repository
-import 'package:eliud_model/shared/abstract_repository_singleton.dart';
-// import the repository of this package:
-import '../shared/abstract_repository_singleton.dart';
+String _imports = """
 
 import 'package:eliud_model/shared/action_model.dart';
-import 'package:eliud_model/shared/rgb_model.dart';
-import 'package:eliud_model/shared/icon_model.dart';
 
 import 'package:eliud_model/model/menu_def_model.dart';
 import 'package:eliud_model/model/page_model.dart';
@@ -24,7 +16,7 @@ import 'package:eliud_model/model/drawer_model.dart';
 import 'package:eliud_model/model/menu_item_model.dart';
 import 'package:eliud_model/model/home_menu_model.dart';
 
-""";
+""" + base_imports(repo: true, model: true, entity: true);
 
 const String _header = """
 class AdminApp {

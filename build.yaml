@@ -249,6 +249,30 @@ builders:
     build_to: source
     auto_apply: all_packages
 
+  cache_export:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["cache_export"]
+    build_extensions: {r"$lib$": ["cache_export.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  entity_export:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["entity_export"]
+    build_extensions: {r"$lib$": ["entity_export.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
+  model_export:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["model_export"]
+    build_extensions: {r"$lib$": ["model_export.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
   component_registry:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"

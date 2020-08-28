@@ -34,29 +34,20 @@ const String _isDocumentIDValid = """
 
 """;
 
-const String _imports = """
+String _imports = """
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 
-// import the main repository
-import 'package:eliud_model/tools/main_abstract_repository_singleton.dart';
-// import the shared repository
-import 'package:eliud_model/shared/abstract_repository_singleton.dart';
-// import the repository of this package:
-import '../shared/abstract_repository_singleton.dart';
-
 import 'package:eliud_model/tools/enums.dart';
 import 'package:eliud_model/tools/types.dart';
 
-import 'package:eliud_model/shared/rgb_model.dart';
+import 'package:eliud_model/model/rgb_model.dart';
 
 import 'package:eliud_model/tools/string_validator.dart';
-import 'package:eliud_model/shared/repository_export.dart';
-import '../shared/repository_export.dart';
 
-""";
+""" + base_imports(repo: true, model: true, entity: true);
 
 class FormBlocCodeGenerator extends CodeGenerator {
   FormBlocCodeGenerator({ModelSpecification modelSpecifications})
@@ -67,10 +58,11 @@ class FormBlocCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FORM_BLOC);
     headerBuffer.writeln(_imports);
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.modelFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formEventFileName()) + "';");
-    headerBuffer.writeln("import '" + resolveImport(importThis: modelSpecifications.formStateFileName()) + "';");
+
+    headerBuffer.writeln("import '" + modelSpecifications.formEventFileName() + "';");
+    headerBuffer.writeln("import '" + modelSpecifications.formStateFileName() + "';");
     headerBuffer.writeln();
+
     return headerBuffer.toString();
   }
 

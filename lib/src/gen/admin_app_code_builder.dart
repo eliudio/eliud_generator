@@ -14,7 +14,7 @@ import 'code_builder_multi.dart';
 class AdminAppBuilder extends CodeBuilderMulti {
   AdminAppCodeGenerator adminAppCodeGenerator = AdminAppCodeGenerator(fileName);
 
-  static const String fileName = 'shared/admin_app.dart';
+  static const String fileName = 'model/admin_app.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {

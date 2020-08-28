@@ -2,15 +2,18 @@ import 'package:build/build.dart';
 import 'package:eliud_generator/src/gen/abstract_repository_singleton_builder.dart';
 import 'package:eliud_generator/src/gen/admin_app_code_builder.dart';
 import 'package:eliud_generator/src/gen/cache_code_builder.dart';
+import 'package:eliud_generator/src/gen/cache_export_builder.dart';
 import 'package:eliud_generator/src/gen/component_registry_builder.dart';
 import 'package:eliud_generator/src/gen/cross_component_builder.dart';
 
 import 'package:eliud_generator/src/gen/entity_code_builder.dart';
+import 'package:eliud_generator/src/gen/entity_export_builder.dart';
 import 'package:eliud_generator/src/gen/js_firestore_code_builder.dart';
 import 'package:eliud_generator/src/gen/js_repository_singleton_builder.dart';
 import 'package:eliud_generator/src/gen/model_code_builder.dart';
 
 import 'package:eliud_generator/src/gen/firestore_code_builder.dart';
+import 'package:eliud_generator/src/gen/model_export_builder.dart';
 import 'package:eliud_generator/src/gen/repository_code_builder.dart';
 
 import 'package:eliud_generator/src/gen/component_bloc_code_builder.dart';
@@ -115,6 +118,15 @@ Builder abstract_repository_singleton(BuilderOptions options) =>
 
 Builder repository_export(BuilderOptions options) =>
     RepositoryExportBuilder();
+
+Builder entity_export(BuilderOptions options) =>
+    EntityExportBuilder();
+
+Builder model_export(BuilderOptions options) =>
+    ModelExportBuilder();
+
+Builder cache_export(BuilderOptions options) =>
+    CacheExportBuilder();
 
 Builder component_registry(BuilderOptions options) =>
     ComponentRegistryBuilder();
