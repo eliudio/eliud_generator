@@ -4,7 +4,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
-import 'package:eliud_model/tools/random.dart';
+import 'package:eliud_core/tools/random.dart';
 
 import 'dart:async';
 

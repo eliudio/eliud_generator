@@ -40,12 +40,12 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:eliud_model/tools/enums.dart';
-import 'package:eliud_model/tools/types.dart';
+import 'package:eliud_core/tools/enums.dart';
+import 'package:eliud_core/tools/types.dart';
 
-import 'package:eliud_model/model/rgb_model.dart';
+import 'package:eliud_core/model/rgb_model.dart';
 
-import 'package:eliud_model/tools/string_validator.dart';
+import 'package:eliud_core/tools/string_validator.dart';
 
 """ + base_imports(repo: true, model: true, entity: true);
 

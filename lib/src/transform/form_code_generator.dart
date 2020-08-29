@@ -6,11 +6,11 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports = """
-import 'package:eliud_model/core/global_data.dart';
+import 'package:eliud_core/core/global_data.dart';
 
-import 'package:eliud_model/shared/action_model.dart';
-import 'package:eliud_model/core/navigate/router.dart';
-import 'package:eliud_model/tools/screen_size.dart';
+import 'package:eliud_core/tools/action_model.dart';
+import 'package:eliud_core/core/navigate/router.dart';
+import 'package:eliud_core/tools/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -19,15 +19,16 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 import 'package:intl/intl.dart';
 
-import 'package:eliud_model/core/eliud.dart';
+import 'package:eliud_core/core/eliud.dart';
 
-import 'package:eliud_model/model/internal_component.dart';
-import 'package:eliud_model/model/embedded_component.dart';
+import 'package:eliud_core/model/internal_component.dart';
+import 'package:eliud_core/model/embedded_component.dart';
 import '../model/embedded_component.dart';
-import 'package:eliud_model/shared/bespoke_formfields.dart';
+import '../tools/bespoke_formfields.dart';
+import 'package:eliud_core/tools/bespoke_formfields.dart';
 
-import 'package:eliud_model/tools/enums.dart';
-import 'package:eliud_model/tools/etc.dart';
+import 'package:eliud_core/tools/enums.dart';
+import 'package:eliud_core/tools/etc.dart';
 
 """ + base_imports(repo: true, model: true, entity: true);
 

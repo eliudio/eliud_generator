@@ -6,7 +6,7 @@ import 'code_generator.dart';
 import 'data_code_generator.dart';
 
 String _imports = """
-import 'package:eliud_model/core/global_data.dart';
+import 'package:eliud_core/core/global_data.dart';
 
 """ + base_imports(repo: true, model: true, entity: true);
 
@@ -44,7 +44,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     });
 
 */
-    headerBuffer.writeln("import 'package:eliud_model/tools/random.dart';");
+    headerBuffer.writeln("import 'package:eliud_core/tools/random.dart';");
 
     headerBuffer.writeln();
     return headerBuffer.toString();

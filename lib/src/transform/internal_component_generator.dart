@@ -5,12 +5,12 @@ import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
 String _imports = """
-import 'package:eliud_model/tools/component_constructor.dart';
+import 'package:eliud_core/tools/component_constructor.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:eliud_model/shared/has_fab.dart';
+import 'package:eliud_core/tools/has_fab.dart';
 
 """;
 

@@ -4,13 +4,13 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 const String _imports = """
-import 'package:eliud_model/core/global_data.dart';
+import 'package:eliud_core/core/global_data.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:eliud_model/platform/platform.dart';
+import 'package:eliud_core/platform/platform.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
