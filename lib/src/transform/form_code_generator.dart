@@ -9,7 +9,7 @@ String _imports = """
 import 'package:eliud_core/core/global_data.dart';
 
 import 'package:eliud_core/tools/action_model.dart';
-import 'package:eliud_core/core/navigate/router.dart';
+import 'package:eliud_core/core/navigate/router.dart' as eliudrouter;
 import 'package:eliud_core/tools/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +19,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 import 'package:intl/intl.dart';
 
-import 'package:eliud_core/core/eliud.dart';
+import 'package:eliud_core/eliud.dart';
 
 import 'package:eliud_core/model/internal_component.dart';
 import 'package:eliud_core/model/embedded_component.dart';
@@ -475,7 +475,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14 + 8) + "}");
 
     codeBuffer.writeln(spaces(14 + 8) + "if (widget.submitAction != null) {");
-    codeBuffer.writeln(spaces(14 + 10) + "Router.navigateTo(context, widget.submitAction);");
+    codeBuffer.writeln(spaces(14 + 10) + "eliudrouter.Router.navigateTo(context, widget.submitAction);");
     codeBuffer.writeln(spaces(14 + 8) + "} else {");
     codeBuffer.writeln(spaces(14 + 10) + "Navigator.pop(context);");
     codeBuffer.writeln(spaces(14 + 8) + "}");
