@@ -48,7 +48,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
-    headerBuffer.writeln(base_imports(entity:true, depends: modelSpecifications.depends));
+    headerBuffer.writeln(base_imports(modelSpecifications.packageName, entity:true, depends: modelSpecifications.depends));
 
     return headerBuffer.toString();
   }

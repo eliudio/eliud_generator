@@ -3,7 +3,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-const String _imports = """
+String _imports(String packageName) => """
 import 'package:eliud_core/core/global_data.dart';
 
 import 'package:flutter/material.dart';
@@ -16,10 +16,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 """;
 
-const String _specificImports = """
-import '\${path}_list_bloc.dart';
-import '\${path}_list_state.dart';
-import '\${path}_model.dart';
+String _specificImports(String packageName) => """
+import 'package:$packageName/model/\${path}_list_bloc.dart';
+import 'package:$packageName/model/\${path}_list_state.dart';
+import 'package:$packageName/model/\${path}_model.dart';
 
 """;
 
@@ -145,8 +145,8 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln(process(_imports));
-    headerBuffer.writeln(process(_specificImports, parameters: <String, String> { '\${path}': camelcaseToUnderscore(modelSpecifications.id) }));
+    headerBuffer.writeln(process(_imports(modelSpecifications.packageName)));
+    headerBuffer.writeln(process(_specificImports(modelSpecifications.packageName), parameters: <String, String> { '\${path}': camelcaseToUnderscore(modelSpecifications.id) }));
     return headerBuffer.toString();
   }
 

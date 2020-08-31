@@ -5,10 +5,10 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 import 'data_code_generator.dart';
 
-String _imports(List<String> depends) => """
+String _imports(String packageName, List<String> depends) => """
 import 'package:eliud_core/core/global_data.dart';
 
-""" + base_imports(repo: true, model: true, entity: true, depends: depends);
+""" + base_imports(packageName, repo: true, model: true, entity: true, depends: depends);
 
 class ModelCodeGenerator extends DataCodeGenerator {
   ModelCodeGenerator({ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
@@ -25,16 +25,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
-    headerBuffer.writeln(_imports(modelSpecifications.depends));
+    headerBuffer.writeln(_imports(modelSpecifications.packageName, modelSpecifications.depends));
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
-/*
-    modelSpecifications.fields.forEach((field) {
-      if ((!field.isEnum()) && (!field.isNativeType())) {
-        headerBuffer.writeln("import '" + resolveImport(importThis: camelcaseToUnderscore(field.fieldType) + "_model.dart") + "';");
-      }
-    });
-*/
+    headerBuffer.writeln(importString(modelSpecifications.packageName, 'model/' + modelSpecifications.entityFileName()));
 
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_MODEL);
 

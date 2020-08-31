@@ -43,6 +43,7 @@ class View {
 }
 
 class ModelSpecification extends Specification {
+  final String packageName;
   final List<Field> fields;
   final List<Group> groups;
   final GenerateSpecification generate;
@@ -72,14 +73,15 @@ class ModelSpecification extends Specification {
   final String where;
   final String whereJs;
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.where, this.whereJs, this.depends }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.packageName, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.where, this.whereJs, this.depends }) : super(id: id);
 
   ModelSpecification copyWith({ String id, GenerateSpecification generate, List<Field> fields, List<Group> groups,
     ListFields listFields, String displayOnDelete, Map<String, String> extraImports, bool isAppModel,
     String preToEntityCode, String preMapUpdateCode, List<View> views, List<String> depends }) {
     ModelSpecification newModelSpecification = ModelSpecification(
       id: id ?? this.id,
-      generate: generate ?? this.generate ,
+      generate: generate ?? this.generate,
+      packageName: packageName ?? this.packageName,
       fields: fields ?? this.fields,
       groups: groups ?? this.groups,
       listFields: listFields ?? this.listFields,
@@ -113,6 +115,7 @@ class ModelSpecification extends Specification {
     return <String, dynamic>{
       "id": id,
       "generate": generate.toJson(),
+      'packageName': packageName,
       'fields': jsonFields,
       'groups': jsonGroups,
       'listFields': listFields.toJson(),
@@ -135,11 +138,11 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, where, whereJs, depends ];
+  List<Object> get props => [id, generate, packageName, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, where, whereJs, depends ];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, where: $where, whereJs: $whereJs, depends: $depends }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, packageName: $packageName, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, where: $where, whereJs: $whereJs, depends: $depends }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -190,6 +193,7 @@ class ModelSpecification extends Specification {
     return ModelSpecification(
       id: json["id"] as String,
       generate: GenerateSpecification.fromJson(json["generate"]),
+      packageName: json["packageName"] as String,
       fields: theItems,
       groups: theGroups,
       listFields: theListFields,

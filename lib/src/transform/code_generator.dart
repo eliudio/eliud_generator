@@ -2,7 +2,15 @@ import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/transform/code_generator_base.dart';
 
-String base_imports({bool repo, bool model, bool entity, bool cache, bool embeddedComponent, List<String> depends}) {
+String importString(String packageName, String file) {
+  if (file.endsWith('.dart')) {
+    return "import 'package:$packageName/$file';\n";
+  } else {
+    return "import 'package:$packageName/$file.dart';\n";
+  }
+}
+
+String base_imports(String packageName, {bool repo, bool model, bool entity, bool cache, bool embeddedComponent, List<String> depends}) {
   String base = "";
   if ((repo != null) && (repo)) {
     if (depends != null) {
@@ -12,9 +20,8 @@ String base_imports({bool repo, bool model, bool entity, bool cache, bool embedd
       });
     }
     base = base + "import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';\n";
-    base = base + "import '../model/abstract_repository_singleton.dart';\n";
-    base = base + "import 'repository_export.dart';\n";
-//    base = base + "import '../model/repository_export.dart';\n";
+    base = base + importString(packageName, "model/abstract_repository_singleton");
+    base = base + importString(packageName, "model/repository_export");
   }
 
   if ((cache != null) && (cache)) {
@@ -23,7 +30,7 @@ String base_imports({bool repo, bool model, bool entity, bool cache, bool embedd
         base = base + "import 'package:" + element + "/model/cache_export.dart';\n";
       });
     }
-    base = base + "import '../model/cache_export.dart';\n";
+    base = base + importString(packageName, "model/cache_export");
   }
 
   if ((embeddedComponent != null) && (embeddedComponent)) {
@@ -32,7 +39,7 @@ String base_imports({bool repo, bool model, bool entity, bool cache, bool embedd
         base = base + "import 'package:" + element + "/model/embedded_component.dart';\n";
       });
     }
-    base = base + "import '../model/embedded_component.dart';\n";
+    base = base + importString(packageName, "model/embedded_component");
   }
 
   if ((model != null) && (model)) {
@@ -42,7 +49,7 @@ String base_imports({bool repo, bool model, bool entity, bool cache, bool embedd
       });
     }
     base = base + "import 'package:eliud_core/tools/action_model.dart';\n";
-    base = base + "import '../model/model_export.dart';\n";
+    base = base + importString(packageName, "model/model_export");
   }
 
   if ((entity != null) && (entity)) {
@@ -52,11 +59,16 @@ String base_imports({bool repo, bool model, bool entity, bool cache, bool embedd
       });
     }
     base = base + "import 'package:eliud_core/tools/action_entity.dart';\n";
-    base = base + "import '../model/entity_export.dart';\n";
+    base = base + importString(packageName, "model/entity_export");
   }
 
   return base;
 }
+
+/*
+ * In theory all modelSpecifications must share the same package name. This is unexpected and unhandled if this is not the case.
+ */
+String sharedPackageName(List<ModelSpecificationPlus> modelSpecificationPlus) => modelSpecificationPlus[0].modelSpecification.packageName;
 
 List<String> mergeAllDepends(List<ModelSpecificationPlus> modelSpecificationPlus) {
   List<String> depends = [];

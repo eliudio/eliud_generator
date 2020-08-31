@@ -5,7 +5,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-String _imports(List<String> depends) => """
+String _imports(String packageName, List<String> depends) => """
 import 'package:eliud_core/core/global_data.dart';
 
 import 'package:eliud_core/tools/action_model.dart';
@@ -22,22 +22,22 @@ import 'package:intl/intl.dart';
 import 'package:eliud_core/eliud.dart';
 
 import 'package:eliud_core/model/internal_component.dart';
-import '../model/embedded_component.dart';
-import '../tools/bespoke_formfields.dart';
+import 'package:$packageName/model/embedded_component.dart';
+import 'package:$packageName/tools/bespoke_formfields.dart';
 import 'package:eliud_core/tools/bespoke_formfields.dart';
 
 import 'package:eliud_core/tools/enums.dart';
 import 'package:eliud_core/tools/etc.dart';
 
-""" + base_imports(repo: true, model: true, entity: true, embeddedComponent: true, depends: depends);
+""" + base_imports(packageName, repo: true, model: true, entity: true, embeddedComponent: true, depends: depends);
 
-const String _specificImports = """
-import '\${path}_list_bloc.dart';
-import '\${path}_list_event.dart';
-import '\${path}_model.dart';
-import '\${path}_form_bloc.dart';
-import '\${path}_form_event.dart';
-import '\${path}_form_state.dart';
+String _specificImports(String packageName) => """
+import 'package:$packageName/model/\${path}_list_bloc.dart';
+import 'package:$packageName/model/\${path}_list_event.dart';
+import 'package:$packageName/model/\${path}_model.dart';
+import 'package:$packageName/model/\${path}_form_bloc.dart';
+import 'package:$packageName/model/\${path}_form_event.dart';
+import 'package:$packageName/model/\${path}_form_state.dart';
 
 """;
 
@@ -177,8 +177,8 @@ class RealFormCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln(process(_imports(modelSpecifications.depends)));
-    headerBuffer.writeln(process(_specificImports, parameters: <String, String>{
+    headerBuffer.writeln(process(_imports(modelSpecifications.packageName, modelSpecifications.depends)));
+    headerBuffer.writeln(process(_specificImports(modelSpecifications.packageName), parameters: <String, String>{
       '\${path}': camelcaseToUnderscore(modelSpecifications.id)
     }));
     return headerBuffer.toString();

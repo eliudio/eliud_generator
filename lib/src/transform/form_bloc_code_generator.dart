@@ -34,7 +34,7 @@ const String _isDocumentIDValid = """
 
 """;
 
-String _imports(List<String> depends) => """
+String _imports(String packageName, List<String> depends) => """
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
@@ -47,7 +47,7 @@ import 'package:eliud_core/model/rgb_model.dart';
 
 import 'package:eliud_core/tools/string_validator.dart';
 
-""" + base_imports(repo: true, model: true, entity: true, depends: depends);
+""" + base_imports(packageName, repo: true, model: true, entity: true, depends: depends);
 
 class FormBlocCodeGenerator extends CodeGenerator {
   FormBlocCodeGenerator({ModelSpecification modelSpecifications})
@@ -57,11 +57,11 @@ class FormBlocCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FORM_BLOC);
-    headerBuffer.writeln(_imports(modelSpecifications.depends));
+    headerBuffer.writeln(_imports(modelSpecifications.packageName, modelSpecifications.depends));
 
-    headerBuffer.writeln("import '" + modelSpecifications.formEventFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.formStateFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.formEventFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.formStateFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
     headerBuffer.writeln();
 
     return headerBuffer.toString();

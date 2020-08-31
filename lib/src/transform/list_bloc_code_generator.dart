@@ -15,9 +15,9 @@ class ListBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:meta/meta.dart';");
     headerBuffer.writeln();
 
-    headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.listEventFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.listStateFileName() + "';");
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listEventFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listStateFileName()));
     headerBuffer.writeln();
 
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_LIST_BLOC);

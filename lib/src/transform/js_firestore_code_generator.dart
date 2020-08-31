@@ -153,11 +153,11 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:firebase/firebase.dart';");
     headerBuffer.writeln("import 'package:firebase/firestore.dart';");
-    headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
     headerBuffer.writeln();
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FIRESTORE);
     headerBuffer.writeln();
-    headerBuffer.writeln(base_imports(repo: true, model: true, entity: true, depends: modelSpecifications.depends));
+    headerBuffer.writeln(base_imports(modelSpecifications.packageName, repo: true, model: true, entity: true, depends: modelSpecifications.depends));
     headerBuffer.writeln();
 
     return headerBuffer.toString();
@@ -204,10 +204,6 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
   @override
   String theFileName() {
     return modelSpecifications.firestoreFileName();
-  }
-
-  String _collectionName() {
-    return firstLowerCase(_id()) + "Collection";
   }
 
   String _id() {

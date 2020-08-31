@@ -13,10 +13,10 @@ class ComponentBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln();
-    headerBuffer.writeln("import '" + modelSpecifications.modelFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.componentEventFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.componentStateFileName() + "';");
-    headerBuffer.writeln("import '" + modelSpecifications.repositoryFileName() + "';");
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.modelFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentEventFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentStateFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
 
     if (uniqueAssociationTypes.isNotEmpty) headerBuffer.writeln();
 

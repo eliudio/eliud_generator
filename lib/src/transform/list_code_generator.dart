@@ -3,7 +3,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-String _imports = """
+String _imports(String packageName) => """
 import 'package:eliud_core/core/global_data.dart';
 import 'package:eliud_core/tools/has_fab.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +20,10 @@ import 'package:eliud_core/tools/etc.dart';
 import 'package:eliud_core/tools/enums.dart';
 import 'package:eliud_core/eliud.dart';
 
-import '\${importprefix}_list_event.dart';
-import '\${importprefix}_list_state.dart';
-import '\${importprefix}_list_bloc.dart';
-import '\${importprefix}_model.dart';
+import 'package:$packageName/model/\${importprefix}_list_event.dart';
+import 'package:$packageName/model/\${importprefix}_list_state.dart';
+import 'package:$packageName/model/\${importprefix}_list_bloc.dart';
+import 'package:$packageName/model/\${importprefix}_model.dart';
 
 """;
 
@@ -169,7 +169,7 @@ class ListCodeGenerator extends CodeGenerator {
 
   @override
   String commonImports() {
-    return process(_imports, parameters: <String, String>{
+    return process(_imports(modelSpecifications.packageName), parameters: <String, String>{
       "\${importprefix}": camelcaseToUnderscore(modelSpecifications.id)
     })
     + (modelSpecifications.generate.generateForm ? process(_importForms, parameters: <String, String>{

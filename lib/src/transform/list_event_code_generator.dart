@@ -11,7 +11,7 @@ class ListEventCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
-    headerBuffer.writeln("import '" + modelSpecifications.modelFileName() + "';");
+    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.modelFileName()));
 
     headerBuffer.writeln();
     return headerBuffer.toString();
