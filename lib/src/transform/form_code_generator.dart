@@ -5,7 +5,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-String _imports = """
+String _imports(List<String> depends) => """
 import 'package:eliud_core/core/global_data.dart';
 
 import 'package:eliud_core/tools/action_model.dart';
@@ -22,7 +22,6 @@ import 'package:intl/intl.dart';
 import 'package:eliud_core/eliud.dart';
 
 import 'package:eliud_core/model/internal_component.dart';
-import 'package:eliud_core/model/embedded_component.dart';
 import '../model/embedded_component.dart';
 import '../tools/bespoke_formfields.dart';
 import 'package:eliud_core/tools/bespoke_formfields.dart';
@@ -30,7 +29,7 @@ import 'package:eliud_core/tools/bespoke_formfields.dart';
 import 'package:eliud_core/tools/enums.dart';
 import 'package:eliud_core/tools/etc.dart';
 
-""" + base_imports(repo: true, model: true, entity: true);
+""" + base_imports(repo: true, model: true, entity: true, embeddedComponent: true, depends: depends);
 
 const String _specificImports = """
 import '\${path}_list_bloc.dart';
@@ -178,7 +177,7 @@ class RealFormCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln(process(_imports));
+    headerBuffer.writeln(process(_imports(modelSpecifications.depends)));
     headerBuffer.writeln(process(_specificImports, parameters: <String, String>{
       '\${path}': camelcaseToUnderscore(modelSpecifications.id)
     }));

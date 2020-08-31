@@ -60,6 +60,9 @@ class ModelSpecification extends Specification {
   // views
   final List<View> views;
 
+  // depending plugins
+  final List<String> depends;
+
   static String IMPORT_KEY_FORM_BLOC = "form_bloc";
   static String IMPORT_KEY_MODEL = "model";
   static String IMPORT_KEY_FIRESTORE = "firestore";
@@ -69,11 +72,11 @@ class ModelSpecification extends Specification {
   final String where;
   final String whereJs;
 
-  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.where, this.whereJs }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.where, this.whereJs, this.depends }) : super(id: id);
 
   ModelSpecification copyWith({ String id, GenerateSpecification generate, List<Field> fields, List<Group> groups,
     ListFields listFields, String displayOnDelete, Map<String, String> extraImports, bool isAppModel,
-    String preToEntityCode, String preMapUpdateCode, List<View> views }) {
+    String preToEntityCode, String preMapUpdateCode, List<View> views, List<String> depends }) {
     ModelSpecification newModelSpecification = ModelSpecification(
       id: id ?? this.id,
       generate: generate ?? this.generate ,
@@ -88,6 +91,7 @@ class ModelSpecification extends Specification {
       views: views ?? this.views,
       where: where ?? this.where,
       whereJs: whereJs ?? this.whereJs,
+      depends: depends ?? this.depends,
     );
     return newModelSpecification;
   }
@@ -119,7 +123,8 @@ class ModelSpecification extends Specification {
       "preMapUpdateCode": preMapUpdateCode,
       "alternativeViews": jsonViews,
       "where": where,
-      "whereJs": whereJs
+      "whereJs": whereJs,
+      "depends": depends,
     };
   }
 
@@ -130,11 +135,11 @@ class ModelSpecification extends Specification {
   }
 
   @override
-  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, where, whereJs ];
+  List<Object> get props => [id, generate, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, where, whereJs, depends ];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, where: $where, whereJs: $whereJs }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, where: $where, whereJs: $whereJs, depends: $depends }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -180,6 +185,8 @@ class ModelSpecification extends Specification {
 
     }
 
+    var dependsFields = json["depends"];
+
     return ModelSpecification(
       id: json["id"] as String,
       generate: GenerateSpecification.fromJson(json["generate"]),
@@ -194,6 +201,7 @@ class ModelSpecification extends Specification {
       views: theViews,
       where: json["where"] as String,
       whereJs: json["whereJs"] as String,
+      depends: dependsFields != null ? List.from(dependsFields) : null,
     );
   }
 

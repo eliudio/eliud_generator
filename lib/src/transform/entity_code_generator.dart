@@ -2,6 +2,7 @@ import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
+import 'code_generator.dart';
 import 'data_code_generator.dart';
 
 const String _jsonMethods = """
@@ -47,9 +48,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
-    headerBuffer.writeln("import 'entity_export.dart';");
-    headerBuffer.writeln("import 'package:eliud_core/tools/action_entity.dart';");
-    headerBuffer.writeln("import 'package:eliud_core/model/entity_export.dart';");
+    headerBuffer.writeln(base_imports(entity:true, depends: modelSpecifications.depends));
 
     return headerBuffer.toString();
   }

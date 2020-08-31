@@ -2,76 +2,76 @@ import 'package:eliud_generator/src/model/field.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/transform/code_generator_base.dart';
 
-String base_imports({bool repo, bool model, bool entity, bool cache}) {
-  String base = """
-// import the main classes
-import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';
-
-// import the shared classes
-import 'package:eliud_core/model/abstract_repository_singleton.dart';
-""";
-
+String base_imports({bool repo, bool model, bool entity, bool cache, bool embeddedComponent, List<String> depends}) {
+  String base = "";
   if ((repo != null) && (repo)) {
-    base = base + """
-import 'package:eliud_core/model/repository_export.dart';
-""";
+    if (depends != null) {
+      depends.forEach((element) {
+        base = base + "import 'package:" + element + "/model/repository_export.dart';\n";
+        base = base + "import 'package:" + element + "/model/abstract_repository_singleton.dart';\n";
+      });
+    }
+    base = base + "import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';\n";
+    base = base + "import '../model/abstract_repository_singleton.dart';\n";
+    base = base + "import 'repository_export.dart';\n";
+//    base = base + "import '../model/repository_export.dart';\n";
   }
 
   if ((cache != null) && (cache)) {
-    base = base + """
-import 'package:eliud_core/model/cache_export.dart';
-""";
+    if (depends != null) {
+      depends.forEach((element) {
+        base = base + "import 'package:" + element + "/model/cache_export.dart';\n";
+      });
+    }
+    base = base + "import '../model/cache_export.dart';\n";
+  }
+
+  if ((embeddedComponent != null) && (embeddedComponent)) {
+    if (depends != null) {
+      depends.forEach((element) {
+        base = base + "import 'package:" + element + "/model/embedded_component.dart';\n";
+      });
+    }
+    base = base + "import '../model/embedded_component.dart';\n";
   }
 
   if ((model != null) && (model)) {
-    base = base + """
-import 'package:eliud_core/model/model_export.dart';
-import 'package:eliud_core/tools/action_model.dart';
-""";
+    if (depends != null) {
+      depends.forEach((element) {
+        base = base + "import 'package:" + element + "/model/model_export.dart';\n";
+      });
+    }
+    base = base + "import 'package:eliud_core/tools/action_model.dart';\n";
+    base = base + "import '../model/model_export.dart';\n";
   }
 
   if ((entity != null) && (entity)) {
-    base = base + """
-import 'package:eliud_core/model/entity_export.dart';
-""";
-  }
-
-  base = base + """
-  
-// import the classes of this package:
-import '../model/abstract_repository_singleton.dart';
-""";
-
-  if ((repo != null) && (repo)) {
-    base = base + """
-import '../model/repository_export.dart';
-import 'package:eliud_core/model/repository_export.dart';
-""";
-  }
-
-  if ((cache != null) && (cache)) {
-    base = base + """
-import '../model/cache_export.dart';
-import 'package:eliud_core/model/cache_export.dart';
-""";
-  }
-
-  if ((model != null) && (model)) {
-    base = base + """
-import '../model/model_export.dart';
-import 'package:eliud_core/model/model_export.dart';
-""";
-  }
-
-  if ((entity != null) && (entity)) {
-    base = base + """
-import '../model/entity_export.dart';
-import 'package:eliud_core/model/entity_export.dart';
-""";
+    if (depends != null) {
+      depends.forEach((element) {
+        base = base + "import 'package:" + element + "/model/entity_export.dart';\n";
+      });
+    }
+    base = base + "import 'package:eliud_core/tools/action_entity.dart';\n";
+    base = base + "import '../model/entity_export.dart';\n";
   }
 
   return base;
 }
+
+List<String> mergeAllDepends(List<ModelSpecificationPlus> modelSpecificationPlus) {
+  List<String> depends = [];
+  modelSpecificationPlus.forEach((modelSpecificationPlus) {
+    if (modelSpecificationPlus.modelSpecification.depends != null) {
+      modelSpecificationPlus.modelSpecification.depends.forEach((newDepend) {
+        if (!depends.contains(newDepend)) {
+          depends.add(newDepend);
+        }
+      });
+    }
+  });
+  return depends;
+}
+
 
 abstract class CodeGenerator extends CodeGeneratorBase {
   final ModelSpecification modelSpecifications;

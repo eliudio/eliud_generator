@@ -5,10 +5,10 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 import 'data_code_generator.dart';
 
-String _imports = """
+String _imports(List<String> depends) => """
 import 'package:eliud_core/core/global_data.dart';
 
-""" + base_imports(repo: true, model: true, entity: true);
+""" + base_imports(repo: true, model: true, entity: true, depends: depends);
 
 class ModelCodeGenerator extends DataCodeGenerator {
   ModelCodeGenerator({ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
@@ -25,7 +25,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     if (hasArray()) headerBuffer.writeln("import 'package:collection/collection.dart';");
-    headerBuffer.writeln(_imports);
+    headerBuffer.writeln(_imports(modelSpecifications.depends));
     headerBuffer.writeln();
     headerBuffer.writeln("import '" + modelSpecifications.entityFileName() + "';");
 /*

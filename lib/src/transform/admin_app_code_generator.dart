@@ -4,7 +4,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
-String _imports = """
+String _imports(List<String> depends) => """
 
 import 'package:eliud_core/tools/action_model.dart';
 
@@ -16,7 +16,7 @@ import 'package:eliud_core/model/drawer_model.dart';
 import 'package:eliud_core/model/menu_item_model.dart';
 import 'package:eliud_core/model/home_menu_model.dart';
 
-""" + base_imports(repo: true, model: true, entity: true);
+""" + base_imports(repo: true, model: true, entity: true, depends: depends);
 
 const String _header = """
 class AdminApp {
@@ -149,7 +149,7 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(header());
-    codeBuffer.writeln(process(_imports));
+    codeBuffer.writeln(process(_imports(mergeAllDepends(modelSpecificationPlus))));
     codeBuffer.writeln(process(_header));
 
     // MenuDef

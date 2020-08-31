@@ -4,11 +4,11 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-String _imports = """
+String _imports(List<String> depends) => """
 import 'dart:async';
 import '\${filename}_model.dart';
 import '\${filename}_repository.dart';
-""" + base_imports(repo: true, model: true, entity: true, cache:true);
+""" + base_imports(repo: true, model: true, entity: true, cache:true, depends: depends);
 
 const String _header = """
 class \${id}Cache implements \${id}Repository {
@@ -151,7 +151,7 @@ class CacheCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln(process(_imports, parameters: <String, String> { '\${filename}': camelcaseToUnderscore(modelSpecifications.id) }));
+    headerBuffer.writeln(process(_imports(modelSpecifications.depends), parameters: <String, String> { '\${filename}': camelcaseToUnderscore(modelSpecifications.id) }));
 
     return headerBuffer.toString();
   }

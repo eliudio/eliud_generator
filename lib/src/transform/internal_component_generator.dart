@@ -14,13 +14,13 @@ import 'package:eliud_core/tools/has_fab.dart';
 
 """;
 
-String _componentImports = """
+String _componentImports(List<String> depends) => """
 import '../\${path}_list_bloc.dart';
 import '../\${path}_list.dart';
 import '../\${path}_dropdown_button.dart';
 import '../\${path}_list_event.dart';
 
-""" + base_imports(repo: true, model: true, entity: true);
+""" + base_imports(repo: true, model: true, entity: true, depends: depends);
 
 const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {
@@ -132,7 +132,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(process(_componentImports,
+        codeBuffer.writeln(process(_componentImports(ms.depends),
             parameters: <String, String>{"\${path}": spec.path}));
       }
     });
