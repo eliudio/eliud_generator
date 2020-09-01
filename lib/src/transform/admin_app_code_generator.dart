@@ -6,6 +6,7 @@ import 'code_generator_multi.dart';
 
 String _imports(String packageName, List<String> depends) => """
 
+import 'package:eliud_core/tools/admin_app_base.dart';
 import 'package:eliud_core/tools/action_model.dart';
 
 import 'package:eliud_core/model/menu_def_model.dart';
@@ -19,7 +20,7 @@ import 'package:eliud_core/model/home_menu_model.dart';
 """ + base_imports(packageName, repo: true, model: true, entity: true, depends: depends);
 
 const String _header = """
-class AdminApp {
+class AdminApp extends AdminAppInstallerBase {
   final String appID;
   final DrawerModel _drawer;
   final DrawerModel _endDrawer;
@@ -108,16 +109,28 @@ const String _setupAdminPagesOtherPages = """
 const String _setupAdminPagesFooter = """
     ;
   }
+
+  Future<MenuDefModel> menu(String appID) async {
+    return _setupMenuDef(appID);
+  }
+
+  @override
+  Future<void> run() async {
+    return _setupAdminPages();
+  }
+
 """;
 
 // run
 const String _headerRun = """
-  static Future<void> deleteAll(String appID) async {
-    return await imageRepository().deleteAll()
+class AdminAppWhiper extends AdminAppWhiperBase {
+
+  @override
+  Future<void> deleteAll(String appID) async {
 """;
 
 const String _footerOther = """
-        .then((_) => \${lid}Repository().deleteAll())
+    await \${lid}Repository().deleteAll();
 """;
 
 const String _footerApp = """
@@ -125,14 +138,6 @@ const String _footerApp = """
 
 const String _footerRun = """
     ;
-  }
-
-  static Future<MenuDefModel> menu(String appID) async {
-    return _setupMenuDef(appID);
-  }
-
-  Future<void> run() async {
-    return _setupAdminPages();
   }
 
 """;
@@ -196,6 +201,8 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
       }
     });
     codeBuffer.writeln(process(_setupAdminPagesFooter));
+
+    codeBuffer.writeln(process(_footer));
 
     codeBuffer.write(process(_headerRun));
 
