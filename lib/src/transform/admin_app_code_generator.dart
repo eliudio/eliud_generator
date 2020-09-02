@@ -63,8 +63,8 @@ const String _footerAdminMenuDef = """
     return menu;
   }
 
-  static Future<MenuDefModel> _setupMenuDef(String appID) {
-    return menuDefRepository().add(_adminMenuDef(appID));
+  Future<MenuDefModel> _setupMenuDef(String appID) async {
+    return await menuDefRepository().add(_adminMenuDef(appID));
   }
 
 """;
@@ -111,7 +111,7 @@ const String _setupAdminPagesFooter = """
   }
 
   Future<MenuDefModel> menu(String appID) async {
-    return _setupMenuDef(appID);
+    return await _setupMenuDef(appID);
   }
 
   @override
@@ -123,7 +123,7 @@ const String _setupAdminPagesFooter = """
 
 // run
 const String _headerRun = """
-class AdminAppWhiper extends AdminAppWhiperBase {
+class AdminAppWiper extends AdminAppWiperBase {
 
   @override
   Future<void> deleteAll(String appID) async {
@@ -207,13 +207,17 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.write(process(_headerRun));
 
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository)) {
+      if (spec.modelSpecification.generate.hasPersistentRepository) {
+        print("doing spec.modelSpecification.id : " + spec.modelSpecification.id);
         Map<String, String> parameters = <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) };
         if ((spec.modelSpecification.id != "Member") && (spec.modelSpecification.id != "App") && (!spec.modelSpecification.generate.isDocumentCollection)) {
             codeBuffer.write(process(_footerOther, parameters: parameters));
         }
+      } else {
+        print("not doing spec.modelSpecification.id : " + spec.modelSpecification.id);
       }
     });
+    print("test");
     Map<String, String> parameters = <String, String>{ '\${lid}': 'app' };
     codeBuffer.write(process(_footerApp, parameters: parameters));
     codeBuffer.writeln(process(_footerRun));

@@ -1,14 +1,11 @@
 import 'dart:convert';
 
-import 'package:eliud_generator/src/model/spec.dart';
-
-import 'field.dart';
-
 class GenerateSpecification {
-  final bool generateComponent;       // includes bloc, state and event
-  final bool generateRepository;
+  final bool generateComponent;         // includes bloc, state and event
+  final bool generateRepository;        // generate
   final bool generateCache;
   final bool generateFirestoreRepository;
+  final bool hasPersistentRepository;   // not generating a firestore repository doesn't mean there is no repository. Generate a repository doesn't mean there's a persistent repository. We need to know if there is a persistent repository in some cases, such as when wanting to wipe the repository
   final bool generateModel;
   final bool generateEntity;
   final bool generateForm;              // includes bloc, state and event
@@ -19,7 +16,7 @@ class GenerateSpecification {
   final bool isExtension;               // is this an extension, is this a component that can be added to a page
   final bool isDocumentCollection;      // is this a collection within a document, or is this a collection that stands on it's own, e.g. StripeCustomer (false) has Payments (true)
 
-  GenerateSpecification({ this.generateComponent, this.generateRepository, this.generateCache,
+  GenerateSpecification({ this.generateComponent, this.generateRepository, this.generateCache, this.hasPersistentRepository,
     this.generateFirestoreRepository, this.generateModel, this.generateEntity,
     this.generateForm, this.generateList, this.generateDropDownButton, this.generateInternalComponent,
     this.generateEmbeddedComponent, this.isExtension, this.isDocumentCollection
@@ -31,6 +28,7 @@ class GenerateSpecification {
       "generateRepository": generateRepository,
       "generateCache": generateCache,
       "generateFirestoreRepository": generateFirestoreRepository,
+      "hasPersistentRepository": hasPersistentRepository,
       "generateModel": generateModel,
       "generateEntity": generateEntity,
       "generateForm": generateForm,
@@ -50,12 +48,12 @@ class GenerateSpecification {
   }
 
   @override
-  List<Object> get props => [generateComponent, generateRepository, generateCache, generateFirestoreRepository, generateModel,
+  List<Object> get props => [generateComponent, generateRepository, generateCache, generateFirestoreRepository, hasPersistentRepository, generateModel,
     generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension, isDocumentCollection];
 
   @override
   String toString() {
-    return 'GenerateSpecification { generateComponent: $generateComponent, generateRepository: $generateCache: generateCache, $generateRepository, generateFirestoreRepository: $generateFirestoreRepository, generateModel: $generateModel, generateEntity: $generateEntity, generateForm: $generateForm, generateList: $generateList, generateDropDownButton: $generateDropDownButton, generateInternalComponent: $generateInternalComponent, generateEmbeddedComponent: $generateEmbeddedComponent, isExtension:$isExtension }';
+    return 'GenerateSpecification { generateComponent: $generateComponent, generateRepository: $generateCache: generateCache, $generateRepository, hasPersistentRepository: $hasPersistentRepository, generateFirestoreRepository: $generateFirestoreRepository, generateModel: $generateModel, generateEntity: $generateEntity, generateForm: $generateForm, generateList: $generateList, generateDropDownButton: $generateDropDownButton, generateInternalComponent: $generateInternalComponent, generateEmbeddedComponent: $generateEmbeddedComponent, isExtension:$isExtension }';
   }
 
   static GenerateSpecification fromJson(Map<String, Object> json) {
@@ -64,6 +62,7 @@ class GenerateSpecification {
       generateRepository: json["generateRepository"] as bool ?? false,
       generateCache: json["generateCache"] as bool ?? false,
       generateFirestoreRepository: json["generateFirestoreRepository"] as bool ?? false,
+      hasPersistentRepository: json["hasPersistentRepository"] as bool ?? false,
       generateModel: json["generateModel"] as bool ?? false,
       generateEntity: json["generateEntity"] as bool ?? false,
       generateForm: json["generateForm"] as bool ?? false,
