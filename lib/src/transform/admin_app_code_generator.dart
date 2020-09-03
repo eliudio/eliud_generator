@@ -36,7 +36,7 @@ class AdminApp extends AdminAppInstallerBase {
 
 // Admin menu
 const String _headerAdminMenuDef = """
-  static MenuDefModel _adminMenuDef(String appID) {
+  Future<MenuDefModel> menu(String appID) async {
     List<MenuItemModel> menuItems = List<MenuItemModel>();
 """;
 
@@ -55,16 +55,13 @@ const String _menuItemDef = """
 const String _footerAdminMenuDef = """
     MenuDefModel menu = MenuDefModel(
       admin: true,
-      documentID: "ADMIN_MENU_DEF_1",
+      documentID: "\${pkgName}_admin_menu",
       appId: appID,
-      name: "Menu Definition 1",
+      name: "\${pkgName} admin menu",
       menuItems: menuItems
     );
+    await menuDefRepository().add(menu);
     return menu;
-  }
-
-  Future<MenuDefModel> _setupMenuDef(String appID) async {
-    return await menuDefRepository().add(_adminMenuDef(appID));
   }
 
 """;
@@ -79,7 +76,7 @@ const String _page = """
     PageModel page = PageModel(
         conditional: PageCondition.AdminOnly,
         appId: appID,
-        documentID: "\${lowid}spage",
+        documentID: "\${pkgName}_\${lowid}s_page",
         title: "\${id}s",
         drawer: _drawer,
         endDrawer: _endDrawer,
@@ -108,10 +105,6 @@ const String _setupAdminPagesOtherPages = """
 
 const String _setupAdminPagesFooter = """
     ;
-  }
-
-  Future<MenuDefModel> menu(String appID) async {
-    return await _setupMenuDef(appID);
   }
 
   @override
@@ -153,6 +146,7 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
   @override
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
     StringBuffer codeBuffer = StringBuffer();
+    var pkgName = sharedPackageName(modelSpecificationPlus);
     codeBuffer.write(header());
     codeBuffer.writeln(process(_imports(sharedPackageName(modelSpecificationPlus), mergeAllDepends(modelSpecificationPlus))));
     codeBuffer.writeln(process(_header));
@@ -167,7 +161,9 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
         }));
       }
     });
-    codeBuffer.writeln(process(_footerAdminMenuDef));
+    codeBuffer.writeln(process(_footerAdminMenuDef, parameters: <String, String>{
+      '\${pkgName}': pkgName,
+    }));
 
     // Pages
     modelSpecificationPlus.forEach((spec) {
@@ -175,7 +171,8 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln(process(_page, parameters: <String, String>{
           '\${id}': spec.modelSpecification.id,
           '\${lid}': firstLowerCase(spec.modelSpecification.id),
-          '\${lowid}': allLowerCase(spec.modelSpecification.id)
+          '\${lowid}': allLowerCase(spec.modelSpecification.id),
+          '\${pkgName}': pkgName,
         }));
       }
     });
