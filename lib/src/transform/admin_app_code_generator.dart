@@ -47,7 +47,7 @@ const String _menuItemDef = """
         text: "\${id}s",
         description: "\${id}s",
         icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
-        action: GotoPage(pageID: "\${lowid}spage"))
+        action: GotoPage(pageID: "\${pkgName}_\${lowid}s_page"))
     );
 
 """;
@@ -157,7 +157,8 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
       if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
         codeBuffer.writeln(process(_menuItemDef, parameters: <String, String>{
           '\${id}': spec.modelSpecification.id,
-          '\${lowid}': allLowerCase(spec.modelSpecification.id)
+          '\${lowid}': allLowerCase(spec.modelSpecification.id),
+          '\${pkgName}': pkgName,
         }));
       }
     });
