@@ -72,7 +72,7 @@ const String _page = """
   PageModel _\${lid}sPages() {
     List<BodyComponentModel> components = List();
     components.add(BodyComponentModel(
-      documentID: "internalWidget-\${lid}s", componentName: "internalWidgets", componentId: "\${lid}s"));
+      documentID: "internalWidget-\${lid}s", componentName: "\${pkgName}_internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
         conditional: PageCondition.AdminOnly,
         appId: appID,

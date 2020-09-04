@@ -1,6 +1,7 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
+import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
@@ -72,10 +73,13 @@ class CrossComponentCodeGenerator extends CodeGeneratorMulti {
 
   @override
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
+    var pkgName = sharedPackageName(modelSpecificationPlus);
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(header());
     codeBuffer.writeln(process(_imports));
-    codeBuffer.writeln(process(_code));
+    codeBuffer.writeln(process(_code, parameters: <String, String>{
+      '\${pkgName}': pkgName,
+    }));
     return codeBuffer.toString();
 
   }

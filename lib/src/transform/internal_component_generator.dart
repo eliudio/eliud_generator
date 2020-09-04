@@ -173,7 +173,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
       }
     });
     codeBuffer.writeln(spaces(4) +
-        "return Image(image: AssetImage('assets/images/component_not_available.png'));");
+        "return Text('Component with componentId == \$componentId not found');");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
 

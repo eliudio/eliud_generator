@@ -50,7 +50,8 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     register.writeln("]);");
     register.writeln();
 
-    register .writeln(spaces(4) + "Registry.registry().register(componentName: \"internalWidgets\", componentConstructor: ListComponentFactory());");
+    var pkgName = sharedPackageName(modelSpecificationPlus);
+    register .writeln(spaces(4) + 'Registry.registry().register(componentName: "' + pkgName + '_internalWidgets", componentConstructor: ListComponentFactory());');
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
       if (spec.modelSpecification.generate.isExtension) {
