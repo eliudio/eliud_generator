@@ -36,6 +36,8 @@ class AdminApp extends AdminAppInstallerBase {
 
 // Admin menu
 const String _headerAdminMenuDef = """
+class AdminMenu extends AdminAppMenuInstallerBase {
+
   Future<MenuDefModel> menu(String appID) async {
     List<MenuItemModel> menuItems = List<MenuItemModel>();
 """;
@@ -63,7 +65,7 @@ const String _footerAdminMenuDef = """
     await menuDefRepository().add(menu);
     return menu;
   }
-
+}
 """;
 
 
@@ -151,21 +153,6 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(process(_imports(sharedPackageName(modelSpecificationPlus), mergeAllDepends(modelSpecificationPlus))));
     codeBuffer.writeln(process(_header));
 
-    // MenuDef
-    codeBuffer.writeln(process(_headerAdminMenuDef));
-    modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
-        codeBuffer.writeln(process(_menuItemDef, parameters: <String, String>{
-          '\${id}': spec.modelSpecification.id,
-          '\${lowid}': allLowerCase(spec.modelSpecification.id),
-          '\${pkgName}': pkgName,
-        }));
-      }
-    });
-    codeBuffer.writeln(process(_footerAdminMenuDef, parameters: <String, String>{
-      '\${pkgName}': pkgName,
-    }));
-
     // Pages
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
@@ -202,20 +189,37 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
 
     codeBuffer.writeln(process(_footer));
 
+
+
+
+    // MenuDef
+    codeBuffer.writeln(process(_headerAdminMenuDef));
+    modelSpecificationPlus.forEach((spec) {
+      if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
+        codeBuffer.writeln(process(_menuItemDef, parameters: <String, String>{
+          '\${id}': spec.modelSpecification.id,
+          '\${lowid}': allLowerCase(spec.modelSpecification.id),
+          '\${pkgName}': pkgName,
+        }));
+      }
+    });
+    codeBuffer.writeln(process(_footerAdminMenuDef, parameters: <String, String>{
+      '\${pkgName}': pkgName,
+    }));
+
+
+
+
     codeBuffer.write(process(_headerRun));
 
     modelSpecificationPlus.forEach((spec) {
       if (spec.modelSpecification.generate.hasPersistentRepository) {
-        print("doing spec.modelSpecification.id : " + spec.modelSpecification.id);
         Map<String, String> parameters = <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) };
         if ((spec.modelSpecification.id != "Member") && (spec.modelSpecification.id != "App") && (!spec.modelSpecification.generate.isDocumentCollection)) {
             codeBuffer.write(process(_footerOther, parameters: parameters));
         }
-      } else {
-        print("not doing spec.modelSpecification.id : " + spec.modelSpecification.id);
       }
     });
-    print("test");
     Map<String, String> parameters = <String, String>{ '\${lid}': 'app' };
     codeBuffer.write(process(_footerApp, parameters: parameters));
     codeBuffer.writeln(process(_footerRun));
