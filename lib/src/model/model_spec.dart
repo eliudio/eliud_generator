@@ -68,6 +68,7 @@ class ModelSpecification extends Specification {
   static String IMPORT_KEY_MODEL = "model";
   static String IMPORT_KEY_FIRESTORE = "firestore";
   static String IMPORT_KEY_LIST_BLOC = "list_bloc";
+  static String IMPORT_KEY_FORM = "form";
 
   final Map<String, String> extraImports;
   final String where;

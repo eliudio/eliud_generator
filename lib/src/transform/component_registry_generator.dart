@@ -27,6 +27,7 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
 
   @override
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
+    var pkgName = sharedPackageName(modelSpecificationPlus);
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(header());
 
@@ -37,10 +38,12 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
         _import.writeln("import '../extensions/" + camelcaseToUnderscore(spec.modelSpecification.id) + "_component.dart';");
       }
     });
+    _import.writeln(importString(pkgName, "model/internal_component.dart"));
+
     codeBuffer.writeln(process(_imports, parameters: <String, String> { '\${import}': _import.toString() }));
     StringBuffer register = StringBuffer();
 
-    register.write(spaces(4) + "Registry.registry().addInternalComponents([");
+    register.write(spaces(4) + "Registry.registry().addInternalComponents('" + pkgName + "', [");
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
@@ -50,11 +53,11 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     register.writeln("]);");
     register.writeln();
 
-    var pkgName = sharedPackageName(modelSpecificationPlus);
-    register .writeln(spaces(4) + 'Registry.registry().register(componentName: "' + pkgName + '_internalWidgets", componentConstructor: ListComponentFactory());');
+    register.writeln(spaces(4) + 'Registry.registry().register(componentName: "' + pkgName + '_internalWidgets", componentConstructor: ListComponentFactory());');
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
       if (spec.modelSpecification.generate.isExtension) {
+        register.writeln(spaces(4) + "Registry.registry().addDropDownSupporter(\"" + firstLowerCase(spec.modelSpecification.id) + "s\", DropdownButtonComponentFactory());");
         register .writeln(spaces(4) + "Registry.registry().register(componentName: \"" + firstLowerCase(spec.modelSpecification.id) + "s\", componentConstructor: " + spec.modelSpecification.id + "ComponentConstructorDefault());");
       }
     });

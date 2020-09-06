@@ -34,9 +34,21 @@ class ListComponentFactory implements ComponentConstructor {
 const String _DropdownButtonFactoryCodeHeader = """
 typedef DropdownButtonChanged(String value);
 
-class DropdownButtonComponentFactory implements ComponentConstructor {
+class DropdownButtonComponentFactory implements ComponentDropDown {
+""";
+
+const String _DropdownButtonSupportMethod = """
+  bool supports(String id) {
+""";
+
+const String _DropdownButtonSupportMethodFooter = """
+    return false;
+  }
+""";
+
+const String _DropdownButtonFactoryCodeMethod = """
   Widget createNew({String id, Map<String, String> parameters, String value, DropdownButtonChanged trigger, bool optional}) {
-  """;
+""";
 
 const String _DropdownButtonFactoryCodeComponent = """
       return DropdownButtonComponent(componentId: id, value: value, trigger: trigger, optional: optional);
@@ -138,7 +150,19 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     });
 
     codeBuffer.writeln(process(_ListFactoryCode));
+
     codeBuffer.writeln(process(_DropdownButtonFactoryCodeHeader));
+    codeBuffer.writeln(process(_DropdownButtonSupportMethod));
+    modelSpecificationPlus.forEach((spec) {
+      ModelSpecification ms = spec.modelSpecification;
+      if (ms.generate.generateInternalComponent) {
+        codeBuffer.writeln(
+            spaces(4) + "if (id == \"" + firstLowerCase(ms.id) + "s\") return true;");
+      }
+    });
+    codeBuffer.writeln(process(_DropdownButtonSupportMethodFooter));
+
+    codeBuffer.writeln(process(_DropdownButtonFactoryCodeMethod));
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {

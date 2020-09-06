@@ -193,14 +193,6 @@ builders:
     build_to: source
     auto_apply: all_packages
 
-  cross_component:
-    target: ":eliud_generator"
-    import: "package:eliud_generator/builder.dart"
-    builder_factories: ["cross_component"]
-    build_extensions: {r"$lib$": ["cross_component.dart"]}
-    build_to: source
-    auto_apply: all_packages
-
   embedded_component:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"
