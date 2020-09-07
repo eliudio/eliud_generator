@@ -34,7 +34,7 @@ static Widget \${lid}sList(List<\${id}Model> values, \${id}ListChanged trigger) 
           )..add(Load\${id}List()),
         )
         ],
-    child: \${id}ListWidget(),
+    child: \${id}ListWidget(isEmbedded: true),
   );
 }
 """;
