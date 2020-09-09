@@ -59,7 +59,7 @@ const String _footerAdminMenuDef = """
       admin: true,
       documentID: "\${pkgName}_admin_menu",
       appId: appID,
-      name: "\${pkgName} admin menu",
+      name: "\${pkgName}",
       menuItems: menuItems
     );
     await menuDefRepository().add(menu);
