@@ -89,50 +89,68 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(4) + "if (map == null) return null;");
     codeBuffer.writeln();
     modelSpecifications.fields.forEach((field) {
-      if (field.arrayType != ArrayType.CollectionArrayType) {
-        if ((!field.isEnum()) &&
-            (!field.association) &&
-            (!field.isNativeType())) {
-          extraLine = true;
-          if (field.isArray()) {
-            if (field.arrayType != ArrayType.CollectionArrayType) {
-              codeBuffer.writeln(spaces(4) +
-                  "final " +
-                  fieldName(field) +
-                  "List = (map['" +
-                  fieldName(field) +
-                  "'] as List<dynamic>)");
-              codeBuffer.writeln(spaces(8) + ".map((dynamic item) =>");
-              codeBuffer.writeln(
-                  spaces(8) + field.fieldType + "Entity.fromMap(item as Map))");
-              codeBuffer.writeln(spaces(8) + ".toList();");
+      if (field.isBespoke()) {
+        codeBuffer
+            .writeln(spaces(4) + "var " + fieldName(field) + "FromMap;");
+        codeBuffer.writeln(spaces(4) +
+            fieldName(field) +
+            "FromMap = map['" +
+            fieldName(field) +
+            "'];");
+        codeBuffer.writeln(
+            spaces(4) + "if (" + fieldName(field) + "FromMap != null)");
+        codeBuffer.writeln(spaces(6) +
+            fieldName(field) +
+            "FromMap = " +
+            field.bespokeEntityMapping + ";");
+
+      } else {
+        if (field.arrayType != ArrayType.CollectionArrayType) {
+          if ((!field.isEnum()) &&
+              (!field.association) &&
+              (!field.isNativeType())) {
+            extraLine = true;
+            if (field.isArray()) {
+              if (field.arrayType != ArrayType.CollectionArrayType) {
+                codeBuffer.writeln(spaces(4) +
+                    "final " +
+                    fieldName(field) +
+                    "List = (map['" +
+                    fieldName(field) +
+                    "'] as List<dynamic>)");
+                codeBuffer.writeln(spaces(8) + ".map((dynamic item) =>");
+                codeBuffer.writeln(
+                    spaces(8) + field.fieldType +
+                        "Entity.fromMap(item as Map))");
+                codeBuffer.writeln(spaces(8) + ".toList();");
+              } else {
+                // the collection is maintained by it's own collection / repository
+              }
             } else {
-              // the collection is maintained by it's own collection / repository
+              codeBuffer
+                  .writeln(spaces(4) + "var " + fieldName(field) + "FromMap;");
+              codeBuffer.writeln(spaces(4) +
+                  fieldName(field) +
+                  "FromMap = map['" +
+                  fieldName(field) +
+                  "'];");
+              codeBuffer.writeln(
+                  spaces(4) + "if (" + fieldName(field) + "FromMap != null)");
+              codeBuffer.writeln(spaces(6) +
+                  fieldName(field) +
+                  "FromMap = " +
+                  field.fieldType +
+                  "Entity.fromMap(" +
+                  fieldName(field) +
+                  "FromMap);");
             }
-          } else {
-            codeBuffer
-                .writeln(spaces(4) + "var " + fieldName(field) + "FromMap;");
-            codeBuffer.writeln(spaces(4) +
-                fieldName(field) +
-                "FromMap = map['" +
-                fieldName(field) +
-                "'];");
+          } else if (field.isMap()) {
             codeBuffer.writeln(
-                spaces(4) + "if (" + fieldName(field) + "FromMap != null)");
-            codeBuffer.writeln(spaces(6) +
-                fieldName(field) +
-                "FromMap = " +
-                field.fieldType +
-                "Entity.fromMap(" +
-                fieldName(field) +
-                "FromMap);");
+                process(_convertToMap, parameters: <String, String>{
+                  '\${fieldId}': fieldName(field),
+                  '\${fieldType}': field.dartEntityType(),
+                }));
           }
-        } else if (field.isMap()) {
-          codeBuffer.writeln(
-              process(_convertToMap, parameters: <String, String>{
-                '\${fieldId}': fieldName(field),
-                '\${fieldType}': field.dartEntityType(),
-              }));
         }
       }
     });
@@ -187,39 +205,42 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + "Map<String, Object> toDocument() {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if (field.arrayType != ArrayType.CollectionArrayType) {
-        if ((!field.isEnum()) &&
-            (!field.association) &&
-            (!field.isNativeType())) {
-          extraLine = true;
-          if (field.isArray()) {
-            if (field.arrayType != ArrayType.CollectionArrayType) {
+      if (!field.isBespoke()) {
+        if (field.arrayType != ArrayType.CollectionArrayType) {
+          if ((!field.isEnum()) &&
+              (!field.association) &&
+              (!field.isNativeType())) {
+            extraLine = true;
+            if (field.isArray()) {
+              if (field.arrayType != ArrayType.CollectionArrayType) {
+                codeBuffer.writeln(spaces(4) +
+                    "final List<Map<String, dynamic>> " +
+                    fieldName(field) +
+                    "ListMap" +
+                    " = " +
+                    fieldName(field) +
+                    " != null ");
+                codeBuffer.writeln(spaces(8) +
+                    "? " +
+                    fieldName(field) +
+                    ".map((item) => item.toDocument()).toList()");
+                codeBuffer.writeln(spaces(8) + ": null;");
+              } else {
+                // the collection is maintained by it's own collection / repository
+              }
+            } else {
               codeBuffer.writeln(spaces(4) +
-                  "final List<Map<String, dynamic>> " +
+                  "final Map<String, dynamic> " +
                   fieldName(field) +
-                  "ListMap" +
-                  " = " +
+                  "Map"
+                      " = " +
                   fieldName(field) +
                   " != null ");
-              codeBuffer.writeln(spaces(8) +
-                  "? " +
-                  fieldName(field) +
-                  ".map((item) => item.toDocument()).toList()");
+              codeBuffer
+                  .writeln(
+                  spaces(8) + "? " + fieldName(field) + ".toDocument()");
               codeBuffer.writeln(spaces(8) + ": null;");
-            } else {
-              // the collection is maintained by it's own collection / repository
             }
-          } else {
-            codeBuffer.writeln(spaces(4) +
-                "final Map<String, dynamic> " +
-                fieldName(field) +
-                "Map"
-                    " = " +
-                fieldName(field) +
-                " != null ");
-            codeBuffer
-                .writeln(spaces(8) + "? " + fieldName(field) + ".toDocument()");
-            codeBuffer.writeln(spaces(8) + ": null;");
           }
         }
       }
@@ -228,40 +249,44 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer
         .writeln(spaces(4) + "Map<String, Object> theDocument = HashMap();");
     modelSpecifications.fields.forEach((field) {
-      if (field.arrayType != ArrayType.CollectionArrayType) {
-        if (field.fieldName != "documentID") {
-          codeBuffer.write(spaces(4) +
-              "if (" +
-              fieldName(field) +
-              " != null) " +
-              "theDocument[\"" +
-              fieldName(field) +
-              "\"] = ");
-          if ((field.association) || (field.isEnum())) {
-            codeBuffer.writeln(fieldName(field) + ";");
-          } else {
-            if (!field.isNativeType()) {
-              if (field.isArray()) {
-                if (field.arrayType != ArrayType.CollectionArrayType) {
-                  codeBuffer.writeln(fieldName(field) + "ListMap;");
-                }
-              } else {
-                codeBuffer.writeln(fieldName(field) + "Map;");
-              }
+      if (field.isBespoke()) {
+        codeBuffer.writeln(field.bespokeEntityToDocument);
+      } else {
+        if (field.arrayType != ArrayType.CollectionArrayType) {
+          if (field.fieldName != "documentID") {
+            codeBuffer.write(spaces(4) +
+                "if (" +
+                fieldName(field) +
+                " != null) " +
+                "theDocument[\"" +
+                fieldName(field) +
+                "\"] = ");
+            if ((field.association) || (field.isEnum())) {
+              codeBuffer.writeln(fieldName(field) + ";");
             } else {
-              if (field.isArray()) {
-                if (field.arrayType != ArrayType.CollectionArrayType) {
-                  codeBuffer.writeln(fieldName(field) + ".toList();");
+              if (!field.isNativeType()) {
+                if (field.isArray()) {
+                  if (field.arrayType != ArrayType.CollectionArrayType) {
+                    codeBuffer.writeln(fieldName(field) + "ListMap;");
+                  }
+                } else {
+                  codeBuffer.writeln(fieldName(field) + "Map;");
                 }
               } else {
-                codeBuffer.writeln(fieldName(field) + ";");
+                if (field.isArray()) {
+                  if (field.arrayType != ArrayType.CollectionArrayType) {
+                    codeBuffer.writeln(fieldName(field) + ".toList();");
+                  }
+                } else {
+                  codeBuffer.writeln(fieldName(field) + ";");
+                }
               }
             }
+            codeBuffer.writeln(spaces(6) +
+                "else theDocument[\"" +
+                fieldName(field) +
+                "\"] = null;");
           }
-          codeBuffer.writeln(spaces(6) +
-              "else theDocument[\"" +
-              fieldName(field) +
-              "\"] = null;");
         }
       }
     });
