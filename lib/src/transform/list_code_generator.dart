@@ -4,6 +4,12 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName) => """
+import 'package:eliud_core/core/access/bloc/access_bloc.dart';
+import 'package:eliud_core/core/access/bloc/access_state.dart';
+import 'package:eliud_core/core/app/app_bloc.dart';
+import 'package:eliud_core/core/app/app_state.dart';
+import 'package:eliud_core/core/access/bloc/access_state.dart';
+
 import 'package:eliud_core/core/global_data.dart';
 import 'package:eliud_core/tools/has_fab.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +31,8 @@ import 'package:$packageName/model/\${importprefix}_list_state.dart';
 import 'package:$packageName/model/\${importprefix}_list_bloc.dart';
 import 'package:$packageName/model/\${importprefix}_model.dart';
 
+import 'package:eliud_core/model/app_model.dart';
+
 """;
 
 String _importForms = """
@@ -33,7 +41,7 @@ import '\${importprefix}_form.dart';
 
 String _onTap = """
                       final removedItem = await Navigator.of(context).push(
-                        pageRouteBuilder(page: BlocProvider.value(
+                        pageRouteBuilder(appState.app, page: BlocProvider.value(
                               value: BlocProvider.of<\${id}ListBloc>(context),
                               child: getForm(value, FormAction.UpdateAction))));
                       if (removedItem != null) {
@@ -47,152 +55,6 @@ String _onTap = """
                       }
 """;
 
-
-String _listBody = """
-class \${id}ListWidget extends StatefulWidget with HasFab {
-  bool readOnly;
-  String form;
-  \${id}ListWidgetState state;
-  bool isEmbedded;
-
-  \${id}ListWidget({ Key key, this.readOnly, this.form, this.isEmbedded }): super(key: key);
-
-  @override
-  \${id}ListWidgetState createState() {
-    state ??= \${id}ListWidgetState();
-    return state;
-  }
-
-  Widget fab(BuildContext context) {
-    if ((readOnly != null) && readOnly) return null;
-    state ??= \${id}ListWidgetState();
-    return state.fab(context);
-  }
-}
-
-class \${id}ListWidgetState extends State<\${id}ListWidget> {
-  \${id}ListBloc bloc;
-
-  @override
-  void didChangeDependencies() {
-    bloc = BlocProvider.of<\${id}ListBloc>(context);
-    super.didChangeDependencies();
-  }
-
-  @override
-  void dispose () {
-    if (bloc != null) bloc.close();
-    super.dispose();
-  }
-
-  @override
-  Widget fab(BuildContext aContext) {
-    return !GlobalData.memberIsOwner() \${allowAddItemsCondition} 
-        ? null
-        :FloatingActionButton(
-      heroTag: "\${id}FloatBtnTag",
-      foregroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonForegroundColor),
-      backgroundColor: RgbHelper.color(rgbo: GlobalData.app().floatingButtonBackgroundColor),
-      child: Icon(Icons.add),
-      onPressed: () {
-        Navigator.of(context).push(
-          pageRouteBuilder(page: BlocProvider.value(
-              value: bloc,
-              child: \${id}Form(
-                  value: null,
-                  formAction: FormAction.AddAction)
-          )),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
-      if (state is \${id}ListLoading) {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      } else if (state is \${id}ListLoaded) {
-        final values = state.values;
-        if ((widget.isEmbedded != null) && (widget.isEmbedded)) {
-          List<Widget> children = List();
-          children.add(theList(context, values));
-          children.add(RaisedButton(
-                  color: RgbHelper.color(rgbo: GlobalData.app().formSubmitButtonColor),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                              pageRouteBuilder(page: BlocProvider.value(
-                                  value: bloc,
-                                  child: \${id}Form(
-                                      value: null,
-                                      formAction: FormAction.AddAction)
-                              )),
-                            );
-                  },
-                  child: Text('Add', style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().formSubmitButtonTextColor))),
-                ));
-          return ListView(
-            padding: const EdgeInsets.all(8),
-            physics: ScrollPhysics(),
-            shrinkWrap: true,
-            children: children
-          );
-        } else {
-          return theList(context, values);
-        }
-      } else {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      }
-    });
-  }
-  
-  Widget theList(BuildContext context, values) {
-    return Container(
-      decoration: BoxDecorationHelper.boxDecoration(GlobalData.app().listBackground),
-      child: ListView.separated(
-        separatorBuilder: (context, index) => Divider(
-          color: RgbHelper.color(rgbo: GlobalData.app().dividerColor)
-        ),
-        shrinkWrap: true,
-        physics: ScrollPhysics(),
-        itemCount: values.length,
-        itemBuilder: (context, index) {
-          final value = values[index];
-          return \${id}ListItem(
-            value: value,
-            onDismissed: (direction) {
-              BlocProvider.of<\${id}ListBloc>(context)
-                  .add(Delete\${id}List(value: value));
-              Scaffold.of(context).showSnackBar(DeleteSnackBar(
-                message: "\${id} " + value.\${displayOnDelete},
-                onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
-                    .add(Add\${id}List(value: value)),
-              ));
-            },
-            onTap: () async {
-             \${onTap}
-            },
-          );
-        }
-      ));
-  }
-  
-  
-  Widget getForm(value, action) {
-    if (widget.form == null) {
-      return \${id}Form(value: value, formAction: action);
-    } else {
-\${_formVariations}
-    }
-  }
-  
-}
-
-""";
 
 class ListCodeGenerator extends CodeGenerator {
   ListCodeGenerator ({ModelSpecification modelSpecifications})
@@ -247,6 +109,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln("class " + modelSpecifications.id + "ListItem extends StatelessWidget {");
     codeBuffer.writeln(spaces(2) + "final DismissDirectionCallback onDismissed;");
     codeBuffer.writeln(spaces(2) + "final GestureTapCallback onTap;");
+    codeBuffer.writeln(spaces(2) + "final AppModel app;");
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + " value;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListItem({");
@@ -254,6 +117,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(4) + "@required this.onDismissed,");
     codeBuffer.writeln(spaces(4) + "@required this.onTap,");
     codeBuffer.writeln(spaces(4) + "@required this.value,");
+    codeBuffer.writeln(spaces(4) + "@required this.app,");
     codeBuffer.writeln(spaces(2) + "}) : super(key: key);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
@@ -274,7 +138,7 @@ class ListCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
       codeBuffer.writeln(spaces(14) + "value." + title + ",");
       codeBuffer.writeln(
-          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().listTextItemColor)),");
+          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: app.listTextItemColor)),");
       codeBuffer.writeln(spaces(12) + ")),");
     }
     codeBuffer.writeln(spaces(10) + "),");
@@ -291,7 +155,7 @@ class ListCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(10) + "maxLines: 1,");
         codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
         codeBuffer.writeln(
-            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: GlobalData.app().listTextItemColor)),");
+            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: app.listTextItemColor)),");
         codeBuffer.writeln(spaces(8) + "))");
       }
       codeBuffer.writeln(spaces(12) + ": null,");
@@ -310,3 +174,163 @@ class ListCodeGenerator extends CodeGenerator {
     return modelSpecifications.listFileName();
   }
 }
+
+String _listBody = """
+class \${id}ListWidget extends StatefulWidget with HasFab {
+  bool readOnly;
+  String form;
+  \${id}ListWidgetState state;
+  bool isEmbedded;
+
+  \${id}ListWidget({ Key key, this.readOnly, this.form, this.isEmbedded }): super(key: key);
+
+  @override
+  \${id}ListWidgetState createState() {
+    state ??= \${id}ListWidgetState();
+    return state;
+  }
+
+  @override
+  Widget fab(BuildContext context) {
+    if ((readOnly != null) && readOnly) return null;
+    state ??= \${id}ListWidgetState();
+    var accessState = AccessBloc.getState(context);
+    var appState = AppBloc.getState(context);
+    return state.fab(context, accessState, appState);
+  }
+}
+
+class \${id}ListWidgetState extends State<\${id}ListWidget> {
+  \${id}ListBloc bloc;
+
+  @override
+  void didChangeDependencies() {
+    bloc = BlocProvider.of<\${id}ListBloc>(context);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose () {
+    if (bloc != null) bloc.close();
+    super.dispose();
+  }
+
+  @override
+  Widget fab(BuildContext aContext, AccessState accessState, AppLoaded appState) {
+    if (appState is AppLoaded) {
+      return !accessState.memberIsOwner(appState) \${allowAddItemsCondition}
+        ? null
+        :FloatingActionButton(
+        heroTag: "\${id}FloatBtnTag",
+        foregroundColor: RgbHelper.color(rgbo: appState.app.floatingButtonForegroundColor),
+        backgroundColor: RgbHelper.color(rgbo: appState.app.floatingButtonBackgroundColor),
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).push(
+            pageRouteBuilder(appState.app, page: BlocProvider.value(
+                value: bloc,
+                child: \${id}Form(
+                    value: null,
+                    formAction: FormAction.AddAction)
+            )),
+          );
+        },
+      );
+    } else {
+      return Text('App not loaded');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = AppBloc.getState(context);
+    var accessState = AccessBloc.getState(context);
+    if (appState is AppLoaded) {
+      return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
+        if (state is \${id}ListLoading) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state is \${id}ListLoaded) {
+          final values = state.values;
+          if ((widget.isEmbedded != null) && (widget.isEmbedded)) {
+            List<Widget> children = List();
+            children.add(theList(context, values, appState, accessState));
+            children.add(RaisedButton(
+                    color: RgbHelper.color(rgbo: appState.app.formSubmitButtonColor),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                                pageRouteBuilder(appState.app, page: BlocProvider.value(
+                                    value: bloc,
+                                    child: \${id}Form(
+                                        value: null,
+                                        formAction: FormAction.AddAction)
+                                )),
+                              );
+                    },
+                    child: Text('Add', style: TextStyle(color: RgbHelper.color(rgbo: appState.app.formSubmitButtonTextColor))),
+                  ));
+            return ListView(
+              padding: const EdgeInsets.all(8),
+              physics: ScrollPhysics(),
+              shrinkWrap: true,
+              children: children
+            );
+          } else {
+            return theList(context, values, appState, accessState);
+          }
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      });
+    } else {
+      return Text("App not loaded");
+    } 
+  }
+  
+  Widget theList(BuildContext context, values, AppLoaded appState, AccessState accessState) {
+    return Container(
+      decoration: BoxDecorationHelper.boxDecoration(accessState, appState.app.listBackground),
+      child: ListView.separated(
+        separatorBuilder: (context, index) => Divider(
+          color: RgbHelper.color(rgbo: appState.app.dividerColor)
+        ),
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
+        itemCount: values.length,
+        itemBuilder: (context, index) {
+          final value = values[index];
+          return \${id}ListItem(
+            value: value,
+            app: appState.app,
+            onDismissed: (direction) {
+              BlocProvider.of<\${id}ListBloc>(context)
+                  .add(Delete\${id}List(value: value));
+              Scaffold.of(context).showSnackBar(DeleteSnackBar(
+                message: "\${id} " + value.\${displayOnDelete},
+                onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
+                    .add(Add\${id}List(value: value)),
+              ));
+            },
+            onTap: () async {
+             \${onTap}
+            },
+          );
+        }
+      ));
+  }
+  
+  
+  Widget getForm(value, action) {
+    if (widget.form == null) {
+      return \${id}Form(value: value, formAction: action);
+    } else {
+\${_formVariations}
+    }
+  }
+  
+}
+
+""";

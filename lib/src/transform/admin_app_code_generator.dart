@@ -49,7 +49,7 @@ const String _menuItemDef = """
         text: "\${id}s",
         description: "\${id}s",
         icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
-        action: GotoPage(pageID: "\${pkgName}_\${lowid}s_page"))
+        action: GotoPage(appID, pageID: "\${pkgName}_\${lowid}s_page"))
     );
 
 """;
@@ -62,7 +62,7 @@ const String _footerAdminMenuDef = """
       name: "\${pkgName}",
       menuItems: menuItems
     );
-    await menuDefRepository().add(menu);
+    await menuDefRepository(appID: appID).add(menu);
     return menu;
   }
 }
@@ -98,11 +98,11 @@ const String _setupAdminPagesHeader = """
 """;
 
 const String _setupAdminPagesFirstPage = """
-    return pageRepository().add(_\${lid}sPages())
+    return pageRepository(appID: appID).add(_\${lid}sPages())
 """;
 
 const String _setupAdminPagesOtherPages = """
-        .then((_) => pageRepository().add(_\${lid}sPages()))
+        .then((_) => pageRepository(appID: appID).add(_\${lid}sPages()))
 """;
 
 const String _setupAdminPagesFooter = """
@@ -125,6 +125,10 @@ class AdminAppWiper extends AdminAppWiperBase {
 """;
 
 const String _footerOther = """
+    await \${lid}Repository(appID: appID).deleteAll();
+""";
+
+const String _footerOtherNoApp = """
     await \${lid}Repository().deleteAll();
 """;
 
@@ -216,7 +220,11 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
       if (spec.modelSpecification.generate.hasPersistentRepository) {
         Map<String, String> parameters = <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) };
         if ((spec.modelSpecification.id != "Member") && (spec.modelSpecification.id != "App") && (!spec.modelSpecification.generate.isDocumentCollection)) {
+          if (spec.modelSpecification.isAppModel) {
             codeBuffer.write(process(_footerOther, parameters: parameters));
+          } else {
+            codeBuffer.write(process(_footerOtherNoApp, parameters: parameters));
+          }
         }
       }
     });

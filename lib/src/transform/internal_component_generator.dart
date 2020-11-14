@@ -6,6 +6,7 @@ import 'code_generator_multi.dart';
 
 String _imports = """
 import 'package:eliud_core/tools/component_constructor.dart';
+import 'package:eliud_core/core/app/app_bloc.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -99,12 +100,12 @@ class DropdownButtonComponent extends StatelessWidget {
 """;
 
 const String _SpecificListComponentCode = """
-  Widget _\${lowerSpecific}Build() {
+  Widget _\${lowerSpecific}Build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
-            \${lowerSpecific}Repository: \${lowerSpecific}Repository(),
+            \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar}),
           )..add(Load\${upperSpecific}List()),
         )
       ],
@@ -114,12 +115,12 @@ const String _SpecificListComponentCode = """
 """;
 
 const String _SpecificDropdownButtonComponentCode = """
-  Widget _\${lowerSpecific}Build() {
+  Widget _\${lowerSpecific}Build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
-            \${lowerSpecific}Repository: \${lowerSpecific}Repository(),
+            \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar}),
           )..add(Load\${upperSpecific}List()),
         )
       ],
@@ -193,7 +194,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
             firstLowerCase(ms.id) +
             "s') return _" +
             firstLowerCase(ms.id) +
-            "Build();");
+            "Build(context);");
       }
     });
     codeBuffer.writeln(spaces(4) +
@@ -220,18 +221,21 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
+      var appIdVar = ms.isAppModel ? "appID: AppBloc.appId(context)" : "";
       if (ms.generate.generateInternalComponent) {
         if (list)
           codeBuffer.writeln(process(_SpecificListComponentCode,
               parameters: <String, String>{
                 "\${lowerSpecific}": firstLowerCase(ms.id),
                 "\${upperSpecific}": ms.id,
+                "\${appIdVar}" : appIdVar,
               }));
         else
           codeBuffer.writeln(process(_SpecificDropdownButtonComponentCode,
               parameters: <String, String>{
                 "\${lowerSpecific}": firstLowerCase(ms.id),
                 "\${upperSpecific}": ms.id,
+                "\${appIdVar}" : appIdVar,
               }));
       }
     });

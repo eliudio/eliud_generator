@@ -10,7 +10,7 @@ const String _code = """
 class \${id}JsFirestore implements \${id}Repository {
   Future<\${id}Model> add(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID)
-        .set(value.toEntity().toDocument())
+        .set(value.toEntity(\${appIdDef}).toDocument())
         .then((_) => value);
   }
 
@@ -20,7 +20,7 @@ class \${id}JsFirestore implements \${id}Repository {
 
   Future<\${id}Model> update(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID)
-        .update(data: value.toEntity().toDocument())
+        .update(data: value.toEntity(\${appIdDef}).toDocument())
         .then((_) => value);
   }
 
@@ -173,7 +173,8 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
       "\${where}": where,
-      "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications)
+      "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
+      "\${appIdDef}": !modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel ? "appID" : ""
     };
 
     StringBuffer bodyBuffer = StringBuffer();

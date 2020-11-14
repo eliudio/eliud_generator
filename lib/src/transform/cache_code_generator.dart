@@ -106,7 +106,7 @@ const String _refreshRelationsModel = """
     \${fieldType}Model \${fieldName}Holder;
     if (model.\${fieldName} != null) {
       try {
-        await \${lfieldType}Repository().get(model.\${fieldName}.documentID).then((val) {
+        await \${lfieldType}Repository(\${appIdVar}).get(model.\${fieldName}.documentID).then((val) {
           \${fieldName}Holder = val;
         }).catchError((error) {});
       } catch (_) {}
@@ -185,6 +185,7 @@ class CacheCodeGenerator extends CodeGenerator {
               '\${fieldName}': field.fieldName,
               '\${fieldType}': field.fieldType,
               '\${lfieldType}': firstLowerCase(field.fieldType),
+              '\${appIdVar}': modelSpecifications.isAppModel ? 'appID: model.appId' : ''
             }));
         assignParametersBuffer.writeln(process(_refreshRelationsAssignField,
             parameters: <String, String>{

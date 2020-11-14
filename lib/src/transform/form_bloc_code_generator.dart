@@ -22,7 +22,7 @@ const String _isDocumentIDValid = """
   Future<\${id}FormState> _isDocumentIDValid(String value, \${id}Model newValue) async {
     if (value == null) return Future.value(error("Provide value for documentID", newValue));
     if (value.length == 0) return Future.value(error("Provide value for documentID", newValue));
-    Future<\${id}Model> findDocument = _\${lid}Repository.get(value);
+    Future<\${id}Model> findDocument = \${lid}Repository(appID: appId).get(value);
     return await findDocument.then((documentFound) {
       if (documentFound == null) {
         return Submittable\${id}Form(value: newValue);
@@ -136,7 +136,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(8) + "// Need to re-retrieve the document from the repository so that I get all associated types");
     codeBuffer.write(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: ");
     if (withRepository())
-      codeBuffer.writeln("await _" + firstLowerCase(modelSpecifications.id) + "Repository.get(event.value.documentID));");
+      codeBuffer.writeln("await " + firstLowerCase(modelSpecifications.id) + "Repository(appID: appId).get(event.value.documentID));");
     else
       codeBuffer.writeln("event.value);");
     codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
@@ -188,9 +188,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(8) + "if (event.value != null)");
           codeBuffer.writeln(
               spaces(10) + "newValue = currentState.value.copyWith(" +
-                  field.fieldName + ": await _" +
+                  field.fieldName + ": await " +
                   firstLowerCase(field.fieldType) +
-                  "Repository.get(event.value));");
+                  "Repository(appID: appId).get(event.value));");
           codeBuffer.writeln(spaces(8) + "else");
           codeBuffer.writeln(
               spaces(10) + "newValue = new " + modelSpecifications.id +
@@ -240,23 +240,18 @@ class FormBlocCodeGenerator extends CodeGenerator {
   String _memberData() {
     StringBuffer codeBuffer = StringBuffer();
     if (withRepository()) {
-      codeBuffer.writeln(
-          spaces(2) + "final " + modelSpecifications.id + "Repository _" +
-              firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository();");
-
       codeBuffer.writeln(spaces(2) + "final FormAction formAction;");
     }
-    modelSpecifications.uniqueAssociationTypes().forEach((field) {
-        codeBuffer.writeln(spaces(2) + "final " + field + "Repository _" + firstLowerCase(field) + "Repository = " + firstLowerCase(field) + "Repository();");
-    });
+    codeBuffer.writeln(spaces(2) + "final String appId;");
+
     return codeBuffer.toString();
   }
 
   String _constructor() {
     if (withRepository()) {
-      return spaces(2) + modelSpecifications.id + "FormBloc({ this.formAction }): super(" + modelSpecifications.id + "FormUninitialized());";
+      return spaces(2) + modelSpecifications.id + "FormBloc(this.appId, { this.formAction }): super(" + modelSpecifications.id + "FormUninitialized());";
     } else {
-      return spaces(2) + modelSpecifications.id + "FormBloc(): super(" + modelSpecifications.id + "FormUninitialized());";
+      return spaces(2) + modelSpecifications.id + "FormBloc(this.appId, ): super(" + modelSpecifications.id + "FormUninitialized());";
     }
   }
 

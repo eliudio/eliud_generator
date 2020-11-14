@@ -183,17 +183,19 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
   String _toEntity() {
     StringBuffer codeBuffer = StringBuffer();
+    String appIdDef = "";
+    String appIdRef = "";
+    if (modelSpecifications.fields
+        .where((field) => field.fieldName == "appId")
+        .length >
+        0) {
+      appIdDef = "String appId";
+      appIdRef = "appId";
+    }
     codeBuffer.writeln(
-        spaces(2) + modelSpecifications.entityClassName() + " toEntity() {");
+        spaces(2) + modelSpecifications.entityClassName() + " toEntity($appIdDef) {");
     if (modelSpecifications.preToEntityCode != null) {
       codeBuffer.writeln(spaces(4) + modelSpecifications.preToEntityCode);
-    }
-
-    if (modelSpecifications.fields
-            .where((field) => field.fieldName == "appId")
-            .length >
-        0) {
-      codeBuffer.writeln(spaces(4) + "appId = GlobalData.app().documentID;");
     }
 
     codeBuffer.writeln(
@@ -224,13 +226,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
                   if (field.arrayType != ArrayType.CollectionArrayType) {
                     codeBuffer.writeln();
                     codeBuffer.writeln(
-                        spaces(12) + ".map((item) => item.toEntity())");
+                        spaces(12) + ".map((item) => item.toEntity($appIdRef))");
                     codeBuffer.write(spaces(12) + ".toList()");
                   } else {
                     codeBuffer.write(spaces(12) + "what to do here?");
                   }
                 } else {
-                  codeBuffer.write(".toEntity()");
+                  codeBuffer.write(".toEntity($appIdRef)");
                 }
               }
             }
@@ -333,10 +335,17 @@ class ModelCodeGenerator extends DataCodeGenerator {
             spaces(4) + "if (entity." + field.fieldName + "Id != null) {");
         codeBuffer.writeln(spaces(6) + "try {");
 
+        String appVar;
+        if (modelSpecifications.isAppModel) {
+          // a model which is not an app model can not have relationships which require an app ID, ie. which are app specific
+          appVar = "appID: entity.appId";
+        } else {
+          appVar = "";
+        }
         codeBuffer.writeln(spaces(8) +
             "await " +
             firstLowerCase(field.fieldType) +
-            "Repository().get(entity." +
+            "Repository($appVar).get(entity." +
             field.fieldName +
             "Id" +
             ").then((val) {");

@@ -31,30 +31,30 @@ class ComponentBlocCodeGenerator extends CodeGenerator {
 
   String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(spaces(2) + modelSpecifications.id + "Bloc({ this." + firstLowerCase(modelSpecifications.id) + "Repository }): super("  + modelSpecifications.id + "Uninitialized());");
+    codeBuffer.write(spaces(2) + modelSpecifications.id + "ComponentBloc({ this." + firstLowerCase(modelSpecifications.id) + "Repository }): super("  + modelSpecifications.id + "ComponentUninitialized());");
     return codeBuffer.toString();
   }
 
   String _mapEventToState() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "State> mapEventToState(" + modelSpecifications.id + "Event event) async* {");
+    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ComponentState> mapEventToState(" + modelSpecifications.id + "ComponentEvent event) async* {");
     codeBuffer.writeln(spaces(4) + "final currentState = state;");
-    codeBuffer.writeln(spaces(4) + "if (event is Fetch" + modelSpecifications.id + ") {");
+    codeBuffer.writeln(spaces(4) + "if (event is Fetch" + modelSpecifications.id + "Component) {");
     codeBuffer.writeln(spaces(6) + "try {");
-    codeBuffer.writeln(spaces(8) + "if (currentState is " + modelSpecifications.id + "Uninitialized) {");
+    codeBuffer.writeln(spaces(8) + "if (currentState is " + modelSpecifications.id + "ComponentUninitialized) {");
     codeBuffer.writeln(spaces(10) + "final " + modelSpecifications.id + "Model model = await _fetch" + modelSpecifications.id + "(event.id);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(10) + "if (model != null) {");
-    codeBuffer.writeln(spaces(12) + "yield " + modelSpecifications.id + "Loaded(value: model);");
+    codeBuffer.writeln(spaces(12) + "yield " + modelSpecifications.id + "ComponentLoaded(value: model);");
     codeBuffer.writeln(spaces(10) + "} else {");
     codeBuffer.writeln(spaces(12) + "String id = event.id;");
-    codeBuffer.writeln(spaces(12) + "yield " + modelSpecifications.id + "Error(message: \"" + modelSpecifications.id + " with id = '\$id' not found\");");
+    codeBuffer.writeln(spaces(12) + "yield " + modelSpecifications.id + "ComponentError(message: \"" + modelSpecifications.id + " with id = '\$id' not found\");");
     codeBuffer.writeln(spaces(10) + "}");
     codeBuffer.writeln(spaces(10) + "return;");
     codeBuffer.writeln(spaces(8) + "}");
     codeBuffer.writeln(spaces(6) + "} catch (_) {");
-    codeBuffer.writeln(spaces(8) + "yield " + modelSpecifications.id + "Error(message: \"Unknown error whilst retrieving " + modelSpecifications.id + "\");");
+    codeBuffer.writeln(spaces(8) + "yield " + modelSpecifications.id + "ComponentError(message: \"Unknown error whilst retrieving " + modelSpecifications.id + "\");");
     codeBuffer.writeln(spaces(6) + "}");
     codeBuffer.writeln(spaces(4) + "}");
     codeBuffer.writeln(spaces(2) + "}");
@@ -81,7 +81,7 @@ class ComponentBlocCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("class " + modelSpecifications.id + "Bloc extends Bloc<" + modelSpecifications.id + "Event, " + modelSpecifications.id + "State> {");
+    codeBuffer.writeln("class " + modelSpecifications.id + "ComponentBloc extends Bloc<" + modelSpecifications.id + "ComponentEvent, " + modelSpecifications.id + "ComponentState> {");
 
     codeBuffer.writeln(_dataMembers());
     codeBuffer.writeln(_constructor());

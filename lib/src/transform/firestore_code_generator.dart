@@ -9,7 +9,7 @@ import 'firestore_helper.dart';
 const String _code = """
 class \${id}Firestore implements \${id}Repository {
   Future<\${id}Model> add(\${id}Model value) {
-    return \${id}Collection.document(value.documentID).setData(value.toEntity().toDocument()).then((_) => value);
+    return \${id}Collection.document(value.documentID).setData(value.toEntity(\${appIdDef}).toDocument()).then((_) => value);
   }
 
   Future<void> delete(\${id}Model value) {
@@ -17,7 +17,7 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   Future<\${id}Model> update(\${id}Model value) {
-    return \${id}Collection.document(value.documentID).updateData(value.toEntity().toDocument()).then((_) => value);
+    return \${id}Collection.document(value.documentID).updateData(value.toEntity(\${appIdDef}).toDocument()).then((_) => value);
   }
 
   \${id}Model _populateDoc(DocumentSnapshot doc) {
@@ -161,7 +161,8 @@ class FirestoreCodeGenerator extends CodeGenerator {
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
       "\${where}": where,
-      "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications)
+      "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
+      "\${appIdDef}": !modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel ? "appID" : ""
     };
     StringBuffer headerBuffer = StringBuffer();
 

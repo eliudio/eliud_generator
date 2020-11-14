@@ -51,14 +51,14 @@ class RepositoryCodeGenerator extends CodeGenerator {
     String modelClassName = modelSpecifications.modelClassName();
 
     String typeDef = "";
-    if (modelSpecifications.generate.generateCache)
+//    if (modelSpecifications.generate.generateCache)
       typeDef = "typedef " + modelClassName + "Trigger(List<" + modelClassName + "> list);";
 
     String listen = "";
-    if (modelSpecifications.generate.generateCache) {
+//    if (modelSpecifications.generate.generateCache) {
       listen = "StreamSubscription<List<" + modelClassName + ">> listen(" + modelClassName + "Trigger trigger);\n";
       listen = listen + "StreamSubscription<List<" + modelClassName + ">> listenWithDetails(" + modelClassName + "Trigger trigger);";
-    }
+//    }
 
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,

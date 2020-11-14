@@ -17,7 +17,7 @@ class ComponentEventCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("abstract class " + modelSpecifications.id + "Event extends Equatable {");
+    codeBuffer.writeln("abstract class " + modelSpecifications.id + "ComponentEvent extends Equatable {");
 
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "List<Object> get props => [];");
@@ -25,10 +25,10 @@ class ComponentEventCodeGenerator extends CodeGenerator {
     codeBuffer.writeln("}");
     codeBuffer.writeln();
 
-    codeBuffer.writeln("class Fetch" + modelSpecifications.id + " extends "+ modelSpecifications.id + "Event {");
+    codeBuffer.writeln("class Fetch" + modelSpecifications.id + "Component extends "+ modelSpecifications.id + "ComponentEvent {");
     codeBuffer.writeln(spaces(2) + "final String id;");
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Fetch" + modelSpecifications.id + "({ this.id });");
+    codeBuffer.writeln(spaces(2) + "Fetch" + modelSpecifications.id + "Component({ this.id });");
     codeBuffer.writeln("}");
     codeBuffer.writeln();
 

@@ -22,9 +22,21 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
-        codeBuffer.writeln(
-            spec.modelSpecification.id + "Repository " +
-                firstLowerCase(spec.modelSpecification.id) + "Repository() => AbstractRepositorySingleton.singleton." + firstLowerCase(spec.modelSpecification.id) + "Repository();");
+        if (spec.modelSpecification.isAppModel) {
+          codeBuffer.writeln(
+              spec.modelSpecification.id + "Repository " +
+                  firstLowerCase(spec.modelSpecification.id) +
+                  "Repository({ String appID }) => AbstractRepositorySingleton.singleton." +
+                  firstLowerCase(spec.modelSpecification.id) +
+                  "Repository(appID);");
+        } else {
+          codeBuffer.writeln(
+              spec.modelSpecification.id + "Repository " +
+                  firstLowerCase(spec.modelSpecification.id) +
+                  "Repository({ String appID }) => AbstractRepositorySingleton.singleton." +
+                  firstLowerCase(spec.modelSpecification.id) +
+                  "Repository();");
+        }
       }
     });
     codeBuffer.writeln();
@@ -33,16 +45,30 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+        if (spec.modelSpecification.isAppModel) {
+          codeBuffer.writeln(
+              spaces(2) + spec.modelSpecification.id + "Repository " +
+                  firstLowerCase(spec.modelSpecification.id) + "Repository(String appID);");
+        } else {
           codeBuffer.writeln(
               spaces(2) + spec.modelSpecification.id + "Repository " +
                   firstLowerCase(spec.modelSpecification.id) + "Repository();");
+        }
       }
     });
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "void flush() {");
+    codeBuffer.writeln(spaces(2) + "void flush(String appID) {");
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
-        codeBuffer.writeln(spaces(4) + firstLowerCase(spec.modelSpecification.id) + "Repository().flush();");
+        if (spec.modelSpecification.isAppModel) {
+          codeBuffer.writeln(
+              spaces(4) + firstLowerCase(spec.modelSpecification.id) +
+                  "Repository(appID).flush();");
+        } else {
+          codeBuffer.writeln(
+              spaces(4) + firstLowerCase(spec.modelSpecification.id) +
+                  "Repository().flush();");
+        }
       }
     });
     codeBuffer.writeln(spaces(2) + "}");

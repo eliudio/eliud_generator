@@ -20,38 +20,38 @@ class ComponentStateCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     String className = modelSpecifications.repositoryClassName();
     String modelClassName = modelSpecifications.modelClassName();
-    codeBuffer.writeln("abstract class " + modelSpecifications.id + "State extends Equatable {");
+    codeBuffer.writeln("abstract class " + modelSpecifications.id + "ComponentState extends Equatable {");
 
-    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "State();");
+    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "ComponentState();");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "List<Object> get props => [];");
     codeBuffer.writeln("}");
     codeBuffer.writeln();
 
-    codeBuffer.writeln("class " + modelSpecifications.id + "Uninitialized extends " + modelSpecifications.id + "State {}");
+    codeBuffer.writeln("class " + modelSpecifications.id + "ComponentUninitialized extends " + modelSpecifications.id + "ComponentState {}");
     codeBuffer.writeln();
 
-    codeBuffer.writeln("class " + modelSpecifications.id + "Error extends " + modelSpecifications.id + "State {");
+    codeBuffer.writeln("class " + modelSpecifications.id + "ComponentError extends " + modelSpecifications.id + "ComponentState {");
     codeBuffer.writeln(spaces(2) + "final String message;");
-    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "Error({ this.message });");
+    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ComponentError({ this.message });");
     codeBuffer.writeln("}");
     codeBuffer.writeln();
 
-    codeBuffer.writeln("class " + modelSpecifications.id + "Loaded extends " + modelSpecifications.id + "State {");
+    codeBuffer.writeln("class " + modelSpecifications.id + "ComponentLoaded extends " + modelSpecifications.id + "ComponentState {");
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + " value;");
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "Loaded({ this.value });");
+    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "ComponentLoaded({ this.value });");
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "Loaded copyWith({ " + modelSpecifications.modelClassName() + " copyThis }) {");
-    codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.id + "Loaded(value: copyThis ?? this.value);");
+    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ComponentLoaded copyWith({ " + modelSpecifications.modelClassName() + " copyThis }) {");
+    codeBuffer.writeln(spaces(4) + "return " + modelSpecifications.id + "ComponentLoaded(value: copyThis ?? this.value);");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "List<Object> get props => [value];");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "String toString() => '" + modelSpecifications.modelClassName() + "Loaded { value: \$value }';");
+    codeBuffer.writeln(spaces(2) + "String toString() => '" + modelSpecifications.id + "ComponentLoaded { value: \$value }';");
 
     codeBuffer.writeln("}");
     codeBuffer.writeln();
