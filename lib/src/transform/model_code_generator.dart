@@ -183,17 +183,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
   String _toEntity() {
     StringBuffer codeBuffer = StringBuffer();
-    String appIdDef = "";
-    String appIdRef = "";
-    if (modelSpecifications.fields
-        .where((field) => field.fieldName == "appId")
-        .length >
-        0) {
-      appIdDef = "String appId";
-      appIdRef = "appId";
-    }
     codeBuffer.writeln(
-        spaces(2) + modelSpecifications.entityClassName() + " toEntity($appIdDef) {");
+        spaces(2) + modelSpecifications.entityClassName() + " toEntity({String appId}) {");
     if (modelSpecifications.preToEntityCode != null) {
       codeBuffer.writeln(spaces(4) + modelSpecifications.preToEntityCode);
     }
@@ -226,13 +217,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
                   if (field.arrayType != ArrayType.CollectionArrayType) {
                     codeBuffer.writeln();
                     codeBuffer.writeln(
-                        spaces(12) + ".map((item) => item.toEntity($appIdRef))");
+                        spaces(12) + ".map((item) => item.toEntity(appId: appId))");
                     codeBuffer.write(spaces(12) + ".toList()");
                   } else {
                     codeBuffer.write(spaces(12) + "what to do here?");
                   }
                 } else {
-                  codeBuffer.write(".toEntity($appIdRef)");
+                  codeBuffer.write(".toEntity(appId: appId)");
                 }
               }
             }

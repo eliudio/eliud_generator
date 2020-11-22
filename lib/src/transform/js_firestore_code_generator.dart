@@ -174,7 +174,7 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
       '\${lid}': firstLowerCase(modelSpecifications.id),
       "\${where}": where,
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
-      "\${appIdDef}": !modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel ? "appID" : ""
+      "\${appIdDef}": !modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel ? "appId: appID" : ""
     };
 
     StringBuffer bodyBuffer = StringBuffer();
