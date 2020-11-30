@@ -20,12 +20,12 @@ class \${id}Firestore implements \${id}Repository {
     return \${id}Collection.document(value.documentID).updateData(value.toEntity(\${appIdDef}).toDocument()).then((_) => value);
   }
 
-  \${id}Model _populateDoc(DocumentSnapshot doc) {
-    return \${id}Model.fromEntity(doc.documentID, \${id}Entity.fromMap(doc.data));
+  \${id}Model _populateDoc(DocumentSnapshot value) {
+    return \${id}Model.fromEntity(value.documentID, \${id}Entity.fromMap(value.data));
   }
 
-  Future<\${id}Model> _populateDocPlus(DocumentSnapshot doc) async {
-    return \${id}Model.fromEntityPlus(doc.documentID, \${id}Entity.fromMap(doc.data));  }
+  Future<\${id}Model> _populateDocPlus(DocumentSnapshot value) async {
+    return \${id}Model.fromEntityPlus(value.documentID, \${id}Entity.fromMap(value.data), \${appIdDef});  }
 
   Future<\${id}Model> get(String id) {
     return \${id}Collection.document(id).get().then((doc) {
@@ -126,10 +126,10 @@ const String _footerWithoutCollectionParameter = """
 """;
 
 const String _footer = """
-  final String appID;
+  final String appId;
   final CollectionReference \${id}Collection;
 
-  \${id}Firestore(this.appID) : \${id}Collection = Firestore.instance.collection('\${COLLECTION_ID}-\${appID}');
+  \${id}Firestore(this.appId) : \${id}Collection = Firestore.instance.collection('\${COLLECTION_ID}-\${appId}');
 }
 """;
 
@@ -154,6 +154,15 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
   @override
   String body() {
+    String appVar;
+    if (!modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel) {
+      appVar = "appId: appId";
+    } else if (modelSpecifications.id == "App") {
+      appVar = "appId: value.documentID";
+    } else {
+      appVar = "";
+    }
+
     String where = "";
     if (modelSpecifications.where != null)
       where = modelSpecifications.where + ".";
@@ -162,7 +171,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
       '\${lid}': firstLowerCase(modelSpecifications.id),
       "\${where}": where,
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
-      "\${appIdDef}": !modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel ? "appId: appID" : ""
+      "\${appIdDef}": appVar
     };
     StringBuffer headerBuffer = StringBuffer();
 

@@ -185,7 +185,7 @@ class CacheCodeGenerator extends CodeGenerator {
               '\${fieldName}': field.fieldName,
               '\${fieldType}': field.fieldType,
               '\${lfieldType}': firstLowerCase(field.fieldType),
-              '\${appIdVar}': modelSpecifications.isAppModel ? 'appID: model.appId' : ''
+              '\${appIdVar}': modelSpecifications.isAppModel ? 'appId: model.appId' : ''
             }));
         assignParametersBuffer.writeln(process(_refreshRelationsAssignField,
             parameters: <String, String>{

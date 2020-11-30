@@ -22,7 +22,7 @@ const String _isDocumentIDValid = """
   Future<\${id}FormState> _isDocumentIDValid(String value, \${id}Model newValue) async {
     if (value == null) return Future.value(error("Provide value for documentID", newValue));
     if (value.length == 0) return Future.value(error("Provide value for documentID", newValue));
-    Future<\${id}Model> findDocument = \${lid}Repository(appID: appId).get(value);
+    Future<\${id}Model> findDocument = \${lid}Repository(appId: appId).get(value);
     return await findDocument.then((documentFound) {
       if (documentFound == null) {
         return Submittable\${id}Form(value: newValue);
@@ -136,7 +136,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(8) + "// Need to re-retrieve the document from the repository so that I get all associated types");
     codeBuffer.write(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: ");
     if (withRepository())
-      codeBuffer.writeln("await " + firstLowerCase(modelSpecifications.id) + "Repository(appID: appId).get(event.value.documentID));");
+      codeBuffer.writeln("await " + firstLowerCase(modelSpecifications.id) + "Repository(appId: appId).get(event.value.documentID));");
     else
       codeBuffer.writeln("event.value);");
     codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
@@ -190,7 +190,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
               spaces(10) + "newValue = currentState.value.copyWith(" +
                   field.fieldName + ": await " +
                   firstLowerCase(field.fieldType) +
-                  "Repository(appID: appId).get(event.value));");
+                  "Repository(appId: appId).get(event.value));");
           codeBuffer.writeln(spaces(8) + "else");
           codeBuffer.writeln(
               spaces(10) + "newValue = new " + modelSpecifications.id +

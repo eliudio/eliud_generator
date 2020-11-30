@@ -312,7 +312,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
       codeBuffer.write("String documentID, ");
     }
     codeBuffer
-        .writeln(modelSpecifications.entityClassName() + " entity) async {");
+        .writeln(modelSpecifications.entityClassName() + " entity, { String appId}) async {");
     codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln();
     modelSpecifications.fields.forEach((field) {
@@ -326,13 +326,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
             spaces(4) + "if (entity." + field.fieldName + "Id != null) {");
         codeBuffer.writeln(spaces(6) + "try {");
 
-        String appVar;
-        if (modelSpecifications.isAppModel) {
-          // a model which is not an app model can not have relationships which require an app ID, ie. which are app specific
-          appVar = "appID: entity.appId";
-        } else {
-          appVar = "";
-        }
+        String appVar = "appId: appId";
         codeBuffer.writeln(spaces(8) +
             "await " +
             firstLowerCase(field.fieldType) +
@@ -382,7 +376,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
                 codeBuffer.writeln(spaces(12) +
                     ".map((item) => " +
                     field.fieldType +
-                    "Model.fromEntityPlus(newRandomKey(), item))");
+                    "Model.fromEntityPlus(newRandomKey(), item, appId: appId))");
                 codeBuffer.write(spaces(12) + ".toList()))");
               } else {
                 codeBuffer.write("await " +
@@ -396,7 +390,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
                   field.fieldType +
                   "Model.fromEntityPlus(entity." +
                   field.fieldName +
-                  ")");
+                  ", appId: appId)");
             }
           } else {
             if (field.fieldName == "documentID") {

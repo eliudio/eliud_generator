@@ -21,7 +21,7 @@ import 'package:eliud_core/model/home_menu_model.dart';
 
 const String _header = """
 class AdminApp extends AdminAppInstallerBase {
-  final String appID;
+  final String appId;
   final DrawerModel _drawer;
   final DrawerModel _endDrawer;
   final AppBarModel _appBar;
@@ -30,7 +30,7 @@ class AdminApp extends AdminAppInstallerBase {
   final RgbModel selectedMenuItemColor;
   final RgbModel backgroundColor;
   
-  AdminApp(this.appID, this._drawer, this._endDrawer, this._appBar, this._homeMenu, this.menuItemColor, this.selectedMenuItemColor, this.backgroundColor);
+  AdminApp(this.appId, this._drawer, this._endDrawer, this._appBar, this._homeMenu, this.menuItemColor, this.selectedMenuItemColor, this.backgroundColor);
 
 """;
 
@@ -38,7 +38,7 @@ class AdminApp extends AdminAppInstallerBase {
 const String _headerAdminMenuDef = """
 class AdminMenu extends AdminAppMenuInstallerBase {
 
-  Future<MenuDefModel> menu(String appID) async {
+  Future<MenuDefModel> menu(String appId) async {
     List<MenuItemModel> menuItems = List<MenuItemModel>();
 """;
 
@@ -49,7 +49,7 @@ const String _menuItemDef = """
         text: "\${id}s",
         description: "\${id}s",
         icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
-        action: GotoPage(appID, pageID: "\${pkgName}_\${lowid}s_page"))
+        action: GotoPage(appId, pageID: "\${pkgName}_\${lowid}s_page"))
     );
 
 """;
@@ -58,11 +58,11 @@ const String _footerAdminMenuDef = """
     MenuDefModel menu = MenuDefModel(
       admin: true,
       documentID: "\${pkgName}_admin_menu",
-      appId: appID,
+      appId: appId,
       name: "\${pkgName}",
       menuItems: menuItems
     );
-    await menuDefRepository(appID: appID).add(menu);
+    await menuDefRepository(appId: appId).add(menu);
     return menu;
   }
 }
@@ -77,7 +77,7 @@ const String _page = """
       documentID: "internalWidget-\${lid}s", componentName: "\${pkgName}_internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
         conditional: PageCondition.AdminOnly,
-        appId: appID,
+        appId: appId,
         documentID: "\${pkgName}_\${lowid}s_page",
         title: "\${id}s",
         drawer: _drawer,
@@ -98,11 +98,11 @@ const String _setupAdminPagesHeader = """
 """;
 
 const String _setupAdminPagesFirstPage = """
-    return pageRepository(appID: appID).add(_\${lid}sPages())
+    return pageRepository(appId: appId).add(_\${lid}sPages())
 """;
 
 const String _setupAdminPagesOtherPages = """
-        .then((_) => pageRepository(appID: appID).add(_\${lid}sPages()))
+        .then((_) => pageRepository(appId: appId).add(_\${lid}sPages()))
 """;
 
 const String _setupAdminPagesFooter = """
@@ -121,11 +121,11 @@ const String _headerRun = """
 class AdminAppWiper extends AdminAppWiperBase {
 
   @override
-  Future<void> deleteAll(String appID) async {
+  Future<void> deleteAll(String appId) async {
 """;
 
 const String _footerOther = """
-    await \${lid}Repository(appID: appID).deleteAll();
+    await \${lid}Repository(appId: appId).deleteAll();
 """;
 
 const String _footerOtherNoApp = """

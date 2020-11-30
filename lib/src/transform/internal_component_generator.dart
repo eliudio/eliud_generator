@@ -221,7 +221,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
-      var appIdVar = ms.isAppModel ? "appID: AppBloc.appId(context)" : "";
+      var appIdVar = ms.isAppModel ? "appId: AppBloc.appId(context)" : "";
       if (ms.generate.generateInternalComponent) {
         if (list)
           codeBuffer.writeln(process(_SpecificListComponentCode,

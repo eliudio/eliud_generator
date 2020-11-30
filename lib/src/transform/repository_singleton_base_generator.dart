@@ -58,16 +58,16 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
         codeBuffer.write(spaces(4) + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository");
         if (spec.modelSpecification.isAppModel) {
-          codeBuffer.writeln("(String appID) {");
-          codeBuffer.write(spaces(6) + "if (_" + firstLowerCase(spec.modelSpecification.id) + "Repository[appID] == null) _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appID] = ");
+          codeBuffer.writeln("(String appId) {");
+          codeBuffer.write(spaces(6) + "if (_" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] == null) _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] = ");
 
           if (spec.modelSpecification.generate.generateCache) {
-            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore(appID));");
+            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore(appId));");
           } else {
-            codeBuffer.writeln("${prefix}FireStore(appID);");
+            codeBuffer.writeln("${prefix}FireStore(appId);");
           }
 
-          codeBuffer.writeln(spaces(6) + "return _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appID];");
+          codeBuffer.writeln(spaces(6) + "return _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId];");
         } else {
           codeBuffer.writeln("() {");
           codeBuffer.writeln(spaces(6) + "return _" + firstLowerCase(spec.modelSpecification.id) + "Repository;");

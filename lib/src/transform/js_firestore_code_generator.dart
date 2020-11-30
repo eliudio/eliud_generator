@@ -10,7 +10,7 @@ const String _code = """
 class \${id}JsFirestore implements \${id}Repository {
   Future<\${id}Model> add(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID)
-        .set(value.toEntity(\${appIdDef}).toDocument())
+        .set(value.toEntity(\${appIdDef1}).toDocument())
         .then((_) => value);
   }
 
@@ -20,16 +20,16 @@ class \${id}JsFirestore implements \${id}Repository {
 
   Future<\${id}Model> update(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID)
-        .update(data: value.toEntity(\${appIdDef}).toDocument())
+        .update(data: value.toEntity(\${appIdDef1}).toDocument())
         .then((_) => value);
   }
 
-  \${id}Model _populateDoc(DocumentSnapshot doc) {
-    return \${id}Model.fromEntity(doc.id, \${id}Entity.fromMap(doc.data()));
+  \${id}Model _populateDoc(DocumentSnapshot value) {
+    return \${id}Model.fromEntity(value.id, \${id}Entity.fromMap(value.data()));
   }
 
-  Future<\${id}Model> _populateDocPlus(DocumentSnapshot doc) async {
-    return \${id}Model.fromEntityPlus(doc.id, \${id}Entity.fromMap(doc.data()));
+  Future<\${id}Model> _populateDocPlus(DocumentSnapshot value) async {
+    return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data()), \${appIdDef2});
   }
 
   Future<\${id}Model> get(String id) {
@@ -133,11 +133,11 @@ const String _collectionCode = """
 """;
 
 const String _codeFooter = """
-  CollectionReference getCollection() => firestore().collection('\${COLLECTION_ID}-\$appID');
+  CollectionReference getCollection() => firestore().collection('\${COLLECTION_ID}-\$appId');
 
-  final String appID;
+  final String appId;
   
-  \${id}JsFirestore(this.appID) : \${lid}Collection = firestore().collection('\${COLLECTION_ID}-\$appID');
+  \${id}JsFirestore(this.appId) : \${lid}Collection = firestore().collection('\${COLLECTION_ID}-\$appId');
 
   final CollectionReference \${lid}Collection;
 }
@@ -165,6 +165,17 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
 
   @override
   String body() {
+    String appVar1;
+    String appVar2;
+    if (!modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel) {
+      appVar1 = appVar2 = "appId: appId";
+    } else if (modelSpecifications.id == "App") {
+      appVar1 = "appId: value.documentID";
+      appVar2 = "appId: value.id";
+    } else {
+      appVar1 = appVar2 = "";
+    }
+
     String where = "";
     if (modelSpecifications.whereJs != null)
       where = modelSpecifications.whereJs + ".";
@@ -174,7 +185,8 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
       '\${lid}': firstLowerCase(modelSpecifications.id),
       "\${where}": where,
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
-      "\${appIdDef}": !modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel ? "appId: appID" : ""
+      "\${appIdDef1}": appVar1,
+      "\${appIdDef2}": appVar2
     };
 
     StringBuffer bodyBuffer = StringBuffer();
