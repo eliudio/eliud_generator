@@ -158,6 +158,15 @@ class CacheCodeGenerator extends CodeGenerator {
 
   @override
   String body() {
+    String appVar;
+    if (!modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel) {
+      appVar = "appId: model.appId";
+    } else if (modelSpecifications.id == "App") {
+      appVar = "appId: model.documentID";
+    } else {
+      appVar = "";
+    }
+
     var parameters = <String, String> { '\${id}': modelSpecifications.id };
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(process(_header, parameters: parameters));
@@ -185,7 +194,7 @@ class CacheCodeGenerator extends CodeGenerator {
               '\${fieldName}': field.fieldName,
               '\${fieldType}': field.fieldType,
               '\${lfieldType}': firstLowerCase(field.fieldType),
-              '\${appIdVar}': modelSpecifications.isAppModel ? 'appId: model.appId' : ''
+              '\${appIdVar}': appVar
             }));
         assignParametersBuffer.writeln(process(_refreshRelationsAssignField,
             parameters: <String, String>{
