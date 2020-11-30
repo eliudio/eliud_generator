@@ -6,8 +6,7 @@ import 'code_generator_multi.dart';
 
 String _imports = """
 import 'package:eliud_core/tools/component_constructor.dart';
-import 'package:eliud_core/core/app/app_bloc.dart';
-
+import 'package:eliud_core/core/access/bloc/access_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -221,7 +220,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
-      var appIdVar = ms.isAppModel ? "appId: AppBloc.appId(context)" : "";
+      var appIdVar = ms.isAppModel ? "appId: AccessBloc.appId(context)" : "";
       if (ms.generate.generateInternalComponent) {
         if (list)
           codeBuffer.writeln(process(_SpecificListComponentCode,

@@ -6,8 +6,6 @@ import 'code_generator.dart';
 String _imports(String packageName) => """
 import 'package:eliud_core/core/access/bloc/access_bloc.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
-import 'package:eliud_core/core/app/app_bloc.dart';
-import 'package:eliud_core/core/app/app_state.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 
 import 'package:eliud_core/core/global_data.dart';
@@ -41,7 +39,7 @@ import '\${importprefix}_form.dart';
 
 String _onTap = """
                       final removedItem = await Navigator.of(context).push(
-                        pageRouteBuilder(appState.app, page: BlocProvider.value(
+                        pageRouteBuilder(accessState.app, page: BlocProvider.value(
                               value: BlocProvider.of<\${id}ListBloc>(context),
                               child: getForm(value, FormAction.UpdateAction))));
                       if (removedItem != null) {
@@ -195,8 +193,7 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
     if ((readOnly != null) && readOnly) return null;
     state ??= \${id}ListWidgetState();
     var accessState = AccessBloc.getState(context);
-    var appState = AppBloc.getState(context);
-    return state.fab(context, accessState, appState);
+    return state.fab(context, accessState);
   }
 }
 
@@ -216,18 +213,18 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
   }
 
   @override
-  Widget fab(BuildContext aContext, AccessState accessState, AppLoaded appState) {
-    if (appState is AppLoaded) {
-      return !accessState.memberIsOwner(appState) \${allowAddItemsCondition}
+  Widget fab(BuildContext aContext, AccessState accessState) {
+    if (accessState is AppLoaded) {
+      return !accessState.memberIsOwner() \${allowAddItemsCondition}
         ? null
         :FloatingActionButton(
         heroTag: "\${id}FloatBtnTag",
-        foregroundColor: RgbHelper.color(rgbo: appState.app.floatingButtonForegroundColor),
-        backgroundColor: RgbHelper.color(rgbo: appState.app.floatingButtonBackgroundColor),
+        foregroundColor: RgbHelper.color(rgbo: accessState.app.floatingButtonForegroundColor),
+        backgroundColor: RgbHelper.color(rgbo: accessState.app.floatingButtonBackgroundColor),
         child: Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(
-            pageRouteBuilder(appState.app, page: BlocProvider.value(
+            pageRouteBuilder(accessState.app, page: BlocProvider.value(
                 value: bloc,
                 child: \${id}Form(
                     value: null,
@@ -243,9 +240,8 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = AppBloc.getState(context);
     var accessState = AccessBloc.getState(context);
-    if (appState is AppLoaded) {
+    if (accessState is AppLoaded) {
       return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
         if (state is \${id}ListLoading) {
           return Center(
@@ -255,12 +251,12 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
           final values = state.values;
           if ((widget.isEmbedded != null) && (widget.isEmbedded)) {
             List<Widget> children = List();
-            children.add(theList(context, values, appState, accessState));
+            children.add(theList(context, values, accessState));
             children.add(RaisedButton(
-                    color: RgbHelper.color(rgbo: appState.app.formSubmitButtonColor),
+                    color: RgbHelper.color(rgbo: accessState.app.formSubmitButtonColor),
                     onPressed: () {
                       Navigator.of(context).push(
-                                pageRouteBuilder(appState.app, page: BlocProvider.value(
+                                pageRouteBuilder(accessState.app, page: BlocProvider.value(
                                     value: bloc,
                                     child: \${id}Form(
                                         value: null,
@@ -268,7 +264,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
                                 )),
                               );
                     },
-                    child: Text('Add', style: TextStyle(color: RgbHelper.color(rgbo: appState.app.formSubmitButtonTextColor))),
+                    child: Text('Add', style: TextStyle(color: RgbHelper.color(rgbo: accessState.app.formSubmitButtonTextColor))),
                   ));
             return ListView(
               padding: const EdgeInsets.all(8),
@@ -277,7 +273,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
               children: children
             );
           } else {
-            return theList(context, values, appState, accessState);
+            return theList(context, values, accessState);
           }
         } else {
           return Center(
@@ -290,12 +286,12 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
     } 
   }
   
-  Widget theList(BuildContext context, values, AppLoaded appState, AccessState accessState) {
+  Widget theList(BuildContext context, values, AppLoaded accessState) {
     return Container(
-      decoration: BoxDecorationHelper.boxDecoration(accessState, appState.app.listBackground),
+      decoration: BoxDecorationHelper.boxDecoration(accessState, accessState.app.listBackground),
       child: ListView.separated(
         separatorBuilder: (context, index) => Divider(
-          color: RgbHelper.color(rgbo: appState.app.dividerColor)
+          color: RgbHelper.color(rgbo: accessState.app.dividerColor)
         ),
         shrinkWrap: true,
         physics: ScrollPhysics(),
@@ -304,7 +300,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
           final value = values[index];
           return \${id}ListItem(
             value: value,
-            app: appState.app,
+            app: accessState.app,
             onDismissed: (direction) {
               BlocProvider.of<\${id}ListBloc>(context)
                   .add(Delete\${id}List(value: value));

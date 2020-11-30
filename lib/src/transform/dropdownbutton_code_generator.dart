@@ -17,9 +17,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/access/bloc/access_bloc.dart';
 
-import 'package:eliud_core/core/app/app_state.dart';
-import 'package:eliud_core/core/app/app_bloc.dart';
-
 """;
 
 String _specificImports(String packageName) => """
@@ -66,7 +63,6 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
 
   @override
   Widget build(BuildContext context) {
-    var appState = AppBloc.getState(context);
     var accessState = AccessBloc.getState(context);
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
       if (state is \${id}ListLoading) {
@@ -115,7 +111,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                       items: items,
                       value: valueChosen,
                       hint: Text('Select a \${lid}'),
-                      onChanged: !accessState.memberIsOwner(appState) ? null : _onChange,
+                      onChanged: !accessState.memberIsOwner() ? null : _onChange,
                     );
         if (\${withImages}) {
           return Container(height:48, child: Center(child: button));

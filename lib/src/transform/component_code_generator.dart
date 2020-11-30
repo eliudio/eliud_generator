@@ -12,7 +12,6 @@ class ComponentCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:flutter/material.dart';");
     headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
-    headerBuffer.writeln("import 'package:eliud_core/core/app/app_bloc.dart';");
 
     headerBuffer.writeln();
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentBlocFileName()));

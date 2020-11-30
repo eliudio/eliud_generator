@@ -7,10 +7,8 @@ import 'code_generator.dart';
 
 String _imports(String packageName, List<String> depends) => """
 import 'package:eliud_core/core/global_data.dart';
-import 'package:eliud_core/core/app/app_bloc.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/access/bloc/access_bloc.dart';
-import 'package:eliud_core/core/app/app_state.dart';
 import 'package:eliud_core/tools/action_model.dart';
 import 'package:eliud_core/core/navigate/router.dart' as eliudrouter;
 import 'package:eliud_core/tools/screen_size.dart';
@@ -54,12 +52,11 @@ class \${className}Form extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var app = AppBloc.app(context);
     var accessState = AccessBloc.getState(context);
-    var appState = AppBloc.getState(context);
+    var app = AccessBloc.app(context);
     if (formAction == FormAction.ShowData) {
       return BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AppBloc.appId(context),
+            create: (context) => \${id}FormBloc(AccessBloc.appId(context),
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormEvent(value: value)),
   
@@ -67,7 +64,7 @@ class \${className}Form extends StatelessWidget {
           );
     } if (formAction == FormAction.ShowPreloadedData) {
       return BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AppBloc.appId(context),
+            create: (context) => \${id}FormBloc(AccessBloc.appId(context),
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormNoLoadEvent(value: value)),
   
@@ -87,7 +84,7 @@ class \${className}Form extends StatelessWidget {
                         decoration: BoxDecorationHelper.boxDecoration(accessState, app.formAppBarBackground)),
                 ),
         body: BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AppBloc.appId(context),
+            create: (context) => \${id}FormBloc(AccessBloc.appId(context),
                                        \${constructorParameters}
                                                 )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
   
@@ -159,15 +156,15 @@ const _xyzLookupChangedString = """
 """;
 
 const String _readOnlyMethodMember = """
-  bool _readOnly(AccessState accessState, AppState appState, \${id}FormInitialized state) {
+  bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
     return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (state.value.documentID != GlobalData.member().documentID);
   }
   
 """;
 
 const String _readOnlyMethod = """
-  bool _readOnly(AccessState accessState, AppState appState, \${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner(appState));
+  bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
+    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner());
   }
   
 """;
@@ -312,8 +309,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
-    codeBuffer.writeln(spaces(4) + "var app = AppBloc.app(context);");
-    codeBuffer.writeln(spaces(4) + "var appState = AppBloc.getState(context);");
+    codeBuffer.writeln(spaces(4) + "var app = AccessBloc.app(context);");
     codeBuffer.writeln(spaces(4) + "var accessState = AccessBloc.getState(context);");
 
     // start blocbuilder
@@ -436,7 +432,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "if ((formAction != FormAction.ShowData) && (formAction != FormAction.ShowPreloadedData))");
     codeBuffer.writeln(spaces(10) + "children.add(RaisedButton(");
     codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: app.formSubmitButtonColor),");
-    codeBuffer.writeln(spaces(18) + "onPressed: _readOnly(accessState, appState, state) ? null : () {");
+    codeBuffer.writeln(spaces(18) + "onPressed: _readOnly(accessState, state) ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
         "if (state is " +
         modelSpecifications.id +
@@ -576,7 +572,7 @@ class RealFormCodeGenerator extends CodeGenerator {
               codeBuffer.writeln(spaces(18) +
                   "readOnly: (formAction == FormAction.UpdateAction),");
           } else {
-            codeBuffer.writeln(spaces(18) + "readOnly: _readOnly(accessState, appState, state),");
+            codeBuffer.writeln(spaces(18) + "readOnly: _readOnly(accessState, state),");
           }
           codeBuffer.writeln(
               spaces(18) + "controller: _" + field.fieldName + "Controller,");
@@ -632,7 +628,7 @@ class RealFormCodeGenerator extends CodeGenerator {
               "value: _" +
               firstLowerCase(field.fieldName) +
               "Selection,");
-          codeBuffer.writeln(spaces(20) + "onChanged: _readOnly(accessState, appState, state) ? null : (val) {");
+          codeBuffer.writeln(spaces(20) + "onChanged: _readOnly(accessState, state) ? null : (val) {");
           //      codeBuffer.writeln(spaces(22) + "setState(() => print());");
           codeBuffer.writeln(spaces(22) +
               "setSelection" +
@@ -668,7 +664,7 @@ class RealFormCodeGenerator extends CodeGenerator {
                 .writeln(spaces(20) + "title: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: app.formFieldTextColor))),");
             codeBuffer
                 .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: app.formFieldTextColor))),");
-            codeBuffer.writeln(spaces(20) + "onChanged: !accessState.memberIsOwner(appState) ? null : (val) {");
+            codeBuffer.writeln(spaces(20) + "onChanged: !accessState.memberIsOwner() ? null : (val) {");
             codeBuffer.writeln(spaces(22) +
                 "setSelection" +
                 firstUpperCase(field.fieldName) +
