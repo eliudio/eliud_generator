@@ -104,6 +104,7 @@ const String _SpecificListComponentCode = """
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
+            \${listBlocParam}
             \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar}),
           )..add(Load\${upperSpecific}List()),
         )
@@ -119,6 +120,7 @@ const String _SpecificDropdownButtonComponentCode = """
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
+            \${listBlocParam}
             \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar}),
           )..add(Load\${upperSpecific}List()),
         )
@@ -222,12 +224,14 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
       ModelSpecification ms = spec.modelSpecification;
       var appIdVar = ms.isAppModel ? "appId: AccessBloc.appId(context)" : "";
       if (ms.generate.generateInternalComponent) {
+        var listBlocParam = (ms.id == "Member") ? "BlocProvider.of<AccessBloc>(context), " : "";
         if (list)
           codeBuffer.writeln(process(_SpecificListComponentCode,
               parameters: <String, String>{
                 "\${lowerSpecific}": firstLowerCase(ms.id),
                 "\${upperSpecific}": ms.id,
                 "\${appIdVar}" : appIdVar,
+                "\${listBlocParam}": listBlocParam
               }));
         else
           codeBuffer.writeln(process(_SpecificDropdownButtonComponentCode,
@@ -235,6 +239,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
                 "\${lowerSpecific}": firstLowerCase(ms.id),
                 "\${upperSpecific}": ms.id,
                 "\${appIdVar}" : appIdVar,
+                "\${listBlocParam}": listBlocParam
               }));
       }
     });

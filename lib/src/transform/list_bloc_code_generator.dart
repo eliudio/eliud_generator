@@ -18,6 +18,12 @@ class ListBlocCodeGenerator extends CodeGenerator {
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listEventFileName()));
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listStateFileName()));
+    if (modelSpecifications.id == "Member") {
+      headerBuffer.write(
+          "import 'package:eliud_core/core/access/bloc/access_bloc.dart';");
+      headerBuffer.write(
+          "import 'package:eliud_core/core/access/bloc/access_event.dart';");
+    }
     headerBuffer.writeln();
 
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_LIST_BLOC);
@@ -29,15 +35,34 @@ class ListBlocCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.id + "Repository _" + firstLowerCase(modelSpecifications.id) + "Repository;");
     codeBuffer.writeln(spaces(2) + "StreamSubscription _" + firstLowerCase(modelSpecifications.id) + "sListSubscription;");
+    if (modelSpecifications.id == "Member") {
+      codeBuffer.writeln(spaces(2) + "final AccessBloc accessBloc;");
+    }
+
     return codeBuffer.toString();
   }
 
   String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListBloc({ @required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository })");
+    codeBuffer.write(spaces(2) + modelSpecifications.id + "ListBloc(");
+    if (modelSpecifications.id == "Member") {
+      codeBuffer.write("this.accessBloc,");
+    }
+    codeBuffer.writeln("{ @required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository })");
     codeBuffer.writeln(spaces(6) + ": assert(" + firstLowerCase(modelSpecifications.id) + "Repository != null),");
     codeBuffer.writeln(spaces(6) + "_" + firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository,");
     codeBuffer.writeln(spaces(6) + "super(" + modelSpecifications.id + "ListLoading());");
+
+    if (modelSpecifications.id == "Member") {
+      codeBuffer.writeln(spaces(2) + "String _currentMember() {");
+      codeBuffer.writeln(spaces(4) + "var _currentMember = '';");
+      codeBuffer.writeln(spaces(4) + "var state = accessBloc.state;");
+      codeBuffer.writeln(spaces(4) +
+          "if (state is LoggedIn) _currentMember = state.member.documentID;");
+      codeBuffer.writeln(spaces(4) + "return _currentMember;");
+      codeBuffer.writeln(spaces(2) + "}");
+    }
+
     return codeBuffer.toString();
   }
 
@@ -64,15 +89,16 @@ class ListBlocCodeGenerator extends CodeGenerator {
   }
 
   String _mappers() {
+    var currentMember = (modelSpecifications.id == "Member") ? "_currentMember(), " : "";
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListToState() async* {");
     codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listen((list) => add(" + modelSpecifications.id + "ListUpdated(value: list)));");
+    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listen(" + currentMember + " (list) => add(" + modelSpecifications.id + "ListUpdated(value: list)));");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListWithDetailsToState() async* {");
     codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listenWithDetails((list) => add(" + modelSpecifications.id + "ListUpdated(value: list)));");
+    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listenWithDetails(" + currentMember + " (list) => add(" + modelSpecifications.id + "ListUpdated(value: list)));");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapAdd" + modelSpecifications.id + "ListToState(Add" + modelSpecifications.id + "List event) async* {");

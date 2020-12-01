@@ -157,7 +157,7 @@ const _xyzLookupChangedString = """
 
 const String _readOnlyMethodMember = """
   bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (state.value.documentID != GlobalData.member().documentID);
+    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!((accessState is LoggedIn) && (accessState.member.documentID == state.value.documentID)));
   }
   
 """;
