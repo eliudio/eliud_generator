@@ -58,7 +58,6 @@ abstract class Specification extends Equatable {
   }
 
   String repositoryFileName() {
-    print(id);
     if (id == "Member") {
       return camelcaseToUnderscore(id) + "_repository_bespoke.dart";
     } else {

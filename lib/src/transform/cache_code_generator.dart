@@ -158,14 +158,6 @@ class CacheCodeGenerator extends CodeGenerator {
 
   @override
   String body() {
-    String appVar;
-    if (!modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel) {
-      appVar = "appId: model.appId";
-    } else if (modelSpecifications.id == "App") {
-      appVar = "appId: model.documentID";
-    } else {
-      appVar = "";
-    }
 
     var parameters = <String, String> { '\${id}': modelSpecifications.id };
     StringBuffer codeBuffer = StringBuffer();
@@ -189,6 +181,12 @@ class CacheCodeGenerator extends CodeGenerator {
     StringBuffer assignParametersBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
       if (field.association) {
+        String appVar;
+        if ((field.fieldType != "Image") && (field.fieldType != "App") && (field.fieldType != "Member") && (field.fieldType != "Country")) {
+          appVar = "appId: model." + field.fieldName + ".appId";
+        } else {
+          appVar = '';
+        }
         codeBuffer.writeln(process(_refreshRelationsModel,
             parameters: <String, String>{
               '\${fieldName}': field.fieldName,
