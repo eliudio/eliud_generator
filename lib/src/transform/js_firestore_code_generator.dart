@@ -10,8 +10,8 @@ const String _code = """
 class \${id}JsFirestore implements \${id}Repository {
   Future<\${id}Model> add(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID)
-        .set(value.toEntity(\${appIdDef1}).toDocument())
-        .then((_) => value);
+        .set(value.toEntity(\${appIdDef1}).\${copyStatement}toDocument())
+        .then((_) => value)\${thenStatement};
   }
 
   Future<void> delete(\${id}Model value) {
@@ -20,8 +20,8 @@ class \${id}JsFirestore implements \${id}Repository {
 
   Future<\${id}Model> update(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID)
-        .update(data: value.toEntity(\${appIdDef1}).toDocument())
-        .then((_) => value);
+        .update(data: value.toEntity(\${appIdDef1}).\${copyStatement}toDocument())
+        .then((_) => value)\${thenStatement};
   }
 
   \${id}Model _populateDoc(DocumentSnapshot value) {
@@ -180,13 +180,18 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
     if (modelSpecifications.whereJs != null)
       where = modelSpecifications.whereJs + ".";
 
+    String copyStatement = FirestoreHelper.copyWith(modelSpecifications);
+    String thenStatement = FirestoreHelper.then(modelSpecifications);
+
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
       "\${where}": where,
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
       "\${appIdDef1}": appVar1,
-      "\${appIdDef2}": appVar2
+      "\${appIdDef2}": appVar2,
+      "\${copyStatement}": copyStatement,
+      "\${thenStatement}": thenStatement
     };
 
     StringBuffer bodyBuffer = StringBuffer();

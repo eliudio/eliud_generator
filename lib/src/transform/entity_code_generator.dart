@@ -43,11 +43,46 @@ class EntityCodeGenerator extends DataCodeGenerator {
     return field.dartEntityType();
   }
 
+  String _copyWith() {
+    var hasServerTimeStamp = false;
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.write(
+        spaces(2) + modelSpecifications.entityClassName() + " copyWith({");
+    modelSpecifications.fields.forEach((field) {
+      if (field.isServerTimestamp()) {
+        codeBuffer.write(dartEntityType(field) + " " + fieldName(field) + ", ");
+        hasServerTimeStamp = true;
+      }
+    });
+    codeBuffer.writeln("}) {");
+    codeBuffer.write(spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
+    modelSpecifications.fields.forEach((field) {
+      if (field.fieldName != "documentID") {
+        if (field.isServerTimestamp()) {
+          codeBuffer.write(fieldName(field) + " : " + fieldName(field) + ", ");
+        } else {
+          codeBuffer.write(fieldName(field) +
+              ": " +
+              fieldName(field) +
+              ", ");
+        }
+      }
+    });
+    codeBuffer.writeln(");");
+    codeBuffer.write(spaces(2) + "}");
+    if (hasServerTimeStamp) {
+      return codeBuffer.toString();
+    } else {
+      return "";
+    }
+  }
+
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
+    //headerBuffer.writeln("import 'package:firebase/firestore.dart';");
     headerBuffer.writeln(base_imports(modelSpecifications.packageName, entity:true, depends: modelSpecifications.depends));
 
     return headerBuffer.toString();
@@ -107,6 +142,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
       } else {
         if (field.arrayType != ArrayType.CollectionArrayType) {
           if ((!field.isEnum()) &&
+              (!field.isServerTimestamp()) &&
               (!field.association) &&
               (!field.isNativeType())) {
             extraLine = true;
@@ -161,7 +197,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.fieldName != "documentID") {
           codeBuffer.write(spaces(6) + fieldName(field) + ": ");
-          if ((field.association) || (field.isEnum())) {
+          if (field.isServerTimestamp()) {
+            codeBuffer.writeln("map['" + fieldName(field) + "']?.toDate(), ");
+          } else if ((field.association) || (field.isEnum())) {
             if (field.isMap())
               codeBuffer.writeln(fieldName(field) + ", ");
             else
@@ -208,6 +246,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
       if (!field.isBespoke()) {
         if (field.arrayType != ArrayType.CollectionArrayType) {
           if ((!field.isEnum()) &&
+              (!field.isServerTimestamp()) &&
               (!field.association) &&
               (!field.isNativeType())) {
             extraLine = true;
@@ -249,7 +288,11 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer
         .writeln(spaces(4) + "Map<String, Object> theDocument = HashMap();");
     modelSpecifications.fields.forEach((field) {
-      if (field.isBespoke()) {
+      if (field.isServerTimestamp()) {
+        codeBuffer.writeln(spaces(4) +'theDocument["'+
+            fieldName(field) +
+            '"] = ' + fieldName(field) + ';');
+      } else if (field.isBespoke()) {
         codeBuffer.writeln(field.bespokeEntityToDocument);
       } else {
         if (field.arrayType != ArrayType.CollectionArrayType) {
@@ -308,6 +351,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
         name: modelSpecifications.entityClassName(),
         terminate: true,
         excludeCollection: true));
+    codeBuffer.writeln(_copyWith());
     codeBuffer.writeln(_getProps());
     codeBuffer
         .writeln(toStringCode(true, modelSpecifications.entityClassName(), excludeCollection: true));

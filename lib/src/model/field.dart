@@ -186,6 +186,10 @@ class Field extends Equatable {
     return (fieldType == "bool");
   }
 
+  bool isServerTimestamp() {
+    return (fieldType == "ServerTimestamp");
+  }
+
   bool isBespoke() {
     return (fieldType == "bespoke");
   }
@@ -215,6 +219,7 @@ class Field extends Equatable {
     if (isString()) return false;
     if (isDouble()) return false;
     if (isBool()) return false;
+    if (isServerTimestamp()) return false;
     if (isInt()) return false;
     if (isBespoke()) return false;
     return true;
@@ -223,7 +228,9 @@ class Field extends Equatable {
   bool isArray() => (arrayType != ArrayType.NoArray);
 
   String dartModelType() {
-    if (isEnum()) {
+    if (isServerTimestamp()) {
+      return "DateTime";
+    } else if (isEnum()) {
       if (isArray())
         return "List<" + enumName + ">";
       else if (map)
@@ -236,7 +243,9 @@ class Field extends Equatable {
   }
 
   String dartEntityType() {
-    if (isEnum()) {
+    if (isServerTimestamp()) {
+      return "Object";
+    } else if (isEnum()) {
       if (isArray())
         return "List<int>";
       else if (map) {

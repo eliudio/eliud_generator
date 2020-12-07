@@ -195,7 +195,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.fieldName != "documentID") {
           codeBuffer.write(spaces(10) + field.fieldName);
-          if (field.isBespoke()) {
+          if ((field.isServerTimestamp()) || (field.isBespoke())) {
             codeBuffer.write(
                 ": " + field.fieldName +", ");
           } else {
@@ -251,8 +251,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      if (field.isBespoke()) {
-        codeBuffer.write(spaces(10) + field.fieldName + ": entity." + field.fieldName + ", ");
+      if ((field.isBespoke()) || (field.isServerTimestamp())) {
+        codeBuffer.writeln(spaces(10) + field.fieldName + ": entity." + field.fieldName + ", ");
       } else {
         if (field.arrayType != ArrayType.CollectionArrayType) {
           if (!field.association) {
@@ -345,7 +345,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       codeBuffer.write(spaces(10) + field.fieldName + ": ");
-      if (field.isBespoke()) {
+      if ((field.isBespoke()) || (field.isServerTimestamp())) {
         codeBuffer.write("entity." + field.fieldName);
       } else {
         if (field.isEnum()) {

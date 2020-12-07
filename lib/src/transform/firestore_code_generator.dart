@@ -9,7 +9,7 @@ import 'firestore_helper.dart';
 const String _code = """
 class \${id}Firestore implements \${id}Repository {
   Future<\${id}Model> add(\${id}Model value) {
-    return \${id}Collection.document(value.documentID).setData(value.toEntity(\${appIdDef}).toDocument()).then((_) => value);
+    return \${id}Collection.document(value.documentID).setData(value.toEntity(\${appIdDef}).\${copyStatement}toDocument()).then((_) => value)\${thenStatement};
   }
 
   Future<void> delete(\${id}Model value) {
@@ -17,7 +17,7 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   Future<\${id}Model> update(\${id}Model value) {
-    return \${id}Collection.document(value.documentID).updateData(value.toEntity(\${appIdDef}).toDocument()).then((_) => value);
+    return \${id}Collection.document(value.documentID).updateData(value.toEntity(\${appIdDef}).\${copyStatement}toDocument()).then((_) => value)\${thenStatement};
   }
 
   \${id}Model _populateDoc(DocumentSnapshot value) {
@@ -166,12 +166,18 @@ class FirestoreCodeGenerator extends CodeGenerator {
     String where = "";
     if (modelSpecifications.where != null)
       where = modelSpecifications.where + ".";
+
+    String copyStatement = FirestoreHelper.copyWith(modelSpecifications);
+    String thenStatement = FirestoreHelper.then(modelSpecifications);
+
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
       "\${where}": where,
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
-      "\${appIdDef}": appVar
+      "\${appIdDef}": appVar,
+      "\${copyStatement}": copyStatement,
+      "\${thenStatement}": thenStatement
     };
     StringBuffer headerBuffer = StringBuffer();
 
