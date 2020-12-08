@@ -17,7 +17,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("import 'dart:collection';");
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
-      if (spec.modelSpecification.generate.generateFirestoreRepository) {
+      if (spec.modelSpecification.generate.generateRepositorySingleton) {
         codeBuffer.writeln("import '../" + path + file_prefix + "_firestore.dart';");
       }
       if (spec.modelSpecification.generate.generateRepository) {
@@ -38,7 +38,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
 
     // attributes
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton) && (!spec.modelSpecification.generate.isDocumentCollection)) {
         codeBuffer.write(spaces(4) + "var _" + firstLowerCase(spec.modelSpecification.id) + "Repository = ");
         if (spec.modelSpecification.isAppModel) {
           codeBuffer.writeln("HashMap<String, " + spec.modelSpecification.id + "Repository>();");
@@ -55,7 +55,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
 
     // Methods
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepository) &&  (spec.modelSpecification.generate.generateFirestoreRepository) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton) && (!spec.modelSpecification.generate.isDocumentCollection)) {
         codeBuffer.write(spaces(4) + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository");
         if (spec.modelSpecification.isAppModel) {
           codeBuffer.writeln("(String appId) {");

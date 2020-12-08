@@ -5,6 +5,7 @@ class GenerateSpecification {
   final bool generateRepository;        // generate
   final bool generateCache;
   final bool generateFirestoreRepository;
+  final bool generateRepositorySingleton;
   final bool hasPersistentRepository;   // not generating a firestore repository doesn't mean there is no repository. Generate a repository doesn't mean there's a persistent repository. We need to know if there is a persistent repository in some cases, such as when wanting to wipe the repository
   final bool generateModel;
   final bool generateEntity;
@@ -17,7 +18,7 @@ class GenerateSpecification {
   final bool isDocumentCollection;      // is this a collection within a document, or is this a collection that stands on it's own, e.g. StripeCustomer (false) has Payments (true)
 
   GenerateSpecification({ this.generateComponent, this.generateRepository, this.generateCache, this.hasPersistentRepository,
-    this.generateFirestoreRepository, this.generateModel, this.generateEntity,
+    this.generateFirestoreRepository, this.generateRepositorySingleton, this.generateModel, this.generateEntity,
     this.generateForm, this.generateList, this.generateDropDownButton, this.generateInternalComponent,
     this.generateEmbeddedComponent, this.isExtension, this.isDocumentCollection
   });
@@ -28,6 +29,7 @@ class GenerateSpecification {
       "generateRepository": generateRepository,
       "generateCache": generateCache,
       "generateFirestoreRepository": generateFirestoreRepository,
+      "generateRepositorySingleton": generateRepositorySingleton,
       "hasPersistentRepository": hasPersistentRepository,
       "generateModel": generateModel,
       "generateEntity": generateEntity,
@@ -48,30 +50,31 @@ class GenerateSpecification {
   }
 
   @override
-  List<Object> get props => [generateComponent, generateRepository, generateCache, generateFirestoreRepository, hasPersistentRepository, generateModel,
+  List<Object> get props => [generateComponent, generateRepository, generateCache, generateFirestoreRepository, generateRepositorySingleton, hasPersistentRepository, generateModel,
     generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension, isDocumentCollection];
 
   @override
   String toString() {
-    return 'GenerateSpecification { generateComponent: $generateComponent, generateRepository: $generateCache: generateCache, $generateRepository, hasPersistentRepository: $hasPersistentRepository, generateFirestoreRepository: $generateFirestoreRepository, generateModel: $generateModel, generateEntity: $generateEntity, generateForm: $generateForm, generateList: $generateList, generateDropDownButton: $generateDropDownButton, generateInternalComponent: $generateInternalComponent, generateEmbeddedComponent: $generateEmbeddedComponent, isExtension:$isExtension }';
+    return 'GenerateSpecification { generateComponent: $generateComponent, generateRepository: $generateCache: generateCache, $generateRepository, hasPersistentRepository: $hasPersistentRepository, generateFirestoreRepository: $generateFirestoreRepository, generateRepositorySingleton: $generateRepositorySingleton, generateModel: $generateModel, generateEntity: $generateEntity, generateForm: $generateForm, generateList: $generateList, generateDropDownButton: $generateDropDownButton, generateInternalComponent: $generateInternalComponent, generateEmbeddedComponent: $generateEmbeddedComponent, isExtension:$isExtension }';
   }
 
   static GenerateSpecification fromJson(Map<String, Object> json) {
     return GenerateSpecification(
-      generateComponent: json["generateComponent"] as bool ?? false,
-      generateRepository: json["generateRepository"] as bool ?? false,
-      generateCache: json["generateCache"] as bool ?? false,
-      generateFirestoreRepository: json["generateFirestoreRepository"] as bool ?? false,
-      hasPersistentRepository: json["hasPersistentRepository"] as bool ?? false,
-      generateModel: json["generateModel"] as bool ?? false,
-      generateEntity: json["generateEntity"] as bool ?? false,
-      generateForm: json["generateForm"] as bool ?? false,
-      generateList: json["generateList"] as bool ?? false,
-      generateDropDownButton: json["generateDropDownButton"] as bool ?? false,
-      generateInternalComponent: json["generateInternalComponent"] as bool ?? false,
-      generateEmbeddedComponent: json["generateEmbeddedComponent"] as bool ?? false,
-      isExtension: json["isExtension"] as bool ?? false,
-      isDocumentCollection: json["isDocumentCollection"] as bool ?? false
+        generateComponent: json["generateComponent"] as bool ?? false,
+        generateRepository: json["generateRepository"] as bool ?? false,
+        generateCache: json["generateCache"] as bool ?? false,
+        generateFirestoreRepository: json["generateFirestoreRepository"] as bool ?? false,
+        generateRepositorySingleton: json["generateRepositorySingleton"] as bool ?? false,
+        hasPersistentRepository: json["hasPersistentRepository"] as bool ?? false,
+        generateModel: json["generateModel"] as bool ?? false,
+        generateEntity: json["generateEntity"] as bool ?? false,
+        generateForm: json["generateForm"] as bool ?? false,
+        generateList: json["generateList"] as bool ?? false,
+        generateDropDownButton: json["generateDropDownButton"] as bool ?? false,
+        generateInternalComponent: json["generateInternalComponent"] as bool ?? false,
+        generateEmbeddedComponent: json["generateEmbeddedComponent"] as bool ?? false,
+        isExtension: json["isExtension"] as bool ?? false,
+        isDocumentCollection: json["isDocumentCollection"] as bool ?? false
     );
   }
 
