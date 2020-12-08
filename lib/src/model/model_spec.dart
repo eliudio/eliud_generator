@@ -257,4 +257,10 @@ class ModelSpecification extends Specification {
     });
     return thoseFields;
   }
+  
+  bool isMemberSpecific() {
+    if (id == "Member") return true;
+    if (id == "Post") return true;
+    return false;
+  }
 }

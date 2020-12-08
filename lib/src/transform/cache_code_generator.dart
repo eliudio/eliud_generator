@@ -54,23 +54,23 @@ const String _code = """
   }
 
   @override
-  Stream<List<\${id}Model>> values() {
-    return reference.values();
+  Stream<List<\${id}Model>> values(\${currentMemberString}) {
+    return reference.values(\${currentMemberStringValue});
   }
 
   @override
-  Stream<List<\${id}Model>> valuesWithDetails() {
-    return reference.valuesWithDetails();
+  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}) {
+    return reference.valuesWithDetails(\${currentMemberStringValue});
   }
 
   @override
-  Future<List<\${id}Model>> valuesList() async {
-    return await reference.valuesList();
+  Future<List<\${id}Model>> valuesList(\${currentMemberString}) async {
+    return await reference.valuesList(\${currentMemberStringValue});
   }
   
   @override
-  Future<List<\${id}Model>> valuesListWithDetails() async {
-    return await reference.valuesListWithDetails();
+  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}) async {
+    return await reference.valuesListWithDetails(\${currentMemberStringValue});
   }
 
   void flush() {
@@ -87,13 +87,13 @@ const String _deleteAll = """
 
 const String _listen = """
   @override
-  StreamSubscription<List<\${id}Model>> listen(trigger, { String orderBy, bool descending }) {
-    return reference.listen(trigger, orderBy: orderBy, descending: descending);
+  StreamSubscription<List<\${id}Model>> listen(\${currentMemberString}trigger, { String orderBy, bool descending }) {
+    return reference.listen(\${currentMemberStringValue}trigger, orderBy: orderBy, descending: descending);
   }
 
   @override
-  StreamSubscription<List<\${id}Model>> listenWithDetails(trigger) {
-    return reference.listenWithDetails(trigger);
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}trigger) {
+    return reference.listenWithDetails(\${currentMemberStringValue}trigger);
   }
 
 """;
@@ -159,7 +159,11 @@ class CacheCodeGenerator extends CodeGenerator {
   @override
   String body() {
 
-    var parameters = <String, String> { '\${id}': modelSpecifications.id };
+    var parameters = <String, String> {
+      '\${id}': modelSpecifications.id,
+      '\${currentMemberString}': modelSpecifications.isMemberSpecific() ? 'String currentMember, ' : '',
+      '\${currentMemberStringValue}': modelSpecifications.isMemberSpecific() ? 'currentMember,' : '',
+    };
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(process(_header, parameters: parameters));
     codeBuffer.writeln(process(_code, parameters: parameters));

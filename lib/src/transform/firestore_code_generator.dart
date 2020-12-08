@@ -37,15 +37,25 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, { String orderBy, bool descending }) {
-    var stream = (orderBy == null ?  \${id}Collection : \${id}Collection.orderBy(orderBy, descending: descending)).snapshots()
-        .map((data) {
-      Iterable<\${id}Model> \${lid}s  = data.documents.map((doc) {
-        \${id}Model value = _populateDoc(doc);
-        return value;
-      }).toList();
-      return \${lid}s;
-    });
-
+    Stream<List<\${id}Model>> stream;
+    if (orderBy == null) {
+       stream = \${id}Collection.snapshots().map((data) {
+        Iterable<\${id}Model> \${lid}s  = data.documents.map((doc) {
+          \${id}Model value = _populateDoc(doc);
+          return value;
+        }).toList();
+        return \${lid}s;
+      });
+    } else {
+      stream = \${id}Collection.orderBy(orderBy, descending: descending).snapshots().map((data) {
+        Iterable<\${id}Model> \${lid}s  = data.documents.map((doc) {
+          \${id}Model value = _populateDoc(doc);
+          return value;
+        }).toList();
+        return \${lid}s;
+      });
+  
+    }
     return stream.listen((listOf\${id}Models) {
       trigger(listOf\${id}Models);
     });

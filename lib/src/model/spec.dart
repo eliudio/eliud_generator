@@ -58,11 +58,7 @@ abstract class Specification extends Equatable {
   }
 
   String repositoryFileName() {
-    if (id == "Member") {
-      return camelcaseToUnderscore(id) + "_repository_bespoke.dart";
-    } else {
-      return camelcaseToUnderscore(id) + "_repository.dart";
-    }
+    return camelcaseToUnderscore(id) + "_repository.dart";
   }
 
   String firestoreFileName() {

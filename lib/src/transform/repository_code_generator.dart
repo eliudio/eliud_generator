@@ -12,12 +12,9 @@ abstract class \${id}Repository {
   Future<void> delete(\${id}Model value);
   Future<\${id}Model> get(String id);
   Future<\${id}Model> update(\${id}Model value);
-  Stream<List<\${id}Model>> values();
-  Stream<List<\${id}Model>> valuesWithDetails();
+  \${values}
   \${listen}
   void flush();
-  Future<List<\${id}Model>> valuesList();
-  Future<List<\${id}Model>> valuesListWithDetails();
 """;
 
 const String _collectionCode = """
@@ -51,11 +48,34 @@ class RepositoryCodeGenerator extends CodeGenerator {
 
     String typeDef = "typedef " + modelClassName + "Trigger(List<" + modelClassName + "> list);";
 
-    String listen = "StreamSubscription<List<" + modelClassName + ">> listen(" + modelClassName + "Trigger trigger, { String orderBy, bool descending });\n"
-                  + "  StreamSubscription<List<" + modelClassName + ">> listenWithDetails(" + modelClassName + "Trigger trigger);";
+    String values;
+    String listen;
+
+    if (modelSpecifications.isMemberSpecific()) {
+      values = "Stream<List<$modelClassName>> values(String currentMember);\n"
+          + "  Stream<List<$modelClassName>> valuesWithDetails(String currentMember);\n"
+          + "  Future<List<$modelClassName>> valuesList(String currentMember);\n"
+          + "  Future<List<$modelClassName>> valuesListWithDetails(String currentMember);";
+      listen = "StreamSubscription<List<$modelClassName" +
+          ">> listen(String currentMember, $modelClassName" +
+          "Trigger trigger, { String orderBy, bool descending });\n"
+          + "  StreamSubscription<List<$modelClassName" +
+          ">> listenWithDetails(String currentMember, $modelClassName" + "Trigger trigger);";
+    } else {
+      values = "Stream<List<$modelClassName>> values();\n"
+          + "  Stream<List<$modelClassName>> valuesWithDetails();"
+          + "  Future<List<$modelClassName>> valuesList();\n"
+          + "  Future<List<$modelClassName>> valuesListWithDetails();";
+      listen = "StreamSubscription<List<$modelClassName" +
+          ">> listen($modelClassName" +
+          "Trigger trigger, { String orderBy, bool descending });\n"
+          + "  StreamSubscription<List<$modelClassName" +
+          ">> listenWithDetails($modelClassName" + "Trigger trigger);";
+    }
 
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
+      '\${values}': values,
       '\${listen}': listen,
       '\${typeDef}': typeDef
     };

@@ -18,11 +18,13 @@ class ListBlocCodeGenerator extends CodeGenerator {
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listEventFileName()));
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listStateFileName()));
-    if (modelSpecifications.id == "Member") {
-      headerBuffer.write(
+    if (modelSpecifications.isMemberSpecific()) {
+      headerBuffer.writeln(
           "import 'package:eliud_core/core/access/bloc/access_bloc.dart';");
-      headerBuffer.write(
+      headerBuffer.writeln(
           "import 'package:eliud_core/core/access/bloc/access_event.dart';");
+      headerBuffer.writeln(
+          "import 'package:eliud_core/core/access/bloc/access_state.dart';");
     }
     headerBuffer.writeln();
 
@@ -35,7 +37,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.id + "Repository _" + firstLowerCase(modelSpecifications.id) + "Repository;");
     codeBuffer.writeln(spaces(2) + "StreamSubscription _" + firstLowerCase(modelSpecifications.id) + "sListSubscription;");
-    if (modelSpecifications.id == "Member") {
+    if (modelSpecifications.isMemberSpecific()) {
       codeBuffer.writeln(spaces(2) + "final AccessBloc accessBloc;");
     }
 
@@ -45,7 +47,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
   String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(spaces(2) + modelSpecifications.id + "ListBloc(");
-    if (modelSpecifications.id == "Member") {
+    if (modelSpecifications.isMemberSpecific()) {
       codeBuffer.write("this.accessBloc,");
     }
     codeBuffer.writeln("{ @required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository })");
@@ -53,7 +55,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(6) + "_" + firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository,");
     codeBuffer.writeln(spaces(6) + "super(" + modelSpecifications.id + "ListLoading());");
 
-    if (modelSpecifications.id == "Member") {
+    if (modelSpecifications.isMemberSpecific()) {
       codeBuffer.writeln(spaces(2) + "String _currentMember() {");
       codeBuffer.writeln(spaces(4) + "var _currentMember = '';");
       codeBuffer.writeln(spaces(4) + "var state = accessBloc.state;");
@@ -89,7 +91,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
   }
 
   String _mappers() {
-    var currentMember = (modelSpecifications.id == "Member") ? "_currentMember(), " : "";
+    var currentMember = (modelSpecifications.isMemberSpecific()) ? "_currentMember(), " : "";
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListToState({ String orderBy, bool descending }) async* {");
     codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
