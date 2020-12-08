@@ -42,9 +42,9 @@ class \${id}JsFirestore implements \${id}Repository {
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger) {
-    // If we use \${lid}Collection here, then the second subscription fails
-    Stream<List<\${id}Model>> stream = getCollection().\${where}onSnapshot
+  @override
+  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, {String orderBy, bool descending }) {
+    var stream = (orderBy == null ?  getCollection() : getCollection().orderBy(orderBy, descending ? 'desc': 'asc')).\${where}onSnapshot
         .map((data) {
       Iterable<\${id}Model> \${lid}s  = data.docs.map((doc) {
         \${id}Model value = _populateDoc(doc);

@@ -3,7 +3,6 @@ import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
-import 'data_code_generator.dart';
 
 const String _code = """
 \${typeDef}
@@ -50,15 +49,10 @@ class RepositoryCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     String modelClassName = modelSpecifications.modelClassName();
 
-    String typeDef = "";
-//    if (modelSpecifications.generate.generateCache)
-      typeDef = "typedef " + modelClassName + "Trigger(List<" + modelClassName + "> list);";
+    String typeDef = "typedef " + modelClassName + "Trigger(List<" + modelClassName + "> list);";
 
-    String listen = "";
-//    if (modelSpecifications.generate.generateCache) {
-      listen = "StreamSubscription<List<" + modelClassName + ">> listen(" + modelClassName + "Trigger trigger);\n";
-      listen = listen + "StreamSubscription<List<" + modelClassName + ">> listenWithDetails(" + modelClassName + "Trigger trigger);";
-//    }
+    String listen = "StreamSubscription<List<" + modelClassName + ">> listen(" + modelClassName + "Trigger trigger, { String orderBy, bool descending });\n"
+                  + "  StreamSubscription<List<" + modelClassName + ">> listenWithDetails(" + modelClassName + "Trigger trigger);";
 
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,

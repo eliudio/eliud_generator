@@ -1,7 +1,18 @@
 import 'package:eliud_generator/builder.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
+import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
+
+String _loadListEventCode = """
+  final String orderBy;
+  final bool descending;
+
+  Load\${id}List({this.orderBy, this.descending});
+
+  @override
+  List<Object> get props => [orderBy, descending];
+""";
 
 class ListEventCodeGenerator extends CodeGenerator {
   ListEventCodeGenerator({ModelSpecification modelSpecifications})
@@ -30,7 +41,8 @@ class ListEventCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "List<Object> get props => [ value ];");
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "@override");
+    codeBuffer
+        .writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() => '" + className + "{ value: \$value }';");
     codeBuffer.writeln("}");
 
@@ -49,7 +61,13 @@ class ListEventCodeGenerator extends CodeGenerator {
     codeBuffer.writeln("}");
     codeBuffer.writeln();
 
-    codeBuffer.writeln("class Load" + modelSpecifications.id + "List extends "+ modelSpecifications.id + "ListEvent {}");
+    codeBuffer.writeln("class Load" + modelSpecifications.id + "List extends "+ modelSpecifications.id + "ListEvent {");
+    codeBuffer.writeln(process(_loadListEventCode, parameters: <String, String>{
+      '\${id}': modelSpecifications.id,
+    }));
+    codeBuffer.writeln("}");
+    codeBuffer.writeln();
+
     codeBuffer.writeln("class Load" + modelSpecifications.id + "ListWithDetails extends "+ modelSpecifications.id + "ListEvent {}");
     codeBuffer.writeln();
 

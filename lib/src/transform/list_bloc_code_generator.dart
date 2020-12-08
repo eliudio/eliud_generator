@@ -72,7 +72,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> mapEventToState(" + modelSpecifications.id + "ListEvent event) async* {");
     codeBuffer.writeln(spaces(4) + "final currentState = state;");
     codeBuffer.writeln(spaces(4) + "if (event is Load" + modelSpecifications.id + "List) {");
-    codeBuffer.writeln(spaces(6) + "yield* _mapLoad" + modelSpecifications.id + "ListToState();");
+    codeBuffer.writeln(spaces(6) + "yield* _mapLoad" + modelSpecifications.id + "ListToState(orderBy: event.orderBy, descending: event.descending);");
     codeBuffer.writeln(spaces(4) + "} if (event is Load" + modelSpecifications.id + "ListWithDetails) {");
     codeBuffer.writeln(spaces(6) + "yield* _mapLoad" + modelSpecifications.id + "ListWithDetailsToState();");
     codeBuffer.writeln(spaces(4) + "} else if (event is Add" + modelSpecifications.id + "List) {");
@@ -91,9 +91,9 @@ class ListBlocCodeGenerator extends CodeGenerator {
   String _mappers() {
     var currentMember = (modelSpecifications.id == "Member") ? "_currentMember(), " : "";
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListToState() async* {");
+    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListToState({ String orderBy, bool descending }) async* {");
     codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listen(" + currentMember + " (list) => add(" + modelSpecifications.id + "ListUpdated(value: list)));");
+    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listen(" + currentMember + " (list) => add(" + modelSpecifications.id + "ListUpdated(value: list)), orderBy: orderBy, descending: descending);");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListWithDetailsToState() async* {");

@@ -97,7 +97,7 @@ class \${id}InMemoryRepository implements \${id}Repository {
     }
     
     @override
-    StreamSubscription<List<\${id}Model>> listen(trigger) {
+    StreamSubscription<List<\${id}Model>> listen(trigger, { String orderBy, bool descending }) {
       return theValues.listen((theList) => trigger(theList));
     }
   

@@ -87,8 +87,8 @@ const String _deleteAll = """
 
 const String _listen = """
   @override
-  StreamSubscription<List<\${id}Model>> listen(trigger) {
-    return reference.listen(trigger);
+  StreamSubscription<List<\${id}Model>> listen(trigger, { String orderBy, bool descending }) {
+    return reference.listen(trigger, orderBy: orderBy, descending: descending);
   }
 
   @override
