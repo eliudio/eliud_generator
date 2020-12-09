@@ -36,10 +36,10 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, { String orderBy, bool descending }) {
+  StreamSubscription<List<\${id}Model>> listen(\${currentMemberString}\${id}ModelTrigger trigger, { String orderBy, bool descending }) {
     Stream<List<\${id}Model>> stream;
     if (orderBy == null) {
-       stream = \${id}Collection.snapshots().map((data) {
+       stream = \${id}Collection.\${where}snapshots().map((data) {
         Iterable<\${id}Model> \${lid}s  = data.documents.map((doc) {
           \${id}Model value = _populateDoc(doc);
           return value;
@@ -47,7 +47,7 @@ class \${id}Firestore implements \${id}Repository {
         return \${lid}s;
       });
     } else {
-      stream = \${id}Collection.orderBy(orderBy, descending: descending).snapshots().map((data) {
+      stream = \${id}Collection.orderBy(orderBy, descending: descending).\${where}snapshots().map((data) {
         Iterable<\${id}Model> \${lid}s  = data.documents.map((doc) {
           \${id}Model value = _populateDoc(doc);
           return value;
@@ -61,7 +61,7 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger) {
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}\${id}ModelTrigger trigger) {
     Stream<List<\${id}Model>> stream = \${id}Collection.snapshots()
         .asyncMap((data) async {
       return await Future.wait(data.documents.map((doc) =>  _populateDocPlus(doc)).toList());
@@ -73,28 +73,28 @@ class \${id}Firestore implements \${id}Repository {
   }
 
 
-  Stream<List<\${id}Model>> values() {
+  Stream<List<\${id}Model>> values(\${currentMemberString}) {
     return \${id}Collection.\${where}snapshots().map((snapshot) {
       return snapshot.documents
             .map((doc) => _populateDoc(doc)).toList();
     });
   }
 
-  Stream<List<\${id}Model>> valuesWithDetails() {
+  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}) {
     return \${id}Collection.\${where}snapshots().asyncMap((snapshot) {
       return Future.wait(snapshot.documents
           .map((doc) => _populateDocPlus(doc)).toList());
     });
   }
 
-  Future<List<\${id}Model>> valuesList() async {
+  Future<List<\${id}Model>> valuesList(\${currentMemberString}) async {
     return await \${id}Collection.\${where}getDocuments().then((value) {
       var list = value.documents;
       return list.map((doc) => _populateDoc(doc)).toList();
     });
   }
 
-  Future<List<\${id}Model>> valuesListWithDetails() async {
+  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}) async {
     return await \${id}Collection.\${where}getDocuments().then((value) {
       var list = value.documents;
       return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
@@ -174,8 +174,11 @@ class FirestoreCodeGenerator extends CodeGenerator {
     }
 
     String where = "";
-    if (modelSpecifications.where != null)
+    if (modelSpecifications.isMemberSpecific()) {
+      where = "where('readAccess', arrayContainsAny: [currentMember, 'PUBLIC']).";
+    } else if (modelSpecifications.where != null) {
       where = modelSpecifications.where + ".";
+    }
 
     String copyStatement = FirestoreHelper.copyWith(modelSpecifications);
     String thenStatement = FirestoreHelper.then(modelSpecifications);
@@ -187,7 +190,9 @@ class FirestoreCodeGenerator extends CodeGenerator {
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
       "\${appIdDef}": appVar,
       "\${copyStatement}": copyStatement,
-      "\${thenStatement}": thenStatement
+      "\${thenStatement}": thenStatement,
+      '\${currentMemberString}': modelSpecifications.isMemberSpecific() ? 'String currentMember, ' : '',
+      '\${currentMemberStringValue}': modelSpecifications.isMemberSpecific() ? 'currentMember,' : '',
     };
     StringBuffer headerBuffer = StringBuffer();
 

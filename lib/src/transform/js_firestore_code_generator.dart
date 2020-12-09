@@ -43,22 +43,33 @@ class \${id}JsFirestore implements \${id}Repository {
   }
 
   @override
-  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, {String orderBy, bool descending }) {
-    var stream = (orderBy == null ?  getCollection() : getCollection().orderBy(orderBy, descending ? 'desc': 'asc')).\${where}onSnapshot
-        .map((data) {
-      Iterable<\${id}Model> \${lid}s  = data.docs.map((doc) {
-        \${id}Model value = _populateDoc(doc);
-        return value;
-      }).toList();
-      return \${lid}s;
-    });
-
+  StreamSubscription<List<\${id}Model>> listen(\${currentMemberString}\${id}ModelTrigger trigger, {String orderBy, bool descending }) {
+    var stream;
+    if (orderBy == null) {
+      stream = getCollection().\${where}onSnapshot
+          .map((data) {
+        Iterable<\${id}Model> \${lid}s  = data.docs.map((doc) {
+          \${id}Model value = _populateDoc(doc);
+          return value;
+        }).toList();
+        return \${lid}s;
+      });
+    } else {
+      stream = (orderBy == null ?  getCollection() : getCollection().orderBy(orderBy, descending ? 'desc': 'asc')).\${where}onSnapshot
+          .map((data) {
+        Iterable<\${id}Model> \${lid}s  = data.docs.map((doc) {
+          \${id}Model value = _populateDoc(doc);
+          return value;
+        }).toList();
+        return \${lid}s;
+      });
+    }
     return stream.listen((listOf\${id}Models) {
       trigger(listOf\${id}Models);
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger) {
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}\${id}ModelTrigger trigger) {
     // If we use \${lid}Collection here, then the second subscription fails
     Stream<List<\${id}Model>> stream = getCollection().\${where}onSnapshot
         .asyncMap((data) async {
@@ -70,18 +81,18 @@ class \${id}JsFirestore implements \${id}Repository {
     });
   }
 
-  Stream<List<\${id}Model>> values() {
+  Stream<List<\${id}Model>> values(\${currentMemberString}) {
     return \${lid}Collection.\${where}onSnapshot
         .map((data) => data.docs.map((doc) => _populateDoc(doc)).toList());
   }
 
-  Stream<List<\${id}Model>> valuesWithDetails() {
+  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}) {
     return \${lid}Collection.\${where}onSnapshot
         .asyncMap((data) => Future.wait(data.docs.map((doc) => _populateDocPlus(doc)).toList()));
   }
 
   @override
-  Future<List<\${id}Model>> valuesList() {
+  Future<List<\${id}Model>> valuesList(\${currentMemberString}) {
     return \${lid}Collection.\${where}get().then((value) {
       var list = value.docs;
       return list.map((doc) => _populateDoc(doc)).toList();
@@ -89,7 +100,7 @@ class \${id}JsFirestore implements \${id}Repository {
   }
 
   @override
-  Future<List<\${id}Model>> valuesListWithDetails() {
+  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}) {
     return \${lid}Collection.\${where}get().then((value) {
       var list = value.docs;
       return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
@@ -177,7 +188,9 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
     }
 
     String where = "";
-    if (modelSpecifications.whereJs != null)
+    if (modelSpecifications.isMemberSpecific()) {
+      where = "where('readAccess', 'array-contains-any', [currentMember, 'PUBLIC']).";
+    } else if (modelSpecifications.whereJs != null)
       where = modelSpecifications.whereJs + ".";
 
     String copyStatement = FirestoreHelper.copyWith(modelSpecifications);
@@ -191,7 +204,9 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
       "\${appIdDef1}": appVar1,
       "\${appIdDef2}": appVar2,
       "\${copyStatement}": copyStatement,
-      "\${thenStatement}": thenStatement
+      "\${thenStatement}": thenStatement,
+      '\${currentMemberString}': modelSpecifications.isMemberSpecific() ? 'String currentMember, ' : '',
+      '\${currentMemberStringValue}': modelSpecifications.isMemberSpecific() ? 'currentMember,' : '',
     };
 
     StringBuffer bodyBuffer = StringBuffer();
