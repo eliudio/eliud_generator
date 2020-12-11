@@ -175,7 +175,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
     String where = "";
     if (modelSpecifications.isMemberSpecific()) {
-      where = "where('readAccess', arrayContainsAny: ((currentMember == null) || (currentMember == "")) ? ['PUBLIC'] : [currentMember, 'PUBLIC']).";
+      where = "where('readAccess', arrayContainsAny: ((currentMember == null) || (currentMember == \"\")) ? ['PUBLIC'] : [currentMember, 'PUBLIC']).";
     } else if (modelSpecifications.where != null) {
       where = modelSpecifications.where + ".";
     }
