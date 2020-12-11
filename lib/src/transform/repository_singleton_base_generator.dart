@@ -43,11 +43,11 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
         if (spec.modelSpecification.isAppModel) {
           codeBuffer.writeln("HashMap<String, " + spec.modelSpecification.id + "Repository>();");
         } else {
-//          if (spec.modelSpecification.generate.generateCache) {
-//            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore());");
-//          } else {
+          if (spec.modelSpecification.generate.generateCache) {
+            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore());");
+          } else {
             codeBuffer.writeln(spec.modelSpecification.id + "${prefix}Firestore();");
-//          }
+          }
         }
       }
     });
@@ -61,11 +61,11 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
           codeBuffer.writeln("(String appId) {");
           codeBuffer.write(spaces(6) + "if (_" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] == null) _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] = ");
 
-//          if (spec.modelSpecification.generate.generateCache) {
-//            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore(appId));");
-//          } else {
+          if (spec.modelSpecification.generate.generateCache) {
+            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore(appId));");
+          } else {
               codeBuffer.writeln(spec.modelSpecification.id + "${prefix}Firestore(appId);");
-//          }
+          }
 
           codeBuffer.writeln(spaces(6) + "return _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId];");
         } else {
