@@ -189,7 +189,7 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
 
     String where = "";
     if (modelSpecifications.isMemberSpecific()) {
-      where = "where('readAccess', 'array-contains-any', [currentMember, 'PUBLIC']).";
+      where = "where('readAccess', 'array-contains-any', ((currentMember == null) || (currentMember == "")) ? ['PUBLIC'] : [currentMember, 'PUBLIC']).";
     } else if (modelSpecifications.whereJs != null)
       where = modelSpecifications.whereJs + ".";
 
