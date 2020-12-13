@@ -12,6 +12,7 @@ class ComponentCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:flutter/material.dart';");
     headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
+    headerBuffer.writeln("import 'package:eliud_core/core/widgets/progress_indicator.dart';");
 
     headerBuffer.writeln();
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentBlocFileName()));
@@ -57,7 +58,7 @@ class ComponentCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + "return alertWidget(title: 'Error', content: state.message);");
     codeBuffer.writeln(spaces(6) + "} else {");
     codeBuffer.writeln(spaces(8) + "return Center(");
-    codeBuffer.writeln(spaces(10) + "child: CircularProgressIndicator(),");
+    codeBuffer.writeln(spaces(10) + "child: DelayedCircularProgressIndicator(),");
     codeBuffer.writeln(spaces(8) + ");");
     codeBuffer.writeln(spaces(6) + "}");
     codeBuffer.writeln(spaces(4) + "});");

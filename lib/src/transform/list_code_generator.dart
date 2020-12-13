@@ -7,6 +7,7 @@ String _imports(String packageName) => """
 import 'package:eliud_core/core/access/bloc/access_bloc.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
+import 'package:eliud_core/core/widgets/progress_indicator.dart';
 
 import 'package:eliud_core/core/global_data.dart';
 import 'package:eliud_core/tools/has_fab.dart';
@@ -245,7 +246,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
       return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
         if (state is \${id}ListLoading) {
           return Center(
-            child: CircularProgressIndicator(),
+            child: DelayedCircularProgressIndicator(),
           );
         } else if (state is \${id}ListLoaded) {
           final values = state.values;
@@ -277,7 +278,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
           }
         } else {
           return Center(
-            child: CircularProgressIndicator(),
+            child: DelayedCircularProgressIndicator(),
           );
         }
       });
