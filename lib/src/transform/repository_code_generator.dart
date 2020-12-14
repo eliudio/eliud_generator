@@ -5,15 +5,25 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 const String _code = """
-\${typeDef}
+import 'dart:async';
+import 'package:eliud_core/tools/firestore_tools.dart';
+import 'package:eliud_core/tools/common_tools.dart';
+
+typedef \${id}ModelTrigger(List<\${id}Model> list);
 
 abstract class \${id}Repository {
   Future<\${id}Model> add(\${id}Model value);
   Future<void> delete(\${id}Model value);
   Future<\${id}Model> get(String id);
   Future<\${id}Model> update(\${id}Model value);
-  \${values}
-  \${listen}
+
+  Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc});
+  Stream<List<\${id}Model>> valuesWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc});
+  Future<List<\${id}Model>> valuesList({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc});
+  Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc});
+
+  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, {String currentMember, String orderBy, bool descending});
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger, {String currentMember, String orderBy, bool descending});
   void flush();
 """;
 
@@ -35,7 +45,6 @@ class RepositoryCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("import 'dart:async';");
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.modelFileName()));
     headerBuffer.writeln();
     return headerBuffer.toString();
@@ -46,38 +55,8 @@ class RepositoryCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     String modelClassName = modelSpecifications.modelClassName();
 
-    String typeDef = "typedef " + modelClassName + "Trigger(List<" + modelClassName + "> list);";
-
-    String values;
-    String listen;
-
-    if (modelSpecifications.isMemberSpecific()) {
-      values = "Stream<List<$modelClassName>> values(String currentMember, {String orderBy, bool descending });\n"
-          + "  Stream<List<$modelClassName>> valuesWithDetails(String currentMember, {String orderBy, bool descending });\n"
-          + "  Future<List<$modelClassName>> valuesList(String currentMember, {String orderBy, bool descending });\n"
-          + "  Future<List<$modelClassName>> valuesListWithDetails(String currentMember, {String orderBy, bool descending });";
-      listen = "StreamSubscription<List<$modelClassName" +
-          ">> listen(String currentMember, $modelClassName" +
-          "Trigger trigger, { String orderBy, bool descending });\n"
-          + "  StreamSubscription<List<$modelClassName" +
-          ">> listenWithDetails(String currentMember, $modelClassName" + "Trigger trigger, { String orderBy, bool descending });";
-    } else {
-      values = "Stream<List<$modelClassName>> values({String orderBy, bool descending });\n"
-          + "  Stream<List<$modelClassName>> valuesWithDetails({String orderBy, bool descending });"
-          + "  Future<List<$modelClassName>> valuesList({String orderBy, bool descending });\n"
-          + "  Future<List<$modelClassName>> valuesListWithDetails({String orderBy, bool descending });";
-      listen = "StreamSubscription<List<$modelClassName" +
-          ">> listen($modelClassName" +
-          "Trigger trigger, { String orderBy, bool descending });\n"
-          + "  StreamSubscription<List<$modelClassName" +
-          ">> listenWithDetails($modelClassName" + "Trigger trigger, { String orderBy, bool descending });";
-    }
-
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
-      '\${values}': values,
-      '\${listen}': listen,
-      '\${typeDef}': typeDef
     };
     codeBuffer.writeln(process(_code, parameters: parameters));
 

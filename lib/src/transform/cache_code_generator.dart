@@ -6,6 +6,7 @@ import 'code_generator.dart';
 
 String _imports(String packageName, List<String> depends) => """
 import 'dart:async';
+import 'package:eliud_core/tools/common_tools.dart';
 import 'package:$packageName/model/\${filename}_model.dart';
 import 'package:$packageName/model/\${filename}_repository.dart';
 """ + base_imports(packageName, repo: true, model: true, entity: true, cache:true, depends: depends);
@@ -54,23 +55,23 @@ const String _code = """
   }
 
   @override
-  Stream<List<\${id}Model>> values(\${currentMemberString}{String orderBy, bool descending }) {
-    return reference.values(\${currentMemberStringValue});
+  Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
+    return reference.values(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc);
   }
 
   @override
-  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}{String orderBy, bool descending }) {
-    return reference.valuesWithDetails(\${currentMemberStringValue});
+  Stream<List<\${id}Model>> valuesWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
+    return reference.valuesWithDetails(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc);
   }
 
   @override
-  Future<List<\${id}Model>> valuesList(\${currentMemberString}{String orderBy, bool descending }) async {
-    return await reference.valuesList(\${currentMemberStringValue});
+  Future<List<\${id}Model>> valuesList({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) async {
+    return await reference.valuesList(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc);
   }
   
   @override
-  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}{String orderBy, bool descending }) async {
-    return await reference.valuesListWithDetails(\${currentMemberStringValue});
+  Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc}) async {
+    return await reference.valuesListWithDetails(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc);
   }
 
   void flush() {
@@ -87,13 +88,13 @@ const String _deleteAll = """
 
 const String _listen = """
   @override
-  StreamSubscription<List<\${id}Model>> listen(\${currentMemberString}trigger, { String orderBy, bool descending }) {
-    return reference.listen(\${currentMemberStringValue}trigger, orderBy: orderBy, descending: descending);
+  StreamSubscription<List<\${id}Model>> listen(trigger, {String currentMember, String orderBy, bool descending}) {
+    return reference.listen(trigger, currentMember: currentMember, orderBy: orderBy, descending: descending);
   }
 
   @override
-  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}trigger, {String orderBy, bool descending }) {
-    return reference.listenWithDetails(\${currentMemberStringValue}trigger);
+  StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, {String currentMember, String orderBy, bool descending}) {
+    return reference.listenWithDetails(trigger, currentMember: currentMember, orderBy: orderBy, descending: descending);
   }
 
 """;
@@ -161,8 +162,6 @@ class CacheCodeGenerator extends CodeGenerator {
 
     var parameters = <String, String> {
       '\${id}': modelSpecifications.id,
-      '\${currentMemberString}': modelSpecifications.isMemberSpecific() ? 'String currentMember, ' : '',
-      '\${currentMemberStringValue}': modelSpecifications.isMemberSpecific() ? 'currentMember,' : '',
     };
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(process(_header, parameters: parameters));

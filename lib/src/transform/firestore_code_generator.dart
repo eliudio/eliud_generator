@@ -7,6 +7,11 @@ import 'data_code_generator.dart';
 import 'firestore_helper.dart';
 
 const String _code = """
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eliud_core/tools/firestore_tools.dart';
+import 'package:eliud_core/tools/common_tools.dart';
+
 class \${id}Firestore implements \${id}Repository {
   Future<\${id}Model> add(\${id}Model value) {
     return \${id}Collection.document(value.documentID).setData(value.toEntity(\${appIdDef}).\${copyStatement}toDocument()).then((_) => value)\${thenStatement};
@@ -36,7 +41,7 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listen(\${currentMemberString}\${id}ModelTrigger trigger, { String orderBy, bool descending }) {
+  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, {String currentMember, String orderBy, bool descending}) {
     Stream<List<\${id}Model>> stream;
     if (orderBy == null) {
        stream = \${id}Collection.\${where}snapshots().map((data) {
@@ -61,7 +66,7 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}\${id}ModelTrigger trigger, { String orderBy, bool descending }) {
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger, {String currentMember, String orderBy, bool descending}) {
     Stream<List<\${id}Model>> stream;
     if (orderBy == null) {
       stream = \${id}Collection.snapshots()
@@ -81,60 +86,53 @@ class \${id}Firestore implements \${id}Repository {
   }
 
 
-  Stream<List<\${id}Model>> values(\${currentMemberString}{ String orderBy, bool descending }) {
-    if (orderBy == null) {
-      return \${id}Collection.\${where}snapshots().map((snapshot) {
-        return snapshot.documents
-              .map((doc) => _populateDoc(doc)).toList();
-      });
-    } else {
-      return \${id}Collection.orderBy(orderBy, descending: descending).\${where}snapshots().map((snapshot) {
-        return snapshot.documents
-              .map((doc) => _populateDoc(doc)).toList();
-      });
-    }
+  Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
+    DocumentSnapshot lastDoc;
+    Stream<List<\${id}Model>> _values = getQuery(\${id}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit).snapshots().map((snapshot) {
+      return snapshot.documents.map((doc) {
+        lastDoc = doc;
+        return _populateDoc(doc);
+      }).toList();});
+    if ((setLastDoc != null) && (lastDoc != null)) setLastDoc(lastDoc);
+    return _values;
   }
 
-  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}{ String orderBy, bool descending }) {
-    if (orderBy == null) {
-      return \${id}Collection.\${where}snapshots().asyncMap((snapshot) {
-        return Future.wait(snapshot.documents
-            .map((doc) => _populateDocPlus(doc)).toList());
-      });
-    } else {
-      return \${id}Collection.orderBy(orderBy, descending: descending).\${where}snapshots().asyncMap((snapshot) {
-        return Future.wait(snapshot.documents
-            .map((doc) => _populateDocPlus(doc)).toList());
-      });
-    }
+  Stream<List<\${id}Model>> valuesWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
+    DocumentSnapshot lastDoc;
+    Stream<List<\${id}Model>> _values = getQuery(\${id}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit).snapshots().asyncMap((snapshot) {
+      return Future.wait(snapshot.documents.map((doc) {
+        lastDoc = doc;
+        return _populateDocPlus(doc);
+      }).toList());
+    });
+    if ((setLastDoc != null) && (lastDoc != null)) setLastDoc(lastDoc);
+    return _values;
   }
 
-  Future<List<\${id}Model>> valuesList(\${currentMemberString}{ String orderBy, bool descending }) async {
-    if (orderBy == null) {
-      return await \${id}Collection.\${where}getDocuments().then((value) {
-        var list = value.documents;
-        return list.map((doc) => _populateDoc(doc)).toList();
-      });
-    } else {
-      return await \${id}Collection.orderBy(orderBy, descending: descending).\${where}getDocuments().then((value) {
-        var list = value.documents;
-        return list.map((doc) => _populateDoc(doc)).toList();
-      });
-    }
+  Future<List<\${id}Model>> valuesList({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) async {
+    DocumentSnapshot lastDoc;
+    List<\${id}Model> _values = await getQuery(\${id}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit).getDocuments().then((value) {
+      var list = value.documents;
+      return list.map((doc) { 
+        lastDoc = doc;
+        return _populateDoc(doc);
+      }).toList();
+    });
+    if ((setLastDoc != null) && (lastDoc != null)) setLastDoc(lastDoc);
+    return _values;
   }
 
-  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}{ String orderBy, bool descending }) async {
-    if (orderBy == null) {
-      return await \${id}Collection.\${where}getDocuments().then((value) {
-        var list = value.documents;
-        return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
-      });
-    } else {
-      return await \${id}Collection.orderBy(orderBy, descending: descending).\${where}getDocuments().then((value) {
-        var list = value.documents;
-        return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
-      });
-    }
+  Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) async {
+    DocumentSnapshot lastDoc;
+    List<\${id}Model> _values = await getQuery(\${id}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit).getDocuments().then((value) {
+      var list = value.documents;
+      return Future.wait(list.map((doc) {
+        lastDoc = doc;
+        return _populateDocPlus(doc);
+      }).toList());
+    });
+    if ((setLastDoc != null) && (lastDoc != null)) setLastDoc(lastDoc);
+    return _values;
   }
 
   void flush() {}
@@ -143,7 +141,8 @@ class \${id}Firestore implements \${id}Repository {
     return \${id}Collection.getDocuments().then((snapshot) {
       for (DocumentSnapshot ds in snapshot.documents){
         ds.reference.delete();
-      }});
+      }
+    });
   }
 
 """;
@@ -186,8 +185,6 @@ class FirestoreCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("import 'dart:async';");
-    headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
     headerBuffer.writeln();
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FIRESTORE);
@@ -227,8 +224,6 @@ class FirestoreCodeGenerator extends CodeGenerator {
       "\${appIdDef}": appVar,
       "\${copyStatement}": copyStatement,
       "\${thenStatement}": thenStatement,
-      '\${currentMemberString}': modelSpecifications.isMemberSpecific() ? 'String currentMember, ' : '',
-      '\${currentMemberStringValue}': modelSpecifications.isMemberSpecific() ? 'currentMember,' : '',
     };
     StringBuffer headerBuffer = StringBuffer();
 

@@ -5,6 +5,7 @@ import 'code_generator_multi.dart';
 
 const String _imports = """
 import 'package:eliud_core/tools/random.dart';
+import 'package:eliud_core/tools/common_tools.dart';
 
 import 'dart:async';
 
@@ -88,31 +89,31 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return completer.future;
     }
 
-    Stream<List<\${id}Model>> values({String orderBy, bool descending }) {
+    Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
       return theValues;
     }
     
-    Stream<List<\${id}Model>> valuesWithDetails({String orderBy, bool descending }) {
+    Stream<List<\${id}Model>> valuesWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
       return theValues;
     }
     
     @override
-    StreamSubscription<List<\${id}Model>> listen(trigger, { String orderBy, bool descending }) {
+    StreamSubscription<List<\${id}Model>> listen(trigger, { String currentMember, String orderBy, bool descending }) {
       return theValues.listen((theList) => trigger(theList));
     }
   
     @override
-    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, {String orderBy, bool descending }) {
+    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, { String currentMember, String orderBy, bool descending }) {
       return theValues.listen((theList) => trigger(theList));
     }
     
     void flush() {}
 
-    Future<List<\${id}Model>> valuesList({String orderBy, bool descending }) {
+    Future<List<\${id}Model>> valuesList({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
       return Future.value(items);
     }
     
-    Future<List<\${id}Model>> valuesListWithDetails({String orderBy, bool descending }) {
+    Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
       return Future.value(items);
     }
 """;
