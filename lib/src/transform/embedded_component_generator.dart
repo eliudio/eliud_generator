@@ -88,11 +88,11 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return completer.future;
     }
 
-    Stream<List<\${id}Model>> values() {
+    Stream<List<\${id}Model>> values({String orderBy, bool descending }) {
       return theValues;
     }
     
-    Stream<List<\${id}Model>> valuesWithDetails() {
+    Stream<List<\${id}Model>> valuesWithDetails({String orderBy, bool descending }) {
       return theValues;
     }
     
@@ -102,17 +102,17 @@ class \${id}InMemoryRepository implements \${id}Repository {
     }
   
     @override
-    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger) {
+    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, {String orderBy, bool descending }) {
       return theValues.listen((theList) => trigger(theList));
     }
     
     void flush() {}
 
-    Future<List<\${id}Model>> valuesList() {
+    Future<List<\${id}Model>> valuesList({String orderBy, bool descending }) {
       return Future.value(items);
     }
     
-    Future<List<\${id}Model>> valuesListWithDetails() {
+    Future<List<\${id}Model>> valuesListWithDetails({String orderBy, bool descending }) {
       return Future.value(items);
     }
 """;

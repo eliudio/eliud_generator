@@ -52,25 +52,25 @@ class RepositoryCodeGenerator extends CodeGenerator {
     String listen;
 
     if (modelSpecifications.isMemberSpecific()) {
-      values = "Stream<List<$modelClassName>> values(String currentMember);\n"
-          + "  Stream<List<$modelClassName>> valuesWithDetails(String currentMember);\n"
-          + "  Future<List<$modelClassName>> valuesList(String currentMember);\n"
-          + "  Future<List<$modelClassName>> valuesListWithDetails(String currentMember);";
+      values = "Stream<List<$modelClassName>> values(String currentMember, {String orderBy, bool descending });\n"
+          + "  Stream<List<$modelClassName>> valuesWithDetails(String currentMember, {String orderBy, bool descending });\n"
+          + "  Future<List<$modelClassName>> valuesList(String currentMember, {String orderBy, bool descending });\n"
+          + "  Future<List<$modelClassName>> valuesListWithDetails(String currentMember, {String orderBy, bool descending });";
       listen = "StreamSubscription<List<$modelClassName" +
           ">> listen(String currentMember, $modelClassName" +
           "Trigger trigger, { String orderBy, bool descending });\n"
           + "  StreamSubscription<List<$modelClassName" +
-          ">> listenWithDetails(String currentMember, $modelClassName" + "Trigger trigger);";
+          ">> listenWithDetails(String currentMember, $modelClassName" + "Trigger trigger, { String orderBy, bool descending });";
     } else {
-      values = "Stream<List<$modelClassName>> values();\n"
-          + "  Stream<List<$modelClassName>> valuesWithDetails();"
-          + "  Future<List<$modelClassName>> valuesList();\n"
-          + "  Future<List<$modelClassName>> valuesListWithDetails();";
+      values = "Stream<List<$modelClassName>> values({String orderBy, bool descending });\n"
+          + "  Stream<List<$modelClassName>> valuesWithDetails({String orderBy, bool descending });"
+          + "  Future<List<$modelClassName>> valuesList({String orderBy, bool descending });\n"
+          + "  Future<List<$modelClassName>> valuesListWithDetails({String orderBy, bool descending });";
       listen = "StreamSubscription<List<$modelClassName" +
           ">> listen($modelClassName" +
           "Trigger trigger, { String orderBy, bool descending });\n"
           + "  StreamSubscription<List<$modelClassName" +
-          ">> listenWithDetails($modelClassName" + "Trigger trigger);";
+          ">> listenWithDetails($modelClassName" + "Trigger trigger, { String orderBy, bool descending });";
     }
 
     Map<String, String> parameters = <String, String>{

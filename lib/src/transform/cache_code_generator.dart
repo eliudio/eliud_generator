@@ -54,22 +54,22 @@ const String _code = """
   }
 
   @override
-  Stream<List<\${id}Model>> values(\${currentMemberString}) {
+  Stream<List<\${id}Model>> values(\${currentMemberString}{String orderBy, bool descending }) {
     return reference.values(\${currentMemberStringValue});
   }
 
   @override
-  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}) {
+  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}{String orderBy, bool descending }) {
     return reference.valuesWithDetails(\${currentMemberStringValue});
   }
 
   @override
-  Future<List<\${id}Model>> valuesList(\${currentMemberString}) async {
+  Future<List<\${id}Model>> valuesList(\${currentMemberString}{String orderBy, bool descending }) async {
     return await reference.valuesList(\${currentMemberStringValue});
   }
   
   @override
-  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}) async {
+  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}{String orderBy, bool descending }) async {
     return await reference.valuesListWithDetails(\${currentMemberStringValue});
   }
 
@@ -92,7 +92,7 @@ const String _listen = """
   }
 
   @override
-  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}trigger) {
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}trigger, {String orderBy, bool descending }) {
     return reference.listenWithDetails(\${currentMemberStringValue}trigger);
   }
 

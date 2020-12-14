@@ -61,11 +61,19 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}\${id}ModelTrigger trigger) {
-    Stream<List<\${id}Model>> stream = \${id}Collection.snapshots()
-        .asyncMap((data) async {
-      return await Future.wait(data.documents.map((doc) =>  _populateDocPlus(doc)).toList());
-    });
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}\${id}ModelTrigger trigger, { String orderBy, bool descending }) {
+    Stream<List<\${id}Model>> stream;
+    if (orderBy == null) {
+      stream = \${id}Collection.snapshots()
+          .asyncMap((data) async {
+        return await Future.wait(data.documents.map((doc) =>  _populateDocPlus(doc)).toList());
+      });
+    } else {
+      stream = \${id}Collection.orderBy(orderBy, descending: descending).snapshots()
+          .asyncMap((data) async {
+        return await Future.wait(data.documents.map((doc) =>  _populateDocPlus(doc)).toList());
+      });
+    }
 
     return stream.listen((listOf\${id}Models) {
       trigger(listOf\${id}Models);
@@ -73,32 +81,60 @@ class \${id}Firestore implements \${id}Repository {
   }
 
 
-  Stream<List<\${id}Model>> values(\${currentMemberString}) {
-    return \${id}Collection.\${where}snapshots().map((snapshot) {
-      return snapshot.documents
-            .map((doc) => _populateDoc(doc)).toList();
-    });
+  Stream<List<\${id}Model>> values(\${currentMemberString}{ String orderBy, bool descending }) {
+    if (orderBy == null) {
+      return \${id}Collection.\${where}snapshots().map((snapshot) {
+        return snapshot.documents
+              .map((doc) => _populateDoc(doc)).toList();
+      });
+    } else {
+      return \${id}Collection.orderBy(orderBy, descending: descending).\${where}snapshots().map((snapshot) {
+        return snapshot.documents
+              .map((doc) => _populateDoc(doc)).toList();
+      });
+    }
   }
 
-  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}) {
-    return \${id}Collection.\${where}snapshots().asyncMap((snapshot) {
-      return Future.wait(snapshot.documents
-          .map((doc) => _populateDocPlus(doc)).toList());
-    });
+  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}{ String orderBy, bool descending }) {
+    if (orderBy == null) {
+      return \${id}Collection.\${where}snapshots().asyncMap((snapshot) {
+        return Future.wait(snapshot.documents
+            .map((doc) => _populateDocPlus(doc)).toList());
+      });
+    } else {
+      return \${id}Collection.orderBy(orderBy, descending: descending).\${where}snapshots().asyncMap((snapshot) {
+        return Future.wait(snapshot.documents
+            .map((doc) => _populateDocPlus(doc)).toList());
+      });
+    }
   }
 
-  Future<List<\${id}Model>> valuesList(\${currentMemberString}) async {
-    return await \${id}Collection.\${where}getDocuments().then((value) {
-      var list = value.documents;
-      return list.map((doc) => _populateDoc(doc)).toList();
-    });
+  Future<List<\${id}Model>> valuesList(\${currentMemberString}{ String orderBy, bool descending }) async {
+    if (orderBy == null) {
+      return await \${id}Collection.\${where}getDocuments().then((value) {
+        var list = value.documents;
+        return list.map((doc) => _populateDoc(doc)).toList();
+      });
+    } else {
+      return await \${id}Collection.orderBy(orderBy, descending: descending).\${where}getDocuments().then((value) {
+        var list = value.documents;
+        return list.map((doc) => _populateDoc(doc)).toList();
+      });
+    }
   }
 
-  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}) async {
-    return await \${id}Collection.\${where}getDocuments().then((value) {
-      var list = value.documents;
-      return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
-    });
+  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}{ String orderBy, bool descending }) async {
+    if (orderBy == null) {
+      return await \${id}Collection.\${where}getDocuments().then((value) {
+        var list = value.documents;
+        return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
+      });
+    } else {
+      return await \${id}Collection.orderBy(orderBy, descending: descending).\${where}getDocuments().then((value) {
+        var list = value.documents;
+        return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
+      });
+    }
   }
 
   void flush() {}

@@ -55,7 +55,7 @@ class \${id}JsFirestore implements \${id}Repository {
         return \${lid}s;
       });
     } else {
-      stream = (orderBy == null ?  getCollection() : getCollection().orderBy(orderBy, descending ? 'desc': 'asc')).\${where}onSnapshot
+      stream = getCollection().orderBy(orderBy, descending ? 'desc': 'asc').\${where}onSnapshot
           .map((data) {
         Iterable<\${id}Model> \${lid}s  = data.docs.map((doc) {
           \${id}Model value = _populateDoc(doc);
@@ -69,42 +69,74 @@ class \${id}JsFirestore implements \${id}Repository {
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}\${id}ModelTrigger trigger) {
-    // If we use \${lid}Collection here, then the second subscription fails
-    Stream<List<\${id}Model>> stream = getCollection().\${where}onSnapshot
-        .asyncMap((data) async {
-      return await Future.wait(data.docs.map((doc) =>  _populateDocPlus(doc)).toList());
-    });
-
+  StreamSubscription<List<\${id}Model>> listenWithDetails(\${currentMemberString}\${id}ModelTrigger trigger, {String orderBy, bool descending }) {
+    var stream;
+    if (orderBy == null) {
+      // If we use \${lid}Collection here, then the second subscription fails
+      stream = getCollection().\${where}onSnapshot
+          .asyncMap((data) async {
+        return await Future.wait(data.docs.map((doc) =>  _populateDocPlus(doc)).toList());
+      });
+    } else {
+      // If we use \${lid}Collection here, then the second subscription fails
+      stream = getCollection().orderBy(orderBy, descending ? 'desc': 'asc').\${where}onSnapshot
+          .asyncMap((data) async {
+        return await Future.wait(data.docs.map((doc) =>  _populateDocPlus(doc)).toList());
+      });
+    }
     return stream.listen((listOf\${id}Models) {
       trigger(listOf\${id}Models);
     });
   }
 
-  Stream<List<\${id}Model>> values(\${currentMemberString}) {
-    return \${lid}Collection.\${where}onSnapshot
-        .map((data) => data.docs.map((doc) => _populateDoc(doc)).toList());
+  Stream<List<\${id}Model>> values(\${currentMemberString}{String orderBy, bool descending }) {
+    if (orderBy == null) {
+      return \${lid}Collection.\${where}onSnapshot
+          .map((data) => data.docs.map((doc) => _populateDoc(doc)).toList());
+    } else {
+      return \${lid}Collection.orderBy(orderBy, descending ? 'desc': 'asc').\${where}onSnapshot
+          .map((data) => data.docs.map((doc) => _populateDoc(doc)).toList());
+    }
   }
 
-  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}) {
-    return \${lid}Collection.\${where}onSnapshot
-        .asyncMap((data) => Future.wait(data.docs.map((doc) => _populateDocPlus(doc)).toList()));
+  Stream<List<\${id}Model>> valuesWithDetails(\${currentMemberString}{String orderBy, bool descending }) {
+    if (orderBy == null) {
+      return \${lid}Collection.\${where}onSnapshot
+          .asyncMap((data) => Future.wait(data.docs.map((doc) => _populateDocPlus(doc)).toList()));
+    } else {
+      return \${lid}Collection.orderBy(orderBy, descending ? 'desc': 'asc').\${where}onSnapshot
+          .asyncMap((data) => Future.wait(data.docs.map((doc) => _populateDocPlus(doc)).toList()));
+    }
   }
 
   @override
-  Future<List<\${id}Model>> valuesList(\${currentMemberString}) {
-    return \${lid}Collection.\${where}get().then((value) {
-      var list = value.docs;
-      return list.map((doc) => _populateDoc(doc)).toList();
-    });
+  Future<List<\${id}Model>> valuesList(\${currentMemberString}{String orderBy, bool descending }) {
+    if (orderBy == null) {
+      return \${lid}Collection.\${where}get().then((value) {
+        var list = value.docs;
+        return list.map((doc) => _populateDoc(doc)).toList();
+      });
+    } else {
+      return \${lid}Collection.orderBy(orderBy, descending ? 'desc': 'asc').\${where}get().then((value) {
+        var list = value.docs;
+        return list.map((doc) => _populateDoc(doc)).toList();
+      });
+    }
   }
 
   @override
-  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}) {
-    return \${lid}Collection.\${where}get().then((value) {
-      var list = value.docs;
-      return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
-    });
+  Future<List<\${id}Model>> valuesListWithDetails(\${currentMemberString}{String orderBy, bool descending }) {
+    if (orderBy == null) {
+      return \${lid}Collection.\${where}get().then((value) {
+        var list = value.docs;
+        return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
+      });
+    } else {
+      return \${lid}Collection.orderBy(orderBy, descending ? 'desc': 'asc').\${where}get().then((value) {
+        var list = value.docs;
+        return Future.wait(list.map((doc) =>  _populateDocPlus(doc)).toList());
+      });
+    }
   }
 
   void flush() {
