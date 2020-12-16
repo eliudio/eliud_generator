@@ -10,9 +10,6 @@ abstract class Specification extends Equatable {
 
   Specification({this.id});
 
-  Map<String, Object> toJson();
-  String toJsonString();
-
   String modelClassName() {
     return id + "Model";
   }

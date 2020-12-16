@@ -61,12 +61,17 @@ class ListCodeGenerator extends CodeGenerator {
 
   @override
   String commonImports() {
-    return process(_imports(modelSpecifications.packageName), parameters: <String, String>{
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(process(_imports(modelSpecifications.packageName), parameters: <String, String>{
       "\${importprefix}": camelcaseToUnderscore(modelSpecifications.id)
-    })
-    + (modelSpecifications.generate.generateForm ? process(_importForms, parameters: <String, String>{
-      "\${importprefix}": camelcaseToUnderscore(modelSpecifications.id),
-    }) : "");
+    }));
+    if (modelSpecifications.generate.generateForm) {
+      codeBuffer.writeln(process(_importForms, parameters: <String, String>{
+        "\${importprefix}": camelcaseToUnderscore(modelSpecifications.id),
+      }));
+    }
+    extraImports(codeBuffer, ModelSpecification.IMPORT_KEY_ALTERNATIVE_LIST_WIDGETS);
+    return codeBuffer.toString();
   }
 
   String mainClass() {
@@ -94,9 +99,16 @@ class ListCodeGenerator extends CodeGenerator {
     }
     _formVariations = _formVariations + spaces(6) + "return null;";
 
+    String _listItemVariations = "";
+    if (modelSpecifications.listWidgets != null) {
+      modelSpecifications.listWidgets.forEach((element) {
+        _listItemVariations = _listItemVariations + spaces(10) + "if (widget.listItemWidget == \"" + element.listItemWidget + "\") return " + element.listItemWidget + "(value: value);\n";
+      });
+    }
 
     parameters["\${onTap}"] = tap;
     parameters["\${_formVariations}"] = _formVariations;
+    parameters["\${_listItemVariations}"] = _listItemVariations;
     return process(_listBody, parameters: parameters);
   }
 
@@ -178,10 +190,11 @@ String _listBody = """
 class \${id}ListWidget extends StatefulWidget with HasFab {
   bool readOnly;
   String form;
+  String listItemWidget;
   \${id}ListWidgetState state;
   bool isEmbedded;
 
-  \${id}ListWidget({ Key key, this.readOnly, this.form, this.isEmbedded }): super(key: key);
+  \${id}ListWidget({ Key key, this.readOnly, this.form, this.listItemWidget, this.isEmbedded }): super(key: key);
 
   @override
   \${id}ListWidgetState createState() {
@@ -299,6 +312,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         itemCount: values.length,
         itemBuilder: (context, index) {
           final value = values[index];
+\${_listItemVariations}
           return \${id}ListItem(
             value: value,
             app: accessState.app,
@@ -327,6 +341,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
 \${_formVariations}
     }
   }
+  
   
 }
 

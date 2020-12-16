@@ -23,12 +23,6 @@ class View {
 
   View({this.name, this.fields, this.groups, this.title, this.buttonLabel});
 
-  Map<String, Object> toJson() {
-    return {
-      "name": name,
-    };
-  }
-
   static View fromJson(Map<String, Object> json) {
     var jsonFields = json["fields"];
     var jsonGroups = json["groups"];
@@ -38,6 +32,18 @@ class View {
       groups: jsonGroups != null ? List.from(jsonGroups) : null,
       title: json["title"] as String,
       buttonLabel: json["buttonLabel"] as String,
+    );
+  }
+}
+
+class ListWidget {
+  final String listItemWidget;
+
+  ListWidget({this.listItemWidget});
+
+  static ListWidget fromJson(Map<String, Object> json) {
+    return ListWidget(
+      listItemWidget: json["listItemWidget"] as String,
     );
   }
 }
@@ -61,6 +67,9 @@ class ModelSpecification extends Specification {
   // views
   final List<View> views;
 
+  // ListWidget
+  final List<ListWidget> listWidgets;
+
   // depending plugins
   final List<String> depends;
 
@@ -69,16 +78,17 @@ class ModelSpecification extends Specification {
   static String IMPORT_KEY_FIRESTORE = "firestore";
   static String IMPORT_KEY_LIST_BLOC = "list_bloc";
   static String IMPORT_KEY_FORM = "form";
+  static String IMPORT_KEY_ALTERNATIVE_LIST_WIDGETS = "alternative_list_widgets";
 
   final Map<String, String> extraImports;
   final String where;
   final String whereJs;
 
-  ModelSpecification({ String id, this.generate, this.packageName, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.where, this.whereJs, this.depends }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.packageName, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.listWidgets, this.where, this.whereJs, this.depends }) : super(id: id);
 
   ModelSpecification copyWith({ String id, GenerateSpecification generate, List<Field> fields, List<Group> groups,
     ListFields listFields, String displayOnDelete, Map<String, String> extraImports, bool isAppModel,
-    String preToEntityCode, String preMapUpdateCode, List<View> views, List<String> depends }) {
+    String preToEntityCode, String preMapUpdateCode, List<View> views, List<View> listWidgets, List<String> depends }) {
     ModelSpecification newModelSpecification = ModelSpecification(
       id: id ?? this.id,
       generate: generate ?? this.generate,
@@ -92,6 +102,7 @@ class ModelSpecification extends Specification {
       preToEntityCode: preToEntityCode ?? this.preToEntityCode,
       preMapUpdateCode: preMapUpdateCode ?? this.preMapUpdateCode,
       views: views ?? this.views,
+      listWidgets: listWidgets ?? this.listWidgets,
       where: where ?? this.where,
       whereJs: whereJs ?? this.whereJs,
       depends: depends ?? this.depends,
@@ -99,51 +110,12 @@ class ModelSpecification extends Specification {
     return newModelSpecification;
   }
 
-
-  Map<String, Object> toJson() {
-    List<Map<String, dynamic>> jsonFields = fields != null
-        ? fields.map((i) => i.toJson()).toList()
-        : null;
-
-    List<Map<String, dynamic>> jsonGroups = groups != null
-        ? groups.map((i) => i.toJson()).toList()
-        : null;
-
-    List<Map<String, Object>> jsonViews = views != null
-        ? views.map((view) => view.toJson()).toList()
-        :null;
-
-    return <String, dynamic>{
-      "id": id,
-      "generate": generate.toJson(),
-      'packageName': packageName,
-      'fields': jsonFields,
-      'groups': jsonGroups,
-      'listFields': listFields.toJson(),
-      "displayOnDelete": displayOnDelete,
-      "extraImports": extraImports,
-      "isAppModel": isAppModel,
-      "preToEntityCode": preToEntityCode,
-      "preMapUpdateCode": preMapUpdateCode,
-      "alternativeViews": jsonViews,
-      "where": where,
-      "whereJs": whereJs,
-      "depends": depends,
-    };
-  }
-
-  String toJsonString() {
-    Map<String, Object> jsonMap = toJson();
-    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    return encoder.convert(jsonMap);
-  }
-
   @override
-  List<Object> get props => [id, generate, packageName, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, where, whereJs, depends ];
+  List<Object> get props => [id, generate, packageName, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, listWidgets, where, whereJs, depends ];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, packageName: $packageName, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, where: $where, whereJs: $whereJs, depends: $depends }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, packageName: $packageName, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, listWidgets: $listWidgets, where: $where, whereJs: $whereJs, depends: $depends }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -167,6 +139,15 @@ class ModelSpecification extends Specification {
       theViews = (jsonViews as List<dynamic>)
           .map((dynamic item) =>
           View.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
+
+    List<ListWidget> theListWidgets;
+    var jsonWidgets = json['alternativeListWidgets'];
+    if (jsonWidgets != null) {
+      theListWidgets = (jsonWidgets as List<dynamic>)
+          .map((dynamic item) =>
+          ListWidget.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
@@ -204,6 +185,7 @@ class ModelSpecification extends Specification {
       preToEntityCode: json["preToEntityCode"] as String,
       preMapUpdateCode: json["preMapUpdateCode"] as String,
       views: theViews,
+      listWidgets: theListWidgets,
       where: json["where"] as String,
       whereJs: json["whereJs"] as String,
       depends: dependsFields != null ? List.from(dependsFields) : null,
