@@ -11,6 +11,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:eliud_core/core/access/bloc/access_bloc.dart';
 """;
 
 const String _specificImports = """
@@ -22,7 +23,7 @@ import '../\${path}_repository.dart';
 """;
 
 const String _InMemoryRepositoryMethod = """
-static Widget \${lid}sList(List<\${id}Model> values, \${id}ListChanged trigger) {
+static Widget \${lid}sList(BuildContext context, List<\${id}Model> values, \${id}ListChanged trigger) {
   \${id}InMemoryRepository inMemoryRepository = \${id}InMemoryRepository(
     trigger: trigger,
     items: values,
@@ -31,6 +32,7 @@ static Widget \${lid}sList(List<\${id}Model> values, \${id}ListChanged trigger) 
     providers: [
       BlocProvider<\${id}ListBloc>(
         create: (context) => \${id}ListBloc(
+          AccessBloc.getBloc(context), 
           \${lid}Repository: inMemoryRepository,
           )..add(Load\${id}List()),
         )
@@ -89,31 +91,31 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return completer.future;
     }
 
-    Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, ReadCondition readCondition, int privilegeLevel }) {
+    Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, bool isLoggedIn, int privilegeLevel }) {
       return theValues;
     }
     
-    Stream<List<\${id}Model>> valuesWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, ReadCondition readCondition, int privilegeLevel }) {
+    Stream<List<\${id}Model>> valuesWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, bool isLoggedIn, int privilegeLevel }) {
       return theValues;
     }
     
     @override
-    StreamSubscription<List<\${id}Model>> listen(trigger, { String currentMember, String orderBy, bool descending, ReadCondition readCondition, int privilegeLevel }) {
+    StreamSubscription<List<\${id}Model>> listen(trigger, { String currentMember, String orderBy, bool descending, bool isLoggedIn, int privilegeLevel }) {
       return theValues.listen((theList) => trigger(theList));
     }
   
     @override
-    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, { String currentMember, String orderBy, bool descending, ReadCondition readCondition, int privilegeLevel }) {
+    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, { String currentMember, String orderBy, bool descending, bool isLoggedIn, int privilegeLevel }) {
       return theValues.listen((theList) => trigger(theList));
     }
     
     void flush() {}
 
-    Future<List<\${id}Model>> valuesList({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, ReadCondition readCondition, int privilegeLevel }) {
+    Future<List<\${id}Model>> valuesList({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, bool isLoggedIn, int privilegeLevel }) {
       return Future.value(items);
     }
     
-    Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, ReadCondition readCondition, int privilegeLevel }) {
+    Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, bool isLoggedIn, int privilegeLevel }) {
       return Future.value(items);
     }
 """;
@@ -149,7 +151,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        codeBuffer.writeln(firstLowerCase(ms.id) + "sList(value, trigger) => EmbeddedComponentFactory." + firstLowerCase(ms.id) + "sList(value, trigger);");
+        codeBuffer.writeln(firstLowerCase(ms.id) + "sList(context, value, trigger) => EmbeddedComponentFactory." + firstLowerCase(ms.id) + "sList(context, value, trigger);");
       }
     });
     codeBuffer.writeln();

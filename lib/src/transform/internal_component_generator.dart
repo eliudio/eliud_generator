@@ -224,7 +224,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
       ModelSpecification ms = spec.modelSpecification;
       var appIdVar = ms.isAppModel ? "appId: AccessBloc.appId(context)" : "";
       if (ms.generate.generateInternalComponent) {
-        var listBlocParam = (ms.isMemberSpecific()) ? "BlocProvider.of<AccessBloc>(context), " : "";
+        var listBlocParam = "BlocProvider.of<AccessBloc>(context), ";
         if (list)
           codeBuffer.writeln(process(_SpecificListComponentCode,
               parameters: <String, String>{

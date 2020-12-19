@@ -18,14 +18,12 @@ class ListBlocCodeGenerator extends CodeGenerator {
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listEventFileName()));
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listStateFileName()));
-    if (modelSpecifications.isMemberSpecific()) {
-      headerBuffer.writeln(
-          "import 'package:eliud_core/core/access/bloc/access_bloc.dart';");
-      headerBuffer.writeln(
-          "import 'package:eliud_core/core/access/bloc/access_event.dart';");
-      headerBuffer.writeln(
-          "import 'package:eliud_core/core/access/bloc/access_state.dart';");
-    }
+    headerBuffer.writeln(
+        "import 'package:eliud_core/core/access/bloc/access_bloc.dart';");
+    headerBuffer.writeln(
+        "import 'package:eliud_core/core/access/bloc/access_event.dart';");
+    headerBuffer.writeln(
+        "import 'package:eliud_core/core/access/bloc/access_state.dart';");
     headerBuffer.writeln();
 
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_LIST_BLOC);
@@ -37,9 +35,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.id + "Repository _" + firstLowerCase(modelSpecifications.id) + "Repository;");
     codeBuffer.writeln(spaces(2) + "StreamSubscription _" + firstLowerCase(modelSpecifications.id) + "sListSubscription;");
-    if (modelSpecifications.isMemberSpecific()) {
-      codeBuffer.writeln(spaces(2) + "final AccessBloc accessBloc;");
-    }
+    codeBuffer.writeln(spaces(2) + "final AccessBloc accessBloc;");
 
     return codeBuffer.toString();
   }
@@ -47,9 +43,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
   String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(spaces(2) + modelSpecifications.id + "ListBloc(");
-    if (modelSpecifications.isMemberSpecific()) {
-      codeBuffer.write("this.accessBloc,");
-    }
+    codeBuffer.write("this.accessBloc,");
     codeBuffer.writeln("{ @required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository })");
     codeBuffer.writeln(spaces(6) + ": assert(" + firstLowerCase(modelSpecifications.id) + "Repository != null),");
     codeBuffer.writeln(spaces(6) + "_" + firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository,");

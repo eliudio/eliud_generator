@@ -688,7 +688,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(20) +
               "child: " +
               firstLowerCase(field.fieldType) +
-              "sList(state.value." +
+              "sList(context, state.value." +
               field.fieldName +
               ", _on" +
               firstUpperCase(field.fieldName) +
