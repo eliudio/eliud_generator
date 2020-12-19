@@ -8,6 +8,8 @@ String _imports(String packageName, List<String> depends) => """
 
 import 'package:eliud_core/tools/admin_app_base.dart';
 import 'package:eliud_core/tools/action_model.dart';
+import 'package:eliud_core/tools/common_tools.dart';
+import 'package:eliud_core/tools/common_tools.dart';
 
 import 'package:eliud_core/model/menu_def_model.dart';
 import 'package:eliud_core/model/page_model.dart';
@@ -76,7 +78,8 @@ const String _page = """
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "\${pkgName}_internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
-        conditional: PageCondition.AdminOnly,
+        readCondition: ReadCondition.AsSpecifiedInPrivilegeLevelRequired,
+        privilegeLevelRequired: 99999,
         appId: appId,
         documentID: "\${pkgName}_\${lowid}s_page",
         title: "\${id}s",

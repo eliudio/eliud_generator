@@ -41,7 +41,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:eliud_core/tools/enums.dart';
-import 'package:eliud_core/tools/types.dart';
+import 'package:eliud_core/tools/common_tools.dart';
 
 import 'package:eliud_core/model/rgb_model.dart';
 
@@ -103,25 +103,27 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
     StringBuffer newModelBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
-      if (field.defaultValue != null) {
-        newModelBuffer.write(spaces(33) + field.fieldName + ": ");
-        if ((field.isInt()) || (field.isDouble())) {
-          newModelBuffer.write(field.defaultValue);
-        } else if (field.isString()) {
-          newModelBuffer.write("\"" + field.defaultValue + "\"");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if (field.defaultValue != null) {
+          newModelBuffer.write(spaces(33) + field.fieldName + ": ");
+          if ((field.isInt()) || (field.isDouble())) {
+            newModelBuffer.write(field.defaultValue);
+          } else if (field.isString()) {
+            newModelBuffer.write("\"" + field.defaultValue + "\"");
+          } else {
+            newModelBuffer.write(field.defaultValue);
+          }
+          newModelBuffer.writeln(", ");
         } else {
-          newModelBuffer.write(field.defaultValue);
-        }
-        newModelBuffer.writeln(", ");
-      } else {
-        if (field.isArray()) {
-          newModelBuffer.writeln(spaces(33) + field.fieldName + ": [],");
-        } else if (field.isInt()) {
-          newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0,");
-        } else if (field.isDouble()) {
-          newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0.0,");
-        } else if (field.isString()) {
-          newModelBuffer.writeln(spaces(33) + field.fieldName + ": \"\",");
+          if (field.isArray()) {
+            newModelBuffer.writeln(spaces(33) + field.fieldName + ": [],");
+          } else if (field.isInt()) {
+            newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0,");
+          } else if (field.isDouble()) {
+            newModelBuffer.writeln(spaces(33) + field.fieldName + ": 0.0,");
+          } else if (field.isString()) {
+            newModelBuffer.writeln(spaces(33) + field.fieldName + ": \"\",");
+          }
         }
       }
     });
@@ -150,71 +152,77 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(4) + "} else if (currentState is " + modelSpecifications.id + "FormInitialized) {");
     codeBuffer.writeln(spaces(6) + modelSpecifications.modelClassName() + " newValue = null;");
     modelSpecifications.fields.forEach((field) {
-      if (!field.hidden) {
-        String className = "Changed" + modelSpecifications.id +
-            firstUpperCase(field.fieldName);
-        codeBuffer.writeln(spaces(6) + "if (event is " + className + ") {");
-        if (field.isInt()) {
-          codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
-          codeBuffer.writeln(
-              spaces(10) + "newValue = currentState.value.copyWith(" +
-                  field.fieldName + ": int.parse(event.value));");
-          codeBuffer.writeln(_yield(10, field));
-          codeBuffer.writeln(spaces(8) + "} else {");
-          codeBuffer.writeln(
-              spaces(10) + "newValue = currentState.value.copyWith(" +
-                  field.fieldName + ": 0);");
-          String errorClassName = firstUpperCase(field.fieldName) +
-              modelSpecifications.id +
-              "FormError(message: \"Value should be a number\", value: newValue);";
-          codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
-          codeBuffer.writeln(spaces(8) + "}");
-        } else if (field.isDouble()) {
-          codeBuffer.writeln(spaces(8) + "if (isDouble(event.value)) {");
-          codeBuffer.writeln(
-              spaces(10) + "newValue = currentState.value.copyWith(" +
-                  field.fieldName + ": double.parse(event.value));");
-          codeBuffer.writeln(_yield(10, field));
-          codeBuffer.writeln(spaces(8) + "} else {");
-          codeBuffer.writeln(
-              spaces(10) + "newValue = currentState.value.copyWith(" +
-                  field.fieldName + ": 0.0);");
-          String errorClassName = firstUpperCase(field.fieldName) +
-              modelSpecifications.id +
-              "FormError(message: \"Value should be a number or decimal number\", value: newValue);";
-          codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
-          codeBuffer.writeln(spaces(8) + "}");
-        } else if (field.association) {
-          codeBuffer.writeln(spaces(8) + "if (event.value != null)");
-          codeBuffer.writeln(
-              spaces(10) + "newValue = currentState.value.copyWith(" +
-                  field.fieldName + ": await " +
-                  firstLowerCase(field.fieldType) +
-                  "Repository(appId: appId).get(event.value));");
-          codeBuffer.writeln(spaces(8) + "else");
-          codeBuffer.writeln(
-              spaces(10) + "newValue = new " + modelSpecifications.id +
-                  "Model(");
-          modelSpecifications.fields.forEach((otherField) {
-            if (otherField != field) {
-              codeBuffer.writeln(
-                  spaces(33) + otherField.fieldName + ": currentState.value." +
-                      otherField.fieldName + ",");
-            } else {
-              codeBuffer.writeln(spaces(33) + otherField.fieldName + ": null,");
-            }
-          });
-          codeBuffer.writeln(spaces(10) + ");");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if (!field.hidden) {
+          String className = "Changed" + modelSpecifications.id +
+              firstUpperCase(field.fieldName);
+          codeBuffer.writeln(spaces(6) + "if (event is " + className + ") {");
+          if (field.isInt()) {
+            codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
+            codeBuffer.writeln(
+                spaces(10) + "newValue = currentState.value.copyWith(" +
+                    field.fieldName + ": int.parse(event.value));");
+            codeBuffer.writeln(_yield(10, field));
+            codeBuffer.writeln(spaces(8) + "} else {");
+            codeBuffer.writeln(
+                spaces(10) + "newValue = currentState.value.copyWith(" +
+                    field.fieldName + ": 0);");
+            String errorClassName = firstUpperCase(field.fieldName) +
+                modelSpecifications.id +
+                "FormError(message: \"Value should be a number\", value: newValue);";
+            codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
+            codeBuffer.writeln(spaces(8) + "}");
+          } else if (field.isDouble()) {
+            codeBuffer.writeln(spaces(8) + "if (isDouble(event.value)) {");
+            codeBuffer.writeln(
+                spaces(10) + "newValue = currentState.value.copyWith(" +
+                    field.fieldName + ": double.parse(event.value));");
+            codeBuffer.writeln(_yield(10, field));
+            codeBuffer.writeln(spaces(8) + "} else {");
+            codeBuffer.writeln(
+                spaces(10) + "newValue = currentState.value.copyWith(" +
+                    field.fieldName + ": 0.0);");
+            String errorClassName = firstUpperCase(field.fieldName) +
+                modelSpecifications.id +
+                "FormError(message: \"Value should be a number or decimal number\", value: newValue);";
+            codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
+            codeBuffer.writeln(spaces(8) + "}");
+          } else if (field.association) {
+            codeBuffer.writeln(spaces(8) + "if (event.value != null)");
+            codeBuffer.writeln(
+                spaces(10) + "newValue = currentState.value.copyWith(" +
+                    field.fieldName + ": await " +
+                    firstLowerCase(field.fieldType) +
+                    "Repository(appId: appId).get(event.value));");
+            codeBuffer.writeln(spaces(8) + "else");
+            codeBuffer.writeln(
+                spaces(10) + "newValue = new " + modelSpecifications.id +
+                    "Model(");
+            modelSpecifications.fields.forEach((otherField) {
+              if (otherField.arrayType != ArrayType.CollectionArrayType) {
+                if (otherField != field) {
+                  codeBuffer.writeln(
+                      spaces(33) + otherField.fieldName +
+                          ": currentState.value." +
+                          otherField.fieldName + ",");
+                } else {
+                  codeBuffer.writeln(
+                      spaces(33) + otherField.fieldName + ": null,");
+                }
+              }
+            });
+            codeBuffer.writeln(spaces(10) + ");");
 
-          codeBuffer.writeln(_yield(8, field));
-        } else {
-          codeBuffer.writeln(
-              spaces(8) + "newValue = currentState.value.copyWith(" +
-                  field.fieldName + ": event.value);");
-          codeBuffer.writeln(_yield(8, field));
+            codeBuffer.writeln(_yield(8, field));
+          } else {
+            codeBuffer.writeln(
+                spaces(8) + "newValue = currentState.value.copyWith(" +
+                    field.fieldName + ": event.value);");
+            codeBuffer.writeln(_yield(8, field));
+          }
+          codeBuffer.writeln(spaces(8) + "return;");
+          codeBuffer.writeln(spaces(6) + "}");
         }
-        codeBuffer.writeln(spaces(8) + "return;");
-        codeBuffer.writeln(spaces(6) + "}");
       }
     });
 
@@ -226,12 +234,14 @@ class FormBlocCodeGenerator extends CodeGenerator {
   String _validations() {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
-      if (field.fieldValidation != null) {
-        codeBuffer.writeln(
-            spaces(2) + "bool _is" + firstUpperCase(field.fieldName) +
-                "Valid(" + field.dartModelType() + " value) {");
-        codeBuffer.writeln(field.fieldValidation);
-        codeBuffer.writeln(spaces(2) + "}");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if (field.fieldValidation != null) {
+          codeBuffer.writeln(
+              spaces(2) + "bool _is" + firstUpperCase(field.fieldName) +
+                  "Valid(" + field.dartModelType() + " value) {");
+          codeBuffer.writeln(field.fieldValidation);
+          codeBuffer.writeln(spaces(2) + "}");
+        }
       }
     });
     return codeBuffer.toString();

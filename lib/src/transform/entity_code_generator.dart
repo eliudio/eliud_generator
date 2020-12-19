@@ -82,7 +82,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
-    //headerBuffer.writeln("import 'package:firebase/firestore.dart';");
+    headerBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
     headerBuffer.writeln(base_imports(modelSpecifications.packageName, entity:true, depends: modelSpecifications.depends));
 
     return headerBuffer.toString();
@@ -350,11 +350,11 @@ class EntityCodeGenerator extends DataCodeGenerator {
         removeDocumentID: true,
         name: modelSpecifications.entityClassName(),
         terminate: true,
-        excludeCollection: true));
+        ));
     codeBuffer.writeln(_copyWith());
     codeBuffer.writeln(_getProps());
     codeBuffer
-        .writeln(toStringCode(true, modelSpecifications.entityClassName(), excludeCollection: true));
+        .writeln(toStringCode(true, modelSpecifications.entityClassName()));
     codeBuffer.writeln(_fromMap());
     codeBuffer.writeln(_toDocument());
 

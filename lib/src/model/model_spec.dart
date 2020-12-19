@@ -76,6 +76,8 @@ class ModelSpecification extends Specification {
   static String IMPORT_KEY_FORM_BLOC = "form_bloc";
   static String IMPORT_KEY_MODEL = "model";
   static String IMPORT_KEY_FIRESTORE = "firestore";
+  static String IMPORT_KEY_JS_FIRESTORE = "js_firestore";
+  static String IMPORT_KEY_REPOSITORY = "repository";
   static String IMPORT_KEY_LIST_BLOC = "list_bloc";
   static String IMPORT_KEY_FORM = "form";
   static String IMPORT_KEY_ALTERNATIVE_LIST_WIDGETS = "alternative_list_widgets";
@@ -83,12 +85,13 @@ class ModelSpecification extends Specification {
   final Map<String, String> extraImports;
   final String where;
   final String whereJs;
+  final bool withReadCondition;
 
-  ModelSpecification({ String id, this.generate, this.packageName, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.listWidgets, this.where, this.whereJs, this.depends }) : super(id: id);
+  ModelSpecification({ String id, this.generate, this.packageName, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.listWidgets, this.where, this.whereJs, this.depends, this.withReadCondition }) : super(id: id);
 
   ModelSpecification copyWith({ String id, GenerateSpecification generate, List<Field> fields, List<Group> groups,
     ListFields listFields, String displayOnDelete, Map<String, String> extraImports, bool isAppModel,
-    String preToEntityCode, String preMapUpdateCode, List<View> views, List<View> listWidgets, List<String> depends }) {
+    String preToEntityCode, String preMapUpdateCode, List<View> views, List<View> listWidgets, List<String> depends, withReadCondition }) {
     ModelSpecification newModelSpecification = ModelSpecification(
       id: id ?? this.id,
       generate: generate ?? this.generate,
@@ -106,16 +109,17 @@ class ModelSpecification extends Specification {
       where: where ?? this.where,
       whereJs: whereJs ?? this.whereJs,
       depends: depends ?? this.depends,
+      withReadCondition: withReadCondition ?? this.withReadCondition,
     );
     return newModelSpecification;
   }
 
   @override
-  List<Object> get props => [id, generate, packageName, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, listWidgets, where, whereJs, depends ];
+  List<Object> get props => [id, generate, packageName, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, listWidgets, where, whereJs, depends, withReadCondition ];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, packageName: $packageName, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, listWidgets: $listWidgets, where: $where, whereJs: $whereJs, depends: $depends }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, packageName: $packageName, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views, listWidgets: $listWidgets, where: $where, whereJs: $whereJs, depends: $depends, withReadCondition: $withReadCondition }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
@@ -189,6 +193,7 @@ class ModelSpecification extends Specification {
       where: json["where"] as String,
       whereJs: json["whereJs"] as String,
       depends: dependsFields != null ? List.from(dependsFields) : null,
+      withReadCondition: json["withReadCondition"] as bool ?? false,
     );
   }
 

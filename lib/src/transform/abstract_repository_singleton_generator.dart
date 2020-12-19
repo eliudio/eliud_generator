@@ -18,7 +18,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       }
     });
     codeBuffer.writeln("import 'package:eliud_core/core/access/bloc/user_repository.dart';");
-    codeBuffer.writeln("import 'package:eliud_core/tools/types.dart';");
+    codeBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton) && (!spec.modelSpecification.generate.isDocumentCollection)) {

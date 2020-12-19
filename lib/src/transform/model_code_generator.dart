@@ -8,6 +8,7 @@ import 'data_code_generator.dart';
 String _imports(String packageName, List<String> depends) =>
     """
 import 'package:eliud_core/core/global_data.dart';
+import 'package:eliud_core/tools/common_tools.dart';
 
 """ +
     base_imports(packageName,
@@ -90,12 +91,14 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _fieldDefinitions() {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
-      if ((field.remark != null) && (field.remark.length > 0)) {
-        codeBuffer.writeln();
-        codeBuffer.writeln(spaces(2) + "// " + field.remark);
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if ((field.remark != null) && (field.remark.length > 0)) {
+          codeBuffer.writeln();
+          codeBuffer.writeln(spaces(2) + "// " + field.remark);
+        }
+        codeBuffer.write(spaces(2));
+        codeBuffer.writeln(field.dartModelType() + " " + field.fieldName + ";");
       }
-      codeBuffer.write(spaces(2));
-      codeBuffer.writeln(field.dartModelType() + " " + field.fieldName + ";");
     });
     return codeBuffer.toString();
   }
@@ -119,18 +122,22 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.write(
         spaces(2) + modelSpecifications.modelClassName() + " copyWith({");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(field.dartModelType() + " " + field.fieldName + ", ");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        codeBuffer.write(field.dartModelType() + " " + field.fieldName + ", ");
+      }
     });
     codeBuffer.writeln("}) {");
     codeBuffer.write(
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(field.fieldName +
-          ": " +
-          field.fieldName +
-          " ?? this." +
-          field.fieldName +
-          ", ");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        codeBuffer.write(field.fieldName +
+            ": " +
+            field.fieldName +
+            " ?? this." +
+            field.fieldName +
+            ", ");
+      }
     });
     codeBuffer.writeln(");");
     codeBuffer.writeln(spaces(2) + "}");
@@ -142,9 +149,11 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.write(spaces(2) + "int get hashCode => ");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(field.fieldName + ".hashCode");
-      if (modelSpecifications.fields.last != field) {
-        codeBuffer.write(" ^ ");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        codeBuffer.write(field.fieldName + ".hashCode");
+        if (modelSpecifications.fields.last != field) {
+          codeBuffer.write(" ^ ");
+        }
       }
     });
     codeBuffer.writeln(";");
@@ -162,19 +171,21 @@ class ModelCodeGenerator extends DataCodeGenerator {
         " &&");
     codeBuffer.writeln(spaces(10) + "runtimeType == other.runtimeType && ");
     modelSpecifications.fields.forEach((field) {
-      if (field.isArray()) {
-        codeBuffer.write(spaces(10) +
-            "ListEquality().equals(" +
-            field.fieldName +
-            ", other." +
-            field.fieldName +
-            ")");
-      } else {
-        codeBuffer.write(
-            spaces(10) + field.fieldName + " == other." + field.fieldName);
-      }
-      if (modelSpecifications.fields.last != field) {
-        codeBuffer.writeln(" &&");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if (field.isArray()) {
+          codeBuffer.write(spaces(10) +
+              "ListEquality().equals(" +
+              field.fieldName +
+              ", other." +
+              field.fieldName +
+              ")");
+        } else {
+          codeBuffer.write(
+              spaces(10) + field.fieldName + " == other." + field.fieldName);
+        }
+        if (modelSpecifications.fields.last != field) {
+          codeBuffer.writeln(" &&");
+        }
       }
     });
     codeBuffer.writeln(";");
@@ -344,64 +355,66 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.write(spaces(10) + field.fieldName + ": ");
-      if ((field.isBespoke()) || (field.isServerTimestamp())) {
-        codeBuffer.write("entity." + field.fieldName);
-      } else {
-        if (field.isEnum()) {
-          if (field.isMap()) {
-            codeBuffer.write("entity." +
-                field.fieldName +
-                ".map((key, value) => MapEntry(key, to" +
-                field.enumName +
-                "(value)))");
-          } else {
-            codeBuffer.write(
-                "to" + field.enumName + "(entity." + field.fieldName + ")");
-          }
-        } else if (field.association) {
-          codeBuffer.write(field.fieldName + "Holder");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        codeBuffer.write(spaces(10) + field.fieldName + ": ");
+        if ((field.isBespoke()) || (field.isServerTimestamp())) {
+          codeBuffer.write("entity." + field.fieldName);
         } else {
-          if (!field.isNativeType()) {
-            if (field.isArray()) {
-              if (field.arrayType != ArrayType.CollectionArrayType) {
-                codeBuffer.writeln();
-                // this construct of creating a list from a list is to make a dynamic list from a fixed sized list.
-                // The reason for requiring a non fixed sized list is because we need to be able to use replaceRange in XyzInMemoryRepository
-                codeBuffer.writeln(spaces(12) +
-                    "new List<" +
-                    field.fieldType +
-                    "Model>.from(await Future.wait(entity. " +
-                    field.fieldName);
-                codeBuffer.writeln(spaces(12) +
-                    ".map((item) => " +
-                    field.fieldType +
-                    "Model.fromEntityPlus(newRandomKey(), item, appId: appId))");
-                codeBuffer.write(spaces(12) + ".toList()))");
+          if (field.isEnum()) {
+            if (field.isMap()) {
+              codeBuffer.write("entity." +
+                  field.fieldName +
+                  ".map((key, value) => MapEntry(key, to" +
+                  field.enumName +
+                  "(value)))");
+            } else {
+              codeBuffer.write(
+                  "to" + field.enumName + "(entity." + field.fieldName + ")");
+            }
+          } else if (field.association) {
+            codeBuffer.write(field.fieldName + "Holder");
+          } else {
+            if (!field.isNativeType()) {
+              if (field.isArray()) {
+                if (field.arrayType != ArrayType.CollectionArrayType) {
+                  codeBuffer.writeln();
+                  // this construct of creating a list from a list is to make a dynamic list from a fixed sized list.
+                  // The reason for requiring a non fixed sized list is because we need to be able to use replaceRange in XyzInMemoryRepository
+                  codeBuffer.writeln(spaces(12) +
+                      "new List<" +
+                      field.fieldType +
+                      "Model>.from(await Future.wait(entity. " +
+                      field.fieldName);
+                  codeBuffer.writeln(spaces(12) +
+                      ".map((item) => " +
+                      field.fieldType +
+                      "Model.fromEntityPlus(newRandomKey(), item, appId: appId))");
+                  codeBuffer.write(spaces(12) + ".toList()))");
+                } else {
+                  codeBuffer.write("await " +
+                      firstLowerCase(field.fieldType) +
+                      "Repository(documentID).valuesList()");
+                }
               } else {
-                codeBuffer.write("await " +
-                    firstLowerCase(field.fieldType) +
-                    "Repository(documentID).valuesList()");
+                codeBuffer.writeln();
+                codeBuffer.write(spaces(12) +
+                    "await " +
+                    field.fieldType +
+                    "Model.fromEntityPlus(entity." +
+                    field.fieldName +
+                    ", appId: appId)");
               }
             } else {
-              codeBuffer.writeln();
-              codeBuffer.write(spaces(12) +
-                  "await " +
-                  field.fieldType +
-                  "Model.fromEntityPlus(entity." +
-                  field.fieldName +
-                  ", appId: appId)");
-            }
-          } else {
-            if (field.fieldName == "documentID") {
-              codeBuffer.write(field.fieldName);
-            } else {
-              codeBuffer.write("entity." + field.fieldName);
+              if (field.fieldName == "documentID") {
+                codeBuffer.write(field.fieldName);
+              } else {
+                codeBuffer.write("entity." + field.fieldName);
+              }
             }
           }
         }
+        codeBuffer.writeln(", ");
       }
-      codeBuffer.writeln(", ");
     });
     codeBuffer.writeln(spaces(4) + ");");
     codeBuffer.writeln(spaces(2) + "}");

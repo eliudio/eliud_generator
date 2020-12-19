@@ -55,23 +55,23 @@ const String _code = """
   }
 
   @override
-  Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
-    return reference.values(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc);
+  Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, ReadCondition readCondition, int privilegeLevel }) {
+    return reference.values(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, readCondition: readCondition, privilegeLevel: privilegeLevel);
   }
 
   @override
-  Stream<List<\${id}Model>> valuesWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) {
-    return reference.valuesWithDetails(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc);
+  Stream<List<\${id}Model>> valuesWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, ReadCondition readCondition, int privilegeLevel }) {
+    return reference.valuesWithDetails(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, readCondition: readCondition, privilegeLevel: privilegeLevel);
   }
 
   @override
-  Future<List<\${id}Model>> valuesList({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc }) async {
-    return await reference.valuesList(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc);
+  Future<List<\${id}Model>> valuesList({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, ReadCondition readCondition, int privilegeLevel }) async {
+    return await reference.valuesList(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, readCondition: readCondition, privilegeLevel: privilegeLevel);
   }
   
   @override
-  Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc}) async {
-    return await reference.valuesListWithDetails(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc);
+  Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, ReadCondition readCondition, int privilegeLevel}) async {
+    return await reference.valuesListWithDetails(currentMember: currentMember, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, readCondition: readCondition, privilegeLevel: privilegeLevel);
   }
 
   void flush() {
@@ -88,13 +88,13 @@ const String _deleteAll = """
 
 const String _listen = """
   @override
-  StreamSubscription<List<\${id}Model>> listen(trigger, {String currentMember, String orderBy, bool descending}) {
-    return reference.listen(trigger, currentMember: currentMember, orderBy: orderBy, descending: descending);
+  StreamSubscription<List<\${id}Model>> listen(trigger, {String currentMember, String orderBy, bool descending, ReadCondition readCondition, int privilegeLevel}) {
+    return reference.listen(trigger, currentMember: currentMember, orderBy: orderBy, descending: descending, readCondition: readCondition, privilegeLevel: privilegeLevel);
   }
 
   @override
-  StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, {String currentMember, String orderBy, bool descending}) {
-    return reference.listenWithDetails(trigger, currentMember: currentMember, orderBy: orderBy, descending: descending);
+  StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, {String currentMember, String orderBy, bool descending, ReadCondition readCondition, int privilegeLevel}) {
+    return reference.listenWithDetails(trigger, currentMember: currentMember, orderBy: orderBy, descending: descending, readCondition: readCondition, privilegeLevel: privilegeLevel);
   }
 
 """;
@@ -183,31 +183,34 @@ class CacheCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(process(_refreshRelationsHeader, parameters: parameters));
     StringBuffer assignParametersBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
-      if (field.association) {
-        String appVar;
-        if ((field.fieldType != "Image") && (field.fieldType != "App") && (field.fieldType != "Member") && (field.fieldType != "Country")) {
-          appVar = "appId: model." + field.fieldName + ".appId";
-        } else {
-          appVar = '';
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if (field.association) {
+          String appVar;
+          if (/*(field.fieldType != "Image") && */(field.fieldType != "App") &&
+              (field.fieldType != "Member") && (field.fieldType != "Country")) {
+            appVar = "appId: model." + field.fieldName + ".appId";
+          } else {
+            appVar = '';
+          }
+          codeBuffer.writeln(process(_refreshRelationsModel,
+              parameters: <String, String>{
+                '\${fieldName}': field.fieldName,
+                '\${fieldType}': field.fieldType,
+                '\${lfieldType}': firstLowerCase(field.fieldType),
+                '\${appIdVar}': appVar
+              }));
+          assignParametersBuffer.writeln(process(_refreshRelationsAssignField,
+              parameters: <String, String>{
+                '\${fieldName}': field.fieldName
+              }));
         }
-        codeBuffer.writeln(process(_refreshRelationsModel,
-            parameters: <String, String>{
-              '\${fieldName}': field.fieldName,
-              '\${fieldType}': field.fieldType,
-              '\${lfieldType}': firstLowerCase(field.fieldType),
-              '\${appIdVar}': appVar
-            }));
-        assignParametersBuffer.writeln(process(_refreshRelationsAssignField,
-            parameters: <String, String>{
-              '\${fieldName}': field.fieldName
-            }));
       }
     });
     modelSpecifications.fields.forEach((field) {
-      if (!field.isEnum()) {
-        if (!field.isNativeType()) {
-          if (field.isArray()) {
-//            if (field.arrayType != ArrayType.CollectionArrayType) {
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if (!field.isEnum()) {
+          if (!field.isNativeType()) {
+            if (field.isArray()) {
               codeBuffer.writeln(process(_refreshRelationsEmbeddedArray,
                   parameters: <String, String>{
                     '\${fieldName}': field.fieldName,
@@ -219,13 +222,7 @@ class CacheCodeGenerator extends CodeGenerator {
                       parameters: <String, String>{
                         '\${fieldName}': field.fieldName
                       }));
-/*
-            } else {
-              assignParametersBuffer.writeln("what to do here to refresh the relationship for " + field.fieldName);
             }
-*/
-          } else {
-            // This might be or become a case to handle as well
           }
         }
       }

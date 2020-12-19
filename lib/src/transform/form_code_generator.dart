@@ -16,6 +16,7 @@ import 'package:eliud_core/tools/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:eliud_core/tools/common_tools.dart';
 
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
@@ -451,11 +452,13 @@ class RealFormCodeGenerator extends CodeGenerator {
         modelSpecifications.id +
         "List(value: state.value.copyWith(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(spaces(14 + 16) +
-          field.fieldName +
-          ": state.value." +
-          field.fieldName +
-          ", ");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        codeBuffer.writeln(spaces(14 + 16) +
+            field.fieldName +
+            ": state.value." +
+            field.fieldName +
+            ", ");
+      }
     });
     codeBuffer.writeln(spaces(14 + 10) + ")));");
     codeBuffer.writeln(spaces(14 + 8) + "} else {");
@@ -470,11 +473,13 @@ class RealFormCodeGenerator extends CodeGenerator {
         modelSpecifications.modelClassName() +
         "(");
     modelSpecifications.fields.forEach((field) {
-      codeBuffer.writeln(spaces(14 + 16) +
-          field.fieldName +
-          ": state.value." +
-          field.fieldName +
-          ", ");
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        codeBuffer.writeln(spaces(14 + 16) +
+            field.fieldName +
+            ": state.value." +
+            field.fieldName +
+            ", ");
+      }
     });
     codeBuffer.writeln(spaces(14 + 12) + ")));");
     codeBuffer.writeln(spaces(14 + 8) + "}");

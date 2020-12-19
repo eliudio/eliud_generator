@@ -8,12 +8,12 @@ abstract class DataCodeGenerator extends CodeGenerator {
 
   String fieldName(Field field);
 
-  String getConstructor({bool removeDocumentID, String name, bool terminate, bool excludeCollection}) {
+  String getConstructor({bool removeDocumentID, String name, bool terminate}) {
     StringBuffer codeBuffer = StringBuffer();
     // Constructor
     codeBuffer.write(spaces(2) + name + "({");
     modelSpecifications.fields.forEach((field) {
-      if (!(excludeCollection != null && excludeCollection && field.arrayType == ArrayType.CollectionArrayType)) {
+      if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.fieldName == "documentID") {
           if (!removeDocumentID) {
             codeBuffer.write(
@@ -33,13 +33,13 @@ abstract class DataCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String toStringCode(bool removeDocumentID, String name, { bool excludeCollection } ) {
+  String toStringCode(bool removeDocumentID, String name) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
-      if (!(excludeCollection != null && excludeCollection && field.arrayType == ArrayType.CollectionArrayType)) {
+      if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.isArray()) {
           codeBuffer.writeln(
               spaces(4) + "String " + fieldName(field) + "Csv = (" +
@@ -52,7 +52,7 @@ abstract class DataCodeGenerator extends CodeGenerator {
     if (extraLine) codeBuffer.writeln();
     codeBuffer.write(spaces(4) + "return '" + name + "{");
     modelSpecifications.fields.forEach((field) {
-      if (!(excludeCollection != null && excludeCollection && field.arrayType == ArrayType.CollectionArrayType)) {
+      if (field.arrayType != ArrayType.CollectionArrayType) {
         if (!((removeDocumentID) && (field.fieldName == "documentID"))) {
           codeBuffer.write(fieldName(field) + ": ");
           if (field.isArray()) {
