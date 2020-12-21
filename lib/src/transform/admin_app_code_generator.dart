@@ -78,8 +78,8 @@ const String _page = """
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "\${pkgName}_internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
-        readCondition: ReadCondition.AsSpecifiedInPrivilegeLevelRequired,
-        privilegeLevelRequired: 99999,
+        readCondition: ReadCondition.MemberOrPrivilegedMemberOnly,
+        privilegeLevelRequired: OWNER_PRIVILEGES,
         appId: appId,
         documentID: "\${pkgName}_\${lowid}s_page",
         title: "\${id}s",
