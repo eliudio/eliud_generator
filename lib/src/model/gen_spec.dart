@@ -15,7 +15,7 @@ class GenerateSpecification {
   final bool generateInternalComponent; // generate an administrative component
   final bool generateEmbeddedComponent; // is this an embedded internal component?
   final bool isExtension;               // is this an extension, is this a component that can be added to a page
-  final bool isDocumentCollection;      // is this a collection within a document, or is this a collection that stands on it's own, e.g. StripeCustomer (false) has Payments (true)
+  final bool isDocumentCollection;      // is this a subcollection of app?
 
   GenerateSpecification({ this.generateComponent, this.generateRepository, this.generateCache, this.hasPersistentRepository,
     this.generateFirestoreRepository, this.generateRepositorySingleton, this.generateModel, this.generateEntity,

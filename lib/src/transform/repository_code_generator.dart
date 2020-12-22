@@ -3,6 +3,7 @@ import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
+import 'firestore_helper.dart';
 
 const String _code = """
 import 'dart:async';
@@ -25,12 +26,16 @@ abstract class \${id}Repository {
   StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, {String currentMember, String orderBy, bool descending, int privilegeLevel});
   StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger, {String currentMember, String orderBy, bool descending, int privilegeLevel});
   void flush();
+
+  dynamic getSubCollection(String documentId, String name);
 """;
 
+/*
 const String _collectionCode = """
-    \${collectionFieldType}Repository \${lCollectionFieldType}Repository(String documentID);
+    \${collectionFieldType}Repository app_\${lCollectionFieldType}Repository(String documentID);
   
 """;
+*/
 
 const String _codeWithArgNoAppID = """
   Future<void> deleteAll();
@@ -42,6 +47,7 @@ class RepositoryCodeGenerator extends CodeGenerator {
   RepositoryCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
+/*
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
@@ -49,6 +55,11 @@ class RepositoryCodeGenerator extends CodeGenerator {
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_REPOSITORY);
     headerBuffer.writeln();
     return headerBuffer.toString();
+  }
+
+*/
+  String commonImports() {
+    return FirestoreHelper.commonImports(extraImports2(ModelSpecification.IMPORT_KEY_REPOSITORY), modelSpecifications, "repository");
   }
 
   @override
@@ -61,6 +72,7 @@ class RepositoryCodeGenerator extends CodeGenerator {
     };
     codeBuffer.writeln(process(_code, parameters: parameters));
 
+/*
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType == ArrayType.CollectionArrayType) {
         codeBuffer.writeln(process(_collectionCode,
@@ -70,6 +82,7 @@ class RepositoryCodeGenerator extends CodeGenerator {
             }));
       }
     });
+*/
 
     codeBuffer.writeln(process(_codeWithArgNoAppID, parameters: parameters));
 

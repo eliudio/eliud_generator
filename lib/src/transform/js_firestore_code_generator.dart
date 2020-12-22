@@ -158,6 +158,11 @@ class \${id}JsFirestore implements \${id}Repository {
     return \${lid}Collection.get().then((snapshot) => snapshot.docs
         .forEach((element) => \${lid}Collection.doc(element.id).delete()));
   }
+  
+  dynamic getSubCollection(String documentId, String name) {
+    return \${lid}Collection.doc(documentId).collection(name);
+  }
+
 """;
 
 
@@ -179,14 +184,16 @@ const String _footerWithoutCollectionParameter = """
 }
 """;
 
+/*
 const String _collectionCode = """
-  \${collectionFieldType}Repository \${lCollectionFieldType}Repository(String documentID) {
+  \${collectionFieldType}Repository app_\${lCollectionFieldType}Repository(String documentID) {
     CollectionReference reference = \${lid}Collection.doc(documentID).collection("\${collectionFieldType}");
     return \${collectionFieldType}JsFirestore(reference);
   }
   
 """;
 
+*/
 const String _codeFooter = """
   CollectionReference getCollection() => firestore().collection('\${COLLECTION_ID}-\$appId');
 
@@ -204,16 +211,7 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
 
   @override
   String commonImports() {
-    StringBuffer headerBuffer = StringBuffer();
-
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
-    headerBuffer.writeln();
-    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_JS_FIRESTORE);
-    headerBuffer.writeln();
-    headerBuffer.writeln(base_imports(modelSpecifications.packageName, repo: true, model: true, entity: true, depends: modelSpecifications.depends));
-    headerBuffer.writeln();
-
-    return headerBuffer.toString();
+    return FirestoreHelper.commonImports(extraImports2(ModelSpecification.IMPORT_KEY_JS_FIRESTORE), modelSpecifications, "js_firestore");
   }
 
   @override
@@ -255,6 +253,7 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
     StringBuffer bodyBuffer = StringBuffer();
     bodyBuffer.write(process(_code, parameters: parameters));
 
+/*
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType == ArrayType.CollectionArrayType) {
         bodyBuffer.writeln(process(_collectionCode,
@@ -266,6 +265,7 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
             }));
       }
     });
+*/
 
     if (modelSpecifications.generate.isDocumentCollection)
       bodyBuffer.writeln(process(_footerWithoutCollectionParameter, parameters: parameters));

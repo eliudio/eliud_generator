@@ -9,7 +9,7 @@ import 'data_code_generator.dart';
 
 class FirestoreHelper {
   static String collectionId(ModelSpecification modelSpecification) {
-    return firstUpperCase(modelSpecification.id);
+    return modelSpecification.id.toLowerCase();
   }
 
   static String copyWith(ModelSpecification modelSpecifications) {
@@ -45,4 +45,17 @@ class FirestoreHelper {
     }
   }
 
+  static String commonImports(String extraImports, ModelSpecification modelSpecifications, String importSufix) {
+    StringBuffer headerBuffer = StringBuffer();
+    headerBuffer.writeln(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
+    if (extraImports != null) {
+      headerBuffer.writeln(extraImports);
+    }
+
+    headerBuffer.writeln(base_imports(modelSpecifications.packageName, repo: true, model: true, entity: true, depends: modelSpecifications.depends));
+
+    headerBuffer.writeln();
+
+    return headerBuffer.toString();
+  }
 }

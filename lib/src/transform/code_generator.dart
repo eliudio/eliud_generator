@@ -134,4 +134,10 @@ abstract class CodeGenerator extends CodeGeneratorBase {
       }
     }
   }
+
+  String extraImports2(String key) {
+    StringBuffer headerBuffer = StringBuffer();
+    extraImports(headerBuffer, key);
+    return headerBuffer.toString();
+  }
 }

@@ -3,6 +3,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 import 'code_generator_multi.dart';
+import 'firestore_helper.dart';
 
 abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
   final String prefix;  // class prefix
@@ -14,6 +15,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(header());
     codeBuffer.writeln("import 'abstract_repository_singleton.dart';");
+    codeBuffer.writeln("import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';");
     codeBuffer.writeln("import 'dart:collection';");
     modelSpecificationPlus.forEach((spec) {
       String path = spec.path;
@@ -38,7 +40,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
 
     // attributes
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton)/* && (!spec.modelSpecification.generate.isDocumentCollection)*/) {
         codeBuffer.write(spaces(4) + "var _" + firstLowerCase(spec.modelSpecification.id) + "Repository = ");
         if (spec.modelSpecification.isAppModel) {
           codeBuffer.writeln("HashMap<String, " + spec.modelSpecification.id + "Repository>();");
@@ -55,16 +57,23 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
 
     // Methods
     modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton) && (!spec.modelSpecification.generate.isDocumentCollection)) {
+      if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton)/* && (!spec.modelSpecification.generate.isDocumentCollection)*/) {
         codeBuffer.write(spaces(4) + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository");
         if (spec.modelSpecification.isAppModel) {
           codeBuffer.writeln("(String appId) {");
           codeBuffer.write(spaces(6) + "if (_" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] == null) _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] = ");
 
-          if (spec.modelSpecification.generate.generateCache) {
-            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore(appId));");
+          var parameter;
+          if (spec.modelSpecification.generate.isDocumentCollection) {
+            parameter = "appRepository().getSubCollection(appId, '" +
+                FirestoreHelper.collectionId(spec.modelSpecification) + "')";
           } else {
-              codeBuffer.writeln(spec.modelSpecification.id + "${prefix}Firestore(appId);");
+            parameter = "appId";
+          }
+          if (spec.modelSpecification.generate.generateCache) {
+            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore($parameter));");
+          } else {
+              codeBuffer.writeln(spec.modelSpecification.id + "${prefix}Firestore($parameter);");
           }
 
           codeBuffer.writeln(spaces(6) + "return _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId];");

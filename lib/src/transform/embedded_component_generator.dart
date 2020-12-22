@@ -118,6 +118,11 @@ class \${id}InMemoryRepository implements \${id}Repository {
     Future<List<\${id}Model>> valuesListWithDetails({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel }) {
       return Future.value(items);
     }
+
+    @override
+    getSubCollection(String documentId, String name) {
+      throw UnimplementedError();
+    }
 """;
 
 const String _InMemoryRepositoryTemplateFooter = """

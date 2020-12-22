@@ -145,15 +145,21 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
+  dynamic getSubCollection(String documentId, String name) {
+    return \${id}Collection.document(documentId).collection(name);
+  }
+
 """;
 
+/*
 const String _collectionCode = """
-  \${collectionFieldType}Repository \${lCollectionFieldType}Repository(String documentID) {
+  \${collectionFieldType}Repository app_\${lCollectionFieldType}Repository(String documentID) {
     CollectionReference reference = \${id}Collection.document(documentID).collection("\${collectionFieldType}");
     return \${collectionFieldType}Firestore(reference);
   }
   
 """;
+*/
 
 const String _footerWithoutAppID = """
   \${id}Firestore();
@@ -174,7 +180,7 @@ const String _footer = """
   final String appId;
   final CollectionReference \${id}Collection;
 
-  \${id}Firestore(this.appId) : \${id}Collection = Firestore.instance.collection('\${COLLECTION_ID}-\${appId}');
+  \${id}Firestore(this.appId) : \${id}Collection = Firestore.instance.collection('\${COLLECTION_ID}');
 }
 """;
 
@@ -184,15 +190,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
   @override
   String commonImports() {
-    StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
-    headerBuffer.writeln();
-    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FIRESTORE);
-    headerBuffer.writeln(base_imports(modelSpecifications.packageName, repo: true, model: true, entity: true, depends: modelSpecifications.depends));
-
-    headerBuffer.writeln();
-
-    return headerBuffer.toString();
+    return FirestoreHelper.commonImports(extraImports2(ModelSpecification.IMPORT_KEY_FIRESTORE), modelSpecifications, "firestore");
   }
 
   @override
@@ -232,6 +230,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
     headerBuffer.writeln(process(_code, parameters: parameters));
 
+/*
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType == ArrayType.CollectionArrayType) {
         headerBuffer.writeln(process(_collectionCode,
@@ -244,6 +243,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
       }
     });
 
+*/
     if (modelSpecifications.generate.isDocumentCollection)
       headerBuffer.writeln(process(_footerWithoutCollectionParameter, parameters: parameters));
     else if (modelSpecifications.isAppModel)

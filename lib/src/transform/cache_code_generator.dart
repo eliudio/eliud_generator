@@ -3,6 +3,7 @@ import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
+import 'firestore_helper.dart';
 
 String _imports(String packageName, List<String> depends) => """
 import 'dart:async';
@@ -78,6 +79,10 @@ const String _code = """
     fullCache.clear();
   }
   
+  dynamic getSubCollection(String documentId, String name) {
+    return reference.getSubCollection(documentId, name);
+  }
+
 """;
 
 const String _deleteAll = """
@@ -131,10 +136,12 @@ const String _refreshRelationsFooter = """
   }
 """;
 
+/*
 const String _collectionCode = """
-    \${collectionFieldType}Repository \${lCollectionFieldType}Repository(String documentID) => reference.\${lCollectionFieldType}Repository(documentID);
+    \${collectionFieldType}Repository app_\${lCollectionFieldType}Repository(String documentID) => reference.app_\${lCollectionFieldType}Repository(documentID);
   
 """;
+*/
 
 /*
  * This class generates the cache repositories. Why a cache repository, when flutter comes with
@@ -153,7 +160,6 @@ class CacheCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln(process(_imports(modelSpecifications.packageName, modelSpecifications.depends), parameters: <String, String> { '\${filename}': camelcaseToUnderscore(modelSpecifications.id) }));
-
     return headerBuffer.toString();
   }
 
@@ -233,6 +239,7 @@ class CacheCodeGenerator extends CodeGenerator {
           '\${copyArguments}': assignParametersBuffer.toString()
         }));
 
+/*
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType == ArrayType.CollectionArrayType) {
         codeBuffer.writeln(process(_collectionCode,
@@ -242,6 +249,7 @@ class CacheCodeGenerator extends CodeGenerator {
             }));
       }
     });
+*/
 
     codeBuffer.writeln(process(_footer, parameters: parameters));
     return codeBuffer.toString();
