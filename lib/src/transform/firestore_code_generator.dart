@@ -170,7 +170,8 @@ const String _footerWithoutAppID = """
 """;
 
 const String _footerWithoutCollectionParameter = """
-  \${id}Firestore(this.\${id}Collection);
+  final String appId;
+  \${id}Firestore(this.\${id}Collection, this.appId);
 
   final CollectionReference \${id}Collection;
 }
@@ -197,7 +198,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
   String body() {
     String appVar;
     String appVar3;
-    if (!modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel) {
+    if (modelSpecifications.isAppModel) {
       appVar = appVar3 = "appId: appId";
     } else if (modelSpecifications.id == "App") {
       appVar = "appId: value.documentID";

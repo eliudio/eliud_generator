@@ -66,7 +66,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
           var parameter;
           if (spec.modelSpecification.generate.isDocumentCollection) {
             parameter = "appRepository().getSubCollection(appId, '" +
-                FirestoreHelper.collectionId(spec.modelSpecification) + "')";
+                FirestoreHelper.collectionId(spec.modelSpecification) + "'), appId";
           } else {
             parameter = "appId";
           }

@@ -176,10 +176,10 @@ const String _codeFooterWithoutAppId = """
 """;
 
 const String _footerWithoutCollectionParameter = """
+  final String appId;
+  \${id}JsFirestore(this.\${lid}Collection, this.appId);
+
   CollectionReference getCollection() => \${lid}Collection;
-
-  \${id}JsFirestore(this.\${lid}Collection);
-
   final CollectionReference \${lid}Collection;
 }
 """;
@@ -219,7 +219,7 @@ class JsFirestoreCodeGenerator extends CodeGenerator {
     String appVar1;
     String appVar2;
     String appVar3;
-    if (!modelSpecifications.generate.isDocumentCollection && modelSpecifications.isAppModel) {
+    if (modelSpecifications.isAppModel) {
       appVar1 = appVar2 = appVar3 = "appId: appId";
     } else if (modelSpecifications.id == "App") {
       appVar1 = "appId: value.documentID";
