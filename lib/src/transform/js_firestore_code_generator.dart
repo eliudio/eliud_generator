@@ -179,7 +179,9 @@ const String _footerWithoutCollectionParameter = """
   final String appId;
   \${id}JsFirestore(this.\${lid}Collection, this.appId);
 
-  CollectionReference getCollection() => \${lid}Collection;
+  // In flutterweb, it seems we require to re-retrieve the collection. If not then subscribing / listening to it a second time fails.
+  // CollectionReference getCollection() => \${lid}Collection;
+  CollectionReference getCollection() => appRepository().getSubCollection(appId, '\${COLLECTION_ID}');
   final CollectionReference \${lid}Collection;
 }
 """;
