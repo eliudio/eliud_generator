@@ -7,7 +7,7 @@ import 'code_generator_multi.dart';
 String _imports(String packageName, List<String> depends) => """
 
 import 'package:eliud_core/tools/admin_app_base.dart';
-import 'package:eliud_core/tools/action_model.dart';
+import '../tools/bespoke_models.dart';
 import 'package:eliud_core/tools/common_tools.dart';
 import 'package:eliud_core/tools/common_tools.dart';
 

@@ -10,7 +10,7 @@ import 'package:eliud_core/core/widgets/progress_indicator.dart';
 import 'package:eliud_core/core/global_data.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/access/bloc/access_bloc.dart';
-import 'package:eliud_core/tools/action_model.dart';
+import '../tools/bespoke_models.dart';
 import 'package:eliud_core/core/navigate/router.dart' as eliudrouter;
 import 'package:eliud_core/tools/screen_size.dart';
 import 'package:flutter/material.dart';

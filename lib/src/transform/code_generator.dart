@@ -48,7 +48,7 @@ String base_imports(String packageName, {bool repo, bool model, bool entity, boo
         base = base + "import 'package:" + element + "/model/model_export.dart';\n";
       });
     }
-    base = base + "import 'package:eliud_core/tools/action_model.dart';\n";
+    base = base + "import '../tools/bespoke_models.dart';\n";
     base = base + importString(packageName, "model/model_export");
   }
 
@@ -58,7 +58,7 @@ String base_imports(String packageName, {bool repo, bool model, bool entity, boo
         base = base + "import 'package:" + element + "/model/entity_export.dart';\n";
       });
     }
-    base = base + "import 'package:eliud_core/tools/action_entity.dart';\n";
+    base = base + "import '../tools/bespoke_entities.dart';\n";
     base = base + importString(packageName, "model/entity_export");
   }
 
