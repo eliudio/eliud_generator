@@ -123,6 +123,11 @@ class \${id}InMemoryRepository implements \${id}Repository {
     getSubCollection(String documentId, String name) {
       throw UnimplementedError();
     }
+
+  @override
+  String timeStampToString(timeStamp) {
+    throw UnimplementedError();
+  }
 """;
 
 const String _InMemoryRepositoryTemplateFooter = """

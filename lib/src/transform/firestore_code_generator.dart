@@ -149,6 +149,9 @@ class \${id}Firestore implements \${id}Repository {
     return \${id}Collection.document(documentId).collection(name);
   }
 
+  String timeStampToString(dynamic timeStamp) {
+    return firestoreTimeStampToString(timeStamp);
+  } 
 """;
 
 /*

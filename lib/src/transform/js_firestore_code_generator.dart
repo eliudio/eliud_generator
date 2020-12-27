@@ -163,6 +163,9 @@ class \${id}JsFirestore implements \${id}Repository {
     return \${lid}Collection.doc(documentId).collection(name);
   }
 
+  String timeStampToString(dynamic timeStamp) {
+    return firestoreTimeStampToString(timeStamp);
+  } 
 """;
 
 

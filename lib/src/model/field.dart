@@ -229,7 +229,7 @@ class Field extends Equatable {
 
   String dartModelType() {
     if (isServerTimestamp()) {
-      return "DateTime";
+      return "String";
     } else if (isEnum()) {
       if (isArray())
         return "List<" + enumName + ">";

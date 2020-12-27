@@ -83,6 +83,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
     headerBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
+    headerBuffer.writeln("import 'abstract_repository_singleton.dart';");
+
     headerBuffer.writeln(base_imports(modelSpecifications.packageName, entity:true, depends: modelSpecifications.depends));
 
     return headerBuffer.toString();
@@ -198,7 +200,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
         if (field.fieldName != "documentID") {
           codeBuffer.write(spaces(6) + fieldName(field) + ": ");
           if (field.isServerTimestamp()) {
-            codeBuffer.writeln("map['" + fieldName(field) + "']?.toDate(), ");
+            codeBuffer.writeln(modelSpecifications.id.toLowerCase() + "Repository().timeStampToString(map['" + fieldName(field) + "']), ");
           } else if ((field.association) || (field.isEnum())) {
             if (field.isMap())
               codeBuffer.writeln(fieldName(field) + ", ");
