@@ -150,8 +150,17 @@ class EntityCodeGenerator extends DataCodeGenerator {
             extraLine = true;
             if (field.isArray()) {
               if (field.arrayType != ArrayType.CollectionArrayType) {
+                codeBuffer
+                    .writeln(spaces(4) + "var " + fieldName(field) + "FromMap;");
                 codeBuffer.writeln(spaces(4) +
-                    "final " +
+                    fieldName(field) +
+                    "FromMap = map['" +
+                    fieldName(field) +
+                    "'];");
+                codeBuffer.writeln(spaces(4) + "var " + fieldName(field) + "List;");
+                codeBuffer.writeln(
+                    spaces(4) + "if (" + fieldName(field) + "FromMap != null)");
+                codeBuffer.writeln(spaces(6) +
                     fieldName(field) +
                     "List = (map['" +
                     fieldName(field) +

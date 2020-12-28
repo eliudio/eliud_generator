@@ -282,7 +282,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
             } else if (!field.isNativeType()) {
               if (field.isArray()) {
                 codeBuffer.writeln();
-                codeBuffer.writeln(spaces(12) + "entity. " + field.fieldName);
+                codeBuffer.writeln(spaces(12) + "entity." +
+                    field.fieldName + " == null ? null :");
+                codeBuffer.writeln(spaces(12) + "entity." + field.fieldName);
                 codeBuffer.writeln(spaces(12) +
                     ".map((item) => " +
                     field.fieldType +
@@ -381,7 +383,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
                   // this construct of creating a list from a list is to make a dynamic list from a fixed sized list.
                   // The reason for requiring a non fixed sized list is because we need to be able to use replaceRange in XyzInMemoryRepository
                   codeBuffer.writeln(spaces(12) +
-                      "new List<" +
+                      "entity. " +
+                      field.fieldName + " == null ? null : new List<" +
                       field.fieldType +
                       "Model>.from(await Future.wait(entity. " +
                       field.fieldName);
