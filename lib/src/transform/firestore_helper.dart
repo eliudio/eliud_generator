@@ -12,6 +12,14 @@ class FirestoreHelper {
     return modelSpecification.id.toLowerCase();
   }
 
+  static String eliudQuery(ModelSpecification modelSpecification) {
+    if (modelSpecification.isMemberSpecific()) {
+      return "EliudQuery.ensureQueryAvailable(eliudQuery).withMemberLimittedCondition(currentMember)";
+    } else {
+      return "eliudQuery";
+    }
+  }
+
   static String copyWith(ModelSpecification modelSpecifications) {
     var hasServerTimeStamp = false;
     StringBuffer codeBuffer = StringBuffer();
