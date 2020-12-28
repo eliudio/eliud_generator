@@ -173,12 +173,12 @@ class ModelCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.isArray()) {
-          codeBuffer.write(spaces(10) +
-              "ListEquality().equals(" +
-              field.fieldName +
-              ", other." +
-              field.fieldName +
-              ")");
+            codeBuffer.write(spaces(10) +
+                "ListEquality().equals(" +
+                field.fieldName +
+                ", other." +
+                field.fieldName +
+                ")");
         } else {
           codeBuffer.write(
               spaces(10) + field.fieldName + " == other." + field.fieldName);
