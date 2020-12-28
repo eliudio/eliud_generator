@@ -96,6 +96,18 @@ class \${id}JsFirestore implements \${id}Repository {
     });
   }
 
+  @override
+  StreamSubscription<\${id}Model> listenTo(String documentId, \${id}Changed changed) {
+    var stream = getCollection().doc(documentId)
+        .onSnapshot
+        .asyncMap((data) {
+      return _populateDocPlus(data);
+    });
+    return stream.listen((value) {
+      changed(value);
+    });
+  }
+
   Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel }) {
     DocumentSnapshot lastDoc;
     Stream<List<\${id}Model>> _values = getQuery(\${lid}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, \${appIdDef3})

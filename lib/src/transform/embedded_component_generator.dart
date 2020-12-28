@@ -128,6 +128,12 @@ class \${id}InMemoryRepository implements \${id}Repository {
   String timeStampToString(timeStamp) {
     throw UnimplementedError();
   }
+  
+  @override
+  StreamSubscription<\${id}Model> listenTo(String documentId, \${id}Changed changed) {
+    throw UnimplementedError();
+  }
+  
 """;
 
 const String _InMemoryRepositoryTemplateFooter = """
