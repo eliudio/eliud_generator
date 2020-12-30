@@ -23,6 +23,8 @@ class ListBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln(
         "import 'package:eliud_core/core/access/bloc/access_event.dart';");
     headerBuffer.writeln(
+        "import 'package:eliud_core/tools/query/query_tools.dart';");
+    headerBuffer.writeln(
         "import 'package:eliud_core/core/access/bloc/access_state.dart';");
     headerBuffer.writeln();
 
@@ -36,6 +38,8 @@ class ListBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.id + "Repository _" + firstLowerCase(modelSpecifications.id) + "Repository;");
     codeBuffer.writeln(spaces(2) + "StreamSubscription _" + firstLowerCase(modelSpecifications.id) + "sListSubscription;");
     codeBuffer.writeln(spaces(2) + "final AccessBloc accessBloc;");
+    codeBuffer.writeln(spaces(2) + "final EliudQuery eliudQuery;");
+    codeBuffer.writeln();
 
     return codeBuffer.toString();
   }
@@ -44,7 +48,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(spaces(2) + modelSpecifications.id + "ListBloc(");
     codeBuffer.write("this.accessBloc,");
-    codeBuffer.writeln("{ @required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository })");
+    codeBuffer.writeln("{ this.eliudQuery, @required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository })");
     codeBuffer.writeln(spaces(6) + ": assert(" + firstLowerCase(modelSpecifications.id) + "Repository != null),");
     codeBuffer.writeln(spaces(6) + "_" + firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository,");
     codeBuffer.writeln(spaces(6) + "super(" + modelSpecifications.id + "ListLoading());");
@@ -89,7 +93,7 @@ class ListBlocCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListToState({ String orderBy, bool descending }) async* {");
     codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listen((list) => add(" + modelSpecifications.id + "ListUpdated(value: list)), orderBy: orderBy, descending: descending, " + currentMember + ");");
+    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listen((list) => add(" + modelSpecifications.id + "ListUpdated(value: list)), orderBy: orderBy, descending: descending, eliudQuery: eliudQuery, " + currentMember + ");");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListWithDetailsToState() async* {");

@@ -129,9 +129,12 @@ const String _refreshRelationsModel = """
 """;
 
 const String _refreshRelationsEmbeddedArray = """
-    List<\${fieldType}Model> \${fieldName}Holder = List<\${fieldType}Model>.from(await Future.wait(await model.\${fieldName}.map((element) async {
-      return await \${fieldType}Cache.refreshRelations(element);
-    }))).toList();
+    List<\${fieldType}Model> \${fieldName}Holder;
+    if (model.\${fieldName} != null) {
+      \${fieldName}Holder = List<\${fieldType}Model>.from(await Future.wait(await model.\${fieldName}.map((element) async {
+        return await \${fieldType}Cache.refreshRelations(element);
+      }))).toList();
+    }
 """;
 
 const String _refreshRelationsAssignField = """
