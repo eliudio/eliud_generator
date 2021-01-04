@@ -70,7 +70,6 @@ class ListCodeGenerator extends CodeGenerator {
         "\${importprefix}": camelcaseToUnderscore(modelSpecifications.id),
       }));
     }
-    extraImports(codeBuffer, ModelSpecification.IMPORT_KEY_ALTERNATIVE_LIST_WIDGETS);
     return codeBuffer.toString();
   }
 
@@ -99,16 +98,8 @@ class ListCodeGenerator extends CodeGenerator {
     }
     _formVariations = _formVariations + spaces(6) + "return null;";
 
-    String _listItemVariations = "";
-    if (modelSpecifications.listWidgets != null) {
-      modelSpecifications.listWidgets.forEach((element) {
-        _listItemVariations = _listItemVariations + spaces(10) + "if (widget.listItemWidget == \"" + element.listItemWidget + "\") return " + element.listItemWidget + "(value: value);\n";
-      });
-    }
-
     parameters["\${onTap}"] = tap;
     parameters["\${_formVariations}"] = _formVariations;
-    parameters["\${_listItemVariations}"] = _listItemVariations;
     return process(_listBody, parameters: parameters);
   }
 
@@ -187,15 +178,18 @@ class ListCodeGenerator extends CodeGenerator {
 }
 
 String _listBody = """
+
+typedef \${id}WidgetProvider(\${id}Model value);
+
 class \${id}ListWidget extends StatefulWidget with HasFab {
   BackgroundModel listBackground;
+  \${id}WidgetProvider widgetProvider;
   bool readOnly;
   String form;
-  String listItemWidget;
   \${id}ListWidgetState state;
   bool isEmbedded;
 
-  \${id}ListWidget({ Key key, this.readOnly, this.form, this.listItemWidget, this.isEmbedded, this.listBackground }): super(key: key);
+  \${id}ListWidget({ Key key, this.readOnly, this.form, this.widgetProvider, this.isEmbedded, this.listBackground }): super(key: key);
 
   @override
   \${id}ListWidgetState createState() {
@@ -313,7 +307,9 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         itemCount: values.length,
         itemBuilder: (context, index) {
           final value = values[index];
-\${_listItemVariations}
+          
+          if (widget.widgetProvider != null) return widget.widgetProvider(value);
+
           return \${id}ListItem(
             value: value,
             app: accessState.app,
