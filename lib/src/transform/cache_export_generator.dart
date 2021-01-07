@@ -10,6 +10,6 @@ class CacheExportGenerator extends ExportGenerator {
 
   @override
   bool shouldGenerate(ModelSpecification spec) {
-    return (spec.generate.generateRepository);
+    return (spec.generate.generateCache);
   }
 }
