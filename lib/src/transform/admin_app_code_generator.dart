@@ -79,8 +79,9 @@ const String _page = """
       documentID: "internalWidget-\${lid}s", componentName: "\${pkgName}_internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
         conditions: ConditionsModel(
-          readCondition: ReadCondition.MemberOrPrivilegedMemberOnly,
-          privilegeLevelRequired: OWNER_PRIVILEGES
+          privilegeLevelRequired: PrivilegeLevelRequired.OwnerPrivilegeRequired,
+          packageCondition: null,
+          conditionOverride: null,
         ),
         appId: appId,
         documentID: "\${pkgName}_\${lowid}s_page",
