@@ -11,6 +11,7 @@ import 'package:eliud_core/tools/query/query_tools.dart';
 import 'package:eliud_core/tools/common_tools.dart';
 import 'package:$packageName/model/\${filename}_model.dart';
 import 'package:$packageName/model/\${filename}_repository.dart';
+
 """ + base_imports(packageName, repo: true, model: true, entity: true, cache:true, depends: depends);
 
 const String _header = """
@@ -40,10 +41,10 @@ const String _code = """
     return Future.value();
   }
 
-  Future<\${id}Model> get(String id){
+  Future<\${id}Model> get(String id, {Function(Exception) onError}) {
     \${id}Model value = fullCache[id];
     if (value != null) return refreshRelations(value);
-    return reference.get(id).then((value) {
+    return reference.get(id, onError: onError).then((value) {
       fullCache[id] = value;
       return value;
     });

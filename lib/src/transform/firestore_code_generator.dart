@@ -33,12 +33,16 @@ class \${id}Firestore implements \${id}Repository {
   Future<\${id}Model> _populateDocPlus(DocumentSnapshot value) async {
     return \${id}Model.fromEntityPlus(value.documentID, \${id}Entity.fromMap(value.data), \${appIdDef});  }
 
-  Future<\${id}Model> get(String id) {
+  Future<\${id}Model> get(String id, {Function(Exception) onError}) {
     return \${id}Collection.document(id).get().then((doc) {
       if (doc.data != null)
         return _populateDocPlus(doc);
       else
         return null;
+    }).catchError((Object e) {
+      if (onError != null) {
+        onError(e);
+      }
     });
   }
 

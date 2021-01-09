@@ -16,7 +16,7 @@ typedef \${id}Changed(\${id}Model value);
 abstract class \${id}Repository {
   Future<\${id}Model> add(\${id}Model value);
   Future<void> delete(\${id}Model value);
-  Future<\${id}Model> get(String id);
+  Future<\${id}Model> get(String id, { Function(Exception) onError });
   Future<\${id}Model> update(\${id}Model value);
 
   Stream<List<\${id}Model>> values({String currentMember, String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery });

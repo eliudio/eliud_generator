@@ -85,7 +85,7 @@ class \${id}InMemoryRepository implements \${id}Repository {
       }
     }
 
-    Future<\${id}Model> get(String id) {
+    Future<\${id}Model> get(String id, { Function(Exception) onError }) {
       int index = _index(id);
       var completer = new Completer<\${id}Model>();
       completer.complete(items[index]);

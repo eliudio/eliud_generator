@@ -40,12 +40,16 @@ class \${id}JsFirestore implements \${id}Repository {
     return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data()), \${appIdDef2});
   }
 
-  Future<\${id}Model> get(String id) {
+  Future<\${id}Model> get(String id, { Function(Exception) onError }) {
     return \${lid}Collection.doc(id).get().then((data) {
       if (data.data() != null) {
         return _populateDocPlus(data);
       } else {
         return null;
+      }
+    }).catchError((Object e) {
+      if (onError != null) {
+        onError(e);
       }
     });
   }
