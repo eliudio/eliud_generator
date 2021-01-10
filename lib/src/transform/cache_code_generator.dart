@@ -206,7 +206,8 @@ class CacheCodeGenerator extends CodeGenerator {
         if (field.association) {
           String appVar;
           if (/*(field.fieldType != "Image") && */(field.fieldType != "App") &&
-              (field.fieldType != "Member") && (field.fieldType != "Country")) {
+              (field.fieldType != "Member") && (field.fieldType != "Country") &&
+              (field.fieldType != "MemberPublicInfo")) {
             appVar = "appId: model." + field.fieldName + ".appId";
           } else {
             appVar = '';
