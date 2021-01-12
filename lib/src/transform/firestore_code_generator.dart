@@ -48,7 +48,12 @@ class \${id}Firestore implements \${id}Repository {
 
   StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, {String currentMember, String orderBy, bool descending, Object startAfter, int limit, int privilegeLevel, EliudQuery eliudQuery}) {
     Stream<List<\${id}Model>> stream;
-    stream = getQuery(\${id}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().map((data) {
+//    stream = getQuery(\${id}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().map((data) {
+//    The above line is replaced by the below line. The reason is because the same collection can not be subscribed to twice
+//    The reason we're subscribing twice to the same list, is because the close on bloc isn't called. This needs to be fixed.
+//    See https://github.com/felangel/bloc/issues/2073.
+//    In the meantime:
+      stream = getQuery(\${collection}, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().map((data) {
       Iterable<\${id}Model> \${lid}s  = data.docs.map((doc) {
         \${id}Model value = _populateDoc(doc);
         return value;
@@ -62,7 +67,9 @@ class \${id}Firestore implements \${id}Repository {
 
   StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger, {String currentMember, String orderBy, bool descending, Object startAfter, int limit, int privilegeLevel, EliudQuery eliudQuery}) {
     Stream<List<\${id}Model>> stream;
-    stream = getQuery(\${id}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots()
+//  stream = getQuery(\${id}Collection, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots()
+//  see comment listen(...) above
+    stream = getQuery(\${collection}, currentMember: currentMember, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots()
         .asyncMap((data) async {
       return await Future.wait(data.docs.map((doc) =>  _populateDocPlus(doc)).toList());
     });
@@ -200,14 +207,18 @@ class FirestoreCodeGenerator extends CodeGenerator {
     String appVar;
     String appVar3;
     String appVar4;
+    String collection;
     if (modelSpecifications.isAppModel) {
       appVar = appVar3 = appVar4 = "appId: appId";
+      collection = "appRepository().getSubCollection(appId, '" + firstLowerCase(modelSpecifications.id) + "')";
     } else if (modelSpecifications.id == "App") {
       appVar = "appId: value.id";
       appVar3 = "";
       appVar4 = "appId: value.documentID";
+      collection = "appRepository()";
     } else {
       appVar = appVar3 = appVar4 = "";
+      collection = firstLowerCase(modelSpecifications.id) + "Repository()";
     }
 
     String copyStatement = FirestoreHelper.copyWith(modelSpecifications);
@@ -218,6 +229,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
       '\${lid}': firstLowerCase(modelSpecifications.id),
       "\${eliudQuery}": FirestoreHelper.eliudQuery(modelSpecifications),
       "\${COLLECTION_ID}": FirestoreHelper.collectionId(modelSpecifications),
+      "\${collection}" : collection,
       "\${appIdDef}": appVar,
       "\${appIdDef3}": appVar3,
       "\${appIdDef4}": appVar4,
