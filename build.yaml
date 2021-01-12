@@ -9,8 +9,6 @@ targets:
         enabled: true
       eliud_generator|firestore:
         enabled: true
-      eliud_generator|js_firestore:
-        enabled: true
       eliud_generator|component_event:
         enabled: true
       eliud_generator|component_state:
@@ -22,8 +20,6 @@ targets:
       eliud_generator|internal_component:
         enabled: true
       eliud_generator|repository_singleton:
-        enabled: true
-      eliud_generator|js_repository_singleton:
         enabled: true
       eliud_generator|abstarct_repository_singleton:
         enabled: true
@@ -70,14 +66,6 @@ builders:
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["firestore"]
     build_extensions: {".spec": ["_firestore.dart"]}
-    build_to: source
-    auto_apply: all_packages
-
-  js_firestore:
-    target: ":eliud_generator"
-    import: "package:eliud_generator/builder.dart"
-    builder_factories: ["js_firestore"]
-    build_extensions: {".spec": ["_js_firestore.dart"]}
     build_to: source
     auto_apply: all_packages
 
@@ -206,14 +194,6 @@ builders:
     import: "package:eliud_generator/builder.dart"
     builder_factories: ["repository_singleton"]
     build_extensions: {r"$lib$": ["repository_singleton.dart"]}
-    build_to: source
-    auto_apply: all_packages
-
-  js_repository_singleton:
-    target: ":eliud_generator"
-    import: "package:eliud_generator/builder.dart"
-    builder_factories: ["js_repository_singleton"]
-    build_extensions: {r"$lib$": ["js_repository_singleton.dart"]}
     build_to: source
     auto_apply: all_packages
 

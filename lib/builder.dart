@@ -7,8 +7,6 @@ import 'package:eliud_generator/src/gen/component_registry_builder.dart';
 
 import 'package:eliud_generator/src/gen/entity_code_builder.dart';
 import 'package:eliud_generator/src/gen/entity_export_builder.dart';
-import 'package:eliud_generator/src/gen/js_firestore_code_builder.dart';
-import 'package:eliud_generator/src/gen/js_repository_singleton_builder.dart';
 import 'package:eliud_generator/src/gen/model_code_builder.dart';
 
 import 'package:eliud_generator/src/gen/firestore_code_builder.dart';
@@ -54,9 +52,6 @@ Builder admin_app(BuilderOptions options) =>
 
 Builder firestore(BuilderOptions options) =>
     FirestoreCodeBuilder();
-
-Builder js_firestore(BuilderOptions options) =>
-    JsFirestoreCodeBuilder();
 
 Builder component_event(BuilderOptions options) =>
     ComponentEventCodeBuilder();
@@ -105,9 +100,6 @@ Builder embedded_component(BuilderOptions options) =>
 
 Builder repository_singleton(BuilderOptions options) =>
     RepositorySingletonBuilder();
-
-Builder js_repository_singleton(BuilderOptions options) =>
-    JsRepositorySingletonBuilder();
 
 Builder abstract_repository_singleton(BuilderOptions options) =>
     AbstractRepositorySingletonBuilder();
