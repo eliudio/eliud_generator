@@ -210,15 +210,15 @@ class FirestoreCodeGenerator extends CodeGenerator {
     String collection;
     if (modelSpecifications.isAppModel) {
       appVar = appVar3 = appVar4 = "appId: appId";
-      collection = "appRepository().getSubCollection(appId, '" + firstLowerCase(modelSpecifications.id) + "')";
+      collection = "appRepository().getSubCollection(appId, '" + modelSpecifications.id.toLowerCase() + "')";
     } else if (modelSpecifications.id == "App") {
       appVar = "appId: value.id";
       appVar3 = "";
       appVar4 = "appId: value.documentID";
-      collection = "appRepository()";
+      collection = "FirebaseFirestore.instance.collection('app')";
     } else {
       appVar = appVar3 = appVar4 = "";
-      collection = firstLowerCase(modelSpecifications.id) + "Repository()";
+      collection = "FirebaseFirestore.instance.collection('" + modelSpecifications.id.toLowerCase() + "')";
     }
 
     String copyStatement = FirestoreHelper.copyWith(modelSpecifications);
