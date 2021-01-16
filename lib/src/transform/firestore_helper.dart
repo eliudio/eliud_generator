@@ -13,11 +13,7 @@ class FirestoreHelper {
   }
 
   static String eliudQuery(ModelSpecification modelSpecification) {
-    if (modelSpecification.isMemberSpecific()) {
-      return "EliudQuery.ensureQueryAvailable(eliudQuery).withMemberLimittedCondition(currentMember)";
-    } else {
-      return "eliudQuery";
-    }
+    return "eliudQuery";
   }
 
   static String copyWith(ModelSpecification modelSpecifications) {
