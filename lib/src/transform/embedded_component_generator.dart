@@ -33,7 +33,6 @@ static Widget \${lid}sList(BuildContext context, List<\${id}Model> values, \${id
     providers: [
       BlocProvider<\${id}ListBloc>(
         create: (context) => \${id}ListBloc(
-          AccessBloc.getBloc(context), 
           \${lid}Repository: inMemoryRepository,
           )..add(Load\${id}List()),
         )

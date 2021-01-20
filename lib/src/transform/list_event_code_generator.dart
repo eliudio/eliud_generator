@@ -4,14 +4,65 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-String _loadListEventCode = """
-  final String orderBy;
-  final bool descending;
+String _code = """
+abstract class \${id}ListEvent extends Equatable {
+  const \${id}ListEvent();
+  @override
+  List<Object> get props => [];
+}
 
-  Load\${id}List({this.orderBy, this.descending});
+class Load\${id}List extends \${id}ListEvent {}
+
+class NewPage extends \${id}ListEvent {}
+
+class Add\${id}List extends \${id}ListEvent {
+  final \${id}Model value;
+
+  const Add\${id}List({ this.value });
 
   @override
-  List<Object> get props => [orderBy, descending];
+  List<Object> get props => [ value ];
+
+  @override
+  String toString() => 'Add\${id}List{ value: \$value }';
+}
+
+class Update\${id}List extends \${id}ListEvent {
+  final \${id}Model value;
+
+  const Update\${id}List({ this.value });
+
+  @override
+  List<Object> get props => [ value ];
+
+  @override
+  String toString() => 'Update\${id}List{ value: \$value }';
+}
+
+class Delete\${id}List extends \${id}ListEvent {
+  final \${id}Model value;
+
+  const Delete\${id}List({ this.value });
+
+  @override
+  List<Object> get props => [ value ];
+
+  @override
+  String toString() => 'Delete\${id}List{ value: \$value }';
+}
+
+class \${id}ListUpdated extends \${id}ListEvent {
+  final List<\${id}Model> value;
+  final bool mightHaveMore;
+
+  const \${id}ListUpdated({ this.value, this.mightHaveMore });
+
+  @override
+  List<Object> get props => [ value, mightHaveMore ];
+
+  @override
+  String toString() => '\${id}ListUpdated{ value: \$value, mightHaveMore: \$mightHaveMore }';
+}
 """;
 
 class ListEventCodeGenerator extends CodeGenerator {
@@ -22,60 +73,20 @@ class ListEventCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.modelFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/" + modelSpecifications.modelFileName()));
 
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
 
-  String _generateClass(String className, bool isList) {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("class " + className + " extends "+ modelSpecifications.id + "ListEvent {");
-    if (isList)
-      codeBuffer.writeln(spaces(2) + "final List<" + modelSpecifications.modelClassName() + "> value;");
-    else
-      codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + " value;");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "const " + className + "({ this.value });");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ value ];");
-    codeBuffer.writeln();
-    codeBuffer
-        .writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "String toString() => '" + className + "{ value: \$value }';");
-    codeBuffer.writeln("}");
-
-    return codeBuffer.toString();
-  }
-
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("abstract class " + modelSpecifications.id + "ListEvent extends Equatable {");
-    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "ListEvent();");
-
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [];");
-
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
-
-    codeBuffer.writeln("class Load" + modelSpecifications.id + "List extends "+ modelSpecifications.id + "ListEvent {");
-    codeBuffer.writeln(process(_loadListEventCode, parameters: <String, String>{
+    codeBuffer.writeln(process(_code, parameters: <String, String>{
       '\${id}': modelSpecifications.id,
+      '\${lid}': firstLowerCase(modelSpecifications.id),
     }));
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
-
-    codeBuffer.writeln("class Load" + modelSpecifications.id + "ListWithDetails extends "+ modelSpecifications.id + "ListEvent {}");
-    codeBuffer.writeln();
-
-    codeBuffer.writeln(_generateClass("Add" + modelSpecifications.id + "List", false));
-    codeBuffer.writeln(_generateClass("Update" + modelSpecifications.id + "List", false));
-    codeBuffer.writeln(_generateClass("Delete" + modelSpecifications.id + "List", false));
-    codeBuffer.writeln(_generateClass(modelSpecifications.id + "ListUpdated", true));
-
     return codeBuffer.toString();
   }
 

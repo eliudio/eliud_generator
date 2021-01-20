@@ -1,6 +1,33 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
+import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
+
+String _code = """
+abstract class \${id}ListState extends Equatable {
+  const \${id}ListState();
+
+  @override
+  List<Object> get props => [];
+}
+
+class \${id}ListLoading extends \${id}ListState {}
+
+class \${id}ListLoaded extends \${id}ListState {
+  final List<\${id}Model> values;
+  final bool mightHaveMore;
+
+  const \${id}ListLoaded({this.mightHaveMore, this.values = const []});
+
+  @override
+  List<Object> get props => [ values, mightHaveMore ];
+
+  @override
+  String toString() => '\${id}ListLoaded { values: \$values }';
+}
+
+class \${id}NotLoaded extends \${id}ListState {}
+""";
 
 class ListStateCodeGenerator extends CodeGenerator {
   ListStateCodeGenerator({ModelSpecification modelSpecifications})
@@ -10,7 +37,8 @@ class ListStateCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.modelFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/" + modelSpecifications.modelFileName()));
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -18,34 +46,10 @@ class ListStateCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("abstract class " + modelSpecifications.id + "ListState extends Equatable {");
-
-    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "ListState();");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [];");
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
-
-    codeBuffer.writeln("class " + modelSpecifications.id + "ListLoading extends " + modelSpecifications.id + "ListState {}");
-    codeBuffer.writeln();
-
-    codeBuffer.writeln("class " + modelSpecifications.id + "ListLoaded extends " + modelSpecifications.id + "ListState {");
-    codeBuffer.writeln(spaces(2) + "final List<" + modelSpecifications.modelClassName() + "> values;");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "ListLoaded({this.values = const []});");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ values ];");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "String toString() => '" + modelSpecifications.id + "ListLoaded { values: \$values }';");
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
-
-    codeBuffer.writeln("class " + modelSpecifications.id + "NotLoaded extends " + modelSpecifications.id + "ListState {}");
-    codeBuffer.writeln();
-
+    codeBuffer.writeln(process(_code, parameters: <String, String>{
+      '\${id}': modelSpecifications.id,
+      '\${lid}': firstLowerCase(modelSpecifications.id),
+    }));
     return codeBuffer.toString();
   }
 

@@ -3,152 +3,131 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
+String _imports = """
+import 'dart:async';
+import 'package:bloc/bloc.dart';
+import 'package:meta/meta.dart';
+
+import 'package:\${package_name}/model/\${id_import}_repository.dart';
+import 'package:\${package_name}/model/\${id_import}_list_event.dart';
+import 'package:\${package_name}/model/\${id_import}_list_state.dart';
+import 'package:eliud_core/tools/query/query_tools.dart';
+""";
+
+String _code = """
+
+const _\${lid}Limit = 5;
+
+class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
+  final \${id}Repository _\${lid}Repository;
+  StreamSubscription _\${lid}sListSubscription;
+  final EliudQuery eliudQuery;
+  int pages = 1;
+  final bool paged;
+  final String orderBy;
+  final bool descending;
+  final bool detailed;
+
+  \${id}ListBloc({this.paged, this.orderBy, this.descending, this.detailed, this.eliudQuery, @required \${id}Repository \${lid}Repository})
+      : assert(\${lid}Repository != null),
+        _\${lid}Repository = \${lid}Repository,
+        super(\${id}ListLoading());
+
+  Stream<\${id}ListState> _mapLoad\${id}ListToState() async* {
+    int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values.length : 0;
+    _\${lid}sListSubscription?.cancel();
+    _\${lid}sListSubscription = _\${lid}Repository.listen(
+          (list) => add(\${id}ListUpdated(value: list, mightHaveMore: amountNow != list.length)),
+      orderBy: orderBy,
+      descending: descending,
+      eliudQuery: eliudQuery,
+      limit: ((paged != null) && (paged)) ? pages * _\${lid}Limit : null
+    );
+  }
+
+  Stream<\${id}ListState> _mapLoad\${id}ListWithDetailsToState() async* {
+    int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values.length : 0;
+    _\${lid}sListSubscription?.cancel();
+    _\${lid}sListSubscription = _\${lid}Repository.listenWithDetails(
+            (list) => add(\${id}ListUpdated(value: list, mightHaveMore: amountNow != list.length)),
+        orderBy: orderBy,
+        descending: descending,
+        eliudQuery: eliudQuery,
+        limit: ((paged != null) && (paged)) ? pages * _\${lid}Limit : null
+    );
+  }
+
+  Stream<\${id}ListState> _mapAdd\${id}ListToState(Add\${id}List event) async* {
+    _\${lid}Repository.add(event.value);
+  }
+
+  Stream<\${id}ListState> _mapUpdate\${id}ListToState(Update\${id}List event) async* {
+    _\${lid}Repository.update(event.value);
+  }
+
+  Stream<\${id}ListState> _mapDelete\${id}ListToState(Delete\${id}List event) async* {
+    _\${lid}Repository.delete(event.value);
+  }
+
+  Stream<\${id}ListState> _map\${id}ListUpdatedToState(
+      \${id}ListUpdated event) async* {
+    yield \${id}ListLoaded(values: event.value, mightHaveMore: event.mightHaveMore);
+  }
+
+  @override
+  Stream<\${id}ListState> mapEventToState(\${id}ListEvent event) async* {
+    if (event is Load\${id}List) {
+      if ((detailed == null) || (!detailed)) {
+        yield* _mapLoad\${id}ListToState();
+      } else {
+        yield* _mapLoad\${id}ListWithDetailsToState();
+      }
+    }
+    if (event is NewPage) {
+      pages = pages + 1; // it doesn't matter so much if we increase pages beyond the end
+      yield* _mapLoad\${id}ListWithDetailsToState();
+    } else if (event is Add\${id}List) {
+      yield* _mapAdd\${id}ListToState(event);
+    } else if (event is Update\${id}List) {
+      yield* _mapUpdate\${id}ListToState(event);
+    } else if (event is Delete\${id}List) {
+      yield* _mapDelete\${id}ListToState(event);
+    } else if (event is \${id}ListUpdated) {
+      yield* _map\${id}ListUpdatedToState(event);
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _\${lid}sListSubscription?.cancel();
+    return super.close();
+  }
+}
+
+""";
+
 class ListBlocCodeGenerator extends CodeGenerator {
   ListBlocCodeGenerator({ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
+  Map<String, String> parameters(ModelSpecification modelSpecification) => <String, String>{
+    '\${id}': modelSpecifications.id,
+    '\${lid}': firstLowerCase(modelSpecifications.id),
+    "\${id_import}": camelcaseToUnderscore(modelSpecifications.id),
+    "\${package_name}": modelSpecifications.packageName
+  };
+
   @override
   String commonImports() {
-    StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("import 'dart:async';");
-    headerBuffer.writeln("import 'package:bloc/bloc.dart';");
-    headerBuffer.writeln("import 'package:meta/meta.dart';");
-    headerBuffer.writeln();
-
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listEventFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.listStateFileName()));
-    headerBuffer.writeln(
-        "import 'package:eliud_core/core/access/bloc/access_bloc.dart';");
-    headerBuffer.writeln(
-        "import 'package:eliud_core/core/access/bloc/access_event.dart';");
-    headerBuffer.writeln(
-        "import 'package:eliud_core/tools/query/query_tools.dart';");
-    headerBuffer.writeln(
-        "import 'package:eliud_core/core/access/bloc/access_state.dart';");
-    headerBuffer.writeln();
-
-    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_LIST_BLOC);
-    headerBuffer.writeln();
-    return headerBuffer.toString();
-  }
-
-  String _dataMembers() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.id + "Repository _" + firstLowerCase(modelSpecifications.id) + "Repository;");
-    codeBuffer.writeln(spaces(2) + "StreamSubscription _" + firstLowerCase(modelSpecifications.id) + "sListSubscription;");
-    codeBuffer.writeln(spaces(2) + "final AccessBloc accessBloc;");
-    codeBuffer.writeln(spaces(2) + "final EliudQuery eliudQuery;");
-    codeBuffer.writeln();
-
-    return codeBuffer.toString();
-  }
-
-  String _constructor() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(spaces(2) + modelSpecifications.id + "ListBloc(");
-    codeBuffer.write("this.accessBloc,");
-    codeBuffer.writeln("{ this.eliudQuery, @required " + modelSpecifications.id + "Repository " + firstLowerCase(modelSpecifications.id) + "Repository })");
-    codeBuffer.writeln(spaces(6) + ": assert(" + firstLowerCase(modelSpecifications.id) + "Repository != null),");
-    codeBuffer.writeln(spaces(6) + "_" + firstLowerCase(modelSpecifications.id) + "Repository = " + firstLowerCase(modelSpecifications.id) + "Repository,");
-    codeBuffer.writeln(spaces(6) + "super(" + modelSpecifications.id + "ListLoading());");
-
-    if (modelSpecifications.isMemberSpecific()) {
-      codeBuffer.writeln(spaces(2) + "String _currentMember() {");
-      codeBuffer.writeln(spaces(4) + "var _currentMember = '';");
-      codeBuffer.writeln(spaces(4) + "var state = accessBloc.state;");
-      codeBuffer.writeln(spaces(4) +
-          "if (state is LoggedIn) _currentMember = state.member.documentID;");
-      codeBuffer.writeln(spaces(4) + "return _currentMember;");
-      codeBuffer.writeln(spaces(2) + "}");
-    }
-
-    return codeBuffer.toString();
-  }
-
-  String _mapEventToState() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> mapEventToState(" + modelSpecifications.id + "ListEvent event) async* {");
-    codeBuffer.writeln(spaces(4) + "final currentState = state;");
-    codeBuffer.writeln(spaces(4) + "if (event is Load" + modelSpecifications.id + "List) {");
-    codeBuffer.writeln(spaces(6) + "yield* _mapLoad" + modelSpecifications.id + "ListToState(orderBy: event.orderBy, descending: event.descending);");
-    codeBuffer.writeln(spaces(4) + "} if (event is Load" + modelSpecifications.id + "ListWithDetails) {");
-    codeBuffer.writeln(spaces(6) + "yield* _mapLoad" + modelSpecifications.id + "ListWithDetailsToState();");
-    codeBuffer.writeln(spaces(4) + "} else if (event is Add" + modelSpecifications.id + "List) {");
-    codeBuffer.writeln(spaces(6) + "yield* _mapAdd" + modelSpecifications.id + "ListToState(event);");
-    codeBuffer.writeln(spaces(4) + "} else if (event is Update" + modelSpecifications.id + "List) {");
-    codeBuffer.writeln(spaces(6) + "yield* _mapUpdate" + modelSpecifications.id + "ListToState(event);");
-    codeBuffer.writeln(spaces(4) + "} else if (event is Delete" + modelSpecifications.id + "List) {");
-    codeBuffer.writeln(spaces(6) + "yield* _mapDelete" + modelSpecifications.id + "ListToState(event);");
-    codeBuffer.writeln(spaces(4) + "} else if (event is " + modelSpecifications.id + "ListUpdated) {");
-    codeBuffer.writeln(spaces(6) + "yield* _map" + modelSpecifications.id + "ListUpdatedToState(event);");
-    codeBuffer.writeln(spaces(4) + "}");
-    codeBuffer.writeln(spaces(2) + "}");
-    return codeBuffer.toString();
-  }
-
-  String _mappers() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListToState({ String orderBy, bool descending }) async* {");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listen((list) => add(" + modelSpecifications.id + "ListUpdated(value: list)), orderBy: orderBy, descending: descending, eliudQuery: eliudQuery,);");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapLoad" + modelSpecifications.id + "ListWithDetailsToState({ String orderBy, bool descending }) async* {");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription = _" + firstLowerCase(modelSpecifications.id) + "Repository.listenWithDetails((list) => add(" + modelSpecifications.id + "ListUpdated(value: list)), orderBy: orderBy, descending: descending, eliudQuery: eliudQuery,);");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapAdd" + modelSpecifications.id + "ListToState(Add" + modelSpecifications.id + "List event) async* {");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "Repository.add(event.value);");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapUpdate" + modelSpecifications.id + "ListToState(Update" + modelSpecifications.id + "List event) async* {");
-
-    if (modelSpecifications.preMapUpdateCode != null) {
-      codeBuffer.writeln(modelSpecifications.preMapUpdateCode);
-    }
-
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "Repository.update(event.value);");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _mapDelete" + modelSpecifications.id + "ListToState(Delete" + modelSpecifications.id + "List event) async* {");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "Repository.delete(event.value);");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.id + "ListState> _map" + modelSpecifications.id + "ListUpdatedToState(" + modelSpecifications.id + "ListUpdated event) async* {");
-    codeBuffer.writeln(spaces(4) + "yield " + modelSpecifications.id + "ListLoaded(values: event.value);");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    return codeBuffer.toString();
-  }
-
-  String _close() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "Future<void> close() {");
-    codeBuffer.writeln(spaces(4) + "_" + firstLowerCase(modelSpecifications.id) + "sListSubscription?.cancel();");
-    codeBuffer.writeln(spaces(4) + "return super.close();");
-    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln(process(_imports, parameters: parameters(modelSpecifications)));
     return codeBuffer.toString();
   }
 
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("class " + modelSpecifications.id + "ListBloc extends Bloc<" + modelSpecifications.id + "ListEvent, " + modelSpecifications.id + "ListState> {");
-
-    codeBuffer.writeln(_dataMembers());
-    codeBuffer.writeln(_constructor());
-    codeBuffer.writeln(_mappers());
-    codeBuffer.writeln(_mapEventToState());
-    codeBuffer.writeln(_close());
-
-    codeBuffer.writeln("}");
-    codeBuffer.writeln();
-
-    codeBuffer.writeln();
+    codeBuffer.writeln(process(_code, parameters: parameters(modelSpecifications)));
     return codeBuffer.toString();
   }
 
