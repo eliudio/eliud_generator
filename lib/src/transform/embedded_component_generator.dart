@@ -133,6 +133,11 @@ class \${id}InMemoryRepository implements \${id}Repository {
   StreamSubscription<\${id}Model> listenTo(String documentId, \${id}Changed changed) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<\${id}Model> changeValue(String documentId, String fieldName, num changeByThisValue) {
+    throw UnimplementedError();
+  }
   
 """;
 

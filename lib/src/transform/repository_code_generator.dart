@@ -32,6 +32,7 @@ abstract class \${id}Repository {
   String timeStampToString(dynamic timeStamp);
 
   dynamic getSubCollection(String documentId, String name);
+  Future<\${id}Model> changeValue(String documentId, String fieldName, num changeByThisValue);
 """;
 
 /*

@@ -157,6 +157,12 @@ class \${id}Firestore implements \${id}Repository {
   String timeStampToString(dynamic timeStamp) {
     return firestoreTimeStampToString(timeStamp);
   } 
+
+  Future<\${id}Model> changeValue(String documentId, String fieldName, num changeByThisValue) {
+    var change = FieldValue.increment(changeByThisValue);
+    return \${id}Collection.doc(documentId).update({fieldName: change}).then((v) => get(documentId));
+  }
+
 """;
 
 /*

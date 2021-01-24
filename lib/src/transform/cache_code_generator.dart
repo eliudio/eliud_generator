@@ -89,6 +89,12 @@ const String _code = """
     return reference.getSubCollection(documentId, name);
   }
 
+  Future<\${id}Model> changeValue(String documentId, String fieldName, num changeByThisValue) {
+    return reference.changeValue(documentId, fieldName, changeByThisValue).then((newValue) {
+      fullCache[documentId] = newValue;
+      return newValue;
+    });
+  }
 """;
 
 const String _deleteAll = """
