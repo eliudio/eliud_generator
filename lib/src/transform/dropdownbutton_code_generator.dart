@@ -13,7 +13,7 @@ import 'package:flutter/widgets.dart';
 import 'package:eliud_core/platform/platform.dart';
 import 'package:eliud_core/core/widgets/progress_indicator.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
+//import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/access/bloc/access_bloc.dart';
