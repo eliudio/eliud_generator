@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:eliud_core/platform/platform.dart';
 import 'package:eliud_core/core/widgets/progress_indicator.dart';
 
 //import 'package:cached_network_image/cached_network_image.dart';
