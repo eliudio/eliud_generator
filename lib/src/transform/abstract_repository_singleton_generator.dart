@@ -20,44 +20,35 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("import 'package:eliud_core/core/access/bloc/user_repository.dart';");
     codeBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
     codeBuffer.writeln("import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';");
+    codeBuffer.writeln("import 'package:eliud_core/package/package.dart';");
+
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton)) {
-/*        if (spec.modelSpecification.generate.isDocumentCollection) {
-          codeBuffer.writeln(
-              spec.modelSpecification.id + "Repository " +
-                  firstLowerCase(spec.modelSpecification.id) +
-                  "Repository({ String appId }) => AbstractRepositorySingleton.singleton." +
-                  firstLowerCase(spec.modelSpecification.id) +
-                  "Repository(the application collection reference);");
-        } else*/
       var appIdVar;
       if ((spec.modelSpecification.generate.isDocumentCollection) || (spec.modelSpecification.isAppModel)) {
         appIdVar = "appId";
       } else {
         appIdVar = "";
       }
-//    if (spec.modelSpecification.isAppModel) {
       codeBuffer.writeln(
           spec.modelSpecification.id + "Repository " +
               firstLowerCase(spec.modelSpecification.id) +
               "Repository({ String appId }) => AbstractRepositorySingleton.singleton." +
               firstLowerCase(spec.modelSpecification.id) +
               "Repository($appIdVar);");
-/*
-      } else {
-        codeBuffer.writeln(
-            spec.modelSpecification.id + "Repository " +
-                firstLowerCase(spec.modelSpecification.id) +
-                "Repository({ String appId }) => AbstractRepositorySingleton.singleton." +
-                firstLowerCase(spec.modelSpecification.id) +
-                "Repository();");
-      }
-*/
       }
     });
     codeBuffer.writeln();
     codeBuffer.writeln("abstract class AbstractRepositorySingleton {");
+    codeBuffer.writeln(spaces(2) + "static List<MemberCollectionInfo> collections = [");
+    modelSpecificationPlus.forEach((spec) {
+      if (spec.modelSpecification.memberIdentifier != null) {
+        codeBuffer.writeln(spaces(4) + "MemberCollectionInfo('" + spec.modelSpecification.id.toLowerCase() + "', '" + spec.modelSpecification.memberIdentifier + "'),");
+      }
+    });
+    codeBuffer.writeln(spaces(2) + "];");
+
     codeBuffer.writeln(spaces(2) + "static AbstractRepositorySingleton singleton;");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {

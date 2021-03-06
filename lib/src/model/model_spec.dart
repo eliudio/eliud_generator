@@ -11,7 +11,7 @@ class ModelSpecificationPlus {
   final ModelSpecification modelSpecification;
   final String path;
 
-  ModelSpecificationPlus({ this.modelSpecification, this.path });
+  ModelSpecificationPlus({this.modelSpecification, this.path});
 }
 
 class View {
@@ -45,11 +45,13 @@ class ModelSpecification extends Specification {
   final String displayOnDelete; // field to be displayed when item is deleted
   // is this a appModel, i.e is this data that's specific to the app and hence will we have seperate specific collection for it?
   final bool isAppModel;
+  final String memberIdentifier;  // This field serves 2 purpose: a) to identify this is member data, which is required to know for gdpr to be able to send member data or delete (right to be forgotten) on request  b) to know which field to use to filter that data
 
   // inject code
   // BEWARE: TO DO: CHANGE code injects and replace with same mechanism as "extraImports". This mechanism to inject code for extra import (key value pairs) allows to inject code much more efficient than using a specific property per inject type
   final String preToEntityCode;
-  final String preMapUpdateCode;  // at start of _mapUpdateXYZListToState in XYZListBloc
+  final String
+      preMapUpdateCode; // at start of _mapUpdateXYZListToState in XYZListBloc
   // BEWARE: BEFORE ADDING AN EXTRA, SEE ABOVE
 
   // views
@@ -70,11 +72,41 @@ class ModelSpecification extends Specification {
   final String where;
   final String whereJs;
 
-  ModelSpecification({ String id, this.generate, this.packageName, this.fields, this.groups, this.listFields, this.displayOnDelete, this.extraImports, this.isAppModel, this.preToEntityCode, this.preMapUpdateCode, this.views, this.where, this.whereJs, this.depends } ) : super(id: id);
+  ModelSpecification(
+      {String id,
+      this.generate,
+      this.packageName,
+      this.fields,
+      this.groups,
+      this.listFields,
+      this.displayOnDelete,
+      this.extraImports,
+      this.isAppModel,
+      this.preToEntityCode,
+      this.preMapUpdateCode,
+      this.views,
+      this.where,
+      this.whereJs,
+      this.depends,
+      this.memberIdentifier})
+      : super(id: id);
 
-  ModelSpecification copyWith({ String id, GenerateSpecification generate, List<Field> fields, List<Group> groups,
-    ListFields listFields, String displayOnDelete, Map<String, String> extraImports, bool isAppModel,
-    String preToEntityCode, String preMapUpdateCode, List<View> views, List<View> listWidgets, List<String> depends }) {
+  ModelSpecification copyWith(
+      {String id,
+      GenerateSpecification generate,
+      List<Field> fields,
+      List<Group> groups,
+      ListFields listFields,
+      String displayOnDelete,
+      Map<String, String> extraImports,
+      bool isAppModel,
+      String preToEntityCode,
+      String preMapUpdateCode,
+      List<View> views,
+      List<View> listWidgets,
+      List<String> depends,
+      bool isMemberModel,
+      String memberIdentifier}) {
     ModelSpecification newModelSpecification = ModelSpecification(
       id: id ?? this.id,
       generate: generate ?? this.generate,
@@ -91,30 +123,44 @@ class ModelSpecification extends Specification {
       where: where ?? this.where,
       whereJs: whereJs ?? this.whereJs,
       depends: depends ?? this.depends,
+      memberIdentifier: memberIdentifier ?? this.memberIdentifier,
     );
     return newModelSpecification;
   }
 
   @override
-  List<Object> get props => [id, generate, packageName, fields, groups, displayOnDelete, extraImports, preToEntityCode, preMapUpdateCode, views, where, whereJs, depends,  ];
+  List<Object> get props => [
+        id,
+        generate,
+        packageName,
+        fields,
+        groups,
+        displayOnDelete,
+        extraImports,
+        preToEntityCode,
+        preMapUpdateCode,
+        views,
+        where,
+        whereJs,
+        depends,
+        memberIdentifier
+      ];
 
   @override
   String toString() {
-    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, packageName: $packageName, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views,  where: $where, whereJs: $whereJs, depends: $depends }';
+    return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, packageName: $packageName, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views,  where: $where, whereJs: $whereJs, depends: $depends,  memberIdentifier: $memberIdentifier }';
   }
 
   static ModelSpecification fromJson(Map<String, Object> json) {
     List<Field> theItems = (json['fields'] as List<dynamic>)
-        .map((dynamic item) =>
-        Field.fromJson(item as Map<String, dynamic>))
+        .map((dynamic item) => Field.fromJson(item as Map<String, dynamic>))
         .toList();
 
     List<Group> theGroups;
     var jsonGroups = json['groups'];
     if (jsonGroups != null) {
       theGroups = (jsonGroups as List<dynamic>)
-          .map((dynamic item) =>
-          Group.fromJson(item as Map<String, dynamic>))
+          .map((dynamic item) => Group.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
@@ -122,8 +168,7 @@ class ModelSpecification extends Specification {
     var jsonViews = json['alternativeViews'];
     if (jsonViews != null) {
       theViews = (jsonViews as List<dynamic>)
-          .map((dynamic item) =>
-          View.fromJson(item as Map<String, dynamic>))
+          .map((dynamic item) => View.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
@@ -143,7 +188,6 @@ class ModelSpecification extends Specification {
       (json['extraImports'] as Map).forEach((k, v) {
         extraImports[k] = v;
       });
-
     }
 
     var dependsFields = json["depends"];
@@ -164,6 +208,7 @@ class ModelSpecification extends Specification {
       where: json["where"] as String,
       whereJs: json["whereJs"] as String,
       depends: dependsFields != null ? List.from(dependsFields) : null,
+      memberIdentifier: json["memberIdentifier"] as String,
     );
   }
 
@@ -173,7 +218,7 @@ class ModelSpecification extends Specification {
   }
 
   List<String> uniqueAssociationTypes() {
-    List<String> uniqueAssociationTypes = List();
+    List<String> uniqueAssociationTypes = [];
     fields.forEach((field) {
       if (field.association) {
         String typeName = field.fieldType;
@@ -186,9 +231,9 @@ class ModelSpecification extends Specification {
   }
 
   List<Field> fieldsForGroups(Group group) {
-    final List<Field> thoseFields = new List();
+    final List<Field> thoseFields = [];
     fields.forEach((field) {
-       if (field.group == group.group) thoseFields.add(field);
+      if (field.group == group.group) thoseFields.add(field);
     });
     return thoseFields;
   }
@@ -196,8 +241,7 @@ class ModelSpecification extends Specification {
   bool _exists(String groupId) {
     if (groups == null) return false;
     for (var group in groups) {
-      if (group.group == groupId)
-        return true;
+      if (group.group == groupId) return true;
     }
     return false;
   }
@@ -207,14 +251,15 @@ class ModelSpecification extends Specification {
   }
 
   List<Field> unGroupedFields() {
-    final List<Field> thoseFields = new List();
+    final List<Field> thoseFields = [];
     fields.forEach((field) {
-      if (field.group == null) thoseFields.add(field);
+      if (field.group == null)
+        thoseFields.add(field);
       else if (!_exists(field.group)) thoseFields.add(field);
     });
     return thoseFields;
   }
-  
+
   bool isMemberSpecific() {
     if (id == "Member") return true;
     if (id == "Post") return true;
