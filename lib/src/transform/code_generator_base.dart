@@ -1,6 +1,5 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
-import 'package:json_schema/json_schema.dart';
 
 const String _header= """
 /*
