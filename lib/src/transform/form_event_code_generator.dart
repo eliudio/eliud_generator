@@ -30,10 +30,10 @@ class FormEventCodeGenerator extends CodeGenerator {
   String _eventWithModel(String name, String modelClassName) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln("class " + name + " extends " + modelSpecifications.id + "FormEvent {");
-    codeBuffer.writeln(spaces(2) + "final " + modelClassName + " value;");
+    codeBuffer.writeln(spaces(2) + "final " + modelClassName + "? value;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ value ];");
+    codeBuffer.writeln(spaces(2) + "List<Object?> get props => [ value ];");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + name + "({this.value});");
     codeBuffer.writeln("}");
@@ -50,7 +50,7 @@ class FormEventCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "const " + formClassName + "();");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [];");
+    codeBuffer.writeln(spaces(2) + "List<Object?> get props => [];");
     codeBuffer.writeln("}");
     codeBuffer.writeln();
 
@@ -63,14 +63,14 @@ class FormEventCodeGenerator extends CodeGenerator {
       String className = "Changed" + modelSpecifications.id + firstUpperCase(field.fieldName);
       codeBuffer.writeln("class " + className + " extends " + formClassName + " {");
       if (field.isInt() || field.isDouble() || field.isString() || (field.association))
-        codeBuffer.writeln(spaces(2) + "final String value;");
+        codeBuffer.writeln(spaces(2) + "final String? value;");
       else
-        codeBuffer.writeln(spaces(2) + "final " + field.dartModelType() + " value;");
+        codeBuffer.writeln(spaces(2) + "final " + field.dartModelType() + "? value;");
       codeBuffer.writeln();
       codeBuffer.writeln(spaces(2) + className + "({this.value});");
       codeBuffer.writeln();
       codeBuffer.writeln(spaces(2) + "@override");
-      codeBuffer.writeln(spaces(2) + "List<Object> get props => [ value ];");
+      codeBuffer.writeln(spaces(2) + "List<Object?> get props => [ value ];");
       codeBuffer.writeln();
       codeBuffer.writeln(spaces(2) + "@override");
       codeBuffer.writeln(spaces(2) + "String toString() => '" + className + "{ value: \$value }';");

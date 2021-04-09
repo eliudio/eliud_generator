@@ -20,28 +20,28 @@ const _\${lid}Limit = 5;
 
 class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   final \${id}Repository _\${lid}Repository;
-  StreamSubscription _\${lid}sListSubscription;
-  final EliudQuery eliudQuery;
+  StreamSubscription? _\${lid}sListSubscription;
+  final EliudQuery? eliudQuery;
   int pages = 1;
-  final bool paged;
-  final String orderBy;
-  final bool descending;
-  final bool detailed;
+  final bool? paged;
+  final String? orderBy;
+  final bool? descending;
+  final bool? detailed;
 
-  \${id}ListBloc({this.paged, this.orderBy, this.descending, this.detailed, this.eliudQuery, @required \${id}Repository \${lid}Repository})
+  \${id}ListBloc({this.paged, this.orderBy, this.descending, this.detailed, this.eliudQuery, required \${id}Repository \${lid}Repository})
       : assert(\${lid}Repository != null),
         _\${lid}Repository = \${lid}Repository,
         super(\${id}ListLoading());
 
   Stream<\${id}ListState> _mapLoad\${id}ListToState() async* {
-    int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values.length : 0;
+    int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values!.length : 0;
     _\${lid}sListSubscription?.cancel();
     _\${lid}sListSubscription = _\${lid}Repository.listen(
           (list) => add(\${id}ListUpdated(value: list, mightHaveMore: amountNow != list.length)),
       orderBy: orderBy,
       descending: descending,
       eliudQuery: eliudQuery,
-      limit: ((paged != null) && (paged)) ? pages * _\${lid}Limit : null
+      limit: ((paged != null) && paged!) ? pages * _\${lid}Limit : null
     );
   }
 
@@ -53,7 +53,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
         orderBy: orderBy,
         descending: descending,
         eliudQuery: eliudQuery,
-        limit: ((paged != null) && (paged)) ? pages * _\${lid}Limit : null
+        limit: ((paged != null) && paged!) ? pages * _\${lid}Limit : null
     );
   }
 
@@ -77,7 +77,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   @override
   Stream<\${id}ListState> mapEventToState(\${id}ListEvent event) async* {
     if (event is Load\${id}List) {
-      if ((detailed == null) || (!detailed)) {
+      if ((detailed == null) || (!detailed!)) {
         yield* _mapLoad\${id}ListToState();
       } else {
         yield* _mapLoad\${id}ListWithDetailsToState();

@@ -8,13 +8,13 @@ abstract class \${id}ComponentState extends Equatable {
   const \${id}ComponentState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class \${id}ComponentUninitialized extends \${id}ComponentState {}
 
 class \${id}ComponentError extends \${id}ComponentState {
-  final String message;
+  final String? message;
   \${id}ComponentError({ this.message });
 }
 
@@ -23,16 +23,16 @@ class \${id}ComponentPermissionDenied extends \${id}ComponentState {
 }
 
 class \${id}ComponentLoaded extends \${id}ComponentState {
-  final \${id}Model value;
+  final \${id}Model? value;
 
   const \${id}ComponentLoaded({ this.value });
 
-  \${id}ComponentLoaded copyWith({ \${id}Model copyThis }) {
+  \${id}ComponentLoaded copyWith({ \${id}Model? copyThis }) {
     return \${id}ComponentLoaded(value: copyThis ?? this.value);
   }
 
   @override
-  List<Object> get props => [value];
+  List<Object?> get props => [value];
 
   @override
   String toString() => '\${id}ComponentLoaded { value: \$value }';

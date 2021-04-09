@@ -24,56 +24,56 @@ const String _footer= """
 
 const String _code = """
   final \${id}Repository reference;
-  final Map<String, \${id}Model> fullCache = Map();
+  final Map<String?, \${id}Model?> fullCache = Map();
 
   \${id}Cache(this.reference);
 
-  Future<\${id}Model> add(\${id}Model value) {
+  Future<\${id}Model> add(\${id}Model? value) {
     return reference.add(value).then((newValue) {
-      fullCache[value.documentID] = newValue;
+      fullCache[value!.documentID] = newValue;
       return newValue;
     });
   }
 
-  Future<void> delete(\${id}Model value){
-    fullCache.remove(value.documentID);
+  Future<void> delete(\${id}Model? value){
+    fullCache.remove(value!.documentID);
     reference.delete(value);
     return Future.value();
   }
 
-  Future<\${id}Model> get(String id, {Function(Exception) onError}) {
-    \${id}Model value = fullCache[id];
+  Future<\${id}Model> get(String? id, {Function(Exception)? onError}) {
+    \${id}Model? value = fullCache[id];
     if (value != null) return refreshRelations(value);
     return reference.get(id, onError: onError).then((value) {
       fullCache[id] = value;
-      return value;
+      return value!;
     });
   }
 
-  Future<\${id}Model> update(\${id}Model value) {
+  Future<\${id}Model> update(\${id}Model? value) {
     return reference.update(value).then((newValue) {
-      fullCache[value.documentID] = newValue;
+      fullCache[value!.documentID] = newValue;
       return newValue;
     });
   }
 
   @override
-  Stream<List<\${id}Model>> values({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) {
+  Stream<List<\${id}Model?>> values({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
     return reference.values(orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
   }
 
   @override
-  Stream<List<\${id}Model>> valuesWithDetails({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) {
+  Stream<List<\${id}Model?>> valuesWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery eliudQuery }) {
     return reference.valuesWithDetails(orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
   }
 
   @override
-  Future<List<\${id}Model>> valuesList({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) async {
+  Future<List<\${id}Model?>> valuesList({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) async {
     return await reference.valuesList(orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
   }
   
   @override
-  Future<List<\${id}Model>> valuesListWithDetails({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) async {
+  Future<List<\${id}Model?>> valuesListWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) async {
     return await reference.valuesListWithDetails(orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
   }
 
@@ -81,7 +81,7 @@ const String _code = """
     fullCache.clear();
   }
   
-  String timeStampToString(dynamic timeStamp) {
+  String? timeStampToString(dynamic timeStamp) {
     return reference.timeStampToString(timeStamp);
   } 
 
@@ -92,7 +92,7 @@ const String _code = """
   Future<\${id}Model> changeValue(String documentId, String fieldName, num changeByThisValue) {
     return reference.changeValue(documentId, fieldName, changeByThisValue).then((newValue) {
       fullCache[documentId] = newValue;
-      return newValue;
+      return newValue!;
     });
   }
 """;
@@ -105,18 +105,18 @@ const String _deleteAll = """
 
 const String _listen = """
   @override
-  StreamSubscription<List<\${id}Model>> listen(trigger, {String orderBy, bool descending, Object startAfter, int limit, int privilegeLevel, EliudQuery eliudQuery}) {
+  StreamSubscription<List<\${id}Model?>> listen(trigger, {String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery}) {
     return reference.listen(trigger, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
   }
 
   @override
-  StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, {String orderBy, bool descending, Object startAfter, int limit, int privilegeLevel, EliudQuery eliudQuery}) {
+  StreamSubscription<List<\${id}Model?>> listenWithDetails(trigger, {String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery}) {
     return reference.listenWithDetails(trigger, orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
   }
 
   @override
-  StreamSubscription<\${id}Model> listenTo(String documentId, changed) {
-    reference.listenTo(documentId, changed);
+  StreamSubscription<\${id}Model?> listenTo(String documentId, \${id}Changed changed) {
+    return reference.listenTo(documentId, changed);
   }
 """;
 
@@ -125,10 +125,10 @@ const String _refreshRelationsHeader = """
 """;
 
 const String _refreshRelationsModel = """
-    \${fieldType}Model \${fieldName}Holder;
+    \${fieldType}Model? \${fieldName}Holder;
     if (model.\${fieldName} != null) {
       try {
-        await \${lfieldType}Repository(\${appIdVar}).get(model.\${fieldName}.documentID).then((val) {
+        await \${lfieldType}Repository(\${appIdVar})!.get(model.\${fieldName}.documentID).then((val) {
           \${fieldName}Holder = val;
         }).catchError((error) {});
       } catch (_) {}
@@ -214,7 +214,7 @@ class CacheCodeGenerator extends CodeGenerator {
           if (/*(field.fieldType != "Image") && */(field.fieldType != "App") &&
               (field.fieldType != "Member") && (field.fieldType != "Country") &&
               (field.fieldType != "MemberPublicInfo")) {
-            appVar = "appId: model." + field.fieldName + ".appId";
+            appVar = "appId: model." + field.fieldName + "!.appId";
           } else {
             appVar = '';
           }

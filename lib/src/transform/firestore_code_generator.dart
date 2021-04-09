@@ -26,50 +26,50 @@ class \${id}Firestore implements \${id}Repository {
     return \${id}Collection.doc(value.documentID).update(value.toEntity(\${appIdDef4}).\${copyStatement}toDocument()).then((_) => value)\${thenStatement};
   }
 
-  \${id}Model _populateDoc(DocumentSnapshot value) {
+  \${id}Model? _populateDoc(DocumentSnapshot value) {
     return \${id}Model.fromEntity(value.id, \${id}Entity.fromMap(value.data()));
   }
 
-  Future<\${id}Model> _populateDocPlus(DocumentSnapshot value) async {
+  Future<\${id}Model?> _populateDocPlus(DocumentSnapshot value) async {
     return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data()), \${appIdDef});  }
 
-  Future<\${id}Model> get(String id, {Function(Exception) onError}) {
-    return \${id}Collection.doc(id).get().then((doc) {
+  Future<\${id}Model?> get(String id, {Function(Exception) onError}) {
+    return \${id}Collection.doc(id).get().then((doc) async {
       if (doc.data() != null)
-        return _populateDocPlus(doc);
+        return await _populateDocPlus(doc);
       else
         return null;
     }).catchError((Object e) {
       if (onError != null) {
-        onError(e);
+        onError(e as Exception);
       }
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listen(\${id}ModelTrigger trigger, {String orderBy, bool descending, Object startAfter, int limit, int privilegeLevel, EliudQuery eliudQuery}) {
+  StreamSubscription<List<\${id}Model?>> listen(\${id}ModelTrigger trigger, {String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery}) {
     Stream<List<\${id}Model>> stream;
-//    stream = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().map((data) {
+//    stream = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots().map((data) {
 //    The above line is replaced by the below line. The reason is because the same collection can not be subscribed to twice
 //    The reason we're subscribing twice to the same list, is because the close on bloc isn't called. This needs to be fixed.
 //    See https://github.com/felangel/bloc/issues/2073.
 //    In the meantime:
-      stream = getQuery(\${collection}, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().map((data) {
-      Iterable<\${id}Model> \${lid}s  = data.docs.map((doc) {
-        \${id}Model value = _populateDoc(doc);
+      stream = getQuery(\${collection}, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().map((data) {
+      Iterable<\${id}Model?> \${lid}s  = data.docs.map((doc) {
+        \${id}Model? value = _populateDoc(doc);
         return value;
       }).toList();
-      return \${lid}s;
+      return \${lid}s as List<\${id}Model?>;
     });
     return stream.listen((listOf\${id}Models) {
       trigger(listOf\${id}Models);
     });
   }
 
-  StreamSubscription<List<\${id}Model>> listenWithDetails(\${id}ModelTrigger trigger, {String orderBy, bool descending, Object startAfter, int limit, int privilegeLevel, EliudQuery eliudQuery}) {
-    Stream<List<\${id}Model>> stream;
+  StreamSubscription<List<\${id}Model?>> listenWithDetails(\${id}ModelTrigger trigger, {String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery}) {
+    Stream<List<\${id}Model?>> stream;
 //  stream = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots()
 //  see comment listen(...) above
-    stream = getQuery(\${collection}, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots()
+    stream = getQuery(\${collection}, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots()
         .asyncMap((data) async {
       return await Future.wait(data.docs.map((doc) =>  _populateDocPlus(doc)).toList());
     });
@@ -80,7 +80,7 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   @override
-  StreamSubscription<\${id}Model> listenTo(String documentId, \${id}Changed changed) {
+  StreamSubscription<\${id}Model?> listenTo(String documentId, \${id}Changed changed) {
     var stream = \${id}Collection.doc(documentId)
         .snapshots()
         .asyncMap((data) {
@@ -91,9 +91,9 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
-  Stream<List<\${id}Model>> values({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) {
-    DocumentSnapshot lastDoc;
-    Stream<List<\${id}Model>> _values = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().map((snapshot) {
+  Stream<List<\${id}Model?>> values({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
+    DocumentSnapshot? lastDoc;
+    Stream<List<\${id}Model?>> _values = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
         lastDoc = doc;
         return _populateDoc(doc);
@@ -102,9 +102,9 @@ class \${id}Firestore implements \${id}Repository {
     return _values;
   }
 
-  Stream<List<\${id}Model>> valuesWithDetails({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) {
-    DocumentSnapshot lastDoc;
-    Stream<List<\${id}Model>> _values = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().asyncMap((snapshot) {
+  Stream<List<\${id}Model?>> valuesWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
+    DocumentSnapshot? lastDoc;
+    Stream<List<\${id}Model?>> _values = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().asyncMap((snapshot) {
       return Future.wait(snapshot.docs.map((doc) {
         lastDoc = doc;
         return _populateDocPlus(doc);
@@ -114,9 +114,9 @@ class \${id}Firestore implements \${id}Repository {
     return _values;
   }
 
-  Future<List<\${id}Model>> valuesList({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) async {
-    DocumentSnapshot lastDoc;
-    List<\${id}Model> _values = await getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).get().then((value) {
+  Future<List<\${id}Model?>> valuesList({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) async {
+    DocumentSnapshot? lastDoc;
+    List<\${id}Model?> _values = await getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).get().then((value) {
       var list = value.docs;
       return list.map((doc) { 
         lastDoc = doc;
@@ -127,9 +127,9 @@ class \${id}Firestore implements \${id}Repository {
     return _values;
   }
 
-  Future<List<\${id}Model>> valuesListWithDetails({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) async {
-    DocumentSnapshot lastDoc;
-    List<\${id}Model> _values = await getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).get().then((value) {
+  Future<List<\${id}Model?>> valuesListWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) async {
+    DocumentSnapshot? lastDoc;
+    List<\${id}Model?> _values = await getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).get().then((value) {
       var list = value.docs;
       return Future.wait(list.map((doc) {
         lastDoc = doc;
@@ -154,11 +154,11 @@ class \${id}Firestore implements \${id}Repository {
     return \${id}Collection.doc(documentId).collection(name);
   }
 
-  String timeStampToString(dynamic timeStamp) {
+  String? timeStampToString(dynamic timeStamp) {
     return firestoreTimeStampToString(timeStamp);
   } 
 
-  Future<\${id}Model> changeValue(String documentId, String fieldName, num changeByThisValue) {
+  Future<\${id}Model?> changeValue(String documentId, String fieldName, num changeByThisValue) {
     var change = FieldValue.increment(changeByThisValue);
     return \${id}Collection.doc(documentId).update({fieldName: change}).then((v) => get(documentId));
   }
@@ -216,7 +216,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     String collection;
     if (modelSpecifications.isAppModel) {
       appVar = appVar3 = appVar4 = "appId: appId";
-      collection = "appRepository().getSubCollection(appId, '" + modelSpecifications.id.toLowerCase() + "')";
+      collection = "appRepository()!.getSubCollection(appId, '" + modelSpecifications.id.toLowerCase() + "')";
     } else if (modelSpecifications.id == "App") {
       appVar = "appId: value.id";
       appVar3 = "";

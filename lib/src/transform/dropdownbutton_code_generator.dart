@@ -27,14 +27,14 @@ import 'package:$packageName/model/\${path}_model.dart';
 """;
 
 const String _code = """
-typedef \${id}Changed(String value);
+typedef \${id}Changed(String? value);
 
 class \${id}DropdownButtonWidget extends StatefulWidget {
-  final String value;
-  final \${id}Changed trigger;
-  final bool optional;
+  final String? value;
+  final \${id}Changed? trigger;
+  final bool? optional;
 
-  \${id}DropdownButtonWidget({ this.value, this.trigger, this.optional, Key key }): super(key: key);
+  \${id}DropdownButtonWidget({ this.value, this.trigger, this.optional, Key? key }): super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -43,7 +43,7 @@ class \${id}DropdownButtonWidget extends StatefulWidget {
 }
 
 class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> {
-  \${id}ListBloc bloc;
+  \${id}ListBloc? bloc;
 
   \${id}DropdownButtonWidgetState();
 
@@ -55,7 +55,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
 
   @override
   void dispose() {
-    if (bloc != null) bloc.close();
+    if (bloc != null) bloc!.close();
     super.dispose();
   }
 
@@ -70,16 +70,16 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
           child: DelayedCircularProgressIndicator(),
         );
       } else if (state is \${id}ListLoaded) {
-        String valueChosen;
-        if (state.values.indexWhere((v) => (v.documentID == widget.value)) >= 0)
+        String? valueChosen;
+        if (state.values!.indexWhere((v) => (v!.documentID == widget.value)) >= 0)
           valueChosen = widget.value;
         else
-          if (widget.optional != null && widget.optional) valueChosen = null;
+          if (widget.optional != null && widget.optional!) valueChosen = null;
           
         final values = state.values;
-        final List<DropdownMenuItem<String>> items = List();
-        if (state.values.isNotEmpty) {
-          if (widget.optional != null && widget.optional) {
+        final items = <DropdownMenuItem<String>>[];
+        if (state.values!.isNotEmpty) {
+          if (widget.optional != null && widget.optional!) {
             items.add(new DropdownMenuItem<String>(
                 value: null,
                 child: new Container(
@@ -91,9 +91,9 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                   ),
                 )));
           }
-          state.values.forEach((element) {
+          state.values!.forEach((element) {
             items.add(new DropdownMenuItem<String>(
-                value: element.documentID,
+                value: element!.documentID,
                 child: new Container(
                   padding: const EdgeInsets.only(bottom: 5.0),
                   height: 100.0,
@@ -126,8 +126,8 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
     });
   }
 
-  void _onChange(String value) {
-    widget.trigger(value);
+  void _onChange(String? value) {
+    widget.trigger!(value);
   }
 }
 """;
@@ -159,13 +159,13 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     StringBuffer childCodeBuffer = StringBuffer();
 
     childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model pm) {");
-    childCodeBuffer.writeln("List<Widget> widgets = List();");
+    childCodeBuffer.writeln("var widgets = <Widget>[];");
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.title + " != null) ");
     childCodeBuffer.write("widgets.add(");
     if (modelSpecifications.listFields.imageTitle) {
       childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.title }));
     } else {
-      childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + ")");
+      childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + "!)");
     }
     childCodeBuffer.writeln(");");
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.subTitle + " != null) ");
@@ -173,7 +173,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     if (modelSpecifications.listFields.imageSubTitle) {
       childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.subTitle }));
     } else {
-      childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + ")");
+      childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + "!)");
     }
     childCodeBuffer.writeln(");");
     childCodeBuffer.writeln("return widgets;");

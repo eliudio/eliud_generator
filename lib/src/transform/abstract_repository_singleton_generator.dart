@@ -32,9 +32,9 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         appIdVar = "";
       }
       codeBuffer.writeln(
-          spec.modelSpecification.id + "Repository " +
+          spec.modelSpecification.id + "Repository? " +
               firstLowerCase(spec.modelSpecification.id) +
-              "Repository({ String appId }) => AbstractRepositorySingleton.singleton." +
+              "Repository({ String? appId }) => AbstractRepositorySingleton.singleton." +
               firstLowerCase(spec.modelSpecification.id) +
               "Repository($appIdVar);");
       }
@@ -49,23 +49,23 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
     });
     codeBuffer.writeln(spaces(2) + "];");
 
-    codeBuffer.writeln(spaces(2) + "static AbstractRepositorySingleton singleton;");
+    codeBuffer.writeln(spaces(2) + "static late AbstractRepositorySingleton singleton;");
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton)) {
         if ((spec.modelSpecification.generate.isDocumentCollection) || (spec.modelSpecification.isAppModel)) {
           codeBuffer.writeln(
-              spaces(2) + spec.modelSpecification.id + "Repository " +
-                  firstLowerCase(spec.modelSpecification.id) + "Repository(String appId);");
+              spaces(2) + spec.modelSpecification.id + "Repository? " +
+                  firstLowerCase(spec.modelSpecification.id) + "Repository(String? appId);");
         } else {
           codeBuffer.writeln(
-              spaces(2) + spec.modelSpecification.id + "Repository " +
+              spaces(2) + spec.modelSpecification.id + "Repository? " +
                   firstLowerCase(spec.modelSpecification.id) + "Repository();");
         }
       }
     });
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "void flush(String appId) {");
+    codeBuffer.writeln(spaces(2) + "void flush(String? appId) {");
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") &&  (spec.modelSpecification.generate.generateRepositorySingleton) && (!spec.modelSpecification.generate.isDocumentCollection)) {
         if (spec.modelSpecification.isAppModel) {

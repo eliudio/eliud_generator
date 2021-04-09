@@ -6,7 +6,7 @@ import 'code_generator.dart';
 String _code = """
 abstract class Abstract\${id}Component extends StatelessWidget {
   static String componentName = "\${lid}s";
-  final String \${lid}ID;
+  final String? \${lid}ID;
 
   Abstract\${id}Component({this.\${lid}ID});
 
@@ -44,7 +44,7 @@ abstract class Abstract\${id}Component extends StatelessWidget {
     });
   }
 
-  Widget yourWidget(BuildContext context, \${id}Model value);
+  Widget yourWidget(BuildContext context, \${id}Model? value);
   Widget alertWidget({ title: String, content: String});
   \${id}Repository get\${id}Repository(BuildContext context);
 }

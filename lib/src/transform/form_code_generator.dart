@@ -47,10 +47,10 @@ import 'package:$packageName/model/\${path}_form_state.dart';
 const String _xyzFormString = """
 class \${className}Form extends StatelessWidget {
   FormAction formAction;
-  \${id}Model value;
-  ActionModel submitAction;
+  \${id}Model? value;
+  ActionModel? submitAction;
 
-  \${className}Form({Key key, @required this.formAction, @required this.value, this.submitAction}) : super(key: key);
+  \${className}Form({Key? key, required this.formAction, required this.value, this.submitAction}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -76,14 +76,14 @@ class \${className}Form extends StatelessWidget {
       return Scaffold(
         appBar: formAction == FormAction.UpdateAction ?
                 AppBar(
-                    title: Text("\${updateTitle}", style: TextStyle(color: RgbHelper.color(rgbo: app.formAppBarTextColor))),
+                    title: Text("\${updateTitle}", style: TextStyle(color: RgbHelper.color(rgbo: app!.formAppBarTextColor))),
                     flexibleSpace: Container(
-                        decoration: BoxDecorationHelper.boxDecoration(accessState, app.formAppBarBackground)),
+                        decoration: BoxDecorationHelper.boxDecoration(accessState, app!.formAppBarBackground)),
                   ) :
                 AppBar(
-                    title: Text("\${addTitle}", style: TextStyle(color: RgbHelper.color(rgbo: app.formAppBarTextColor))),
+                    title: Text("\${addTitle}", style: TextStyle(color: RgbHelper.color(rgbo: app!.formAppBarTextColor))),
                     flexibleSpace: Container(
-                        decoration: BoxDecorationHelper.boxDecoration(accessState, app.formAppBarBackground)),
+                        decoration: BoxDecorationHelper.boxDecoration(accessState, app!.formAppBarBackground)),
                 ),
         body: BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(AccessBloc.appId(context),
@@ -100,8 +100,8 @@ class \${className}Form extends StatelessWidget {
 
 const String _myXyzFormString = """
 class My\${className}Form extends StatefulWidget {
-  final FormAction formAction;
-  final ActionModel submitAction;
+  final FormAction? formAction;
+  final ActionModel? submitAction;
 
   My\${className}Form({this.formAction, this.submitAction});
 
@@ -116,7 +116,7 @@ const _groupFieldHeaderString = """
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                   child: Text('\${label}',
                       style: TextStyle(
-                          color: RgbHelper.color(rgbo: app.formGroupTitleColor), fontWeight: FontWeight.bold)),
+                          color: RgbHelper.color(rgbo: app!.formGroupTitleColor), fontWeight: FontWeight.bold)),
                 ));
 """;
 
@@ -129,7 +129,7 @@ const _otherChangedString = """
 """;
 
 const _xyzSetEnumSelectionString = """
-  void setSelection\${upperFieldName}(int val) {
+  void setSelection\${upperFieldName}(int? val) {
     setState(() {
       _\${lowerFieldName}SelectedRadioTile = val;
     });
@@ -139,7 +139,7 @@ const _xyzSetEnumSelectionString = """
 """;
 
 const _xyzSetBooleanSelectionString = """
-  void setSelection\${upperFieldName}(bool val) {
+  void setSelection\${upperFieldName}(bool? val) {
     setState(() {
       _\${lowerFieldName}Selection = val;
     });
@@ -148,7 +148,7 @@ const _xyzSetBooleanSelectionString = """
 """;
 
 const _xyzLookupChangedString = """
-  void _on\${upperFieldName}Selected(String val) {
+  void _on\${upperFieldName}Selected(String? val) {
     setState(() {
       _\${lowerFieldName} = val;
     });
@@ -159,7 +159,7 @@ const _xyzLookupChangedString = """
 
 const String _readOnlyMethodMember = """
   bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!((accessState is LoggedIn) && (accessState.member.documentID == state.value.documentID)));
+    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!((accessState is LoggedIn) && (accessState.member.documentID == state.value!.documentID)));
   }
   
 """;
@@ -215,9 +215,9 @@ class RealFormCodeGenerator extends CodeGenerator {
 
   String _xyzFormStateMemberData() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "final FormAction formAction;");
+    codeBuffer.writeln(spaces(2) + "final FormAction? formAction;");
     codeBuffer
-        .writeln(spaces(2) + modelSpecifications.id + "FormBloc _myFormBloc;");
+        .writeln(spaces(2) + modelSpecifications.id + "late FormBloc _myFormBloc;");
     return codeBuffer.toString();
   }
 
@@ -234,14 +234,14 @@ class RealFormCodeGenerator extends CodeGenerator {
             break;
           case FormTypeField.CheckBox:
             codeBuffer
-                .writeln(spaces(2) + "bool _" + field.fieldName + "Selection;");
+                .writeln(spaces(2) + "bool? _" + field.fieldName + "Selection;");
             break;
           case FormTypeField.Lookup:
-            codeBuffer.writeln(spaces(2) + "String _" + field.fieldName + ";");
+            codeBuffer.writeln(spaces(2) + "String? _" + field.fieldName + ";");
             break;
           case FormTypeField.Selection:
             codeBuffer.writeln(
-                spaces(2) + "int _" + field.fieldName + "SelectedRadioTile;");
+                spaces(2) + "int? _" + field.fieldName + "SelectedRadioTile;");
             break;
           case FormTypeField.List:
             // Support private data members for list
@@ -339,11 +339,11 @@ class RealFormCodeGenerator extends CodeGenerator {
         switch (field.formFieldType()) {
           case FormTypeField.EntryField:
             codeBuffer.writeln(
-                spaces(8) + "if (state.value." + field.fieldName + " != null)");
+                spaces(8) + "if (state.value!." + field.fieldName + " != null)");
             codeBuffer.writeln(spaces(10) +
                 "_" +
                 field.fieldName +
-                "Controller.text = state.value." +
+                "Controller.text = state.value!." +
                 field.fieldName +
                 ".toString();");
             codeBuffer.writeln(
@@ -355,11 +355,11 @@ class RealFormCodeGenerator extends CodeGenerator {
             break;
           case FormTypeField.CheckBox:
             codeBuffer.writeln(
-                spaces(8) + "if (state.value." + field.fieldName + " != null)");
+                spaces(8) + "if (state.value!." + field.fieldName + " != null)");
             codeBuffer.writeln(spaces(8) +
                 "_" +
                 field.fieldName +
-                "Selection = state.value." +
+                "Selection = state.value!." +
                 field.fieldName +
                 ";");
             codeBuffer.writeln(
@@ -371,11 +371,11 @@ class RealFormCodeGenerator extends CodeGenerator {
             break;
           case FormTypeField.Lookup:
             codeBuffer.writeln(
-                spaces(8) + "if (state.value." + field.fieldName + " != null)");
+                spaces(8) + "if (state.value!." + field.fieldName + " != null)");
             codeBuffer.writeln(spaces(10) +
                 "_" +
                 field.fieldName +
-                "= state.value." +
+                "= state.value!." +
                 field.fieldName +
                 ".documentID;");
             codeBuffer.writeln(
@@ -387,11 +387,11 @@ class RealFormCodeGenerator extends CodeGenerator {
             break;
           case FormTypeField.Selection:
             codeBuffer.writeln(
-                spaces(8) + "if (state.value." + field.fieldName + " != null)");
+                spaces(8) + "if (state.value!." + field.fieldName + " != null)");
             codeBuffer.writeln(spaces(10) +
                 "_" +
                 field.fieldName +
-                "SelectedRadioTile = state.value." +
+                "SelectedRadioTile = state.value!." +
                 field.fieldName +
                 ".index;");
             codeBuffer.writeln(
@@ -417,7 +417,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         modelSpecifications.id +
         "FormInitialized) {");
 
-    codeBuffer.writeln(spaces(8) + "List<Widget> children = List();");
+    codeBuffer.writeln(spaces(8) + "List<Widget?> children = [];");
 
     if (modelSpecifications.groups == null) {
       codeBuffer.writeln(_fields(modelSpecifications.fields));
@@ -433,7 +433,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     }
     codeBuffer.writeln(spaces(8) + "if ((formAction != FormAction.ShowData) && (formAction != FormAction.ShowPreloadedData))");
     codeBuffer.writeln(spaces(10) + "children.add(RaisedButton(");
-    codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: app.formSubmitButtonColor),");
+    codeBuffer.writeln(spaces(18) + "color: RgbHelper.color(rgbo: app!.formSubmitButtonColor),");
     codeBuffer.writeln(spaces(18) + "onPressed: _readOnly(accessState, state) ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
         "if (state is " +
@@ -450,12 +450,12 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14 + 12) +
         "Update" +
         modelSpecifications.id +
-        "List(value: state.value.copyWith(");
+        "List(value: state.value!.copyWith(");
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         codeBuffer.writeln(spaces(14 + 16) +
             field.fieldName +
-            ": state.value." +
+            ": state.value!." +
             field.fieldName +
             ", ");
       }
@@ -476,7 +476,7 @@ class RealFormCodeGenerator extends CodeGenerator {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         codeBuffer.writeln(spaces(14 + 16) +
             field.fieldName +
-            ": state.value." +
+            ": state.value!." +
             field.fieldName +
             ", ");
       }
@@ -485,23 +485,22 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14 + 8) + "}");
 
     codeBuffer.writeln(spaces(14 + 8) + "if (widget.submitAction != null) {");
-    codeBuffer.writeln(spaces(14 + 10) + "eliudrouter.Router.navigateTo(context, widget.submitAction);");
+    codeBuffer.writeln(spaces(14 + 10) + "eliudrouter.Router.navigateTo(context, widget.submitAction!);");
     codeBuffer.writeln(spaces(14 + 8) + "} else {");
     codeBuffer.writeln(spaces(14 + 10) + "Navigator.pop(context);");
     codeBuffer.writeln(spaces(14 + 8) + "}");
 
-    codeBuffer.writeln(spaces(14 + 8) + "return true;");
     codeBuffer.writeln(spaces(14 + 6) + "}");
 
     codeBuffer.writeln(spaces(18) + "},");
     String label = buttonLabel == null ? 'Submit' : buttonLabel;
-    codeBuffer.writeln(spaces(18) + "child: Text('" + label + "', style: TextStyle(color: RgbHelper.color(rgbo: app.formSubmitButtonTextColor))),");
+    codeBuffer.writeln(spaces(18) + "child: Text('" + label + "', style: TextStyle(color: RgbHelper.color(rgbo: app!.formSubmitButtonTextColor))),");
     codeBuffer.writeln(spaces(16) + "));");
 
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(8) + "return Container(");
     codeBuffer.writeln(spaces(10) + "color: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)) ? Colors.transparent : null,");
-    codeBuffer.writeln(spaces(10) + "decoration: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)) ? null : BoxDecorationHelper.boxDecoration(accessState, app.formBackground),");
+    codeBuffer.writeln(spaces(10) + "decoration: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)) ? null : BoxDecorationHelper.boxDecoration(accessState, app!.formBackground),");
     codeBuffer.writeln(spaces(10) + "padding:");
     codeBuffer.writeln(spaces(10) +
         "const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),");
@@ -511,7 +510,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14) + "padding: const EdgeInsets.all(8),");
     codeBuffer.writeln(spaces(14) + "physics: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)) ? NeverScrollableScrollPhysics() : null,");
     codeBuffer.writeln(spaces(14) + "shrinkWrap: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)),");
-    codeBuffer.writeln(spaces(14) + "children: children");
+    codeBuffer.writeln(spaces(14) + "children: children as List<Widget>");
     codeBuffer.writeln(spaces(12) + "),");
     codeBuffer.writeln(spaces(10) + ")");
     codeBuffer.writeln(spaces(8) + ");");
@@ -543,7 +542,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) +
         "children.add(Container(height: 20.0));");
     codeBuffer.writeln(spaces(8) +
-        "children.add(Divider(height: 1.0, thickness: 1.0, color: RgbHelper.color(rgbo: app.dividerColor)));");
+        "children.add(Divider(height: 1.0, thickness: 1.0, color: RgbHelper.color(rgbo: app!.dividerColor)));");
     return codeBuffer.toString();
   }
 
@@ -569,7 +568,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         case FormTypeField.EntryField:
           codeBuffer.writeln(_fieldStart(field));
           codeBuffer.writeln(spaces(16) + "TextFormField(");
-          codeBuffer.writeln(spaces(16) + "style: TextStyle(color: RgbHelper.color(rgbo: app.formFieldTextColor)),");
+          codeBuffer.writeln(spaces(16) + "style: TextStyle(color: RgbHelper.color(rgbo: app!.formFieldTextColor)),");
           if (field.fieldName == "documentID") {
             if (modelSpecifications.id == "Member")
               codeBuffer.writeln(spaces(18) +
@@ -583,14 +582,14 @@ class RealFormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(
               spaces(18) + "controller: _" + field.fieldName + "Controller,");
           codeBuffer.writeln(spaces(18) + "decoration: InputDecoration(");
-          codeBuffer.write(spaces(20) + "enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: app.formFieldTextColor))),");
-          codeBuffer.write(spaces(20) + "focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: app.formFieldFocusColor))),");
+          codeBuffer.write(spaces(20) + "enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: app!.formFieldTextColor))),");
+          codeBuffer.write(spaces(20) + "focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: RgbHelper.color(rgbo: app!.formFieldFocusColor))),");
           codeBuffer.write(spaces(20) + "icon: Icon(Icons.");
           if (field.iconName != null)
             codeBuffer.write(field.iconName);
           else
             codeBuffer.write("text_format");
-          codeBuffer.writeln(", color: RgbHelper.color(rgbo: app.formFieldHeaderColor)),");
+          codeBuffer.writeln(", color: RgbHelper.color(rgbo: app!.formFieldHeaderColor)),");
           codeBuffer.write(spaces(20) + "labelText: '");
           if (field.displayName == null)
             codeBuffer.write(field.fieldName);
@@ -629,12 +628,12 @@ class RealFormCodeGenerator extends CodeGenerator {
             codeBuffer.write(field.fieldName);
           else
             codeBuffer.write(field.displayName);
-          codeBuffer.writeln("', style: TextStyle(color: RgbHelper.color(rgbo: app.formFieldTextColor))),");
+          codeBuffer.writeln("', style: TextStyle(color: RgbHelper.color(rgbo: app!.formFieldTextColor))),");
           codeBuffer.writeln(spaces(20) +
               "value: _" +
               firstLowerCase(field.fieldName) +
               "Selection,");
-          codeBuffer.writeln(spaces(20) + "onChanged: _readOnly(accessState, state) ? null : (val) {");
+          codeBuffer.writeln(spaces(20) + "onChanged: _readOnly(accessState, state) ? null : (dynamic val) {");
           //      codeBuffer.writeln(spaces(22) + "setState(() => print());");
           codeBuffer.writeln(spaces(22) +
               "setSelection" +
@@ -661,16 +660,16 @@ class RealFormCodeGenerator extends CodeGenerator {
             codeBuffer.writeln(_fieldStart(field));
             codeBuffer.writeln(spaces(16) + "RadioListTile(");
             codeBuffer.writeln(spaces(20) + "value: $i,");
-            codeBuffer.writeln(spaces(20) + "activeColor: RgbHelper.color(rgbo: app.formFieldTextColor),");
+            codeBuffer.writeln(spaces(20) + "activeColor: RgbHelper.color(rgbo: app!.formFieldTextColor),");
             codeBuffer.writeln(spaces(20) +
                 "groupValue: _" +
                 firstLowerCase(field.fieldName) +
                 "SelectedRadioTile,");
             codeBuffer
-                .writeln(spaces(20) + "title: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: app.formFieldTextColor))),");
+                .writeln(spaces(20) + "title: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: app!.formFieldTextColor))),");
             codeBuffer
-                .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: app.formFieldTextColor))),");
-            codeBuffer.writeln(spaces(20) + "onChanged: !accessState.memberIsOwner() ? null : (val) {");
+                .writeln(spaces(20) + "subtitle: Text(\"" + enumField + "\", style: TextStyle(color: RgbHelper.color(rgbo: app!.formFieldTextColor))),");
+            codeBuffer.writeln(spaces(20) + "onChanged: !accessState.memberIsOwner() ? null : (dynamic val) {");
             codeBuffer.writeln(spaces(22) +
                 "setSelection" +
                 firstUpperCase(field.fieldName) +
@@ -688,7 +687,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(20) +
               "child: " +
               firstLowerCase(field.fieldType) +
-              "sList(context, state.value." +
+              "sList(context, state.value!." +
               field.fieldName +
               ", _on" +
               firstUpperCase(field.fieldName) +
@@ -711,7 +710,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(16) +
             field.bespokeFormField +
             "(" +
-            "state.value." +
+            "state.value!." +
             field.fieldName +
             ", _on" +
             firstUpperCase(field.fieldName) +

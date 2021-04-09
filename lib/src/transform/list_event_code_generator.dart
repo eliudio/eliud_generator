@@ -8,7 +8,7 @@ String _code = """
 abstract class \${id}ListEvent extends Equatable {
   const \${id}ListEvent();
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class Load\${id}List extends \${id}ListEvent {}
@@ -16,49 +16,49 @@ class Load\${id}List extends \${id}ListEvent {}
 class NewPage extends \${id}ListEvent {}
 
 class Add\${id}List extends \${id}ListEvent {
-  final \${id}Model value;
+  final \${id}Model? value;
 
   const Add\${id}List({ this.value });
 
   @override
-  List<Object> get props => [ value ];
+  List<Object?> get props => [ value ];
 
   @override
   String toString() => 'Add\${id}List{ value: \$value }';
 }
 
 class Update\${id}List extends \${id}ListEvent {
-  final \${id}Model value;
+  final \${id}Model? value;
 
   const Update\${id}List({ this.value });
 
   @override
-  List<Object> get props => [ value ];
+  List<Object?> get props => [ value ];
 
   @override
   String toString() => 'Update\${id}List{ value: \$value }';
 }
 
 class Delete\${id}List extends \${id}ListEvent {
-  final \${id}Model value;
+  final \${id}Model? value;
 
   const Delete\${id}List({ this.value });
 
   @override
-  List<Object> get props => [ value ];
+  List<Object?> get props => [ value ];
 
   @override
   String toString() => 'Delete\${id}List{ value: \$value }';
 }
 
 class \${id}ListUpdated extends \${id}ListEvent {
-  final List<\${id}Model> value;
-  final bool mightHaveMore;
+  final List<\${id}Model?>? value;
+  final bool? mightHaveMore;
 
   const \${id}ListUpdated({ this.value, this.mightHaveMore });
 
   @override
-  List<Object> get props => [ value, mightHaveMore ];
+  List<Object?> get props => [ value, mightHaveMore ];
 
   @override
   String toString() => '\${id}ListUpdated{ value: \$value, mightHaveMore: \$mightHaveMore }';

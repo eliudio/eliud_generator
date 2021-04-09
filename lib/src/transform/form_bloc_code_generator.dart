@@ -19,10 +19,10 @@ const String _evaluateNewMenuFormEvent = """
 const String _isDocumentIDValid = """
   DocumentID\${id}FormError error(String message, \${id}Model newValue) => DocumentID\${id}FormError(message: message, value: newValue);
 
-  Future<\${id}FormState> _isDocumentIDValid(String value, \${id}Model newValue) async {
+  Future<\${id}FormState> _isDocumentIDValid(String? value, \${id}Model newValue) async {
     if (value == null) return Future.value(error("Provide value for documentID", newValue));
     if (value.length == 0) return Future.value(error("Provide value for documentID", newValue));
-    Future<\${id}Model> findDocument = \${lid}Repository(appId: appId).get(value);
+    Future<\${id}Model?> findDocument = \${lid}Repository(appId: appId)!.get(value);
     return await findDocument.then((documentFound) {
       if (documentFound == null) {
         return Submittable\${id}Form(value: newValue);
@@ -138,7 +138,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(8) + "// Need to re-retrieve the document from the repository so that I get all associated types");
     codeBuffer.write(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: ");
     if (withRepository())
-      codeBuffer.writeln("await " + firstLowerCase(modelSpecifications.id) + "Repository(appId: appId).get(event.value.documentID));");
+      codeBuffer.writeln("await " + firstLowerCase(modelSpecifications.id) + "Repository(appId: appId)!.get(event.value!.documentID));");
     else
       codeBuffer.writeln("event.value);");
     codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
@@ -150,7 +150,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(6) + "}");
 
     codeBuffer.writeln(spaces(4) + "} else if (currentState is " + modelSpecifications.id + "FormInitialized) {");
-    codeBuffer.writeln(spaces(6) + modelSpecifications.modelClassName() + " newValue = null;");
+    codeBuffer.writeln(spaces(6) + modelSpecifications.modelClassName() + "? newValue = null;");
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (!field.hidden) {
@@ -160,12 +160,12 @@ class FormBlocCodeGenerator extends CodeGenerator {
           if (field.isInt()) {
             codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
             codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value.copyWith(" +
+                spaces(10) + "newValue = currentState.value!.copyWith(" +
                     field.fieldName + ": int.parse(event.value));");
             codeBuffer.writeln(_yield(10, field));
             codeBuffer.writeln(spaces(8) + "} else {");
             codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value.copyWith(" +
+                spaces(10) + "newValue = currentState.value!.copyWith(" +
                     field.fieldName + ": 0);");
             String errorClassName = firstUpperCase(field.fieldName) +
                 modelSpecifications.id +
@@ -175,12 +175,12 @@ class FormBlocCodeGenerator extends CodeGenerator {
           } else if (field.isDouble()) {
             codeBuffer.writeln(spaces(8) + "if (isDouble(event.value)) {");
             codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value.copyWith(" +
+                spaces(10) + "newValue = currentState.value!.copyWith(" +
                     field.fieldName + ": double.parse(event.value));");
             codeBuffer.writeln(_yield(10, field));
             codeBuffer.writeln(spaces(8) + "} else {");
             codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value.copyWith(" +
+                spaces(10) + "newValue = currentState.value!.copyWith(" +
                     field.fieldName + ": 0.0);");
             String errorClassName = firstUpperCase(field.fieldName) +
                 modelSpecifications.id +
@@ -190,10 +190,10 @@ class FormBlocCodeGenerator extends CodeGenerator {
           } else if (field.association) {
             codeBuffer.writeln(spaces(8) + "if (event.value != null)");
             codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value.copyWith(" +
+                spaces(10) + "newValue = currentState.value!.copyWith(" +
                     field.fieldName + ": await " +
                     firstLowerCase(field.fieldType) +
-                    "Repository(appId: appId).get(event.value));");
+                    "Repository(appId: appId)!.get(event.value));");
             codeBuffer.writeln(spaces(8) + "else");
             codeBuffer.writeln(
                 spaces(10) + "newValue = new " + modelSpecifications.id +
@@ -203,7 +203,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
                 if (otherField != field) {
                   codeBuffer.writeln(
                       spaces(33) + otherField.fieldName +
-                          ": currentState.value." +
+                          ": currentState.value!." +
                           otherField.fieldName + ",");
                 } else {
                   codeBuffer.writeln(
@@ -216,7 +216,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
             codeBuffer.writeln(_yield(8, field));
           } else {
             codeBuffer.writeln(
-                spaces(8) + "newValue = currentState.value.copyWith(" +
+                spaces(8) + "newValue = currentState.value!.copyWith(" +
                     field.fieldName + ": event.value);");
             codeBuffer.writeln(_yield(8, field));
           }
@@ -250,9 +250,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
   String _memberData() {
     StringBuffer codeBuffer = StringBuffer();
     if (withRepository()) {
-      codeBuffer.writeln(spaces(2) + "final FormAction formAction;");
+      codeBuffer.writeln(spaces(2) + "final FormAction? formAction;");
     }
-    codeBuffer.writeln(spaces(2) + "final String appId;");
+    codeBuffer.writeln(spaces(2) + "final String? appId;");
 
     return codeBuffer.toString();
   }

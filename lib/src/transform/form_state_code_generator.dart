@@ -22,10 +22,10 @@ class FormStateCodeGenerator extends CodeGenerator {
   String _generateClass({String className, String extendsThis}) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln("class " + className + " extends " + extendsThis + " { ");
-    codeBuffer.writeln(spaces(2) + "const " + className + "({ String message, " + modelSpecifications.modelClassName() + " value }): super(message: message, value: value);");
+    codeBuffer.writeln(spaces(2) + "const " + className + "({ String? message, " + modelSpecifications.modelClassName() + "? value }): super(message: message, value: value);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ message, value ];");
+    codeBuffer.writeln(spaces(2) + "List<Object?> get props => [ message, value ];");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() {");
@@ -45,7 +45,7 @@ class FormStateCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "const " + className + "({ " + modelSpecifications.modelClassName() + " value }): super(value: value);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ value ];");
+    codeBuffer.writeln(spaces(2) + "List<Object?> get props => [ value ];");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() {");
@@ -67,14 +67,14 @@ class FormStateCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.formStateClassName() + "();");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [];");
+    codeBuffer.writeln(spaces(2) + "List<Object?> get props => [];");
     codeBuffer.writeln("}");
     codeBuffer.writeln();
 
     codeBuffer.writeln("// Startup: menu has not been initialised yet and so we should show a \"loading indicator\" or something");
     codeBuffer.writeln("class " + modelSpecifications.id + "FormUninitialized extends " + modelSpecifications.formStateClassName() + " {");
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [];");
+    codeBuffer.writeln(spaces(2) + "List<Object?> get props => [];");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() {");
@@ -85,10 +85,10 @@ class FormStateCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln("// " + modelClassName + " has been initialised and hence " + modelClassName + " is available");
     codeBuffer.writeln("class " + modelSpecifications.id + "FormInitialized extends " + modelSpecifications.formStateClassName() + " {");
-    codeBuffer.writeln(spaces(2) + "final " + modelClassName + " value;");
+    codeBuffer.writeln(spaces(2) + "final " + modelClassName + "? value;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ value ];");
+    codeBuffer.writeln(spaces(2) + "List<Object?> get props => [ value ];");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "FormInitialized({ this.value });");
     codeBuffer.writeln("}");
@@ -96,12 +96,12 @@ class FormStateCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln("// Menu has been initialised and hence a menu is available");
     codeBuffer.writeln("abstract class " + modelSpecifications.id + "FormError extends " + modelSpecifications.id + "FormInitialized" + " {");
-    codeBuffer.writeln(spaces(2) + "final String message;");
+    codeBuffer.writeln(spaces(2) + "final String? message;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "List<Object> get props => [ message, value ];");
+    codeBuffer.writeln(spaces(2) + "List<Object?> get props => [ message, value ];");
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "FormError({this.message, " + modelClassName + " value }) : super(value: value);");
+    codeBuffer.writeln(spaces(2) + "const " + modelSpecifications.id + "FormError({this.message, " + modelClassName + "? value }) : super(value: value);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "String toString() {");

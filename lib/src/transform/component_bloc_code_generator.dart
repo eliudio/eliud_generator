@@ -5,7 +5,7 @@ import 'code_generator.dart';
 
 const String _code = """
 class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentState> {
-  final \${id}Repository \${lid}Repository;
+  final \${id}Repository? \${lid}Repository;
 
   \${id}ComponentBloc({ this.\${lid}Repository }): super(\${id}ComponentUninitialized());
   @override
@@ -15,9 +15,9 @@ class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentStat
       try {
         if (currentState is \${id}ComponentUninitialized) {
           bool permissionDenied = false;
-          final model = await \${lid}Repository.get(event.id, onError: (error) {
+          final model = await \${lid}Repository!.get(event.id, onError: (error) {
             // Unfortunatly the below is currently the only way we know how to identify if a document is read protected
-            if ((error is PlatformException) &&  (error.message.startsWith("PERMISSION_DENIED"))) {
+            if ((error is PlatformException) &&  (error.message!.startsWith("PERMISSION_DENIED"))) {
               permissionDenied = true;
             }
           });
@@ -27,7 +27,7 @@ class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentStat
             if (model != null) {
               yield \${id}ComponentLoaded(value: model);
             } else {
-              String id = event.id;
+              String id? = event.id;
               yield \${id}ComponentError(
                   message: "\${id} with id = '\$id' not found");
             }

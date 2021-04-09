@@ -26,7 +26,7 @@ class ComponentEventCodeGenerator extends CodeGenerator {
     codeBuffer.writeln();
 
     codeBuffer.writeln("class Fetch" + modelSpecifications.id + "Component extends "+ modelSpecifications.id + "ComponentEvent {");
-    codeBuffer.writeln(spaces(2) + "final String id;");
+    codeBuffer.writeln(spaces(2) + "final String? id;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "Fetch" + modelSpecifications.id + "Component({ this.id });");
     codeBuffer.writeln("}");

@@ -66,7 +66,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (field.isEnum()) {
         codeBuffer
-            .writeln(field.enumName + " to" + field.enumName + "(int index) {");
+            .writeln(field.enumName + " to" + field.enumName + "(int? index) {");
         codeBuffer.writeln(spaces(2) + "switch (index) {");
         int index = 0;
         field.enumValues.forEach((value) {
@@ -97,7 +97,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
           codeBuffer.writeln(spaces(2) + "// " + field.remark);
         }
         codeBuffer.write(spaces(2));
-        codeBuffer.writeln(field.dartModelType() + " " + field.fieldName + ";");
+        codeBuffer.writeln(field.dartModelType() + "? " + field.fieldName + ";");
       }
     });
     return codeBuffer.toString();
@@ -123,7 +123,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         spaces(2) + modelSpecifications.modelClassName() + " copyWith({");
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
-        codeBuffer.write(field.dartModelType() + " " + field.fieldName + ", ");
+        codeBuffer.write(field.dartModelType() + "? " + field.fieldName + ", ");
       }
     });
     codeBuffer.writeln("}) {");
@@ -195,7 +195,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _toEntity() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(
-        spaces(2) + modelSpecifications.entityClassName() + " toEntity({String appId}) {");
+        spaces(2) + modelSpecifications.entityClassName() + " toEntity({String? appId}) {");
     if (modelSpecifications.preToEntityCode != null) {
       codeBuffer.writeln(spaces(4) + modelSpecifications.preToEntityCode);
     }
@@ -218,23 +218,23 @@ class ModelCodeGenerator extends DataCodeGenerator {
                 codeBuffer
                     .write(".map((key, value) => MapEntry(key, value.index))");
               } else {
-                codeBuffer.write(".index");
+                codeBuffer.write("!.index");
               }
             } else if (field.association) {
-              codeBuffer.write(".documentID");
+              codeBuffer.write("!.documentID");
             } else {
               if (!field.isNativeType()) {
                 if (field.isArray()) {
                   if (field.arrayType != ArrayType.CollectionArrayType) {
                     codeBuffer.writeln();
                     codeBuffer.writeln(
-                        spaces(12) + ".map((item) => item.toEntity(appId: appId))");
+                        spaces(12) + "!.map((item) => item.toEntity(appId: appId))");
                     codeBuffer.write(spaces(12) + ".toList()");
                   } else {
                     codeBuffer.write(spaces(12) + "what to do here?");
                   }
                 } else {
-                  codeBuffer.write(".toEntity(appId: appId)");
+                  codeBuffer.write("!.toEntity(appId: appId)");
                 }
               }
             }
@@ -253,11 +253,11 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.write(spaces(2) +
         "static " +
         modelSpecifications.modelClassName() +
-        " fromEntity(");
+        "? fromEntity(");
     if (modelSpecifications.fields[0].fieldName == "documentID") {
       codeBuffer.write("String documentID, ");
     }
-    codeBuffer.writeln(modelSpecifications.entityClassName() + " entity) {");
+    codeBuffer.writeln(modelSpecifications.entityClassName() + "? entity) {");
     codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
@@ -320,19 +320,19 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.write(spaces(2) +
         "static Future<" +
         modelSpecifications.modelClassName() +
-        "> fromEntityPlus(");
+        "?> fromEntityPlus(");
     if (modelSpecifications.fields[0].fieldName == "documentID") {
       codeBuffer.write("String documentID, ");
     }
     codeBuffer
-        .writeln(modelSpecifications.entityClassName() + " entity, { String appId}) async {");
+        .writeln(modelSpecifications.entityClassName() + "? entity, { String? appId}) async {");
     codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln();
     modelSpecifications.fields.forEach((field) {
       if (field.association) {
         codeBuffer.writeln(spaces(4) +
             field.fieldType +
-            "Model " +
+            "Model? " +
             field.fieldName +
             "Holder;");
         codeBuffer.writeln(
@@ -343,7 +343,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.writeln(spaces(8) +
             "await " +
             firstLowerCase(field.fieldType) +
-            "Repository($appVar).get(entity." +
+            "Repository($appVar)!.get(entity." +
             field.fieldName +
             "Id" +
             ").then((val) {");

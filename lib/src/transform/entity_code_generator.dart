@@ -6,8 +6,8 @@ import 'code_generator.dart';
 import 'data_code_generator.dart';
 
 const String _jsonMethods = """
-  static \${id}Entity fromJsonString(String json) {
-    Map<String, dynamic> generationSpecificationMap = jsonDecode(json);
+  static \${id}Entity? fromJsonString(String json) {
+    Map<String, dynamic>? generationSpecificationMap = jsonDecode(json);
     return fromMap(generationSpecificationMap);
   }
 
@@ -96,7 +96,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.fieldName != "documentID")
           codeBuffer.writeln(
-              "  final " + dartEntityType(field) + " " + fieldName(field) +
+              "  final " + dartEntityType(field) + "? " + fieldName(field) +
                   ";");
       }
     });
@@ -105,7 +105,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
 
   String _getProps() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.write(spaces(2) + "List<Object> get props => [");
+    codeBuffer.write(spaces(2) + "List<Object?> get props => [");
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.fieldName != "documentID")
@@ -121,7 +121,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) +
         "static " +
         modelSpecifications.entityClassName() +
-        " fromMap(Map map) {");
+        "? fromMap(Map? map) {");
     bool extraLine = false;
     codeBuffer.writeln(spaces(4) + "if (map == null) return null;");
     codeBuffer.writeln();
@@ -251,7 +251,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
 
   String _toDocument() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "Map<String, Object> toDocument() {");
+    codeBuffer.writeln(spaces(2) + "Map<String, Object?> toDocument() {");
     bool extraLine = false;
     modelSpecifications.fields.forEach((field) {
       if (!field.isBespoke()) {
@@ -297,7 +297,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     });
     if (extraLine) codeBuffer.writeln();
     codeBuffer
-        .writeln(spaces(4) + "Map<String, Object> theDocument = HashMap();");
+        .writeln(spaces(4) + "Map<String, Object?> theDocument = HashMap();");
     modelSpecifications.fields.forEach((field) {
       if (field.isServerTimestamp()) {
         codeBuffer.writeln(spaces(4) +'theDocument["'+
