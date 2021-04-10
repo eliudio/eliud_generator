@@ -42,7 +42,7 @@ class FormStateCodeGenerator extends CodeGenerator {
   String _generateClass2({String className, String extendsThis}) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln("class " + className + " extends " + extendsThis + " { ");
-    codeBuffer.writeln(spaces(2) + "const " + className + "({ " + modelSpecifications.modelClassName() + " value }): super(value: value);");
+    codeBuffer.writeln(spaces(2) + "const " + className + "({ " + modelSpecifications.modelClassName() + "? value }): super(value: value);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "List<Object?> get props => [ value ];");

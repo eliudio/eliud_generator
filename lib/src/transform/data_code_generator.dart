@@ -44,7 +44,7 @@ abstract class DataCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(
               spaces(4) + "String " + fieldName(field) + "Csv = (" +
                   fieldName(field) + " == null) ? '' : " + fieldName(field) +
-                  ".join(', ');");
+                  "!.join(', ');");
           extraLine = true;
         }
       }

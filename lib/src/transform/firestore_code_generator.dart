@@ -33,7 +33,7 @@ class \${id}Firestore implements \${id}Repository {
   Future<\${id}Model?> _populateDocPlus(DocumentSnapshot value) async {
     return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data()), \${appIdDef});  }
 
-  Future<\${id}Model?> get(String id, {Function(Exception) onError}) {
+  Future<\${id}Model?> get(String? id, {Function(Exception)? onError}) {
     return \${id}Collection.doc(id).get().then((doc) async {
       if (doc.data() != null)
         return await _populateDocPlus(doc);
@@ -47,13 +47,13 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   StreamSubscription<List<\${id}Model?>> listen(\${id}ModelTrigger trigger, {String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery}) {
-    Stream<List<\${id}Model>> stream;
+    Stream<List<\${id}Model?>> stream;
 //    stream = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots().map((data) {
 //    The above line is replaced by the below line. The reason is because the same collection can not be subscribed to twice
 //    The reason we're subscribing twice to the same list, is because the close on bloc isn't called. This needs to be fixed.
 //    See https://github.com/felangel/bloc/issues/2073.
 //    In the meantime:
-      stream = getQuery(\${collection}, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().map((data) {
+      stream = getQuery(\${collection}, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots().map((data) {
       Iterable<\${id}Model?> \${lid}s  = data.docs.map((doc) {
         \${id}Model? value = _populateDoc(doc);
         return value;
@@ -104,7 +104,7 @@ class \${id}Firestore implements \${id}Repository {
 
   Stream<List<\${id}Model?>> valuesWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
     DocumentSnapshot? lastDoc;
-    Stream<List<\${id}Model?>> _values = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).snapshots().asyncMap((snapshot) {
+    Stream<List<\${id}Model?>> _values = getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots().asyncMap((snapshot) {
       return Future.wait(snapshot.docs.map((doc) {
         lastDoc = doc;
         return _populateDocPlus(doc);
@@ -116,7 +116,7 @@ class \${id}Firestore implements \${id}Repository {
 
   Future<List<\${id}Model?>> valuesList({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) async {
     DocumentSnapshot? lastDoc;
-    List<\${id}Model?> _values = await getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).get().then((value) {
+    List<\${id}Model?> _values = await getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.get().then((value) {
       var list = value.docs;
       return list.map((doc) { 
         lastDoc = doc;
@@ -129,7 +129,7 @@ class \${id}Firestore implements \${id}Repository {
 
   Future<List<\${id}Model?>> valuesListWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) async {
     DocumentSnapshot? lastDoc;
-    List<\${id}Model?> _values = await getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3}).get().then((value) {
+    List<\${id}Model?> _values = await getQuery(\${id}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.get().then((value) {
       var list = value.docs;
       return Future.wait(list.map((doc) {
         lastDoc = doc;

@@ -27,7 +27,7 @@ class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentStat
             if (model != null) {
               yield \${id}ComponentLoaded(value: model);
             } else {
-              String id? = event.id;
+              String? id = event.id;
               yield \${id}ComponentError(
                   message: "\${id} with id = '\$id' not found");
             }

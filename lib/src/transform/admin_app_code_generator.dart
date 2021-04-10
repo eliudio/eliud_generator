@@ -41,7 +41,7 @@ const String _headerAdminMenuDef = """
 class AdminMenu extends AdminAppMenuInstallerBase {
 
   Future<MenuDefModel> menu(String appId) async {
-    List<MenuItemModel> menuItems = List<MenuItemModel>();
+    var menuItems = <MenuItemModel>[];
 """;
 
 const String _menuItemDef = """
@@ -64,7 +64,7 @@ const String _footerAdminMenuDef = """
       name: "\${pkgName}",
       menuItems: menuItems
     );
-    await menuDefRepository(appId: appId).add(menu);
+    await menuDefRepository(appId: appId)!.add(menu);
     return menu;
   }
 }
@@ -74,7 +74,7 @@ const String _footerAdminMenuDef = """
 // Page
 const String _page = """
   PageModel _\${lid}sPages() {
-    List<BodyComponentModel> components = List();
+    List<BodyComponentModel> components = [];
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "\${pkgName}_internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
@@ -104,11 +104,11 @@ const String _setupAdminPagesHeader = """
 """;
 
 const String _setupAdminPagesFirstPage = """
-    return pageRepository(appId: appId).add(_\${lid}sPages())
+    return pageRepository(appId: appId)!.add(_\${lid}sPages())
 """;
 
 const String _setupAdminPagesOtherPages = """
-        .then((_) => pageRepository(appId: appId).add(_\${lid}sPages()))
+        .then((_) => pageRepository(appId: appId)!.add(_\${lid}sPages()))
 """;
 
 const String _setupAdminPagesFooter = """
@@ -131,11 +131,11 @@ class AdminAppWiper extends AdminAppWiperBase {
 """;
 
 const String _footerOther = """
-    await \${lid}Repository(appId: appId).deleteAll();
+    await \${lid}Repository(appId: appId)!.deleteAll();
 """;
 
 const String _footerOtherNoApp = """
-    await \${lid}Repository().deleteAll();
+    await \${lid}Repository()!.deleteAll();
 """;
 
 const String _footerApp = """

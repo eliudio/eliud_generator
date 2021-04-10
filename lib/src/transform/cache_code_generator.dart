@@ -28,14 +28,14 @@ const String _code = """
 
   \${id}Cache(this.reference);
 
-  Future<\${id}Model> add(\${id}Model? value) {
+  Future<\${id}Model> add(\${id}Model value) {
     return reference.add(value).then((newValue) {
       fullCache[value!.documentID] = newValue;
       return newValue;
     });
   }
 
-  Future<void> delete(\${id}Model? value){
+  Future<void> delete(\${id}Model value){
     fullCache.remove(value!.documentID);
     reference.delete(value);
     return Future.value();
@@ -50,7 +50,7 @@ const String _code = """
     });
   }
 
-  Future<\${id}Model> update(\${id}Model? value) {
+  Future<\${id}Model> update(\${id}Model value) {
     return reference.update(value).then((newValue) {
       fullCache[value!.documentID] = newValue;
       return newValue;
@@ -63,7 +63,7 @@ const String _code = """
   }
 
   @override
-  Stream<List<\${id}Model?>> valuesWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery eliudQuery }) {
+  Stream<List<\${id}Model?>> valuesWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
     return reference.valuesWithDetails(orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
   }
 
@@ -128,7 +128,7 @@ const String _refreshRelationsModel = """
     \${fieldType}Model? \${fieldName}Holder;
     if (model.\${fieldName} != null) {
       try {
-        await \${lfieldType}Repository(\${appIdVar})!.get(model.\${fieldName}.documentID).then((val) {
+        await \${lfieldType}Repository(\${appIdVar})!.get(model.\${fieldName}!.documentID).then((val) {
           \${fieldName}Holder = val;
         }).catchError((error) {});
       } catch (_) {}
@@ -136,9 +136,9 @@ const String _refreshRelationsModel = """
 """;
 
 const String _refreshRelationsEmbeddedArray = """
-    List<\${fieldType}Model> \${fieldName}Holder;
+    List<\${fieldType}Model>? \${fieldName}Holder;
     if (model.\${fieldName} != null) {
-      \${fieldName}Holder = List<\${fieldType}Model>.from(await Future.wait(await model.\${fieldName}.map((element) async {
+      \${fieldName}Holder = List<\${fieldType}Model>.from(await Future.wait(await model.\${fieldName}!.map((element) async {
         return await \${fieldType}Cache.refreshRelations(element);
       }))).toList();
     }

@@ -24,7 +24,7 @@ import 'package:$packageName/\${path}_list_event.dart';
 
 const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {
-  Widget createNew({String id, Map<String, Object> parameters}) {
+  Widget? createNew({String? id, Map<String, Object>? parameters}) {
     return ListComponent(componentId: id);
   }
 }
@@ -32,7 +32,7 @@ class ListComponentFactory implements ComponentConstructor {
 """;
 
 const String _DropdownButtonFactoryCodeHeader = """
-typedef DropdownButtonChanged(String value);
+typedef DropdownButtonChanged(String? value);
 
 class DropdownButtonComponentFactory implements ComponentDropDown {
 """;
@@ -47,7 +47,7 @@ const String _DropdownButtonSupportMethodFooter = """
 """;
 
 const String _DropdownButtonFactoryCodeMethod = """
-  Widget createNew({String id, Map<String, Object> parameters, String value, DropdownButtonChanged trigger, bool optional}) {
+  Widget createNew({String? id, Map<String, Object>? parameters, String? value, DropdownButtonChanged? trigger, bool? optional}) {
 """;
 
 const String _DropdownButtonFactoryCodeComponent = """
@@ -55,7 +55,7 @@ const String _DropdownButtonFactoryCodeComponent = """
 """;
 
 const String _DropdownButtonFactoryCodeFooter = """
-    return null;
+    return Text("Id \$id not found");
   }
 }
 
@@ -63,11 +63,11 @@ const String _DropdownButtonFactoryCodeFooter = """
 
 const String _ListComponentCodeHeader = """
 class ListComponent extends StatelessWidget with HasFab {
-  final String componentId;
-  Widget widget;
+  final String? componentId;
+  Widget? widget;
 
   @override
-  Widget fab(BuildContext context){
+  Widget? fab(BuildContext context){
     if ((widget != null) && (widget is HasFab)) {
       HasFab hasFab = widget as HasFab;
       return hasFab.fab(context);
@@ -84,13 +84,13 @@ class ListComponent extends StatelessWidget with HasFab {
 """;
 
 const String _DropdownButtonComponentCodeHeader = """
-typedef Changed(String value);
+typedef Changed(String? value);
 
 class DropdownButtonComponent extends StatelessWidget {
-  final String componentId;
-  final String value;
-  final Changed trigger;
-  final bool optional;
+  final String? componentId;
+  final String? value;
+  final Changed? trigger;
+  final bool? optional;
 
   DropdownButtonComponent({this.componentId, this.value, this.trigger, this.optional});
 
@@ -104,11 +104,11 @@ const String _SpecificListComponentCode = """
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
-            \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar}),
+            \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar})!,
           )..add(Load\${upperSpecific}List()),
         )
       ],
-      child: widget,
+      child: widget!,
     );
   }
 """;
@@ -119,7 +119,7 @@ const String _SpecificDropdownButtonComponentCode = """
       providers: [
         BlocProvider<\${upperSpecific}ListBloc>(
           create: (context) => \${upperSpecific}ListBloc(
-            \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar}),
+            \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar})!,
           )..add(Load\${upperSpecific}List()),
         )
       ],
@@ -202,7 +202,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
 
     if (list) {
-      codeBuffer.writeln(spaces(2) + "Widget initWidget() {");
+      codeBuffer.writeln(spaces(2) + "void initWidget() {");
       modelSpecificationPlus.forEach((spec) {
         ModelSpecification ms = spec.modelSpecification;
         if (ms.generate.generateInternalComponent) {

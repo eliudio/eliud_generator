@@ -58,14 +58,14 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
     // Methods
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton)/* && (!spec.modelSpecification.generate.isDocumentCollection)*/) {
-        codeBuffer.write(spaces(4) + spec.modelSpecification.id + "Repository " + firstLowerCase(spec.modelSpecification.id) + "Repository");
+        codeBuffer.write(spaces(4) + spec.modelSpecification.id + "Repository? " + firstLowerCase(spec.modelSpecification.id) + "Repository");
         if (spec.modelSpecification.isAppModel) {
-          codeBuffer.writeln("(String appId) {");
-          codeBuffer.write(spaces(6) + "if (_" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] == null) _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] = ");
+          codeBuffer.writeln("(String? appId) {");
+          codeBuffer.write(spaces(6) + "if ((appId != null) && (_" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] == null)) _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] = ");
 
           var parameter;
           if (spec.modelSpecification.generate.isDocumentCollection) {
-            parameter = "appRepository().getSubCollection(appId, '" +
+            parameter = "appRepository()!.getSubCollection(appId, '" +
                 FirestoreHelper.collectionId(spec.modelSpecification) + "'), appId";
           } else {
             parameter = "appId";

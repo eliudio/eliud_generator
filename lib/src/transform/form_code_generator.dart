@@ -217,7 +217,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "final FormAction? formAction;");
     codeBuffer
-        .writeln(spaces(2) + modelSpecifications.id + "late FormBloc _myFormBloc;");
+        .writeln(spaces(2) + "late " + modelSpecifications.id + "FormBloc _myFormBloc;");
     return codeBuffer.toString();
   }
 
@@ -377,7 +377,7 @@ class RealFormCodeGenerator extends CodeGenerator {
                 field.fieldName +
                 "= state.value!." +
                 field.fieldName +
-                ".documentID;");
+                "!.documentID;");
             codeBuffer.writeln(
                 spaces(8) + "else");
             codeBuffer.writeln(spaces(10) +
@@ -393,7 +393,7 @@ class RealFormCodeGenerator extends CodeGenerator {
                 field.fieldName +
                 "SelectedRadioTile = state.value!." +
                 field.fieldName +
-                ".index;");
+                "!.index;");
             codeBuffer.writeln(
                 spaces(8) + "else");
             codeBuffer.writeln(spaces(10) +

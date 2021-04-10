@@ -153,7 +153,7 @@ class ListCodeGenerator extends CodeGenerator {
         codeBuffer.writeln("Center( child: ImageHelper.getThumbnailFromImageModel(imageModel: value, width: fullScreenWidth(context)))");
       } else {
         codeBuffer.writeln("Center( child: Text(");
-        codeBuffer.writeln(spaces(10) + "value.!" + subTitle + "!,");
+        codeBuffer.writeln(spaces(10) + "value!." + subTitle + "!,");
         codeBuffer.writeln(spaces(10) + "maxLines: 1,");
         codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
         codeBuffer.writeln(
@@ -220,7 +220,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         onPressed: () {
           Navigator.of(context).push(
             pageRouteBuilder(accessState.app, page: BlocProvider.value(
-                value: BlocProvider.of<AppBarListBloc>(context),
+                value: BlocProvider.of<\${id}ListBloc>(context),
                 child: \${id}Form(
                     value: null,
                     formAction: FormAction.AddAction)
@@ -252,7 +252,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
                     onPressed: () {
                       Navigator.of(context).push(
                                 pageRouteBuilder(accessState.app, page: BlocProvider.value(
-                                    value: BlocProvider.of<AppBarListBloc>(context),
+                                    value: BlocProvider.of<\${id}ListBloc>(context),
                                     child: \${id}Form(
                                         value: null,
                                         formAction: FormAction.AddAction)
@@ -317,7 +317,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
   }
   
   
-  Widget getForm(value, action) {
+  Widget? getForm(value, action) {
     if (widget.form == null) {
       return \${id}Form(value: value, formAction: action);
     } else {

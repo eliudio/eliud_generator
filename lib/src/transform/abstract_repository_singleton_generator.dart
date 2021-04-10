@@ -71,11 +71,11 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         if (spec.modelSpecification.isAppModel) {
           codeBuffer.writeln(
               spaces(4) + firstLowerCase(spec.modelSpecification.id) +
-                  "Repository(appId).flush();");
+                  "Repository(appId)!.flush();");
         } else {
           codeBuffer.writeln(
               spaces(4) + firstLowerCase(spec.modelSpecification.id) +
-                  "Repository().flush();");
+                  "Repository()!.flush();");
         }
       }
     });

@@ -46,7 +46,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   }
 
   Stream<\${id}ListState> _mapLoad\${id}ListWithDetailsToState() async* {
-    int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values.length : 0;
+    int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values!.length : 0;
     _\${lid}sListSubscription?.cancel();
     _\${lid}sListSubscription = _\${lid}Repository.listenWithDetails(
             (list) => add(\${id}ListUpdated(value: list, mightHaveMore: amountNow != list.length)),
@@ -58,15 +58,21 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   }
 
   Stream<\${id}ListState> _mapAdd\${id}ListToState(Add\${id}List event) async* {
-    _\${lid}Repository.add(event.value);
+    var value = event.value;
+    if (value != null) 
+      _\${lid}Repository.add(value);
   }
 
   Stream<\${id}ListState> _mapUpdate\${id}ListToState(Update\${id}List event) async* {
-    _\${lid}Repository.update(event.value);
+    var value = event.value;
+    if (value != null) 
+      _\${lid}Repository.update(value);
   }
 
   Stream<\${id}ListState> _mapDelete\${id}ListToState(Delete\${id}List event) async* {
-    _\${lid}Repository.delete(event.value);
+    var value = event.value;
+    if (value != null) 
+      _\${lid}Repository.delete(value);
   }
 
   Stream<\${id}ListState> _map\${id}ListUpdatedToState(

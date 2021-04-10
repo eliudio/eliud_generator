@@ -25,10 +25,7 @@ import '../\${path}_repository.dart';
 
 const String _InMemoryRepositoryMethod = """
 static Widget \${lid}sList(BuildContext context, List<\${id}Model> values, \${id}ListChanged trigger) {
-  \${id}InMemoryRepository inMemoryRepository = \${id}InMemoryRepository(
-    trigger: trigger,
-    items: values,
-  );
+  \${id}InMemoryRepository inMemoryRepository = \${id}InMemoryRepository(trigger, values,);
   return MultiBlocProvider(
     providers: [
       BlocProvider<\${id}ListBloc>(
@@ -46,11 +43,11 @@ const String _InMemoryRepositoryTemplate = """
 class \${id}InMemoryRepository implements \${id}Repository {
     final List<\${id}Model> items;
     final \${triggerSignature} trigger;
-    Stream<List<\${id}Model>> theValues;
+    Stream<List<\${id}Model>>? theValues;
 
-    \${id}InMemoryRepository({this.trigger, this.items}) {
-        List<List<\${id}Model>> myList = new List<List<\${id}Model>>();
-        myList.add(items);
+    \${id}InMemoryRepository(this.trigger, this.items) {
+        List<List<\${id}Model>> myList = <List<\${id}Model>>[];
+        if (items != null) myList.add(items);
         theValues = Stream<List<\${id}Model>>.fromIterable(myList);
     }
 
@@ -68,54 +65,57 @@ class \${id}InMemoryRepository implements \${id}Repository {
     Future<\${id}Model> add(\${id}Model value) {
         items.add(value.copyWith(documentID: newRandomKey()));
         trigger(items);
+        return Future.value(value);
     }
 
     Future<void> delete(\${id}Model value) {
-      int index = _index(value.documentID);
+      int index = _index(value!.documentID!);
       if (index >= 0) items.removeAt(index);
       trigger(items);
+      return Future.value(value);
     }
 
     Future<\${id}Model> update(\${id}Model value) {
-      int index = _index(value.documentID);
+      int index = _index(value!.documentID!);
       if (index >= 0) {
         items.replaceRange(index, index+1, [value]);
         trigger(items);
       }
+      return Future.value(value);
     }
 
-    Future<\${id}Model> get(String id, { Function(Exception) onError }) {
-      int index = _index(id);
+    Future<\${id}Model> get(String? id, { Function(Exception)? onError }) {
+      int index = _index(id!);
       var completer = new Completer<\${id}Model>();
       completer.complete(items[index]);
       return completer.future;
     }
 
-    Stream<List<\${id}Model>> values({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) {
-      return theValues;
+    Stream<List<\${id}Model>> values({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
+      return theValues!;
     }
     
-    Stream<List<\${id}Model>> valuesWithDetails({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) {
-      return theValues;
+    Stream<List<\${id}Model>> valuesWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
+      return theValues!;
     }
     
     @override
-    StreamSubscription<List<\${id}Model>> listen(trigger, { String orderBy, bool descending, Object startAfter, int limit, int privilegeLevel, EliudQuery eliudQuery }) {
-      return theValues.listen((theList) => trigger(theList));
+    StreamSubscription<List<\${id}Model>> listen(trigger, { String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery }) {
+      return theValues!.listen((theList) => trigger(theList));
     }
   
     @override
-    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, { String orderBy, bool descending, Object startAfter, int limit, int privilegeLevel, EliudQuery eliudQuery }) {
-      return theValues.listen((theList) => trigger(theList));
+    StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, { String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery }) {
+      return theValues!.listen((theList) => trigger(theList));
     }
     
     void flush() {}
 
-    Future<List<\${id}Model>> valuesList({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) {
+    Future<List<\${id}Model>> valuesList({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
       return Future.value(items);
     }
     
-    Future<List<\${id}Model>> valuesListWithDetails({String orderBy, bool descending, Object startAfter, int limit, SetLastDoc setLastDoc, int privilegeLevel, EliudQuery eliudQuery }) {
+    Future<List<\${id}Model>> valuesListWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
       return Future.value(items);
     }
 
@@ -142,7 +142,7 @@ class \${id}InMemoryRepository implements \${id}Repository {
 """;
 
 const String _InMemoryRepositoryTemplateFooter = """
-    Future<void> deleteAll() {}
+    Future<void> deleteAll() async {}
 }
 """;
 

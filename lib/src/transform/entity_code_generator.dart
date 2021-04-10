@@ -264,7 +264,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
             if (field.isArray()) {
               if (field.arrayType != ArrayType.CollectionArrayType) {
                 codeBuffer.writeln(spaces(4) +
-                    "final List<Map<String, dynamic>> " +
+                    "final List<Map<String?, dynamic>>? " +
                     fieldName(field) +
                     "ListMap" +
                     " = " +
@@ -273,14 +273,14 @@ class EntityCodeGenerator extends DataCodeGenerator {
                 codeBuffer.writeln(spaces(8) +
                     "? " +
                     fieldName(field) +
-                    ".map((item) => item.toDocument()).toList()");
+                    "!.map((item) => item.toDocument()).toList()");
                 codeBuffer.writeln(spaces(8) + ": null;");
               } else {
                 // the collection is maintained by it's own collection / repository
               }
             } else {
               codeBuffer.writeln(spaces(4) +
-                  "final Map<String, dynamic> " +
+                  "final Map<String, dynamic>? " +
                   fieldName(field) +
                   "Map"
                       " = " +
@@ -288,7 +288,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
                   " != null ");
               codeBuffer
                   .writeln(
-                  spaces(8) + "? " + fieldName(field) + ".toDocument()");
+                  spaces(8) + "? " + fieldName(field) + "!.toDocument()");
               codeBuffer.writeln(spaces(8) + ": null;");
             }
           }
@@ -329,7 +329,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
               } else {
                 if (field.isArray()) {
                   if (field.arrayType != ArrayType.CollectionArrayType) {
-                    codeBuffer.writeln(fieldName(field) + ".toList();");
+                    codeBuffer.writeln(fieldName(field) + "!.toList();");
                   }
                 } else {
                   codeBuffer.writeln(fieldName(field) + ";");

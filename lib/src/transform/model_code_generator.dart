@@ -216,7 +216,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
             if (field.isEnum()) {
               if (field.isMap()) {
                 codeBuffer
-                    .write(".map((key, value) => MapEntry(key, value.index))");
+                    .write("!.map((key, value) => MapEntry(key, value!.index))");
               } else {
                 codeBuffer.write("!.index");
               }
@@ -272,7 +272,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
               if (field.isMap()) {
                 codeBuffer.write("entity." +
                     field.fieldName +
-                    ".map((key, value) => MapEntry(key, to" +
+                    "!.map((key, value) => MapEntry(key, to" +
                     field.enumName +
                     "(value)))");
               } else {
@@ -286,9 +286,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
                     field.fieldName + " == null ? null :");
                 codeBuffer.writeln(spaces(12) + "entity." + field.fieldName);
                 codeBuffer.writeln(spaces(12) +
-                    ".map((item) => " +
+                    "!.map((item) => " +
                     field.fieldType +
-                    "Model.fromEntity(newRandomKey(), item))");
+                    "Model.fromEntity(newRandomKey(), item)!)");
                 codeBuffer.write(spaces(12) + ".toList()");
               } else {
                 codeBuffer.writeln();
@@ -366,7 +366,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
             if (field.isMap()) {
               codeBuffer.write("entity." +
                   field.fieldName +
-                  ".map((key, value) => MapEntry(key, to" +
+                  "!.map((key, value) => MapEntry(key, to" +
                   field.enumName +
                   "(value)))");
             } else {
@@ -389,7 +389,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
                       "Model>.from(await Future.wait(entity. " +
                       field.fieldName);
                   codeBuffer.writeln(spaces(12) +
-                      ".map((item) => " +
+                      "!.map((item) => " +
                       field.fieldType +
                       "Model.fromEntityPlus(newRandomKey(), item, appId: appId))");
                   codeBuffer.write(spaces(12) + ".toList()))");
