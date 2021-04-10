@@ -207,7 +207,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         if (field.fieldName != "documentID") {
           codeBuffer.write(spaces(10) + field.fieldName);
           if ((field.isServerTimestamp()) || (field.isBespoke())) {
-            codeBuffer.write(
+            codeBuffer.writeln(
                 ": " + field.fieldName +", ");
           } else {
             if (field.association) codeBuffer.write("Id");
