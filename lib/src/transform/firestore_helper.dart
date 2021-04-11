@@ -7,6 +7,17 @@ import 'data_code_generator.dart';
 
 //COLLECTION_ID = WHAT_COMES_BEFORE-\${appID}-\${id}s
 
+String retrieve_code = """
+.then((v) async {
+      var newValue = await get(value.documentID);
+      if (newValue == null) {
+        return value;
+      } else {
+        return newValue;
+      }
+    })
+""";
+
 class FirestoreHelper {
   static String collectionId(ModelSpecification modelSpecification) {
     return modelSpecification.id.toLowerCase();
@@ -43,7 +54,7 @@ class FirestoreHelper {
       }
     });
     if (hasServerTimeStamp) {
-      return '.then((v) => get(value.documentID))';
+      return retrieve_code;
     } else {
       return '';
     }

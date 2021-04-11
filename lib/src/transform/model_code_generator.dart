@@ -262,7 +262,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
-      if ((field.isBespoke()) || (field.isServerTimestamp())) {
+      if (field.isServerTimestamp()) {
+        codeBuffer.writeln(spaces(10) + field.fieldName + ": entity." + field.fieldName + ".toString(), ");
+      } else if (field.isBespoke()) {
         codeBuffer.writeln(spaces(10) + field.fieldName + ": entity." + field.fieldName + ", ");
       } else {
         if (field.arrayType != ArrayType.CollectionArrayType) {
@@ -359,7 +361,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         codeBuffer.write(spaces(10) + field.fieldName + ": ");
-        if ((field.isBespoke()) || (field.isServerTimestamp())) {
+        if (field.isServerTimestamp()) {
+          codeBuffer.write("entity." + field.fieldName + ".toString()");
+        } else if (field.isBespoke()) {
           codeBuffer.write("entity." + field.fieldName);
         } else {
           if (field.isEnum()) {
