@@ -339,19 +339,15 @@ class ModelCodeGenerator extends DataCodeGenerator {
             "Holder;");
         codeBuffer.writeln(
             spaces(4) + "if (entity." + field.fieldName + "Id != null) {");
-        codeBuffer.writeln(spaces(6) + "try {");
 
-        String appVar = "appId: appId";
-        codeBuffer.writeln(spaces(8) +
-            "await " +
-            firstLowerCase(field.fieldType) +
-            "Repository($appVar)!.get(entity." +
-            field.fieldName +
-            "Id" +
-            ").then((val) {");
-        codeBuffer.writeln(spaces(10) + field.fieldName + "Holder" + " = val;");
-        codeBuffer.writeln(spaces(8) + "}).catchError((error) {});");
-        codeBuffer.writeln(spaces(6) + "} catch (_) {}");
+        codeBuffer.writeln(spaces(6) + "try {");
+        codeBuffer.writeln(spaces(8) + "  " + field.fieldName + "Holder = await " + firstLowerCase(field.fieldType) +"Repository(appId: appId)!.get(entity." + field.fieldName + "Id);");
+        codeBuffer.writeln(spaces(6) + "} on Exception catch(e) {");
+        codeBuffer.writeln(spaces(8) + "print('Error whilst trying to initialise " + field.fieldName + "');");
+        codeBuffer.writeln(spaces(8) + "print('Error whilst retrieving " + firstLowerCase(field.fieldType) + " with id \${entity." + field.fieldName + "Id}');");
+        codeBuffer.writeln(spaces(8) + "print('Exception: \$e');");
+        codeBuffer.writeln(spaces(6) + "}");
+
         codeBuffer.writeln(spaces(4) + "}");
         codeBuffer.writeln();
       }

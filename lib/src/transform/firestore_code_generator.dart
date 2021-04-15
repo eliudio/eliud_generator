@@ -33,17 +33,18 @@ class \${id}Firestore implements \${id}Repository {
   Future<\${id}Model?> _populateDocPlus(DocumentSnapshot value) async {
     return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data()), \${appIdDef});  }
 
-  Future<\${id}Model?> get(String? id, {Function(Exception)? onError}) {
-    return \${id}Collection.doc(id).get().then((doc) async {
-      if (doc.data() != null)
-        return await _populateDocPlus(doc);
-      else
-        return null;
-    }).catchError((Object e) {
+  Future<\${id}Model?> get(String? id, {Function(Exception)? onError}) async {
+    try {
+      var collection = \${id}Collection.doc(id);
+      var doc = await collection.get();
+      return await _populateDocPlus(doc);
+    } on Exception catch(e) {
+      print("Error whilst retrieving \${id} with id \$id");
+      print("Exceptoin: \$e");
       if (onError != null) {
-        onError(e as Exception);
+        onError(e);
       }
-    });
+    };
   }
 
   StreamSubscription<List<\${id}Model?>> listen(\${id}ModelTrigger trigger, {String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery}) {
