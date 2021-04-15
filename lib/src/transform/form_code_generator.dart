@@ -417,7 +417,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         modelSpecifications.id +
         "FormInitialized) {");
 
-    codeBuffer.writeln(spaces(8) + "List<Widget?> children = [];");
+    codeBuffer.writeln(spaces(8) + "List<Widget> children = [];");
 
     if (modelSpecifications.groups == null) {
       codeBuffer.writeln(_fields(modelSpecifications.fields));
