@@ -168,7 +168,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
                 codeBuffer.writeln(spaces(8) + ".map((dynamic item) =>");
                 codeBuffer.writeln(
                     spaces(8) + field.fieldType +
-                        "Entity.fromMap(item as Map))");
+                        "Entity.fromMap(item as Map)!)");
                 codeBuffer.writeln(spaces(8) + ".toList();");
               } else {
                 // the collection is maintained by it's own collection / repository
