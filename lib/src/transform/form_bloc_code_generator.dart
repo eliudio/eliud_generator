@@ -73,7 +73,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
       if (modelSpecifications.generate.generateFirestoreRepository) {
         codeBuffer.writeln(spaces(amountOfSpaces) + "if (formAction == FormAction.AddAction) {");
         codeBuffer.writeln(spaces(amountOfSpaces + 2) +
-            "yield* _isDocumentIDValid(event!.value, newValue).asStream();");
+            "yield* _isDocumentIDValid(event.value, newValue).asStream();");
         codeBuffer.writeln(spaces(amountOfSpaces) + "} else {");
         codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
         codeBuffer.writeln(spaces(amountOfSpaces) + "}");
@@ -81,7 +81,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(spaces(amountOfSpaces) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
       }
     } else if (field.fieldValidation != null) {
-      codeBuffer.writeln(spaces(amountOfSpaces) + "if (!_is" + firstUpperCase(field.fieldName) + "Valid(event!.value)) {");
+      codeBuffer.writeln(spaces(amountOfSpaces) + "if (!_is" + firstUpperCase(field.fieldName) + "Valid(event.value)) {");
       String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Invalid value\", value: newValue);";
       codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield " + errorClassName + "");
       codeBuffer.writeln(spaces(amountOfSpaces) + "} else {");
@@ -138,13 +138,13 @@ class FormBlocCodeGenerator extends CodeGenerator {
       codeBuffer.writeln(spaces(8) + "// Need to re-retrieve the document from the repository so that I get all associated types");
     codeBuffer.write(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: ");
     if (withRepository())
-      codeBuffer.writeln("await " + firstLowerCase(modelSpecifications.id) + "Repository(appId: appId)!.get(event!.value!.documentID));");
+      codeBuffer.writeln("await " + firstLowerCase(modelSpecifications.id) + "Repository(appId: appId)!.get(event.value!.documentID));");
     else
-      codeBuffer.writeln("event!.value);");
+      codeBuffer.writeln("event.value);");
     codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
     codeBuffer.writeln(spaces(8) + "return;");
     codeBuffer.writeln(spaces(6) + "} else if (event is Initialise" + modelSpecifications.id + "FormNoLoadEvent) {");
-    codeBuffer.writeln(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: event!.value);");
+    codeBuffer.writeln(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: event.value);");
     codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
     codeBuffer.writeln(spaces(8) + "return;");
     codeBuffer.writeln(spaces(6) + "}");
@@ -158,10 +158,10 @@ class FormBlocCodeGenerator extends CodeGenerator {
               firstUpperCase(field.fieldName);
           codeBuffer.writeln(spaces(6) + "if (event is " + className + ") {");
           if (field.isInt()) {
-            codeBuffer.writeln(spaces(8) + "if (isInt(event!.value)) {");
+            codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
             codeBuffer.writeln(
                 spaces(10) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": int.parse(event!.value!));");
+                    field.fieldName + ": int.parse(event.value!));");
             codeBuffer.writeln(_yield(10, field));
             codeBuffer.writeln(spaces(8) + "} else {");
             codeBuffer.writeln(
@@ -173,10 +173,10 @@ class FormBlocCodeGenerator extends CodeGenerator {
             codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
             codeBuffer.writeln(spaces(8) + "}");
           } else if (field.isDouble()) {
-            codeBuffer.writeln(spaces(8) + "if (isDouble(event!.value!)) {");
+            codeBuffer.writeln(spaces(8) + "if (isDouble(event.value!)) {");
             codeBuffer.writeln(
                 spaces(10) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": double.parse(event!.value!));");
+                    field.fieldName + ": double.parse(event.value!));");
             codeBuffer.writeln(_yield(10, field));
             codeBuffer.writeln(spaces(8) + "} else {");
             codeBuffer.writeln(
@@ -188,12 +188,12 @@ class FormBlocCodeGenerator extends CodeGenerator {
             codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
             codeBuffer.writeln(spaces(8) + "}");
           } else if (field.association) {
-            codeBuffer.writeln(spaces(8) + "if (event!.value != null)");
+            codeBuffer.writeln(spaces(8) + "if (event.value != null)");
             codeBuffer.writeln(
                 spaces(10) + "newValue = currentState.value!.copyWith(" +
                     field.fieldName + ": await " +
                     firstLowerCase(field.fieldType) +
-                    "Repository(appId: appId)!.get(event!.value));");
+                    "Repository(appId: appId)!.get(event.value));");
             codeBuffer.writeln(spaces(8) + "else");
             codeBuffer.writeln(
                 spaces(10) + "newValue = new " + modelSpecifications.id +
@@ -217,7 +217,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
           } else {
             codeBuffer.writeln(
                 spaces(8) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": event!.value);");
+                    field.fieldName + ": event.value);");
             codeBuffer.writeln(_yield(8, field));
           }
           codeBuffer.writeln(spaces(8) + "return;");
