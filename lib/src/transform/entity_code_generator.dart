@@ -209,7 +209,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
         if (field.fieldName != "documentID") {
           codeBuffer.write(spaces(6) + fieldName(field) + ": ");
           if (field.isServerTimestamp()) {
-            codeBuffer.writeln(firstLowerCase(modelSpecifications.id) + "Repository()?.timeStampToString(map['" + fieldName(field) + "']), ");
+            codeBuffer.writeln(firstLowerCase(modelSpecifications.id) + "Repository(appId: map['appId'])!.timeStampToString(map['" + fieldName(field) + "']), ");
           } else if ((field.association) || (field.isEnum())) {
             if (field.isMap())
               codeBuffer.writeln(fieldName(field) + ", ");
