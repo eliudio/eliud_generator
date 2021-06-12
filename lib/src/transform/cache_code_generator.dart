@@ -210,13 +210,21 @@ class CacheCodeGenerator extends CodeGenerator {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.association) {
           String appVar;
-          if (/*(field.fieldType != "Image") && */(field.fieldType != "App") &&
+/*
+          if ((field.fieldType != "App") &&
               (field.fieldType != "Member") && (field.fieldType != "Country") &&
               (field.fieldType != "MemberPublicInfo")) {
             appVar = "appId: model." + field.fieldName + "!.appId";
           } else {
             appVar = '';
           }
+*/
+          if (modelSpecifications.isAppModel) {
+            appVar = "appId: model.appId";
+          } else {
+            appVar = '';
+          }
+
           codeBuffer.writeln(process(_refreshRelationsModel,
               parameters: <String, String>{
                 '\${fieldName}': field.fieldName,

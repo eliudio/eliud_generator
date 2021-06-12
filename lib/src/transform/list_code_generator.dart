@@ -234,8 +234,8 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
             var children = <Widget>[];
             children.add(theList(context, values, accessState));
             children.add(
-                StyleRegistry.registry().styleWithContext(context).adminFormStyle().submitButton(
-                    context, 'Add',
+                StyleRegistry.registry().styleWithContext(context).adminFormStyle().button(
+                    context, label: 'Add',
                     onPressed: () {
                       Navigator.of(context).push(
                                 pageRouteBuilder(accessState.app, page: BlocProvider.value(

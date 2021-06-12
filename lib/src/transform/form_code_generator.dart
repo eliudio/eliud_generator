@@ -77,7 +77,7 @@ class \${className}Form extends StatelessWidget {
           );
     } else {
       return Scaffold(
-        appBar: StyleRegistry.registry().styleWithContext(context).adminFormStyle().constructAppBar(context, formAction == FormAction.UpdateAction ? '\${updateTitle}' : '\${addTitle}'),
+        appBar: StyleRegistry.registry().styleWithContext(context).adminFormStyle().appBarWithString(context, title: formAction == FormAction.UpdateAction ? '\${updateTitle}' : '\${addTitle}'),
         body: BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(AccessBloc.appId(context),
                                        \${constructorParameters}
@@ -426,7 +426,7 @@ class RealFormCodeGenerator extends CodeGenerator {
 
 
     codeBuffer.writeln(spaces(8) + "if ((formAction != FormAction.ShowData) && (formAction != FormAction.ShowPreloadedData))");
-    codeBuffer.writeln(spaces(10) + "children.add(StyleRegistry.registry().styleWithContext(context).adminFormStyle().submitButton(context, 'Submit',");
+    codeBuffer.writeln(spaces(10) + "children.add(StyleRegistry.registry().styleWithContext(context).adminFormStyle().button(context, label: 'Submit',");
     codeBuffer.writeln(spaces(18) + "onPressed: _readOnly(accessState, state) ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
         "if (state is " +
@@ -579,23 +579,20 @@ class RealFormCodeGenerator extends CodeGenerator {
 
           var hintText;
           if (field.remark != null)
-            hintText = field.remark;
+            hintText = "'field.remark'";
 
-          var fieldType;
-          if (field.isDouble()) {
-            fieldType = "FieldType.Double";
-          } else if (field.isInt()) {
-            fieldType = "FieldType.Int";
-          } else if (field.isString()) {
-            fieldType = "FieldType.String";
-          } else {
-            fieldType = "FieldType.Other";
-          }
+          var keyboardType;
+          if (field.isDouble())
+            keyboardType = "keyboardType: TextInputType.number";
+          if (field.isInt())
+            keyboardType =  "keyboardType: TextInputType.number";
+          if (field.isString())
+            keyboardType = "keyboardType: TextInputType.text";
 
           var validator = "(_) => state is " + firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError ? state.message : null";
 
           codeBuffer.writeln(_fieldStart(field));
-          codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithContext(context).adminFormStyle().textFormField(context, '$labelName', Icons.$iconName, $readOnlyCondition, $controllerName, $fieldType, validator: $validator, hintText: '$hintText')");
+          codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithContext(context).adminFormStyle().textFormField(context, labelText: '$labelName', icon: Icons.$iconName, readOnly: $readOnlyCondition, textEditingController: $controllerName, $keyboardType, validator: $validator, hintText: $hintText)");
           codeBuffer.writeln(_fieldEnd());
 
           break;
