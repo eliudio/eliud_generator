@@ -8,7 +8,7 @@ import 'package:eliud_core/core/access/bloc/access_bloc.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/widgets/progress_indicator.dart';
-
+import 'package:eliud_core/style/style_registry.dart';
 import 'package:eliud_core/core/global_data.dart';
 import 'package:eliud_core/tools/has_fab.dart';
 import 'package:flutter/material.dart';
@@ -137,11 +137,7 @@ class ListCodeGenerator extends CodeGenerator {
     if (modelSpecifications.listFields.imageTitle) {
       codeBuffer.writeln(spaces(12) + "child: Center( child: ImageHelper.getImageFromMediumModel(memberMediumModel: value!." + title + ", width: fullScreenWidth(context)))");
     } else {
-      codeBuffer.writeln(spaces(12) + "child: Center(child: Text(");
-      codeBuffer.writeln(spaces(14) + "value!." + title + "!,");
-      codeBuffer.writeln(
-          spaces(14) + "style: TextStyle(color: RgbHelper.color(rgbo: app.listTextItemColor)),");
-      codeBuffer.writeln(spaces(12) + ")),");
+      codeBuffer.writeln(spaces(12) + "child: Center(child: StyleRegistry.registry().styleWithContext(context).adminListStyle().listItem(context, value!.$title!)),");
     }
     codeBuffer.writeln(spaces(10) + "),");
     codeBuffer.writeln(spaces(8) + "),");
@@ -152,13 +148,7 @@ class ListCodeGenerator extends CodeGenerator {
       if (modelSpecifications.listFields.imageSubTitle) {
         codeBuffer.writeln("Center( child: ImageHelper.getThumbnailFromImageModel(imageModel: value, width: fullScreenWidth(context)))");
       } else {
-        codeBuffer.writeln("Center( child: Text(");
-        codeBuffer.writeln(spaces(10) + "value!." + subTitle + "!,");
-        codeBuffer.writeln(spaces(10) + "maxLines: 1,");
-        codeBuffer.writeln(spaces(10) + "overflow: TextOverflow.ellipsis,");
-        codeBuffer.writeln(
-            spaces(10) + "style: TextStyle(color: RgbHelper.color(rgbo: app.listTextItemColor)),");
-        codeBuffer.writeln(spaces(8) + "))");
+        codeBuffer.writeln("Center(child: StyleRegistry.registry().styleWithContext(context).adminListStyle().listItem(context, value!.$subTitle!))");
       }
       codeBuffer.writeln(spaces(12) + ": null,");
     }
@@ -212,11 +202,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
     if (accessState is AppLoaded) {
       return !accessState.memberIsOwner() \${allowAddItemsCondition}
         ? null
-        :FloatingActionButton(
-        heroTag: "\${id}FloatBtnTag",
-        foregroundColor: RgbHelper.color(rgbo: accessState.app.floatingButtonForegroundColor),
-        backgroundColor: RgbHelper.color(rgbo: accessState.app.floatingButtonBackgroundColor),
-        child: Icon(Icons.add),
+        : StyleRegistry.registry().styleWithContext(context).adminListStyle().floatingActionButton(context, 'PageFloatBtnTag', Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(
             pageRouteBuilder(accessState.app, page: BlocProvider.value(
@@ -247,8 +233,9 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
           if ((widget.isEmbedded != null) && widget.isEmbedded!) {
             var children = <Widget>[];
             children.add(theList(context, values, accessState));
-            children.add(RaisedButton(
-                    color: RgbHelper.color(rgbo: accessState.app.formSubmitButtonColor),
+            children.add(
+                StyleRegistry.registry().styleWithContext(context).adminFormStyle().submitButton(
+                    context, 'Add',
                     onPressed: () {
                       Navigator.of(context).push(
                                 pageRouteBuilder(accessState.app, page: BlocProvider.value(
@@ -259,7 +246,6 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
                                 )),
                               );
                     },
-                    child: Text('Add', style: TextStyle(color: RgbHelper.color(rgbo: accessState.app.formSubmitButtonTextColor))),
                   ));
             return ListView(
               padding: const EdgeInsets.all(8),
@@ -283,11 +269,9 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
   
   Widget theList(BuildContext context, values, AppLoaded accessState) {
     return Container(
-      decoration: widget.listBackground == null ? BoxDecorationHelper.boxDecoration(accessState, accessState.app.listBackground) : BoxDecorationHelper.boxDecoration(accessState, widget.listBackground),
+      decoration: widget.listBackground == null ? StyleRegistry.registry().styleWithContext(context).adminListStyle().boxDecorator(context) : BoxDecorationHelper.boxDecoration(accessState, widget.listBackground),
       child: ListView.separated(
-        separatorBuilder: (context, index) => Divider(
-          color: RgbHelper.color(rgbo: accessState.app.dividerColor)
-        ),
+        separatorBuilder: (context, index) => StyleRegistry.registry().styleWithContext(context).adminListStyle().divider(context),
         shrinkWrap: true,
         physics: ScrollPhysics(),
         itemCount: values.length,
