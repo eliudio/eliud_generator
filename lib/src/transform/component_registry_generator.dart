@@ -6,7 +6,7 @@ import 'code_generator_multi.dart';
 
 const String _imports = """
 import '../model/internal_component.dart';
-import 'package:eliud_core/tools/registry.dart';
+import 'package:eliud_core/core/registry.dart';
 
 \${import}
 
