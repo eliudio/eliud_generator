@@ -6,7 +6,6 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName, List<String> depends) => """
-import 'package:eliud_core/core/widgets/progress_indicator.dart';
 import 'package:eliud_core/core/global_data.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/access/bloc/access_bloc.dart';
@@ -319,7 +318,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         "if (state is " +
         modelSpecifications.id +
         "FormUninitialized) return Center(");
-    codeBuffer.writeln(spaces(8) + "child: DelayedCircularProgressIndicator(),");
+    codeBuffer.writeln(spaces(8) + "child: StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context),");
     codeBuffer.writeln(spaces(6) + ");");
     codeBuffer.writeln();
 
@@ -502,7 +501,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + ");");
 
     codeBuffer.writeln(spaces(6) + "} else {");
-    codeBuffer.writeln(spaces(8) + "return DelayedCircularProgressIndicator();");
+    codeBuffer.writeln(spaces(8) + "return StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context);");
     codeBuffer.writeln(spaces(6) + "}");
     // close blocbuilder
     codeBuffer.writeln(spaces(4) + "});");

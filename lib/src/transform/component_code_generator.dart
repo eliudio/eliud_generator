@@ -38,7 +38,7 @@ abstract class Abstract\${id}Component extends StatelessWidget {
         return alertWidget(title: 'Error', content: state.message);
       } else {
         return Center(
-          child: DelayedCircularProgressIndicator(),
+          child: StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context),
         );
       }
     });
@@ -59,8 +59,7 @@ class ComponentCodeGenerator extends CodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:flutter/material.dart';");
     headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
-    headerBuffer.writeln("import 'package:eliud_core/core/widgets/progress_indicator.dart';");
-
+    headerBuffer.writeln("import 'package:eliud_core/style/style_registry.dart';");
     headerBuffer.writeln();
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentBlocFileName()));
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentEventFileName()));

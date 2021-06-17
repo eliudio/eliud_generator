@@ -10,10 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:eliud_core/core/widgets/progress_indicator.dart';
-
-//import 'package:cached_network_image/cached_network_image.dart';
-
+import 'package:eliud_core/style/style_registry.dart';
 import 'package:eliud_core/core/access/bloc/access_state.dart';
 import 'package:eliud_core/core/access/bloc/access_bloc.dart';
 
@@ -66,9 +63,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
     var accessState = AccessBloc.getState(context);
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
       if (state is \${id}ListLoading) {
-        return Center(
-          child: DelayedCircularProgressIndicator(),
-        );
+        return StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context);
       } else if (state is \${id}ListLoaded) {
         String? valueChosen;
         if (state.values!.indexWhere((v) => (v!.documentID == widget.value)) >= 0)
@@ -119,9 +114,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
           return Center(child: button);
         }
       } else {
-        return Center(
-          child: DelayedCircularProgressIndicator(),
-        );
+        return StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context);
       }
     });
   }
