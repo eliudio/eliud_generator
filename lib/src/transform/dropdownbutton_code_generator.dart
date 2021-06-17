@@ -165,7 +165,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     if (modelSpecifications.listFields.imageTitle) {
       childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.title }));
     } else {
-      childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + "!)");
+      childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + ")");
     }
     childCodeBuffer.writeln(");");
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.subTitle + " != null) ");
@@ -173,7 +173,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     if (modelSpecifications.listFields.imageSubTitle) {
       childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.subTitle }));
     } else {
-      childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + "!)");
+      childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + ")");
     }
     childCodeBuffer.writeln(");");
     childCodeBuffer.writeln("return widgets;");
