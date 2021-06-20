@@ -224,7 +224,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
     if (accessState is AppLoaded) {
       return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
         if (state is \${id}ListLoading) {
-          return StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context);
+          return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
         } else if (state is \${id}ListLoaded) {
           final values = state.values;
           if ((widget.isEmbedded != null) && widget.isEmbedded!) {
@@ -254,7 +254,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
             return theList(context, values, accessState);
           }
         } else {
-          return StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context);
+          return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
         }
       });
     } else {

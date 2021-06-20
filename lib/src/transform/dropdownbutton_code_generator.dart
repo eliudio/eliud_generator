@@ -63,7 +63,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
     var accessState = AccessBloc.getState(context);
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
       if (state is \${id}ListLoading) {
-        return StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context);
+        return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
       } else if (state is \${id}ListLoaded) {
         String? valueChosen;
         if (state.values!.indexWhere((v) => (v!.documentID == widget.value)) >= 0)
@@ -114,7 +114,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
           return Center(child: button);
         }
       } else {
-        return StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicator(context);
+        return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
       }
     });
   }
