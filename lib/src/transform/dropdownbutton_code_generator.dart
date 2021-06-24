@@ -4,7 +4,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName) => """
-import 'package:eliud_core/core/global_data.dart';
+import 'package:eliud_core/core/packages.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

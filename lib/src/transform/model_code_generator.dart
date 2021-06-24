@@ -7,7 +7,6 @@ import 'data_code_generator.dart';
 
 String _imports(String packageName, List<String> depends) =>
     """
-import 'package:eliud_core/core/global_data.dart';
 import 'package:eliud_core/tools/common_tools.dart';
 
 """ +
