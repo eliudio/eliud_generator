@@ -259,6 +259,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(modelSpecifications.entityClassName() + "? entity) {");
     codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln(
+        spaces(4) + "var counter = 0;");
+    codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       if (field.isServerTimestamp()) {
@@ -287,9 +289,15 @@ class ModelCodeGenerator extends DataCodeGenerator {
                     field.fieldName + " == null ? null :");
                 codeBuffer.writeln(spaces(12) + "entity." + field.fieldName);
                 codeBuffer.writeln(spaces(12) +
-                    "!.map((item) => " +
+                    "!.map((item) {");
+                codeBuffer.writeln(spaces(14) +
+                    "counter++; ");
+                codeBuffer.writeln(spaces(14) +
+                    "return " +
                     field.fieldType +
-                    "Model.fromEntity(newRandomKey(), item)!)");
+                    "Model.fromEntity(counter.toString(), item)!;");
+                codeBuffer.writeln(spaces(12) +
+                    "})");
                 codeBuffer.write(spaces(12) + ".toList()");
               } else {
                 codeBuffer.writeln();
@@ -352,6 +360,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
       }
     });
     codeBuffer.writeln(
+        spaces(4) + "var counter = 0;");
+    codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
@@ -383,14 +393,18 @@ class ModelCodeGenerator extends DataCodeGenerator {
                   // The reason for requiring a non fixed sized list is because we need to be able to use replaceRange in XyzInMemoryRepository
                   codeBuffer.writeln(spaces(12) +
                       "entity. " +
-                      field.fieldName + " == null ? null : new List<" +
+                      field.fieldName + " == null ? null : List<" +
                       field.fieldType +
                       "Model>.from(await Future.wait(entity. " +
                       field.fieldName);
                   codeBuffer.writeln(spaces(12) +
-                      "!.map((item) => " +
+                      "!.map((item) {");
+                  codeBuffer.writeln(spaces(12) +
+                      "counter++;");
+                  codeBuffer.writeln(spaces(12) +
+                      "return " +
                       field.fieldType +
-                      "Model.fromEntityPlus(newRandomKey(), item, appId: appId))");
+                      "Model.fromEntityPlus(counter.toString(), item, appId: appId);})");
                   codeBuffer.write(spaces(12) + ".toList()))");
                 } else {
                   codeBuffer.write("await " +
