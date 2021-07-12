@@ -27,11 +27,11 @@ class \${id}Firestore implements \${id}Repository {
   }
 
   \${id}Model? _populateDoc(DocumentSnapshot value) {
-    return \${id}Model.fromEntity(value.id, \${id}Entity.fromMap(value.data()));
+    return \${id}Model.fromEntity(value.id, \${id}Entity.fromMap(value.data() as Map<String, dynamic>));
   }
 
   Future<\${id}Model?> _populateDocPlus(DocumentSnapshot value) async {
-    return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data()), \${appIdDef});  }
+    return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data() as Map<String, dynamic>), \${appIdDef});  }
 
   Future<\${id}Model?> get(String? id, {Function(Exception)? onError}) async {
     try {
