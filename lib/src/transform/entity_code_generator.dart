@@ -121,9 +121,10 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) +
         "static " +
         modelSpecifications.entityClassName() +
-        "? fromMap(Map? map) {");
+        "? fromMap(Object? o) {");
     bool extraLine = false;
-    codeBuffer.writeln(spaces(4) + "if (map == null) return null;");
+    codeBuffer.writeln(spaces(4) + "if (o == null) return null;");
+    codeBuffer.writeln(spaces(4) + "var map = o as Map<String, dynamic>;");
     codeBuffer.writeln();
     modelSpecifications.fields.forEach((field) {
       if (field.isBespoke()) {
