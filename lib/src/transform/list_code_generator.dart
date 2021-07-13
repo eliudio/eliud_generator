@@ -109,7 +109,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln("class " + modelSpecifications.id + "ListItem extends StatelessWidget {");
     codeBuffer.writeln(spaces(2) + "final DismissDirectionCallback onDismissed;");
     codeBuffer.writeln(spaces(2) + "final GestureTapCallback onTap;");
-    codeBuffer.writeln(spaces(2) + "final AppModel app;");
+//    codeBuffer.writeln(spaces(2) + "final AppModel app;");
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + "? value;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListItem({");
@@ -117,7 +117,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(4) + "required this.onDismissed,");
     codeBuffer.writeln(spaces(4) + "required this.onTap,");
     codeBuffer.writeln(spaces(4) + "required this.value,");
-    codeBuffer.writeln(spaces(4) + "required this.app,");
+//    codeBuffer.writeln(spaces(4) + "required this.app,");
     codeBuffer.writeln(spaces(2) + "}) : super(key: key);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
@@ -276,7 +276,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
 
           return \${id}ListItem(
             value: value,
-            app: accessState.app,
+//            app: accessState.app,
             onDismissed: (direction) {
               BlocProvider.of<\${id}ListBloc>(context)
                   .add(Delete\${id}List(value: value));
