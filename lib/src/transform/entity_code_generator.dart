@@ -210,7 +210,28 @@ class EntityCodeGenerator extends DataCodeGenerator {
         if (field.fieldName != "documentID") {
           codeBuffer.write(spaces(6) + fieldName(field) + ": ");
           if (field.isServerTimestamp()) {
-            codeBuffer.writeln(firstLowerCase(modelSpecifications.id) + "Repository(appId: map['appId'])!.timeStampToString(map['" + fieldName(field) + "']), ");
+            if (field.isServerTimestampInitialized()) {
+              var repoArgs;
+              var documentSubCollectionOf = modelSpecifications.generate
+                  .documentSubCollectionOf;
+              if (documentSubCollectionOf != null) {
+                if (modelSpecifications.generate.isAppSubCollection()) {
+                  repoArgs = "appId: map['appId']";
+                } else {
+                  var lowerCase = documentSubCollectionOf.toLowerCase();
+                  repoArgs = "appId: map['appId'], " + lowerCase + "Id: map['" +
+                      lowerCase + "Id']";
+                }
+              } else {
+                repoArgs = '';
+              }
+              codeBuffer.writeln(firstLowerCase(modelSpecifications.id) +
+                  "Repository($repoArgs)!.timeStampToString(map['" +
+                  fieldName(field) + "']), ");
+            } else {
+              codeBuffer.writeln("map['" +
+                  fieldName(field) + "']");
+            }
           } else if ((field.association) || (field.isEnum())) {
             if (field.isMap())
               codeBuffer.writeln(fieldName(field) + ", ");

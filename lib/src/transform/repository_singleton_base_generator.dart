@@ -1,7 +1,5 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
-
-import 'code_generator.dart';
 import 'code_generator_multi.dart';
 import 'firestore_helper.dart';
 
@@ -60,23 +58,62 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton)/* && (!spec.modelSpecification.generate.isDocumentCollection)*/) {
         codeBuffer.write(spaces(4) + spec.modelSpecification.id + "Repository? " + firstLowerCase(spec.modelSpecification.id) + "Repository");
         if (spec.modelSpecification.isAppModel) {
-          codeBuffer.writeln("(String? appId) {");
-          codeBuffer.write(spaces(6) + "if ((appId != null) && (_" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] == null)) _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId] = ");
+          var documentSubCollectionOf = spec.modelSpecification.generate.documentSubCollectionOf;
+          if ((documentSubCollectionOf != null) && (!spec.modelSpecification.generate.isAppSubCollection())) {
+            var lowerCase = documentSubCollectionOf.toLowerCase();
+            var id = lowerCase + "Id";
+            codeBuffer.writeln("(String? appId, String? $id) {");
+            codeBuffer.writeln(spaces(6) + "var key = appId == null || $id == null ? null : appId + '-' + $id;");
+            codeBuffer.write(spaces(6) + "if ((key != null) && (_" +
+                firstLowerCase(spec.modelSpecification.id) +
+                "Repository[key] == null)) _" +
+                firstLowerCase(spec.modelSpecification.id) +
+                "Repository[key] = ");
 
-          var parameter;
-          if (spec.modelSpecification.generate.isDocumentCollection) {
-            parameter = "appRepository()!.getSubCollection(appId, '" +
-                FirestoreHelper.collectionId(spec.modelSpecification) + "'), appId";
-          } else {
-            parameter = "appId";
-          }
-          if (spec.modelSpecification.generate.generateCache) {
-            codeBuffer.writeln(spec.modelSpecification.id + "Cache(" + spec.modelSpecification.id + "${prefix}Firestore($parameter));");
-          } else {
-              codeBuffer.writeln(spec.modelSpecification.id + "${prefix}Firestore($parameter);");
-          }
+            var parameter = lowerCase + "Repository(appId)!.getSubCollection($id!, '" +
+                FirestoreHelper.collectionId(spec.modelSpecification) +
+                "'), appId!";
+            if (spec.modelSpecification.generate.generateCache) {
+              codeBuffer.writeln(spec.modelSpecification.id + "Cache(" +
+                  spec.modelSpecification.id +
+                  "${prefix}Firestore($parameter));");
+            } else {
+              codeBuffer.writeln(spec.modelSpecification.id +
+                  "${prefix}Firestore($parameter);");
+            }
 
-          codeBuffer.writeln(spaces(6) + "return _" + firstLowerCase(spec.modelSpecification.id) + "Repository[appId];");
+            codeBuffer.writeln(spaces(6) + "return _" +
+                firstLowerCase(spec.modelSpecification.id) +
+                "Repository[key];");
+          } else {
+            codeBuffer.writeln("(String? appId) {");
+            codeBuffer.write(spaces(6) + "if ((appId != null) && (_" +
+                firstLowerCase(spec.modelSpecification.id) +
+                "Repository[appId] == null)) _" +
+                firstLowerCase(spec.modelSpecification.id) +
+                "Repository[appId] = ");
+
+            var parameter;
+            if (spec.modelSpecification.generate.isAppSubCollection()) {
+              parameter = "appRepository()!.getSubCollection(appId, '" +
+                  FirestoreHelper.collectionId(spec.modelSpecification) +
+                  "'), appId";
+            } else {
+              parameter = "appId";
+            }
+            if (spec.modelSpecification.generate.generateCache) {
+              codeBuffer.writeln(spec.modelSpecification.id + "Cache(" +
+                  spec.modelSpecification.id +
+                  "${prefix}Firestore($parameter));");
+            } else {
+              codeBuffer.writeln(spec.modelSpecification.id +
+                  "${prefix}Firestore($parameter);");
+            }
+
+            codeBuffer.writeln(spaces(6) + "return _" +
+                firstLowerCase(spec.modelSpecification.id) +
+                "Repository[appId];");
+          }
         } else {
           codeBuffer.writeln("() {");
           codeBuffer.writeln(spaces(6) + "return _" + firstLowerCase(spec.modelSpecification.id) + "Repository;");

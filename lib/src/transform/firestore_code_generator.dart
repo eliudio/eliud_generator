@@ -262,7 +262,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     });
 
 */
-    if (modelSpecifications.generate.isDocumentCollection)
+    if (modelSpecifications.generate.documentSubCollectionOf != null)
       headerBuffer.writeln(process(_footerWithoutCollectionParameter, parameters: parameters));
     else if (modelSpecifications.isAppModel)
       headerBuffer.writeln(process(_footer, parameters: parameters));

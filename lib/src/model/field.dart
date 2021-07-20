@@ -187,6 +187,10 @@ class Field extends Equatable {
   }
 
   bool isServerTimestamp() {
+    return (fieldType == "ServerTimestamp") || (fieldType == "ServerTimestampUninitialized");
+  }
+
+  bool isServerTimestampInitialized() {
     return (fieldType == "ServerTimestamp");
   }
 

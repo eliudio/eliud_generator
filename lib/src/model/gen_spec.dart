@@ -15,12 +15,14 @@ class GenerateSpecification {
   final bool generateInternalComponent; // generate an administrative component
   final bool generateEmbeddedComponent; // is this an embedded internal component?
   final bool isExtension;               // is this an extension, is this a component that can be added to a page
-  final bool isDocumentCollection;      // is this a subcollection of app?
+  final String documentSubCollectionOf;   // is this a subcollection and if so of which doc?
+
+  bool isAppSubCollection() => documentSubCollectionOf != null && documentSubCollectionOf.toLowerCase() == "app";
 
   GenerateSpecification({ this.generateComponent, this.generateRepository, this.generateCache, this.hasPersistentRepository,
     this.generateFirestoreRepository, this.generateRepositorySingleton, this.generateModel, this.generateEntity,
     this.generateForm, this.generateList, this.generateDropDownButton, this.generateInternalComponent,
-    this.generateEmbeddedComponent, this.isExtension, this.isDocumentCollection
+    this.generateEmbeddedComponent, this.isExtension, this.documentSubCollectionOf
   });
 
   Map<String, Object> toJson() {
@@ -39,7 +41,7 @@ class GenerateSpecification {
       "generateInternalComponent": generateInternalComponent,
       "generateEmbeddedComponent": generateEmbeddedComponent,
       "isExtension": isExtension,
-      "isDocumentCollection": isDocumentCollection,
+      "documentSubCollectionOf": documentSubCollectionOf,
     };
   }
 
@@ -51,7 +53,7 @@ class GenerateSpecification {
 
   @override
   List<Object> get props => [generateComponent, generateRepository, generateCache, generateFirestoreRepository, generateRepositorySingleton, hasPersistentRepository, generateModel,
-    generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension, isDocumentCollection];
+    generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension, documentSubCollectionOf];
 
   @override
   String toString() {
@@ -74,7 +76,7 @@ class GenerateSpecification {
         generateInternalComponent: json["generateInternalComponent"] as bool ?? false,
         generateEmbeddedComponent: json["generateEmbeddedComponent"] as bool ?? false,
         isExtension: json["isExtension"] as bool ?? false,
-        isDocumentCollection: json["isDocumentCollection"] as bool ?? false
+        documentSubCollectionOf: json["documentSubCollectionOf"] as String
     );
   }
 
