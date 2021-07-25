@@ -16,7 +16,6 @@ import 'package:eliud_core/tools/query/query_tools.dart';
 
 String _code = """
 
-const _\${lid}Limit = 5;
 
 class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   final \${id}Repository _\${lid}Repository;
@@ -27,8 +26,9 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   final String? orderBy;
   final bool? descending;
   final bool? detailed;
+  final int \${lid}Limit;
 
-  \${id}ListBloc({this.paged, this.orderBy, this.descending, this.detailed, this.eliudQuery, required \${id}Repository \${lid}Repository})
+  \${id}ListBloc({this.paged, this.orderBy, this.descending, this.detailed, this.eliudQuery, required \${id}Repository \${lid}Repository, this.\${lid}Limit = 5})
       : assert(\${lid}Repository != null),
         _\${lid}Repository = \${lid}Repository,
         super(\${id}ListLoading());
@@ -41,7 +41,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
       orderBy: orderBy,
       descending: descending,
       eliudQuery: eliudQuery,
-      limit: ((paged != null) && paged!) ? pages * _\${lid}Limit : null
+      limit: ((paged != null) && paged!) ? pages * \${lid}Limit : null
     );
   }
 
@@ -53,7 +53,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
         orderBy: orderBy,
         descending: descending,
         eliudQuery: eliudQuery,
-        limit: ((paged != null) && paged!) ? pages * _\${lid}Limit : null
+        limit: ((paged != null) && paged!) ? pages * \${lid}Limit : null
     );
   }
 
