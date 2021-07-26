@@ -32,7 +32,7 @@ class FirestoreHelper {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write("copyWith(");
     modelSpecifications.fields.forEach((field) {
-      if (field.isServerTimestamp()) {
+      if (field.isServerTimestampInitialized()) {
         codeBuffer.write(field.fieldName + " : FieldValue.serverTimestamp(), ");
         hasServerTimeStamp = true;
       }
