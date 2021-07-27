@@ -230,7 +230,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
                   fieldName(field) + "']), ");
             } else {
               codeBuffer.writeln("map['" +
-                  fieldName(field) + "']");
+                  fieldName(field) + "'],");
             }
           } else if ((field.association) || (field.isEnum())) {
             if (field.isMap())
