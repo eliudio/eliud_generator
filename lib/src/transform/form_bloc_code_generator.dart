@@ -38,6 +38,7 @@ String _imports(String packageName, List<String> depends) => """
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:eliud_core/tools/firestore/firestore_tools.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:eliud_core/tools/enums.dart';
@@ -214,11 +215,16 @@ class FormBlocCodeGenerator extends CodeGenerator {
             codeBuffer.writeln(spaces(10) + ");");
 
             codeBuffer.writeln(_yield(8, field));
-          } else {
+          } else if (field.isServerTimestamp()) {
             codeBuffer.writeln(
                 spaces(8) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": event.value);");
+                    field.fieldName + ": dateTimeFromTimestampString(event.value!));");
             codeBuffer.writeln(_yield(8, field));
+          } else {
+          codeBuffer.writeln(
+              spaces(8) + "newValue = currentState.value!.copyWith(" +
+                  field.fieldName + ": event.value);");
+          codeBuffer.writeln(_yield(8, field));
           }
           codeBuffer.writeln(spaces(8) + "return;");
           codeBuffer.writeln(spaces(6) + "}");

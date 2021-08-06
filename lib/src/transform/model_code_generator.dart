@@ -8,6 +8,7 @@ import 'data_code_generator.dart';
 String _imports(String packageName, List<String> depends) =>
     """
 import 'package:eliud_core/tools/common_tools.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 """ +
     base_imports(packageName,
@@ -205,9 +206,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.fieldName != "documentID") {
           codeBuffer.write(spaces(10) + field.fieldName);
-          if ((field.isServerTimestamp()) || (field.isBespoke())) {
-            codeBuffer.writeln(
-                ": " + field.fieldName +", ");
+          if (field.isServerTimestamp()) {
+            codeBuffer.writeln(": (" + field.fieldName +
+                " == null) ? null : " + field.fieldName +
+                    "!.millisecondsSinceEpoch, ");
+          } else if (field.isBespoke()) {
+              codeBuffer.writeln(
+                  ": " + field.fieldName +", ");
           } else {
             if (field.association) codeBuffer.write("Id");
             codeBuffer.write(
@@ -264,7 +269,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         spaces(4) + "return " + modelSpecifications.modelClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       if (field.isServerTimestamp()) {
-        codeBuffer.writeln(spaces(10) + field.fieldName + ": entity." + field.fieldName + ".toString(), ");
+        codeBuffer.writeln(spaces(10) + field.fieldName + ": entity." + field.fieldName + " == null ? null : DateTime.fromMillisecondsSinceEpoch((entity." + field.fieldName + " as int)), ");
       } else if (field.isBespoke()) {
         codeBuffer.writeln(spaces(10) + field.fieldName + ": entity." + field.fieldName + ", ");
       } else {
@@ -367,7 +372,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         codeBuffer.write(spaces(10) + field.fieldName + ": ");
         if (field.isServerTimestamp()) {
-          codeBuffer.write("entity." + field.fieldName + ".toString()");
+          codeBuffer.write("entity." + field.fieldName + " == null ? null : DateTime.fromMillisecondsSinceEpoch((entity." + field.fieldName + " as int))");
         } else if (field.isBespoke()) {
           codeBuffer.write("entity." + field.fieldName);
         } else {

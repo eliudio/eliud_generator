@@ -82,10 +82,11 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
-    headerBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
     headerBuffer.writeln("import 'abstract_repository_singleton.dart';");
+    headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
 
     headerBuffer.writeln(base_imports(modelSpecifications.packageName, entity:true, depends: modelSpecifications.depends));
+    headerBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
 
     return headerBuffer.toString();
   }
@@ -225,9 +226,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
               } else {
                 repoArgs = '';
               }
-              codeBuffer.writeln(firstLowerCase(modelSpecifications.id) +
-                  "Repository($repoArgs)!.timeStampToString(map['" +
-                  fieldName(field) + "']), ");
+              codeBuffer.writeln("map['" + fieldName(field) + "'] == null ? null : (map['" + fieldName(field) + "']  as Timestamp).millisecondsSinceEpoch,");
             } else {
               codeBuffer.writeln("map['" +
                   fieldName(field) + "'],");
