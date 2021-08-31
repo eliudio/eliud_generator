@@ -24,7 +24,7 @@ import 'package:$packageName/\${path}_list_event.dart';
 
 const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {
-  Widget? createNew({String? id, Map<String, dynamic>? parameters}) {
+  Widget? createNew({Key? key, required String id, Map<String, dynamic>? parameters}) {
     return ListComponent(componentId: id);
   }
 }
@@ -47,7 +47,7 @@ const String _DropdownButtonSupportMethodFooter = """
 """;
 
 const String _DropdownButtonFactoryCodeMethod = """
-  Widget createNew({String? id, Map<String, dynamic>? parameters, String? value, DropdownButtonChanged? trigger, bool? optional}) {
+  Widget createNew({Key? key, required String id, Map<String, dynamic>? parameters, String? value, DropdownButtonChanged? trigger, bool? optional}) {
 """;
 
 const String _DropdownButtonFactoryCodeComponent = """

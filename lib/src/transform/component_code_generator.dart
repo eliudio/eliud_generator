@@ -8,7 +8,7 @@ abstract class Abstract\${id}Component extends StatelessWidget {
   static String componentName = "\${lid}s";
   final String? \${lid}ID;
 
-  Abstract\${id}Component({this.\${lid}ID});
+  Abstract\${id}Component({Key? key, this.\${lid}ID}): super(key: key);
 
   @override
   Widget build(BuildContext context) {
