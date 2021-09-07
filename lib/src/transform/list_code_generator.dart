@@ -109,15 +109,13 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln("class " + modelSpecifications.id + "ListItem extends StatelessWidget {");
     codeBuffer.writeln(spaces(2) + "final DismissDirectionCallback onDismissed;");
     codeBuffer.writeln(spaces(2) + "final GestureTapCallback onTap;");
-//    codeBuffer.writeln(spaces(2) + "final AppModel app;");
-    codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + "? value;");
+    codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + " value;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListItem({");
     codeBuffer.writeln(spaces(4) + "Key? key,");
     codeBuffer.writeln(spaces(4) + "required this.onDismissed,");
     codeBuffer.writeln(spaces(4) + "required this.onTap,");
     codeBuffer.writeln(spaces(4) + "required this.value,");
-//    codeBuffer.writeln(spaces(4) + "required this.app,");
     codeBuffer.writeln(spaces(2) + "}) : super(key: key);");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + "@override");
@@ -127,28 +125,14 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(6) + "onDismissed: onDismissed,");
     codeBuffer.writeln(spaces(6) + "child: ListTile(");
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");
-    codeBuffer.writeln(spaces(8) + "title: Hero(");
-    String title = modelSpecifications.listFields?.title ?? "documentID!";
-    codeBuffer.writeln(spaces(10) + "tag: '\${value!.documentID}__" + modelSpecifications.id + "heroTag',");
-    codeBuffer.writeln(spaces(10) + "child: Container(");
-    codeBuffer.writeln(spaces(12) + "width: fullScreenWidth(context),");
-    if (modelSpecifications.listFields.imageTitle) {
-      codeBuffer.writeln(spaces(12) + "child: Center( child: ImageHelper.getImageFromMediumModel(memberMediumModel: value!." + title + ", width: fullScreenWidth(context)))");
-    } else {
-      codeBuffer.writeln(spaces(12) + "child: Center(child: StyleRegistry.registry().styleWithContext(context).adminListStyle().listItem(context, value!.$title)),");
+
+    String title = modelSpecifications.listFields.title;
+    if (title != null) {
+      codeBuffer.writeln(spaces(8) + "title: $title,");
     }
-    codeBuffer.writeln(spaces(10) + "),");
-    codeBuffer.writeln(spaces(8) + "),");
     String subTitle = modelSpecifications.listFields.subTitle;
     if (subTitle != null) {
-      codeBuffer.writeln(spaces(8) + "subtitle: (value!." + subTitle + " != null) && (value!." + subTitle + ".isNotEmpty)");
-      codeBuffer.write(spaces(12) + "? ");
-      if (modelSpecifications.listFields.imageSubTitle) {
-        codeBuffer.writeln("Center( child: ImageHelper.getThumbnailFromImageModel(imageModel: value, width: fullScreenWidth(context)))");
-      } else {
-        codeBuffer.writeln("Center(child: StyleRegistry.registry().styleWithContext(context).adminListStyle().listItem(context, value!.$subTitle))");
-      }
-      codeBuffer.writeln(spaces(12) + ": null,");
+      codeBuffer.writeln(spaces(8) + "subtitle: $subTitle,");
     }
     codeBuffer.writeln(spaces(6) + "),");
     codeBuffer.writeln(spaces(4) + ");");

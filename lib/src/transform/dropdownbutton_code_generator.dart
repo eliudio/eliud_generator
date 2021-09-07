@@ -151,6 +151,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     StringBuffer childCodeBuffer = StringBuffer();
 
+/*
     childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model pm) {");
     childCodeBuffer.writeln("var widgets = <Widget>[];");
     childCodeBuffer.write("if (pm." + modelSpecifications.listFields.title + " != null) ");
@@ -171,6 +172,21 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     childCodeBuffer.writeln(");");
     childCodeBuffer.writeln("return widgets;");
     childCodeBuffer.writeln("}");
+*/
+
+    childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model value) {");
+    childCodeBuffer.writeln("var widgets = <Widget>[];");
+    String title = modelSpecifications.listFields.title;
+    if (title != null) {
+      childCodeBuffer.writeln("widgets.add($title);");
+    }
+    String subTitle = modelSpecifications.listFields.subTitle;
+    if (subTitle != null) {
+      childCodeBuffer.writeln("widgets.add($subTitle);");
+    }
+    childCodeBuffer.writeln("return widgets;");
+    childCodeBuffer.writeln("}");
+
     codeBuffer.writeln(process(_code,
         parameters: <String, String> {
           '\${id}': modelSpecifications.id,
