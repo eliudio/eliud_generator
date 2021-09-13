@@ -121,7 +121,7 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
     codeBuffer.writeln(spaces(4) + "return Dismissible(");
-    codeBuffer.writeln(spaces(6) + "key: Key('__" + modelSpecifications.id + "_item_\${value!.documentID}'),");
+    codeBuffer.writeln(spaces(6) + "key: Key('__" + modelSpecifications.id + "_item_\${value.documentID}'),");
     codeBuffer.writeln(spaces(6) + "onDismissed: onDismissed,");
     codeBuffer.writeln(spaces(6) + "child: ListTile(");
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");
