@@ -141,6 +141,14 @@ builders:
     build_to: source
     auto_apply: all_packages
 
+  component_selector:
+    target: ":eliud_generator"
+    import: "package:eliud_generator/builder.dart"
+    builder_factories: ["component_selector"]
+    build_extensions: {".spec": ["_component_selector.dart"]}
+    build_to: source
+    auto_apply: all_packages
+
   form_event:
     target: ":eliud_generator"
     import: "package:eliud_generator/builder.dart"

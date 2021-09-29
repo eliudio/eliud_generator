@@ -94,6 +94,10 @@ abstract class Specification extends Equatable {
     return camelcaseToUnderscore(id) + "_list.dart";
   }
 
+  String componentSelectorFileName() {
+    return camelcaseToUnderscore(id) + "_component_selector.dart";
+  }
+
   String formStateFileName() {
     return camelcaseToUnderscore(id) + "_form_state.dart";
   }
