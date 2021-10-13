@@ -2,8 +2,10 @@ import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
-
-const String _code = """
+/*
+THE BELOW CODE IS THE BLOC WITHOUT LISTENING TO THE UNDERLYING COMPONENT
+LISTENING TO THE UNDERLYING COMPONENT ALLOWS TO MAKE CHANGES AND RECEIVING THOSE CHANGES WITHOUT NEEDING TO REOPEN THE PAGE
+const String _codeOld = """
 class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentState> {
   final \${id}Repository? \${lid}Repository;
 
@@ -42,6 +44,41 @@ class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentStat
 
   @override
   Future<void> close() {
+    return super.close();
+  }
+
+}
+""";
+
+*/
+
+const String _code = """
+class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentState> {
+  final \${id}Repository? \${lid}Repository;
+  StreamSubscription? _\${lid}Subscription;
+
+  Stream<\${id}ComponentState> _mapLoad\${id}ComponentUpdateToState(String documentId) async* {
+    _\${lid}Subscription?.cancel();
+    _\${lid}Subscription = \${lid}Repository!.listenTo(documentId, (value) {
+      if (value != null) add(\${id}ComponentUpdated(value: value));
+    });
+  }
+
+  \${id}ComponentBloc({ this.\${lid}Repository }): super(\${id}ComponentUninitialized());
+
+  @override
+  Stream<\${id}ComponentState> mapEventToState(\${id}ComponentEvent event) async* {
+    final currentState = state;
+    if (event is Fetch\${id}Component) {
+      yield* _mapLoad\${id}ComponentUpdateToState(event.id!);
+    } else if (event is \${id}ComponentUpdated) {
+      yield \${id}ComponentLoaded(value: event.value);
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _\${lid}Subscription?.cancel();
     return super.close();
   }
 

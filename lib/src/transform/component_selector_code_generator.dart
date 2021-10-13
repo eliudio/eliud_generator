@@ -85,7 +85,7 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> {
                     if (selectedValue == 1) {
                       widget.selected(value.documentID!);
                     } else if (selectedValue == 2) {
-                      widget.editorConstructor.updateComponent(context, value);
+                      widget.editorConstructor.updateComponent(context, value, (_) {});
                     }
                   }),
               title: \${title},
@@ -120,7 +120,7 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> {
                 child: iconButton(
               context,
               onPressed: () {
-                widget.editorConstructor.createNewComponent(context);
+                widget.editorConstructor.createNewComponent(context, (_) {});
               },
               icon: Icon(Icons.add),
             ))
