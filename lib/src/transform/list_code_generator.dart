@@ -197,7 +197,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         },
       );
     } else {
-      return Text('App not loaded');
+      return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
     }
   }
 
@@ -241,7 +241,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         }
       });
     } else {
-      return Text("App not loaded");
+      return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
     } 
   }
   
