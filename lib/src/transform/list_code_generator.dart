@@ -4,9 +4,10 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName) => """
-import 'package:eliud_core/core/access/bloc/access_bloc.dart';
-import 'package:eliud_core/core/access/bloc/access_state.dart';
-import 'package:eliud_core/core/access/bloc/access_state.dart';
+import 'package:eliud_core/core/blocs/access/access_bloc.dart';
+import 'package:eliud_core/core/blocs/app/app_bloc.dart';
+import 'package:eliud_core/core/blocs/access/state/access_state.dart';
+import 'package:eliud_core/core/blocs/app/app_state.dart';
 import 'package:eliud_core/style/style_registry.dart';
 import 'package:eliud_core/tools/has_fab.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ import '\${importprefix}_form.dart';
 
 String _onTap = """
                       final removedItem = await Navigator.of(context).push(
-                        pageRouteBuilder(accessState.app, page: BlocProvider.value(
+                        pageRouteBuilder(AppBloc.currentApp(context), page: BlocProvider.value(
                               value: BlocProvider.of<\${id}ListBloc>(context),
                               child: getForm(value, FormAction.UpdateAction))));
                       if (removedItem != null) {
@@ -182,12 +183,12 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
   @override
   Widget? fab(BuildContext aContext, AccessState accessState) {
     if (accessState is AppLoaded) {
-      return !accessState.memberIsOwner() \${allowAddItemsCondition}
+      return !accessState.memberIsOwner(AppBloc.currentAppId(context)) \${allowAddItemsCondition}
         ? null
         : StyleRegistry.registry().styleWithContext(context).adminListStyle().floatingActionButton(context, 'PageFloatBtnTag', Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(
-            pageRouteBuilder(accessState.app, page: BlocProvider.value(
+            pageRouteBuilder(AppBloc.currentApp(context), page: BlocProvider.value(
                 value: BlocProvider.of<\${id}ListBloc>(context),
                 child: \${id}Form(
                     value: null,
@@ -203,49 +204,53 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var accessState = AccessBloc.getState(context);
-    if (accessState is AppLoaded) {
-      return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
-        if (state is \${id}ListLoading) {
-          return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
-        } else if (state is \${id}ListLoaded) {
-          final values = state.values;
-          if ((widget.isEmbedded != null) && widget.isEmbedded!) {
-            var children = <Widget>[];
-            children.add(theList(context, values, accessState));
-            children.add(
-                StyleRegistry.registry().styleWithContext(context).adminFormStyle().button(
-                    context, label: 'Add',
-                    onPressed: () {
-                      Navigator.of(context).push(
-                                pageRouteBuilder(accessState.app, page: BlocProvider.value(
-                                    value: BlocProvider.of<\${id}ListBloc>(context),
-                                    child: \${id}Form(
-                                        value: null,
-                                        formAction: FormAction.AddAction)
-                                )),
-                              );
-                    },
-                  ));
-            return ListView(
-              padding: const EdgeInsets.all(8),
-              physics: ScrollPhysics(),
-              shrinkWrap: true,
-              children: children
-            );
-          } else {
-            return theList(context, values, accessState);
-          }
+    return BlocBuilder<AccessBloc, AccessState>(
+        builder: (context, accessState) {
+      return BlocBuilder<AppBloc, AppState>(builder: (context, appState) {
+        if (appState is AppLoaded) {
+          return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
+            if (state is \${id}ListLoading) {
+              return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
+            } else if (state is \${id}ListLoaded) {
+              final values = state.values;
+              if ((widget.isEmbedded != null) && widget.isEmbedded!) {
+                var children = <Widget>[];
+                children.add(theList(context, values, accessState));
+                children.add(
+                    StyleRegistry.registry().styleWithContext(context).adminFormStyle().button(
+                        context, label: 'Add',
+                        onPressed: () {
+                          Navigator.of(context).push(
+                                    pageRouteBuilder(appState.app, page: BlocProvider.value(
+                                        value: BlocProvider.of<\${id}ListBloc>(context),
+                                        child: \${id}Form(
+                                            value: null,
+                                            formAction: FormAction.AddAction)
+                                    )),
+                                  );
+                        },
+                      ));
+                return ListView(
+                  padding: const EdgeInsets.all(8),
+                  physics: ScrollPhysics(),
+                  shrinkWrap: true,
+                  children: children
+                );
+              } else {
+                return theList(context, values, accessState);
+              }
+            } else {
+              return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
+            }
+          });
         } else {
           return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
         }
       });
-    } else {
-      return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
-    } 
+    });
   }
   
-  Widget theList(BuildContext context, values, AppLoaded accessState) {
+  Widget theList(BuildContext context, values, AccessState accessState) {
     return Container(
       decoration: widget.listBackground == null ? StyleRegistry.registry().styleWithContext(context).adminListStyle().boxDecorator(context) : BoxDecorationHelper.boxDecoration(accessState, widget.listBackground),
       child: ListView.separated(

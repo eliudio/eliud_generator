@@ -4,7 +4,8 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 const String _code = """
-import 'package:eliud_core/core/access/bloc/access_bloc.dart';
+import 'package:eliud_core/core/blocs/access/access_bloc.dart';
+import 'package:eliud_core/core/blocs/app/app_bloc.dart';
 import 'package:eliud_core/style/frontend/has_button.dart';
 import 'package:eliud_core/style/frontend/has_divider.dart';
 import 'package:eliud_core/style/frontend/has_list_tile.dart';
@@ -29,7 +30,7 @@ class \${id}ComponentSelector extends ComponentSelector {
     return BlocProvider<\${id}ListBloc>(
           create: (context) => \${id}ListBloc(
             \${lid}Repository:
-                \${lid}Repository(appId: AccessBloc.appId(context))!,
+                \${lid}Repository(appId: AppBloc.currentAppId(context))!,
           )..add(Load\${id}List()),
       child: Select\${id}Widget(
           height: height,

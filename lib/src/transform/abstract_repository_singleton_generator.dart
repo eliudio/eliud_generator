@@ -19,7 +19,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       }
     });
     codeBuffer.writeln(
-        "import 'package:eliud_core/core/access/bloc/user_repository.dart';");
+        "import 'package:eliud_core/core/blocs/access/repo/user_repository.dart';");
     codeBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
     codeBuffer.writeln(
         "import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';");
