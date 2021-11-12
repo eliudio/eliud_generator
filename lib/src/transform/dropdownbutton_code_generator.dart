@@ -13,7 +13,6 @@ import 'package:flutter/widgets.dart';
 import 'package:eliud_core/style/style_registry.dart';
 import 'package:eliud_core/core/blocs/access/state/access_state.dart';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
-import 'package:eliud_core/core/blocs/app/app_bloc.dart';
 
 """;
 
@@ -107,7 +106,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                       items: items,
                       value: valueChosen,
                       hint: Text('Select a \${lid}'),
-                      onChanged: !accessState.memberIsOwner(AppBloc.currentAppId(context)) ? null : _onChange,
+                      onChanged: !accessState.memberIsOwner(AccessBloc.currentAppId(context)) ? null : _onChange,
                     );
         if (\${withImages}) {
           return Container(height:48, child: Center(child: button));

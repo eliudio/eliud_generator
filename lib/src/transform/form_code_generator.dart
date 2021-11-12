@@ -9,7 +9,6 @@ String _imports(String packageName, List<String> depends) => """
 import 'package:eliud_core/core/blocs/access/state/access_state.dart';
 import 'package:eliud_core/core/blocs/access/state/logged_in.dart';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
-import 'package:eliud_core/core/blocs/app/app_bloc.dart';
 import '../tools/bespoke_models.dart';
 import 'package:eliud_core/core/navigate/router.dart' as eliudrouter;
 import 'package:eliud_core/tools/screen_size.dart';
@@ -57,11 +56,11 @@ class \${className}Form extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var accessState = AccessBloc.getState(context);
-    var app = AppBloc.currentApp(context);
+    var app = AccessBloc.currentApp(context);
     if (app == null) return Text("No app available");
     if (formAction == FormAction.ShowData) {
       return BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AppBloc.currentAppId(context),
+            create: (context) => \${id}FormBloc(AccessBloc.currentAppId(context),
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormEvent(value: value)),
   
@@ -69,7 +68,7 @@ class \${className}Form extends StatelessWidget {
           );
     } if (formAction == FormAction.ShowPreloadedData) {
       return BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AppBloc.currentAppId(context),
+            create: (context) => \${id}FormBloc(AccessBloc.currentAppId(context),
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormNoLoadEvent(value: value)),
   
@@ -79,7 +78,7 @@ class \${className}Form extends StatelessWidget {
       return Scaffold(
         appBar: StyleRegistry.registry().styleWithContext(context).adminFormStyle().appBarWithString(context, title: formAction == FormAction.UpdateAction ? '\${updateTitle}' : '\${addTitle}'),
         body: BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AppBloc.currentAppId(context),
+            create: (context) => \${id}FormBloc(AccessBloc.currentAppId(context),
                                        \${constructorParameters}
                                                 )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
   
@@ -157,7 +156,7 @@ const String _readOnlyMethodMember = """
 
 const String _readOnlyMethod = """
   bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner(AppBloc.currentAppId(context)));
+    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner(AccessBloc.currentAppId(context)));
   }
   
 """;
@@ -302,7 +301,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
-    codeBuffer.writeln(spaces(4) + "var app = AppBloc.currentApp(context);");
+    codeBuffer.writeln(spaces(4) + "var app = AccessBloc.currentApp(context);");
     codeBuffer.writeln(spaces(4) + "if (app == null) return Text('No app available');");
     codeBuffer.writeln(spaces(4) + "var accessState = AccessBloc.getState(context);");
 
@@ -627,7 +626,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         case FormTypeField.Selection:
           int i = 0;
           field.enumValues.forEach((enumField) {
-            var onChanged = "!accessState.memberIsOwner(AppBloc.currentAppId(context)) ? null : (dynamic val) => " + "setSelection" + firstUpperCase(field.fieldName) + "(val)";
+            var onChanged = "!accessState.memberIsOwner(AccessBloc.currentAppId(context)) ? null : (dynamic val) => " + "setSelection" + firstUpperCase(field.fieldName) + "(val)";
             codeBuffer.writeln(_fieldStart(field));
             codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithContext(context).adminFormStyle().radioListTile(context, $i, _" + firstLowerCase(field.fieldName) + "SelectedRadioTile, '$enumField', '$enumField', $onChanged)");
             codeBuffer.writeln(_fieldEnd());
