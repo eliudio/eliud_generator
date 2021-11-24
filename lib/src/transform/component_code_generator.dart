@@ -4,18 +4,26 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _code = """
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:eliud_core/style/style_registry.dart';
+import 'abstract_repository_singleton.dart';
+import 'package:eliud_core/core/widgets/alert_widget.dart';
+import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';
+
 abstract class Abstract\${id}Component extends StatelessWidget {
   static String componentName = "\${lid}s";
-  final String? \${lid}ID;
+  final String theAppId;
+  final String \${lid}Id;
 
-  Abstract\${id}Component({Key? key, this.\${lid}ID}): super(key: key);
+  Abstract\${id}Component({Key? key, required this.theAppId, required this.\${lid}Id}): super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<\${id}ComponentBloc> (
           create: (context) => \${id}ComponentBloc(
-            \${lid}Repository: get\${id}Repository(context))
-        ..add(Fetch\${id}Component(id: \${lid}ID)),
+            \${lid}Repository: \${lid}Repository(appId: theAppId)!)
+        ..add(Fetch\${id}Component(id: \${lid}Id)),
       child: _\${lid}BlockBuilder(context),
     );
   }
@@ -24,7 +32,7 @@ abstract class Abstract\${id}Component extends StatelessWidget {
     return BlocBuilder<\${id}ComponentBloc, \${id}ComponentState>(builder: (context, state) {
       if (state is \${id}ComponentLoaded) {
         if (state.value == null) {
-          return alertWidget(title: 'Error', content: 'No \${id} defined');
+          return AlertWidget(title: "Error", content: 'No \${id} defined');
         } else {
           return yourWidget(context, state.value);
         }
@@ -35,7 +43,7 @@ abstract class Abstract\${id}Component extends StatelessWidget {
           size: 30.0,
         );
       } else if (state is \${id}ComponentError) {
-        return alertWidget(title: 'Error', content: state.message);
+        return AlertWidget(title: 'Error', content: state.message);
       } else {
         return Center(
           child: StyleRegistry.registry().styleWithContext(context).frontEndStyle().progressIndicatorStyle().progressIndicator(context),
@@ -44,9 +52,7 @@ abstract class Abstract\${id}Component extends StatelessWidget {
     });
   }
 
-  Widget yourWidget(BuildContext context, \${id}Model? value);
-  Widget alertWidget({ title: String, content: String});
-  \${id}Repository get\${id}Repository(BuildContext context);
+  Widget yourWidget(BuildContext context, \${id}Model value);
 }
 """;
 
@@ -57,9 +63,8 @@ class ComponentCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("import 'package:flutter/material.dart';");
-    headerBuffer.writeln("import 'package:flutter_bloc/flutter_bloc.dart';");
-    headerBuffer.writeln("import 'package:eliud_core/style/style_registry.dart';");
+
+
     headerBuffer.writeln();
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentBlocFileName()));
     headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentEventFileName()));

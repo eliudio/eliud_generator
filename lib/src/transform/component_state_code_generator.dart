@@ -23,9 +23,9 @@ class \${id}ComponentPermissionDenied extends \${id}ComponentState {
 }
 
 class \${id}ComponentLoaded extends \${id}ComponentState {
-  final \${id}Model? value;
+  final \${id}Model value;
 
-  const \${id}ComponentLoaded({ this.value });
+  const \${id}ComponentLoaded({ required this.value });
 
   \${id}ComponentLoaded copyWith({ \${id}Model? copyThis }) {
     return \${id}ComponentLoaded(value: copyThis ?? this.value);

@@ -58,6 +58,7 @@ class \${className}Form extends StatelessWidget {
     var accessState = AccessBloc.getState(context);
     var app = AccessBloc.currentApp(context);
     if (app == null) return Text("No app available");
+    var appId = app.documentID!;
     if (formAction == FormAction.ShowData) {
       return BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(AccessBloc.currentAppId(context),
@@ -303,6 +304,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
     codeBuffer.writeln(spaces(4) + "var app = AccessBloc.currentApp(context);");
     codeBuffer.writeln(spaces(4) + "if (app == null) return Text('No app available');");
+    codeBuffer.writeln(spaces(4) + "var appId = app.documentID!;");
     codeBuffer.writeln(spaces(4) + "var accessState = AccessBloc.getState(context);");
 
     // start blocbuilder
@@ -614,7 +616,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(_fieldStart(field));
           bool optionalValue = field.optional;
           codeBuffer.writeln(spaces(16) +
-              "DropdownButtonComponentFactory().createNew(id: \"" +
+              "DropdownButtonComponentFactory().createNew(appId: appId, id: \"" +
               firstLowerCase(field.fieldType) +
               "s\", value: _" +
               firstLowerCase(field.fieldName) +
