@@ -61,7 +61,7 @@ class \${className}Form extends StatelessWidget {
     var appId = app.documentID!;
     if (formAction == FormAction.ShowData) {
       return BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AccessBloc.currentAppId(context),
+            create: (context) => \${id}FormBloc(appId,
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormEvent(value: value)),
   
@@ -69,7 +69,7 @@ class \${className}Form extends StatelessWidget {
           );
     } if (formAction == FormAction.ShowPreloadedData) {
       return BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AccessBloc.currentAppId(context),
+            create: (context) => \${id}FormBloc(appId,
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormNoLoadEvent(value: value)),
   
@@ -79,7 +79,7 @@ class \${className}Form extends StatelessWidget {
       return Scaffold(
         appBar: StyleRegistry.registry().styleWithContext(context).adminFormStyle().appBarWithString(context, title: formAction == FormAction.UpdateAction ? '\${updateTitle}' : '\${addTitle}'),
         body: BlocProvider<\${id}FormBloc >(
-            create: (context) => \${id}FormBloc(AccessBloc.currentAppId(context),
+            create: (context) => \${id}FormBloc(appId,
                                        \${constructorParameters}
                                                 )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
   

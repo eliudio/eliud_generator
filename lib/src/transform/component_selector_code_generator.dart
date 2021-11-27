@@ -26,10 +26,11 @@ class \${id}ComponentSelector extends ComponentSelector {
   @override
   Widget createSelectWidget(BuildContext context, double height,
       SelectComponent selected, editorConstructor) {
+    var appId = AccessBloc.currentAppId(context);
     return BlocProvider<\${id}ListBloc>(
           create: (context) => \${id}ListBloc(
             \${lid}Repository:
-                \${lid}Repository(appId: AccessBloc.currentAppId(context))!,
+                \${lid}Repository(appId: appId)!,
           )..add(Load\${id}List()),
       child: Select\${id}Widget(
           height: height,
