@@ -215,7 +215,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
                       context, label: 'Add',
                       onPressed: () {
                         Navigator.of(context).push(
-                                  pageRouteBuilder(accessState.currentApp(context), page: BlocProvider.value(
+                                  pageRouteBuilder(accessState.currentApp, page: BlocProvider.value(
                                       value: BlocProvider.of<\${id}ListBloc>(context),
                                       child: \${id}Form(
                                           value: null,
