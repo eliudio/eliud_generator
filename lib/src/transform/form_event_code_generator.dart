@@ -10,7 +10,7 @@ class InitialiseNew\${id}FormEvent extends \${id}FormEvent {
 """;
 
 class FormEventCodeGenerator extends CodeGenerator {
-  FormEventCodeGenerator({ModelSpecification modelSpecifications})
+  FormEventCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -62,7 +62,7 @@ class FormEventCodeGenerator extends CodeGenerator {
     modelSpecifications.fields.forEach((field) {
       String className = "Changed" + modelSpecifications.id + firstUpperCase(field.fieldName);
       codeBuffer.writeln("class " + className + " extends " + formClassName + " {");
-      if (field.isInt() || field.isDouble() || field.isServerTimestamp() || field.isServerTimestampInitialized() || field.isString() || (field.association))
+      if (field.isInt() || field.isDouble() || field.isServerTimestamp() || field.isServerTimestampInitialized() || field.isString() || (field.isAssociation()))
         codeBuffer.writeln(spaces(2) + "final String? value;");
       else
         codeBuffer.writeln(spaces(2) + "final " + field.dartModelType() + "? value;");

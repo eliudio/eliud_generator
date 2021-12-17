@@ -24,7 +24,7 @@ class \${id}ComponentUpdated extends \${id}ComponentEvent {
 """;
 
 class ComponentEventCodeGenerator extends CodeGenerator {
-  ComponentEventCodeGenerator({ModelSpecification modelSpecifications})
+  ComponentEventCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override

@@ -40,7 +40,7 @@ class \${id}ComponentLoaded extends \${id}ComponentState {
 """;
 
 class ComponentStateCodeGenerator extends CodeGenerator {
-  ComponentStateCodeGenerator({ModelSpecification modelSpecifications})
+  ComponentStateCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override

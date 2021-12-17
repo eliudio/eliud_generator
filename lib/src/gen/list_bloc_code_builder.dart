@@ -13,14 +13,13 @@ class ListBlocCodeBuilder extends CodeBuilder {
   }
 
   @override
-  CodeGenerator generator(String specifications) {
-    print("ListBlocCodeBuilder");
+  CodeGenerator? generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateList) {
       ListBlocCodeGenerator repositoryCodeGenerator = ListBlocCodeGenerator(
           modelSpecifications: modelSpecification);
       return repositoryCodeGenerator;
     }
-
+    return null;
   }
 }

@@ -34,7 +34,7 @@ const String _isDocumentIDValid = """
 
 """;
 
-String _imports(String packageName, List<String> depends) => """
+String _imports(String packageName, List<String>? depends) => """
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
@@ -51,7 +51,7 @@ import 'package:eliud_core/tools/string_validator.dart';
 """ + base_imports(packageName, repo: true, model: true, entity: true, depends: depends);
 
 class FormBlocCodeGenerator extends CodeGenerator {
-  FormBlocCodeGenerator({ModelSpecification modelSpecifications})
+  FormBlocCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -110,7 +110,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
           if ((field.isInt()) || (field.isDouble())) {
             newModelBuffer.write(field.defaultValue);
           } else if (field.isString()) {
-            newModelBuffer.write("\"" + field.defaultValue + "\"");
+            newModelBuffer.write("\"" + field.getDefaultValue() + "\"");
           } else {
             newModelBuffer.write(field.defaultValue);
           }
@@ -154,7 +154,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(6) + modelSpecifications.modelClassName() + "? newValue = null;");
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
-        if (!field.hidden) {
+        if (!field.isHidden()) {
           String className = "Changed" + modelSpecifications.id +
               firstUpperCase(field.fieldName);
           codeBuffer.writeln(spaces(6) + "if (event is " + className + ") {");
@@ -188,7 +188,7 @@ class FormBlocCodeGenerator extends CodeGenerator {
                 "FormError(message: \"Value should be a number or decimal number\", value: newValue);";
             codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
             codeBuffer.writeln(spaces(8) + "}");
-          } else if (field.association) {
+          } else if (field.isAssociation()) {
             codeBuffer.writeln(spaces(8) + "if (event.value != null)");
             codeBuffer.writeln(
                 spaces(10) + "newValue = currentState.value!.copyWith(" +

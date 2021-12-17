@@ -224,7 +224,7 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
       if (spec.modelSpecification.generate.hasPersistentRepository) {
         Map<String, String> parameters = <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) };
         if ((spec.modelSpecification.id != "Member") && (spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.documentSubCollectionOf == null)) {
-          if (spec.modelSpecification.isAppModel) {
+          if (spec.modelSpecification.getIsAppModel()) {
             codeBuffer.write(process(_footerOther, parameters: parameters));
           } else {
             codeBuffer.write(process(_footerOtherNoApp, parameters: parameters));

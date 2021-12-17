@@ -5,7 +5,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 import 'data_code_generator.dart';
 
-String _imports(String packageName, List<String> depends) =>
+String _imports(String packageName, List<String>? depends) =>
     """
 import 'package:eliud_core/tools/common_tools.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +15,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
         repo: true, model: true, entity: true, depends: depends);
 
 class ModelCodeGenerator extends DataCodeGenerator {
-  ModelCodeGenerator({ModelSpecification modelSpecifications})
+  ModelCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   String fieldName(Field field) {
@@ -48,11 +48,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
       if (field.isEnum()) {
-        codeBuffer.writeln("enum " + field.enumName + " {");
+        codeBuffer.writeln("enum " + field.getEnumName() + " {");
         codeBuffer.write(spaces(2));
-        field.enumValues.forEach((value) {
-          codeBuffer.write(value + ", ");
-        });
+        if (field.enumValues != null) {
+          field.enumValues!.forEach((value) {
+            codeBuffer.write(value + ", ");
+          });
+        }
         codeBuffer.writeln("Unknown");
         codeBuffer.writeln("}");
         codeBuffer.writeln();
@@ -66,21 +68,23 @@ class ModelCodeGenerator extends DataCodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (field.isEnum()) {
         codeBuffer.writeln(
-            field.enumName + " to" + field.enumName + "(int? index) {");
+            field.getEnumName() + " to" + field.getEnumName() + "(int? index) {");
         codeBuffer.writeln(spaces(2) + "switch (index) {");
         int index = 0;
-        field.enumValues.forEach((value) {
-          codeBuffer.writeln(spaces(4) +
-              "case $index: return " +
-              field.enumName +
-              "." +
-              value +
-              ";");
-          index++;
-        });
+        if (field.enumValues != null) {
+          field.enumValues!.forEach((value) {
+            codeBuffer.writeln(spaces(4) +
+                "case $index: return " +
+                field.getEnumName() +
+                "." +
+                value +
+                ";");
+            index++;
+          });
+        }
         codeBuffer.writeln(spaces(2) + "}");
         codeBuffer
-            .writeln(spaces(2) + "return " + field.enumName + ".Unknown;");
+            .writeln(spaces(2) + "return " + field.getEnumName() + ".Unknown;");
         codeBuffer.writeln("}");
         codeBuffer.writeln();
       }
@@ -92,9 +96,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
-        if ((field.remark != null) && (field.remark.length > 0)) {
+        if ((field.remark != null) && (field.getRemark().length > 0)) {
           codeBuffer.writeln();
-          codeBuffer.writeln(spaces(2) + "// " + field.remark);
+          codeBuffer.writeln(spaces(2) + "// " + field.getRemark());
         }
         codeBuffer.write(spaces(2));
         codeBuffer
@@ -199,7 +203,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         modelSpecifications.entityClassName() +
         " toEntity({String? appId}) {");
     if (modelSpecifications.preToEntityCode != null) {
-      codeBuffer.writeln(spaces(4) + modelSpecifications.preToEntityCode);
+      codeBuffer.writeln(spaces(4) + modelSpecifications.getPreToEntityCode());
     }
 
     codeBuffer.writeln(
@@ -217,7 +221,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
           } else if (field.isBespoke()) {
             codeBuffer.writeln(": " + field.fieldName + ", ");
           } else {
-            if (field.association) codeBuffer.write("Id");
+            if (field.isAssociation()) codeBuffer.write("Id");
             codeBuffer.write(
                 ": (" + field.fieldName + " != null) ? " + field.fieldName);
             if (field.isEnum()) {
@@ -227,7 +231,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
               } else {
                 codeBuffer.write("!.index");
               }
-            } else if (field.association) {
+            } else if (field.isAssociation()) {
               codeBuffer.write("!.documentID");
             } else {
               if (!field.isNativeType()) {
@@ -286,18 +290,18 @@ class ModelCodeGenerator extends DataCodeGenerator {
             ", ");
       } else {
         if (field.arrayType != ArrayType.CollectionArrayType) {
-          if (!field.association) {
+          if (!field.isAssociation()) {
             codeBuffer.write(spaces(10) + field.fieldName + ": ");
             if (field.isEnum()) {
               if (field.isMap()) {
                 codeBuffer.write("entity." +
                     field.fieldName +
                     "!.map((key, value) => MapEntry(key, to" +
-                    field.enumName +
+                    field.getEnumName() +
                     "(value)))");
               } else {
                 codeBuffer.write(
-                    "to" + field.enumName + "(entity." + field.fieldName + ")");
+                    "to" + field.getEnumName() + "(entity." + field.fieldName + ")");
               }
             } else if (!field.isNativeType()) {
               if (field.isArray()) {
@@ -354,7 +358,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln();
     modelSpecifications.fields.forEach((field) {
-      if (field.association) {
+      if (field.isAssociation()) {
         codeBuffer.writeln(spaces(4) +
             field.fieldType +
             "Model? " +
@@ -410,13 +414,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
               codeBuffer.write("entity." +
                   field.fieldName +
                   "!.map((key, value) => MapEntry(key, to" +
-                  field.enumName +
+                  field.getEnumName() +
                   "(value)))");
             } else {
               codeBuffer.write(
-                  "to" + field.enumName + "(entity." + field.fieldName + ")");
+                  "to" + field.getEnumName() + "(entity." + field.fieldName + ")");
             }
-          } else if (field.association) {
+          } else if (field.isAssociation()) {
             codeBuffer.write(field.fieldName + "Holder");
           } else {
             if (!field.isNativeType()) {

@@ -5,10 +5,10 @@ import 'package:equatable/equatable.dart';
 
 import 'field.dart';
 
-abstract class Specification extends Equatable {
+abstract class Specification {
   final String id;
 
-  Specification({this.id});
+  Specification({required this.id});
 
   String modelClassName() {
     return id + "Model";

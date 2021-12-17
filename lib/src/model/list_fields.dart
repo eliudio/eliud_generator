@@ -1,30 +1,12 @@
 import 'dart:convert';
 
 class ListFields {
-  final String title;
-  final String subTitle;
-  final bool imageTitle;
-  final bool imageSubTitle;
+  final String? title;
+  final String? subTitle;
+  final bool? imageTitle;
+  final bool? imageSubTitle;
 
-  ListFields({ this.title, this.subTitle, this.imageTitle = false, this.imageSubTitle = false});
-
-  Map<String, Object> toJson() {
-    return <String, dynamic>{
-      "title": title,
-      "subTitle": subTitle,
-      "imageTitle": imageTitle,
-      "imageSubTitle": imageSubTitle,
-    };
-  }
-
-  String toJsonString() {
-    Map<String, Object> jsonMap = toJson();
-    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    return encoder.convert(jsonMap);
-  }
-
-  @override
-  List<Object> get props => [title, subTitle, imageTitle, imageSubTitle];
+  ListFields({ required this.title, required this.subTitle, this.imageTitle = false, this.imageSubTitle = false});
 
   @override
   String toString() {
@@ -41,11 +23,31 @@ class ListFields {
   }
 
   static ListFields fromJsonString(String json) {
-    Map<String, dynamic> generationSpecificationMap = jsonDecode(json);
+    Map<String, Object> generationSpecificationMap = jsonDecode(json);
     return fromJson(generationSpecificationMap);
   }
 
   bool hasImage() {
-    return imageTitle || imageSubTitle;
+    return hasImageTitle() || hasImageSubTitle();
+  }
+
+  String getTitle() {
+    if (title == null) return "";
+    return title!;
+  }
+
+  String getSubTitle() {
+    if (subTitle == null) return "";
+    return subTitle!;
+  }
+
+  bool hasImageTitle() {
+    if (imageTitle == null) return false;
+    return imageTitle!;
+  }
+
+  bool hasImageSubTitle() {
+    if (imageSubTitle == null) return false;
+    return imageSubTitle!;
   }
 }

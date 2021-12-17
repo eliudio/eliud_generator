@@ -4,7 +4,7 @@ import 'package:eliud_generator/src/transform/code_generator_base.dart';
 abstract class CodeGeneratorMulti extends CodeGeneratorBase {
   final String fileName;
 
-  CodeGeneratorMulti({ this.fileName });
+  CodeGeneratorMulti({ required this.fileName });
 
   @override
   String theFileName() {

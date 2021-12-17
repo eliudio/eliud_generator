@@ -2,7 +2,7 @@ String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
 String camelcaseToUnderscore(String value) {
   RegExp exp = RegExp(r'(?<=[a-z])[A-Z]');
-  String result = value.replaceAllMapped(exp, (Match m) => ('_' + m.group(0))).toLowerCase();
+  String result = value.replaceAllMapped(exp, (Match m) => ('_' + m.group(0)!)).toLowerCase();
   return result;
 }
 
@@ -14,7 +14,7 @@ String allUpperCase(String s) => s.toUpperCase();
 
 String allLowerCase(String s) => s.toLowerCase();
 
-String process(String template, { Map<String, String> parameters }) {
+String process(String template, { Map<String, String>? parameters }) {
   if (parameters != null) {
     String processed = template;
     parameters.forEach((key, value) {

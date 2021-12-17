@@ -200,7 +200,7 @@ const String _footer = """
 """;
 
 class FirestoreCodeGenerator extends CodeGenerator {
-  FirestoreCodeGenerator({ModelSpecification modelSpecifications})
+  FirestoreCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -214,7 +214,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
     String appVar3;
     String appVar4;
     String collection;
-    if (modelSpecifications.isAppModel) {
+    if (modelSpecifications.getIsAppModel()) {
       appVar = appVar3 = appVar4 = "appId: appId";
       collection = "appRepository()!.getSubCollection(appId, '" + modelSpecifications.id.toLowerCase() + "')";
     } else if (modelSpecifications.id == "App") {
@@ -262,7 +262,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
 */
     if (modelSpecifications.generate.documentSubCollectionOf != null)
       headerBuffer.writeln(process(_footerWithoutCollectionParameter, parameters: parameters));
-    else if (modelSpecifications.isAppModel)
+    else if (modelSpecifications.getIsAppModel())
       headerBuffer.writeln(process(_footer, parameters: parameters));
     else
       headerBuffer.writeln(process(_footerWithoutAppID, parameters: parameters));

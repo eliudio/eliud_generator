@@ -4,11 +4,11 @@ import 'package:eliud_generator/src/model/model_spec.dart';
 import 'code_generator.dart';
 
 abstract class DataCodeGenerator extends CodeGenerator {
-  DataCodeGenerator({ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
+  DataCodeGenerator({required ModelSpecification modelSpecifications}) : super(modelSpecifications: modelSpecifications);
 
   String fieldName(Field field);
 
-  String getConstructor({bool removeDocumentID, String name, bool terminate}) {
+  String getConstructor({required bool removeDocumentID, required String name, required bool terminate}) {
     StringBuffer codeBuffer = StringBuffer();
     // Constructor
     codeBuffer.write(spaces(2) + name + "({");

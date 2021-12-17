@@ -5,7 +5,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-String _imports(String packageName, List<String> depends) => """
+String _imports(String packageName, List<String>? depends) => """
 import 'package:eliud_core/core/blocs/access/state/access_state.dart';
 import 'package:eliud_core/core/blocs/access/state/logged_in.dart';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
@@ -164,10 +164,10 @@ const String _readOnlyMethod = """
 
 class RealFormCodeGenerator extends CodeGenerator {
   final String className;
-  final String title;
-  final String buttonLabel;
+  final String? title;
+  final String? buttonLabel;
 
-  RealFormCodeGenerator(this.className, { this.title, this.buttonLabel, ModelSpecification modelSpecifications })
+  RealFormCodeGenerator(this.className, { this.title, this.buttonLabel, required ModelSpecification modelSpecifications })
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -191,8 +191,8 @@ class RealFormCodeGenerator extends CodeGenerator {
       "\${id}": modelSpecifications.id,
       "\${lid}": firstLowerCase(modelSpecifications.id),
       "\${constructorParameters}": constructorParameters.toString(),
-      "\${updateTitle}": title == null ? "Update " + modelSpecifications.id : title,
-      "\${addTitle}": title == null ? "Add " + modelSpecifications.id : title,
+      "\${updateTitle}": title == null ? "Update " + modelSpecifications.id : title!,
+      "\${addTitle}": title == null ? "Add " + modelSpecifications.id : title!,
     });
   }
 
@@ -419,8 +419,8 @@ class RealFormCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(_groupedFieldsFor(
             "General", null, modelSpecifications.unGroupedFields()));
       }
-      modelSpecifications.groups.forEach((group) {
-        codeBuffer.writeln(_groupedFieldsFor(group.description ?? group.group, group.conditional,
+      modelSpecifications.groups!.forEach((group) {
+        codeBuffer.writeln(_groupedFieldsFor(group.getDescription(), group.conditional,
             modelSpecifications.fieldsForGroups(group)));
       });
     }
@@ -487,7 +487,6 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(14 + 6) + "}");
 
     codeBuffer.writeln(spaces(18) + "},");
-    String label = buttonLabel == null ? 'Submit' : buttonLabel;
     codeBuffer.writeln(spaces(16) + "));");
 
     codeBuffer.writeln();
@@ -513,7 +512,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _groupedFieldHeader(String groupLabel, String condition) {
+  String _groupedFieldHeader(String groupLabel, String? condition) {
     String conditionStr = "";
     if (condition != null) conditionStr = "if " + condition;
     return process(_groupFieldHeaderString,
@@ -537,7 +536,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     if (field.conditional != null) {
       codeBuffer.writeln(
-          spaces(8) + "if (" + field.conditional + ") children.add(");
+          spaces(8) + "if (" + field.getConditional() + ") children.add(");
     } else {
       codeBuffer.writeln(spaces(8) + "children.add(");
     }
@@ -614,7 +613,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           break;
         case FormTypeField.Lookup:
           codeBuffer.writeln(_fieldStart(field));
-          bool optionalValue = field.optional;
+          bool optionalValue = field.isOptional();
           codeBuffer.writeln(spaces(16) +
               "DropdownButtonComponentFactory().createNew(appId: appId, id: \"" +
               firstLowerCase(field.fieldType) +
@@ -627,12 +626,18 @@ class RealFormCodeGenerator extends CodeGenerator {
 
         case FormTypeField.Selection:
           int i = 0;
-          field.enumValues.forEach((enumField) {
-            var onChanged = "!accessState.memberIsOwner(AccessBloc.currentAppId(context)) ? null : (dynamic val) => " + "setSelection" + firstUpperCase(field.fieldName) + "(val)";
-            codeBuffer.writeln(_fieldStart(field));
-            codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithContext(context).adminFormStyle().radioListTile(context, $i, _" + firstLowerCase(field.fieldName) + "SelectedRadioTile, '$enumField', '$enumField', $onChanged)");
-            codeBuffer.writeln(_fieldEnd());
-          });
+          if (field.enumValues != null) {
+            field.enumValues!.forEach((enumField) {
+              var onChanged = "!accessState.memberIsOwner(AccessBloc.currentAppId(context)) ? null : (dynamic val) => " +
+                  "setSelection" + firstUpperCase(field.fieldName) + "(val)";
+              codeBuffer.writeln(_fieldStart(field));
+              codeBuffer.writeln(spaces(18) +
+                  "StyleRegistry.registry().styleWithContext(context).adminFormStyle().radioListTile(context, $i, _" +
+                  firstLowerCase(field.fieldName) +
+                  "SelectedRadioTile, '$enumField', '$enumField', $onChanged)");
+              codeBuffer.writeln(_fieldEnd());
+            });
+          }
           break;
         case FormTypeField.List:
           codeBuffer.writeln(_fieldStart(field));
@@ -655,14 +660,14 @@ class RealFormCodeGenerator extends CodeGenerator {
           break;
       }
     } else {
-      if (field.bespokeFormField.contains("(")) {
+      if (field.getBespokeFormField().contains("(")) {
         codeBuffer.writeln(_fieldStart(field));
-        codeBuffer.writeln(spaces(16) + field.bespokeFormField + "");
+        codeBuffer.writeln(spaces(16) + field.getBespokeFormField() + "");
         codeBuffer.writeln(_fieldEnd());
       } else {
         codeBuffer.writeln(_fieldStart(field));
         codeBuffer.writeln(spaces(16) +
-            field.bespokeFormField +
+            field.getBespokeFormField() +
             "(" +
             "state.value!." +
             field.fieldName +
@@ -675,7 +680,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _groupedFieldsFor(String groupLabel, String condition, List<Field> fields) {
+  String _groupedFieldsFor(String groupLabel, String? condition, List<Field> fields) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(_groupedFieldHeader(groupLabel, condition ));
     codeBuffer.writeln(_fields(fields));
@@ -686,7 +691,7 @@ class RealFormCodeGenerator extends CodeGenerator {
   String _fields(List<Field> fields) {
     StringBuffer codeBuffer = StringBuffer();
     fields.forEach((field) {
-      if (!field.hidden) codeBuffer.writeln(_field(field));
+      if (!field.isHidden()) codeBuffer.writeln(_field(field));
     });
     return codeBuffer.toString();
   }
@@ -842,7 +847,7 @@ class RealFormCodeGenerator extends CodeGenerator {
 class FormCodeGenerator extends CodeGenerator {
   final RealFormCodeGenerator realFormCodeGenerator;
 
-  FormCodeGenerator({ModelSpecification modelSpecifications})
+  FormCodeGenerator({required ModelSpecification modelSpecifications})
       : realFormCodeGenerator = RealFormCodeGenerator(modelSpecifications.id, modelSpecifications: modelSpecifications),
         super(modelSpecifications: modelSpecifications);
 
@@ -851,9 +856,9 @@ class FormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(realFormCodeGenerator.body());
     if (modelSpecifications.views != null) {
-      modelSpecifications.views.forEach((view) {
-        List<Field> fields = List();
-        view.fields.forEach((fieldName) {
+      modelSpecifications.views!.forEach((view) {
+        var fields = <Field>[];
+        view.fields!.forEach((fieldName) {
           // search in the list of view.
           Field newField = modelSpecifications.fields.firstWhere((field) => field.fieldName == fieldName);
           if (newField != null) {
@@ -861,10 +866,10 @@ class FormCodeGenerator extends CodeGenerator {
           }
         });
 
-        List<Group> groups = List();
-        view.groups.forEach((groupName) {
+        var groups = <Group>[];
+        view.groups!.forEach((groupName) {
           // search in the list of view.
-          Group newGroup = modelSpecifications.groups.firstWhere((group) => group.group == groupName);
+          Group newGroup = modelSpecifications.groups!.firstWhere((group) => group.group == groupName);
           if (newGroup != null) {
             groups.add(newGroup);
           }

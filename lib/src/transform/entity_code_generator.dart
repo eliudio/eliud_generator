@@ -26,11 +26,11 @@ const String _convertToMap = """
 """;
 
 class EntityCodeGenerator extends DataCodeGenerator {
-  EntityCodeGenerator({ModelSpecification modelSpecifications})
+  EntityCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   String fieldName(Field field) {
-    if (field.association) return field.fieldName + "Id";
+    if (field.isAssociation()) return field.fieldName + "Id";
     return field.fieldName;
   }
 
@@ -39,7 +39,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
   }
 
   String dartEntityType(Field field) {
-    if (field.association) return "String";
+    if (field.isAssociation()) return "String";
     return field.dartEntityType();
   }
 
@@ -141,13 +141,13 @@ class EntityCodeGenerator extends DataCodeGenerator {
         codeBuffer.writeln(spaces(6) +
             fieldName(field) +
             "FromMap = " +
-            field.bespokeEntityMapping + ";");
+            field.getBespokeEntityMapping() + ";");
 
       } else {
         if (field.arrayType != ArrayType.CollectionArrayType) {
           if ((!field.isEnum()) &&
               (!field.isServerTimestamp()) &&
-              (!field.association) &&
+              (!field.isAssociation()) &&
               (!field.isNativeType())) {
             extraLine = true;
             if (field.isArray()) {
@@ -231,7 +231,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
               codeBuffer.writeln("map['" +
                   fieldName(field) + "'],");
             }
-          } else if ((field.association) || (field.isEnum())) {
+          } else if ((field.isAssociation()) || (field.isEnum())) {
             if (field.isMap())
               codeBuffer.writeln(fieldName(field) + ", ");
             else
@@ -279,7 +279,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
         if (field.arrayType != ArrayType.CollectionArrayType) {
           if ((!field.isEnum()) &&
               (!field.isServerTimestamp()) &&
-              (!field.association) &&
+              (!field.isAssociation()) &&
               (!field.isNativeType())) {
             extraLine = true;
             if (field.isArray()) {
@@ -336,7 +336,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
                 "theDocument[\"" +
                 fieldName(field) +
                 "\"] = ");
-            if ((field.association) || (field.isEnum())) {
+            if ((field.isAssociation()) || (field.isEnum())) {
               codeBuffer.writeln(fieldName(field) + ";");
             } else {
               if (!field.isNativeType()) {

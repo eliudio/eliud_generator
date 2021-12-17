@@ -32,7 +32,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
         var documentSubCollection = spec.modelSpecification.generate.documentSubCollectionOf;
         var appIdVar;
         if ((documentSubCollection != null) ||
-            (spec.modelSpecification.isAppModel)) {
+            (spec.modelSpecification.getIsAppModel())) {
           if (spec.modelSpecification.generate.isAppSubCollection()) {
             appIdVar = "appId";
           } else {
@@ -66,7 +66,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
             "MemberCollectionInfo('" +
             spec.modelSpecification.id.toLowerCase() +
             "', '" +
-            spec.modelSpecification.memberIdentifier +
+            spec.modelSpecification.getMemberIdentifier() +
             "'),");
       }
     });
@@ -80,7 +80,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
           (spec.modelSpecification.generate.generateRepositorySingleton)) {
         if ((spec.modelSpecification.generate.documentSubCollectionOf !=
                 null) ||
-            (spec.modelSpecification.isAppModel)) {
+            (spec.modelSpecification.getIsAppModel())) {
 
           var param;
           if (spec.modelSpecification.generate.isAppSubCollection()) {
@@ -108,7 +108,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       if ((spec.modelSpecification.id != "App") &&
           (spec.modelSpecification.generate.generateRepositorySingleton) &&
           (spec.modelSpecification.generate.isAppSubCollection())) {
-        if (spec.modelSpecification.isAppModel) {
+        if (spec.modelSpecification.getIsAppModel()) {
           codeBuffer.writeln(spaces(4) +
               firstLowerCase(spec.modelSpecification.id) +
               "Repository(appId)!.flush();");

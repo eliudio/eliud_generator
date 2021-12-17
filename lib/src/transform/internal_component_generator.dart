@@ -14,7 +14,7 @@ import 'package:eliud_core/tools/has_fab.dart';
 
 """;
 
-String _componentImports(String packageName, List<String> depends) => """
+String _componentImports(String packageName, List<String>? depends) => """
 import 'package:$packageName/\${path}_list_bloc.dart';
 import 'package:$packageName/\${path}_list.dart';
 import 'package:$packageName/\${path}_dropdown_button.dart';
@@ -232,7 +232,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
-      var appIdVar = ms.isAppModel ? "appId: appId" : "";
+      var appIdVar = ms.getIsAppModel() ? "appId: appId" : "";
       if (ms.generate.generateInternalComponent) {
         if (list)
           codeBuffer.writeln(process(_SpecificListComponentCode,

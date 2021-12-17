@@ -40,7 +40,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton)/* && (!spec.modelSpecification.generate.isDocumentCollection)*/) {
         codeBuffer.write(spaces(4) + "var _" + firstLowerCase(spec.modelSpecification.id) + "Repository = ");
-        if (spec.modelSpecification.isAppModel) {
+        if (spec.modelSpecification.getIsAppModel()) {
           codeBuffer.writeln("HashMap<String, " + spec.modelSpecification.id + "Repository>();");
         } else {
           if (spec.modelSpecification.generate.generateCache) {
@@ -57,7 +57,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       if ((spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.generateRepositorySingleton)/* && (!spec.modelSpecification.generate.isDocumentCollection)*/) {
         codeBuffer.write(spaces(4) + spec.modelSpecification.id + "Repository? " + firstLowerCase(spec.modelSpecification.id) + "Repository");
-        if (spec.modelSpecification.isAppModel) {
+        if (spec.modelSpecification.getIsAppModel()) {
           var documentSubCollectionOf = spec.modelSpecification.generate.documentSubCollectionOf;
           if ((documentSubCollectionOf != null) && (!spec.modelSpecification.generate.isAppSubCollection())) {
             var lowerCase = documentSubCollectionOf.toLowerCase();

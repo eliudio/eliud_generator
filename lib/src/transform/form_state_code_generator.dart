@@ -4,7 +4,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 class FormStateCodeGenerator extends CodeGenerator {
-  FormStateCodeGenerator({ModelSpecification modelSpecifications})
+  FormStateCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -19,7 +19,7 @@ class FormStateCodeGenerator extends CodeGenerator {
     return headerBuffer.toString();
   }
 
-  String _generateClass({String className, String extendsThis}) {
+  String _generateClass({required String className, required String extendsThis}) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln("class " + className + " extends " + extendsThis + " { ");
     codeBuffer.writeln(spaces(2) + "const " + className + "({ String? message, " + modelSpecifications.modelClassName() + "? value }): super(message: message, value: value);");
@@ -39,7 +39,7 @@ class FormStateCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _generateClass2({String className, String extendsThis}) {
+  String _generateClass2({required String className, required String extendsThis}) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln("class " + className + " extends " + extendsThis + " { ");
     codeBuffer.writeln(spaces(2) + "const " + className + "({ " + modelSpecifications.modelClassName() + "? value }): super(value: value);");

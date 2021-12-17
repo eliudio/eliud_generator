@@ -13,12 +13,14 @@ class ComponentEventCodeBuilder extends CodeBuilder {
   }
 
   @override
-  CodeGenerator generator(String specifications) {
+  CodeGenerator? generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateComponent) {
       ComponentEventCodeGenerator eventCodeGenerator = ComponentEventCodeGenerator(
           modelSpecifications: modelSpecification);
+
       return eventCodeGenerator;
     }
+    return null;
   }
 }

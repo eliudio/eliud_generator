@@ -86,7 +86,7 @@ class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentStat
 """;
 
 class ComponentBlocCodeGenerator extends CodeGenerator {
-  ComponentBlocCodeGenerator({ModelSpecification modelSpecifications})
+  ComponentBlocCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override

@@ -30,7 +30,7 @@ class \${id}NotLoaded extends \${id}ListState {}
 """;
 
 class ListStateCodeGenerator extends CodeGenerator {
-  ListStateCodeGenerator({ModelSpecification modelSpecifications})
+  ListStateCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override

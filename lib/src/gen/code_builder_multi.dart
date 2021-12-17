@@ -21,7 +21,7 @@ abstract class CodeBuilderMulti implements Builder {
 
   @override
   Future<void> build(BuildStep buildStep) async {
-    List<ModelSpecificationPlus> specifications = List();
+    List<ModelSpecificationPlus> specifications = <ModelSpecificationPlus>[];
     await for (final input in buildStep.findAssets(_allFilesInLib)) {
       String path = input.path.substring(4).replaceAll(".spec", "");
       final String jsonString = await buildStep.readAsString(input);

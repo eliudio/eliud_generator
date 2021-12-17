@@ -66,7 +66,7 @@ class \${id}ListUpdated extends \${id}ListEvent {
 """;
 
 class ListEventCodeGenerator extends CodeGenerator {
-  ListEventCodeGenerator({ModelSpecification modelSpecifications})
+  ListEventCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override

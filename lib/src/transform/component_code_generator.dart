@@ -57,7 +57,7 @@ abstract class Abstract\${id}Component extends StatelessWidget {
 """;
 
 class ComponentCodeGenerator extends CodeGenerator {
-  ComponentCodeGenerator ({ModelSpecification modelSpecifications})
+  ComponentCodeGenerator ({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override

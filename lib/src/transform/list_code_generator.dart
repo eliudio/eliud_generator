@@ -54,7 +54,7 @@ String _onTap = """
 
 
 class ListCodeGenerator extends CodeGenerator {
-  ListCodeGenerator ({ModelSpecification modelSpecifications})
+  ListCodeGenerator ({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -74,7 +74,7 @@ class ListCodeGenerator extends CodeGenerator {
   String mainClass() {
     Map<String, String> parameters = <String, String>{
       "\${id}": modelSpecifications.id,
-      "\${displayOnDelete}": modelSpecifications?.displayOnDelete ?? "documentID",
+      "\${displayOnDelete}": modelSpecifications.getDisplayOnDelete(),
       "\${allowAddItemsCondition}" : modelSpecifications.id != "Member" ? "" : "&& false",
     };
 
@@ -87,7 +87,7 @@ class ListCodeGenerator extends CodeGenerator {
 
     String _formVariations = "";
     if (modelSpecifications.views != null) {
-      modelSpecifications.views.forEach((element) {
+      modelSpecifications.views!.forEach((element) {
         _formVariations = _formVariations + spaces(6) + "if (widget.form == \"" +
             modelSpecifications.id + element.name + "Form\") return " +
             modelSpecifications.id + element.name +
@@ -126,11 +126,11 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(6) + "child: ListTile(");
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");
 
-    String title = modelSpecifications.listFields.title;
+    String title = modelSpecifications.listFields.getTitle();
     if (title != null) {
       codeBuffer.writeln(spaces(8) + "title: $title,");
     }
-    String subTitle = modelSpecifications.listFields.subTitle;
+    String subTitle = modelSpecifications.listFields.getSubTitle();
     if (subTitle != null) {
       codeBuffer.writeln(spaces(8) + "subtitle: $subTitle,");
     }

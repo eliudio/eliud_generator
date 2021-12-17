@@ -10,7 +10,7 @@ String importString(String packageName, String file) {
   }
 }
 
-String base_imports(String packageName, {bool repo, bool model, bool entity, bool cache, bool embeddedComponent, List<String> depends}) {
+String base_imports(String packageName, {bool? repo, bool? model, required bool entity, bool? cache, bool? embeddedComponent, List<String>? depends}) {
   String base = "";
   if ((repo != null) && (repo)) {
     if (depends != null) {
@@ -74,7 +74,7 @@ List<String> mergeAllDepends(List<ModelSpecificationPlus> modelSpecificationPlus
   List<String> depends = [];
   modelSpecificationPlus.forEach((modelSpecificationPlus) {
     if (modelSpecificationPlus.modelSpecification.depends != null) {
-      modelSpecificationPlus.modelSpecification.depends.forEach((newDepend) {
+      modelSpecificationPlus.modelSpecification.depends!.forEach((newDepend) {
         if (!depends.contains(newDepend)) {
           depends.add(newDepend);
         }
@@ -89,14 +89,14 @@ abstract class CodeGenerator extends CodeGeneratorBase {
   final ModelSpecification modelSpecifications;
   final List<String> uniqueAssociationTypes;
   
-  Field field(String fieldName) {
+  Field? field(String fieldName) {
     for (Field f in modelSpecifications.fields) {
       if (f.fieldName == fieldName) return f;
     }
     return null;
   }
 
-  CodeGenerator({this.modelSpecifications})
+  CodeGenerator({required this.modelSpecifications})
       : uniqueAssociationTypes = modelSpecifications.uniqueAssociationTypes();
 
   bool hasArray() {

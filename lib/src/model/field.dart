@@ -15,54 +15,55 @@ enum ArrayType {
   NoArray
 }
 
-class Field extends Equatable {
+class Field {
   final String fieldName;
   final String displayName;
   final String fieldType;
-  final String fieldValidation;
-  final String enumName;
-  final List<String> enumValues;
-  final ArrayType arrayType;
-  final bool map;
-  final bool association;
-  final String remark;
-  final String group;
-  final String defaultValue;
-  final String
-      iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
-  final bool hidden;
-  final String bespokeFormField;
+  final String? fieldValidation;
+  final String? enumName;
+  final List<String>? enumValues;
+  final ArrayType? arrayType;
+  final bool? map;
+  final bool? association;
+  final String? remark;
+  final String? group;
+  final String? defaultValue;
+  final String?
+  iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
+  final bool? hidden;
+  final String? bespokeFormField;
+
   // if fieldType = 'bespoke' then you can specify your own type + it's mapping
-  final String bespokeFieldType;
-  final String bespokeEntityMapping; // fromMap mapping
-  final String bespokeEntityToDocument; // toDocuemnt mapping
+  final String? bespokeFieldType;
+  final String? bespokeEntityMapping; // fromMap mapping
+  final String? bespokeEntityToDocument; // toDocuemnt mapping
 
-  final bool optional; // is optional?
-  final String
-      conditional; // field is visible in form when this condition is true
+  final bool? optional; // is optional?
+  final String? conditional; // field is visible in form when this condition is true
 
-  const Field(
-      {this.fieldName,
-      this.displayName,
-      this.fieldType,
-      this.fieldValidation,
-      this.arrayType = ArrayType.NoArray,
-      this.map = false,
-      this.association = false,
-      this.enumName,
-      this.enumValues,
-      this.remark,
-      this.group,
-      this.defaultValue,
-      this.iconName,
-      this.hidden,
-      this.bespokeFormField,
-      this.bespokeFieldType,
-      this.bespokeEntityMapping,
-      this.bespokeEntityToDocument,
-      this.optional,
-      this.conditional});
+  const Field({required this.fieldName,
+    required this.displayName,
+    required this.fieldType,
+    required this.fieldValidation,
+    this.arrayType = ArrayType.NoArray,
+    this.map = false,
+    this.association = false,
+    required this.enumName,
+    required this.enumValues,
+    required this.remark,
+    required this.group,
+    required this.defaultValue,
+    required this.iconName,
+    required this.hidden,
+    required this.bespokeFormField,
+    required this.bespokeFieldType,
+    required this.bespokeEntityMapping,
+    required this.bespokeEntityToDocument,
+    required this.optional,
+    required this.conditional});
 
+
+/*
   Map<String, Object> toJson() {
     return {
       "fieldName": fieldName,
@@ -70,7 +71,7 @@ class Field extends Equatable {
       "fieldType": fieldType,
       "fieldValidation": fieldValidation,
       "enumName": enumName,
-      "enumValues": enumValues,
+      "enumValues": enumValues ?? [],
       "arrayType": arrayType,
       "map": map,
       "association": association,
@@ -98,7 +99,6 @@ class Field extends Equatable {
         map,
         association,
         enumName,
-        enumValues,
         remark,
         group,
         defaultValue,
@@ -111,6 +111,52 @@ class Field extends Equatable {
         optional,
         conditional
       ];
+*/
+
+  String getDefaultValue() {
+    if (defaultValue == null) return "";
+    return defaultValue!;
+  }
+
+  bool isHidden() {
+    if (hidden == null) return false;
+    return hidden!;
+  }
+
+  String getConditional() {
+    if (conditional == null) return "";
+    return conditional!;
+  }
+
+  String getBespokeFormField() {
+    if (bespokeFormField == null) return "";
+    return bespokeFormField!;
+  }
+
+  String getBespokeFieldType() {
+    if (bespokeFieldType == null) return "";
+    return bespokeFieldType!;
+  }
+
+  String getGroup() {
+    if (group == null) return "";
+    return group!;
+  }
+
+  String getBespokeEntityMapping() {
+    if (bespokeEntityMapping == null) return "";
+    return bespokeEntityMapping!;
+  }
+
+  String getEnumName() {
+    if (enumName == null) return "";
+    return enumName!;
+  }
+
+  bool isOptional() {
+    if (optional == null) return false;
+    return optional!;
+  }
 
   @override
   String toString() {
@@ -130,15 +176,16 @@ class Field extends Equatable {
     bool association = json["association"] as bool ?? false;
     bool hidden = json["hidden"] as bool ?? false;
     bool optional = json["optional"] as bool ?? false;
-    List<String> myList;
-    Iterable i = json["enumValues"];
+    List<String>? myList;
+    Iterable? i = json["enumValues"] as Iterable;
+
     if (i != null) {
-      myList = List();
+      myList = <String>[];
       i.forEach((val) {
-        myList.add(val);
+        myList!.add(val);
       });
     }
-    return Field(
+    var field = Field(
       fieldName: json["fieldName"] as String,
       displayName: json["displayName"] as String,
       fieldType: json["fieldType"] as String,
@@ -160,6 +207,7 @@ class Field extends Equatable {
       optional: optional,
       conditional: json["conditional"] as String,
     );
+    return field;
   }
 
   bool isEnum() {
@@ -167,7 +215,12 @@ class Field extends Equatable {
   }
 
   bool isMap() {
-    return map;
+    return map != null && map!;
+  }
+
+  bool isAssociation() {
+    if (association == null) return false;
+    return association!;
   }
 
   bool isInt() {
@@ -198,15 +251,20 @@ class Field extends Equatable {
     return (fieldType == "bespoke");
   }
 
+  String getRemark() {
+    if (remark == null) return "";
+    return remark!;
+  }
+
   String dataType(String suffix) {
     if (isBespoke()) {
-      return bespokeFieldType;
+      return getBespokeFieldType();
     } else {
       if (arrayType != ArrayType.NoArray) {
         if (isNativeType()) return "List<" + fieldType + ">";
         return "List<" + fieldType + suffix + ">";
       } else {
-        if (map) {
+        if (isMap()) {
           if (isNativeType()) return "Map<String, " + fieldType + ">";
           return "Map<String, " + fieldType + suffix + ">";
         } else {
@@ -236,11 +294,11 @@ class Field extends Equatable {
       return "DateTime";
     } else if (isEnum()) {
       if (isArray())
-        return "List<" + enumName + ">";
-      else if (map)
-        return "Map<String, " + enumName + ">";
+        return "List<" + getEnumName() + ">";
+      else if (isMap())
+        return "Map<String, " + getEnumName() + ">";
       else
-        return enumName;
+        return getEnumName();
     } else {
       return dataType("Model");
     }
@@ -252,7 +310,7 @@ class Field extends Equatable {
     } else if (isEnum()) {
       if (isArray())
         return "List<int>";
-      else if (map) {
+      else if (isMap()) {
         return "Map<String, int>";
       } else {
         return "int";
@@ -271,14 +329,14 @@ class Field extends Equatable {
   }
 
   FormTypeField formFieldType() {
-    if (map) {
+    if (isMap()) {
       // todo!
       return FormTypeField.Unsupported;
     } else {
       if (isArray()) {
-        if (!association) return FormTypeField.List;
+        if (!isAssociation()) return FormTypeField.List;
       } else {
-        if (association) return FormTypeField.Lookup;
+        if (isAssociation()) return FormTypeField.Lookup;
         if (isEnum()) return FormTypeField.Selection;
         if (isInt()) return FormTypeField.EntryField;
         if (isDouble()) return FormTypeField.EntryField;

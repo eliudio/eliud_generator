@@ -113,7 +113,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
 """;
 
 class ListBlocCodeGenerator extends CodeGenerator {
-  ListBlocCodeGenerator({ModelSpecification modelSpecifications})
+  ListBlocCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   Map<String, String> parameters(ModelSpecification modelSpecification) => <String, String>{

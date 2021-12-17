@@ -15,12 +15,13 @@ class CacheCodeBuilder extends CodeBuilder {
   }
 
   @override
-  CodeGenerator generator(String specifications) {
+  CodeGenerator? generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateCache) {
       CacheCodeGenerator cacheCodeGenerator = CacheCodeGenerator(
           modelSpecifications: modelSpecification);
       return cacheCodeGenerator;
     }
+    return null;
   }
 }

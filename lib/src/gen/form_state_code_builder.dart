@@ -13,13 +13,13 @@ class FormStateCodeBuilder extends CodeBuilder {
   }
 
   @override
-  CodeGenerator generator(String specifications) {
-    print("FormStateCodeBuilder");
+  CodeGenerator? generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateForm) {
       FormStateCodeGenerator stateCodeGenerator = FormStateCodeGenerator(
           modelSpecifications: modelSpecification);
       return stateCodeGenerator;
     }
+    return null;
   }
 }

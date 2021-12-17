@@ -49,7 +49,7 @@ const String _codeWithArgNoAppID = """
 """;
 
 class RepositoryCodeGenerator extends CodeGenerator {
-  RepositoryCodeGenerator({ModelSpecification modelSpecifications})
+  RepositoryCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
 /*

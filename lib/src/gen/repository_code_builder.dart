@@ -14,13 +14,13 @@ class RepositoryCodeBuilder extends CodeBuilder {
   }
 
   @override
-  CodeGenerator generator(String specifications) {
-    print("RepositoryCodeBuilder");
+  CodeGenerator? generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateRepository) {
       RepositoryCodeGenerator repositoryCodeGenerator = RepositoryCodeGenerator(
           modelSpecifications: modelSpecification);
       return repositoryCodeGenerator;
     }
+    return null;
   }
 }

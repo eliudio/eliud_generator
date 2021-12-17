@@ -7,7 +7,7 @@ import 'code_generator_multi.dart';
 abstract class ExportGenerator extends CodeGeneratorMulti {
   String extension;
 
-  ExportGenerator({String fileName, this.extension}): super(fileName: fileName);
+  ExportGenerator({required String fileName, required this.extension}): super(fileName: fileName);
 
   bool shouldGenerate(ModelSpecification spec);
 

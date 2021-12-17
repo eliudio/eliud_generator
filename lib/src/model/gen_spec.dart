@@ -19,14 +19,14 @@ class GenerateSpecification {
 
   bool isAppSubCollection() => documentSubCollectionOf != null && documentSubCollectionOf.toLowerCase() == "app";
 
-  GenerateSpecification({ this.generateComponent, this.generateRepository, this.generateCache, this.hasPersistentRepository,
-    this.generateFirestoreRepository, this.generateRepositorySingleton, this.generateModel, this.generateEntity,
-    this.generateForm, this.generateList, this.generateDropDownButton, this.generateInternalComponent,
-    this.generateEmbeddedComponent, this.isExtension, this.documentSubCollectionOf
+  GenerateSpecification({ required this.generateComponent, required this.generateRepository, required this.generateCache, required this.hasPersistentRepository,
+    required this.generateFirestoreRepository, required this.generateRepositorySingleton, required this.generateModel, required this.generateEntity,
+    required this.generateForm, required this.generateList, required this.generateDropDownButton, required this.generateInternalComponent,
+    required this.generateEmbeddedComponent, required this.isExtension, required this.documentSubCollectionOf
   });
 
   Map<String, Object> toJson() {
-    return <String, dynamic>{
+    return <String, Object>{
       "generateComponent": generateComponent,
       "generateRepository": generateRepository,
       "generateCache": generateCache,
@@ -81,7 +81,7 @@ class GenerateSpecification {
   }
 
   static GenerateSpecification fromJsonString(String json) {
-    Map<String, dynamic> generationSpecificationMap = jsonDecode(json);
+    Map<String, Object> generationSpecificationMap = jsonDecode(json);
     return fromJson(generationSpecificationMap);
   }
 }

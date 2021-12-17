@@ -135,7 +135,7 @@ const _imageString = """
 """;
 
 class DropdownButtonCodeGenerator extends CodeGenerator {
-  DropdownButtonCodeGenerator ({ModelSpecification modelSpecifications})
+  DropdownButtonCodeGenerator ({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -176,11 +176,11 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
 
     childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model value) {");
     childCodeBuffer.writeln("var widgets = <Widget>[];");
-    String title = modelSpecifications.listFields.title;
+    String title = modelSpecifications.listFields.getTitle();
     if (title != null) {
       childCodeBuffer.writeln("widgets.add($title);");
     }
-    String subTitle = modelSpecifications.listFields.subTitle;
+    String subTitle = modelSpecifications.listFields.getSubTitle();
     if (subTitle != null) {
       childCodeBuffer.writeln("widgets.add($subTitle);");
     }

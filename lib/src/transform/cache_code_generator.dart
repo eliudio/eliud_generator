@@ -5,7 +5,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 import 'firestore_helper.dart';
 
-String _imports(String packageName, List<String> depends) => """
+String _imports(String packageName, List<String>? depends) => """
 import 'dart:async';
 import 'package:eliud_core/tools/query/query_tools.dart';
 import 'package:eliud_core/tools/common_tools.dart';
@@ -115,7 +115,12 @@ const String _listen = """
 
   @override
   StreamSubscription<\${id}Model?> listenTo(String documentId, \${id}Changed changed) {
-    return reference.listenTo(documentId, changed);
+    return reference.listenTo(documentId, ((value) {
+      if (value != null) {
+        fullCache[value.documentID] = value;
+      }
+      changed(value);
+    }));
   }
 """;
 
@@ -171,7 +176,7 @@ const String _collectionCode = """
  * forget to submit. At this point, all devices connected will have their cache flushed.
  */
 class CacheCodeGenerator extends CodeGenerator {
-  CacheCodeGenerator({ModelSpecification modelSpecifications})
+  CacheCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -208,7 +213,7 @@ class CacheCodeGenerator extends CodeGenerator {
     StringBuffer assignParametersBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
-        if (field.association) {
+        if (field.isAssociation()) {
           String appVar;
 /*
           if ((field.fieldType != "App") &&
@@ -219,7 +224,7 @@ class CacheCodeGenerator extends CodeGenerator {
             appVar = '';
           }
 */
-          if (modelSpecifications.isAppModel) {
+          if (modelSpecifications.getIsAppModel()) {
             appVar = "appId: model.appId";
           } else {
             appVar = '';

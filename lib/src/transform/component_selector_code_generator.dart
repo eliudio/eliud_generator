@@ -139,7 +139,7 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> {
 """;
 
 class ComponentSelectorCodeGenerator extends CodeGenerator {
-  ComponentSelectorCodeGenerator ({ModelSpecification modelSpecifications})
+  ComponentSelectorCodeGenerator ({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
@@ -150,8 +150,8 @@ class ComponentSelectorCodeGenerator extends CodeGenerator {
   Map<String, String> parameters(ModelSpecification modelSpecification) => <String, String>{
     '\${id}': modelSpecifications.id,
     '\${lid}': firstLowerCase(modelSpecifications.id),
-    '\${title}': modelSpecifications.listFields.title ?? 'null',
-    '\${subtitle}': modelSpecifications.listFields.subTitle ?? 'null',
+    '\${title}': modelSpecifications.listFields.getTitle(),
+    '\${subtitle}': modelSpecifications.listFields.getSubTitle(),
     '\${path}': camelcaseToUnderscore(modelSpecifications.id),
   };
 

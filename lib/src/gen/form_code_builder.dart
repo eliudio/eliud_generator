@@ -13,12 +13,13 @@ class FormCodeBuilder extends CodeBuilder {
   }
 
   @override
-  CodeGenerator generator(String specifications) {
+  CodeGenerator? generator(String specifications) {
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateForm) {
       FormCodeGenerator formCodeGenerator = FormCodeGenerator(
           modelSpecifications: modelSpecification);
       return formCodeGenerator;
     }
+    return null;
   }
 }

@@ -1,22 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-class Group extends Equatable {
-  final String group;
-  final String description;
-  final String conditional; // group is visible in form when this condition is true
+class Group {
+  final String? group;
+  final String? description;
+  final String? conditional; // group is visible in form when this condition is true
 
-  const Group({this.group, this.description, this.conditional,});
-
-  Map<String, Object> toJson() {
-    return {
-      "group": group,
-      "description": description,
-      "conditional": conditional,
-    };
-  }
-
-  @override
-  List<Object> get props => [group, description, conditional];
+  const Group({required this.group, required this.description, required this.conditional,});
 
   @override
   String toString() {
@@ -29,5 +18,10 @@ class Group extends Equatable {
       description: json["description"] as String,
       conditional: json["conditional"] as String,
     );
+  }
+
+  String getDescription() {
+    if (description == null) return "";
+    return description!;
   }
 }
