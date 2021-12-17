@@ -126,11 +126,11 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(6) + "child: ListTile(");
     codeBuffer.writeln(spaces(8) + "onTap: onTap,");
 
-    String title = modelSpecifications.listFields.getTitle();
+    String? title = modelSpecifications.listFields.title;
     if (title != null) {
       codeBuffer.writeln(spaces(8) + "title: $title,");
     }
-    String subTitle = modelSpecifications.listFields.getSubTitle();
+    String? subTitle = modelSpecifications.listFields.subTitle;
     if (subTitle != null) {
       codeBuffer.writeln(spaces(8) + "subtitle: $subTitle,");
     }

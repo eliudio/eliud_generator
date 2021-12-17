@@ -32,12 +32,12 @@ class ListFields {
   }
 
   String getTitle() {
-    if (title == null) return "";
+    if (title == null) return "null";
     return title!;
   }
 
   String getSubTitle() {
-    if (subTitle == null) return "";
+    if (subTitle == null) return "null";
     return subTitle!;
   }
 

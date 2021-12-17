@@ -70,7 +70,7 @@ class ModelSpecification extends Specification {
   }
 
   String getDisplayOnDelete() {
-    if (displayOnDelete == null) return "";
+    if (displayOnDelete == null) return "documentID";
     return displayOnDelete!;
   }
 
