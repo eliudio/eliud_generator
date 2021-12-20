@@ -185,9 +185,10 @@ const String _footerWithoutAppID = """
 
 const String _footerWithoutCollectionParameter = """
   final String appId;
-  \${id}Firestore(this.\${id}Collection, this.appId);
+  \${id}Firestore(this.getCollection, this.appId): \${id}Collection = getCollection();
 
   final CollectionReference \${id}Collection;
+  final GetCollection getCollection;
 }
 """;
 
@@ -216,7 +217,8 @@ class FirestoreCodeGenerator extends CodeGenerator {
     String collection;
     if (modelSpecifications.getIsAppModel()) {
       appVar = appVar3 = appVar4 = "appId: appId";
-      collection = "appRepository()!.getSubCollection(appId, '" + modelSpecifications.id.toLowerCase() + "')";
+      collection = "getCollection()";
+      //"appRepository()!.getSubCollection(appId, '" + modelSpecifications.id.toLowerCase() + "')";
     } else if (modelSpecifications.id == "App") {
       appVar = "appId: value.id";
       appVar3 = "";

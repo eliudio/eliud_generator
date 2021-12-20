@@ -70,7 +70,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
                 firstLowerCase(spec.modelSpecification.id) +
                 "Repository[key] = ");
 
-            var parameter = lowerCase + "Repository(appId)!.getSubCollection($id!, '" +
+            var parameter = "() => " + lowerCase + "Repository(appId)!.getSubCollection($id!, '" +
                 FirestoreHelper.collectionId(spec.modelSpecification) +
                 "'), appId!";
             if (spec.modelSpecification.generate.generateCache) {
@@ -95,7 +95,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
 
             var parameter;
             if (spec.modelSpecification.generate.isAppSubCollection()) {
-              parameter = "appRepository()!.getSubCollection(appId, '" +
+              parameter = "() => appRepository()!.getSubCollection(appId, '" +
                   FirestoreHelper.collectionId(spec.modelSpecification) +
                   "'), appId";
             } else {
