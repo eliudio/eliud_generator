@@ -6,6 +6,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName, List<String>? depends) => """
+import 'package:eliud_core/model/app_model.dart';
 import 'package:eliud_core/core/blocs/access/state/access_state.dart';
 import 'package:eliud_core/core/blocs/access/state/logged_in.dart';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
@@ -47,17 +48,16 @@ import 'package:$packageName/model/\${path}_form_state.dart';
 
 const String _xyzFormString = """
 class \${className}Form extends StatelessWidget {
+  final AppModel app;
   FormAction formAction;
   \${id}Model? value;
   ActionModel? submitAction;
 
-  \${className}Form({Key? key, required this.formAction, required this.value, this.submitAction}) : super(key: key);
+  \${className}Form({Key? key, required this.app, required this.formAction, required this.value, this.submitAction}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var accessState = AccessBloc.getState(context);
-    var app = AccessBloc.currentApp(context);
-    if (app == null) return Text("No app available");
     var appId = app.documentID!;
     if (formAction == FormAction.ShowData) {
       return BlocProvider<\${id}FormBloc >(
@@ -65,7 +65,7 @@ class \${className}Form extends StatelessWidget {
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormEvent(value: value)),
   
-        child: My\${className}Form(submitAction: submitAction, formAction: formAction),
+        child: My\${className}Form(app:app, submitAction: submitAction, formAction: formAction),
           );
     } if (formAction == FormAction.ShowPreloadedData) {
       return BlocProvider<\${id}FormBloc >(
@@ -73,17 +73,17 @@ class \${className}Form extends StatelessWidget {
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormNoLoadEvent(value: value)),
   
-        child: My\${className}Form(submitAction: submitAction, formAction: formAction),
+        child: My\${className}Form(app:app, submitAction: submitAction, formAction: formAction),
           );
     } else {
       return Scaffold(
-        appBar: StyleRegistry.registry().styleWithContext(context).adminFormStyle().appBarWithString(context, title: formAction == FormAction.UpdateAction ? '\${updateTitle}' : '\${addTitle}'),
+        appBar: StyleRegistry.registry().styleWithApp(app).adminFormStyle().appBarWithString(app, context, title: formAction == FormAction.UpdateAction ? '\${updateTitle}' : '\${addTitle}'),
         body: BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(appId,
                                        \${constructorParameters}
                                                 )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
   
-        child: My\${className}Form(submitAction: submitAction, formAction: formAction),
+        child: My\${className}Form(app: app, submitAction: submitAction, formAction: formAction),
           ));
     }
   }
@@ -93,10 +93,11 @@ class \${className}Form extends StatelessWidget {
 
 const String _myXyzFormString = """
 class My\${className}Form extends StatefulWidget {
+  final AppModel app;
   final FormAction? formAction;
   final ActionModel? submitAction;
 
-  My\${className}Form({this.formAction, this.submitAction});
+  My\${className}Form({required this.app, this.formAction, this.submitAction});
 
   _My\${className}FormState createState() => _My\${className}FormState(this.formAction);
 }
@@ -107,7 +108,7 @@ const _groupFieldHeaderString = """
         \${condition} children.add(Container(
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                  child: StyleRegistry.registry().styleWithContext(context).adminFormStyle().groupTitle(context, '\${label}')
+                  child: StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().groupTitle(widget.app, context, '\${label}')
                 ));
 """;
 
@@ -157,7 +158,7 @@ const String _readOnlyMethodMember = """
 
 const String _readOnlyMethod = """
   bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner(AccessBloc.currentAppId(context)));
+    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner(widget.app.documentID!));
   }
   
 """;
@@ -302,9 +303,6 @@ class RealFormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
     codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
-    codeBuffer.writeln(spaces(4) + "var app = AccessBloc.currentApp(context);");
-    codeBuffer.writeln(spaces(4) + "if (app == null) return Text('No app available');");
-    codeBuffer.writeln(spaces(4) + "var appId = app.documentID!;");
     codeBuffer.writeln(spaces(4) + "var accessState = AccessBloc.getState(context);");
 
     // start blocbuilder
@@ -320,7 +318,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         "if (state is " +
         modelSpecifications.id +
         "FormUninitialized) return Center(");
-    codeBuffer.writeln(spaces(8) + "child: StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context),");
+    codeBuffer.writeln(spaces(8) + "child: StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context),");
     codeBuffer.writeln(spaces(6) + ");");
     codeBuffer.writeln();
 
@@ -427,7 +425,7 @@ class RealFormCodeGenerator extends CodeGenerator {
 
 
     codeBuffer.writeln(spaces(8) + "if ((formAction != FormAction.ShowData) && (formAction != FormAction.ShowPreloadedData))");
-    codeBuffer.writeln(spaces(10) + "children.add(StyleRegistry.registry().styleWithContext(context).adminFormStyle().button(context, label: 'Submit',");
+    codeBuffer.writeln(spaces(10) + "children.add(StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().button(widget.app, context, label: 'Submit',");
     codeBuffer.writeln(spaces(18) + "onPressed: _readOnly(accessState, state) ? null : () {");
     codeBuffer.writeln(spaces(14 + 6) +
         "if (state is " +
@@ -490,7 +488,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(16) + "));");
 
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(8) + "return StyleRegistry.registry().styleWithContext(context).adminFormStyle().container(context, Form(");
+    codeBuffer.writeln(spaces(8) + "return StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().container(widget.app, context, Form(");
 
     codeBuffer.writeln(spaces(12) + "child: ListView(");
     codeBuffer.writeln(spaces(14) + "padding: const EdgeInsets.all(8),");
@@ -502,7 +500,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) + ");");
 
     codeBuffer.writeln(spaces(6) + "} else {");
-    codeBuffer.writeln(spaces(8) + "return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);");
+    codeBuffer.writeln(spaces(8) + "return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);");
     codeBuffer.writeln(spaces(6) + "}");
     // close blocbuilder
     codeBuffer.writeln(spaces(4) + "});");
@@ -528,7 +526,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(spaces(8) +
         "children.add(Container(height: 20.0));");
     codeBuffer.writeln(spaces(8) +
-        "children.add(StyleRegistry.registry().styleWithContext(context).adminFormStyle().divider(context));");
+        "children.add(StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().divider(widget.app, context));");
     return codeBuffer.toString();
   }
 
@@ -592,7 +590,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           var validator = "(_) => state is " + firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError ? state.message : null";
 
           codeBuffer.writeln(_fieldStart(field));
-          codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithContext(context).adminFormStyle().textFormField(context, labelText: '$labelName', icon: Icons.$iconName, readOnly: $readOnlyCondition, textEditingController: $controllerName, $keyboardType, validator: $validator, hintText: $hintText)");
+          codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().textFormField(widget.app, context, labelText: '$labelName', icon: Icons.$iconName, readOnly: $readOnlyCondition, textEditingController: $controllerName, $keyboardType, validator: $validator, hintText: $hintText)");
           codeBuffer.writeln(_fieldEnd());
 
           break;
@@ -608,14 +606,14 @@ class RealFormCodeGenerator extends CodeGenerator {
           var onChanged = "_readOnly(accessState, state) ? null : (dynamic val) => setSelection" + firstUpperCase(field.fieldName) + "(val)";
 
           codeBuffer.writeln(_fieldStart(field));
-          codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithContext(context).adminFormStyle().checkboxListTile(context, '$title', $value, $onChanged)");
+          codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().checkboxListTile(widget.app, context, '$title', $value, $onChanged)");
           codeBuffer.writeln(_fieldEnd());
           break;
         case FormTypeField.Lookup:
           codeBuffer.writeln(_fieldStart(field));
           bool optionalValue = field.isOptional();
           codeBuffer.writeln(spaces(16) +
-              "DropdownButtonComponentFactory().createNew(appId: appId, id: \"" +
+              "DropdownButtonComponentFactory().createNew(app: widget.app, id: \"" +
               firstLowerCase(field.fieldType) +
               "s\", value: _" +
               firstLowerCase(field.fieldName) +
@@ -628,11 +626,11 @@ class RealFormCodeGenerator extends CodeGenerator {
           int i = 0;
           if (field.enumValues != null) {
             field.enumValues!.forEach((enumField) {
-              var onChanged = "!accessState.memberIsOwner(AccessBloc.currentAppId(context)) ? null : (dynamic val) => " +
+              var onChanged = "!accessState.memberIsOwner(widget.app.documentID!) ? null : (dynamic val) => " +
                   "setSelection" + firstUpperCase(field.fieldName) + "(val)";
               codeBuffer.writeln(_fieldStart(field));
               codeBuffer.writeln(spaces(18) +
-                  "StyleRegistry.registry().styleWithContext(context).adminFormStyle().radioListTile(context, $i, _" +
+                  "StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().radioListTile(widget.app, context, $i, _" +
                   firstLowerCase(field.fieldName) +
                   "SelectedRadioTile, '$enumField', '$enumField', $onChanged)");
               codeBuffer.writeln(_fieldEnd());
@@ -646,7 +644,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           codeBuffer.writeln(spaces(20) +
               "child: " +
               firstLowerCase(field.fieldType) +
-              "sList(context, state.value!." +
+              "sList(widget.app, context, state.value!." +
               field.fieldName +
               ", _on" +
               firstUpperCase(field.fieldName) +
@@ -668,7 +666,7 @@ class RealFormCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(_fieldStart(field));
         codeBuffer.writeln(spaces(16) +
             field.getBespokeFormField() +
-            "(" +
+            "(widget.app, " +
             "state.value!." +
             field.fieldName +
             ", _on" +

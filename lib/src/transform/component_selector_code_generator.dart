@@ -5,6 +5,7 @@ import 'code_generator.dart';
 
 const String _code = """
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
+import 'package:eliud_core/model/app_model.dart';
 import 'package:eliud_core/style/frontend/has_button.dart';
 import 'package:eliud_core/style/frontend/has_divider.dart';
 import 'package:eliud_core/style/frontend/has_list_tile.dart';
@@ -24,15 +25,15 @@ import '\${path}_model.dart';
 
 class \${id}ComponentSelector extends ComponentSelector {
   @override
-  Widget createSelectWidget(BuildContext context, double height,
+  Widget createSelectWidget(BuildContext context, AppModel app, double height,
       SelectComponent selected, editorConstructor) {
-    var appId = AccessBloc.currentAppId(context);
+    var appId = app.documentID!;
     return BlocProvider<\${id}ListBloc>(
           create: (context) => \${id}ListBloc(
             \${lid}Repository:
                 \${lid}Repository(appId: appId)!,
           )..add(Load\${id}List()),
-      child: Select\${id}Widget(
+      child: Select\${id}Widget(app: app,
           height: height,
           selected: selected,
           editorConstructor: editorConstructor),
@@ -41,12 +42,14 @@ class \${id}ComponentSelector extends ComponentSelector {
 }
 
 class Select\${id}Widget extends StatefulWidget {
+  final AppModel app;
   final double height;
   final SelectComponent selected;
   final ComponentEditorConstructor editorConstructor;
 
   const Select\${id}Widget(
       {Key? key,
+      required this.app,
       required this.height,
       required this.selected,
       required this.editorConstructor})
@@ -60,6 +63,7 @@ class Select\${id}Widget extends StatefulWidget {
 
 class _Select\${id}WidgetState extends State<Select\${id}Widget> {
   Widget theList(BuildContext context, List<\${id}Model?> values) {
+    var app = widget.app; 
     return ListView.builder(
         shrinkWrap: true,
         physics: ScrollPhysics(),
@@ -69,24 +73,25 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> {
           if (value != null) {
             return getListTile(
               context,
+              widget.app,
               trailing: PopupMenuButton<int>(
                   child: Icon(Icons.more_vert),
                   elevation: 10,
                   itemBuilder: (context) => [
                         PopupMenuItem(
                           value: 1,
-                          child: text(context, 'Add to page'),
+                          child: text(widget.app, context, 'Add to page'),
                         ),
                         PopupMenuItem(
                           value: 2,
-                          child: text(context, 'Update'),
+                          child: text(widget.app, context, 'Update'),
                         ),
                       ],
                   onSelected: (selectedValue) {
                     if (selectedValue == 1) {
                       widget.selected(value.documentID!);
                     } else if (selectedValue == 2) {
-                      widget.editorConstructor.updateComponent(context, value, (_) {});
+                      widget.editorConstructor.updateComponent(widget.app, context, value, (_) {});
                     }
                   }),
               title: \${title},
@@ -103,10 +108,10 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> {
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(
         builder: (context, state) {
       if (state is \${id}ListLoading) {
-        return progressIndicator(context);
+        return progressIndicator(widget.app, context);
       } else if (state is \${id}ListLoaded) {
         if (state.values == null) {
-          return text(context, 'No items');
+          return text(widget.app, context, 'No items');
         } else {
           var children = <Widget>[];
           children.add(Container(
@@ -116,12 +121,12 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> {
                 state.values!,
               )));
           children.add(Column(children: [
-            divider(context),
+            divider(widget.app, context),
             Center(
-                child: iconButton(
+                child: iconButton(widget.app, 
               context,
               onPressed: () {
-                widget.editorConstructor.createNewComponent(context, (_) {});
+                widget.editorConstructor.createNewComponent(widget.app, context, (_) {});
               },
               icon: Icon(Icons.add),
             ))

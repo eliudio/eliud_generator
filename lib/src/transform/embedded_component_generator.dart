@@ -7,6 +7,7 @@ const String _imports = """
 import 'package:eliud_core/tools/random.dart';
 import 'package:eliud_core/tools/common_tools.dart';
 import 'package:eliud_core/tools/query/query_tools.dart';
+import 'package:eliud_core/model/app_model.dart';
 
 import 'dart:async';
 
@@ -24,7 +25,7 @@ import '../\${path}_repository.dart';
 """;
 
 const String _InMemoryRepositoryMethod = """
-static Widget \${lid}sList(BuildContext context, List<\${id}Model> values, \${id}ListChanged trigger) {
+static Widget \${lid}sList(BuildContext context, AppModel app, List<\${id}Model> values, \${id}ListChanged trigger) {
   \${id}InMemoryRepository inMemoryRepository = \${id}InMemoryRepository(trigger, values,);
   return MultiBlocProvider(
     providers: [
@@ -34,7 +35,7 @@ static Widget \${lid}sList(BuildContext context, List<\${id}Model> values, \${id
           )..add(Load\${id}List()),
         )
         ],
-    child: \${id}ListWidget(isEmbedded: true),
+    child: \${id}ListWidget(app: app, isEmbedded: true),
   );
 }
 """;
@@ -172,7 +173,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        codeBuffer.writeln(firstLowerCase(ms.id) + "sList(context, value, trigger) => EmbeddedComponentFactory." + firstLowerCase(ms.id) + "sList(context, value, trigger);");
+        codeBuffer.writeln(firstLowerCase(ms.id) + "sList(app, context, value, trigger) => EmbeddedComponentFactory." + firstLowerCase(ms.id) + "sList(app, context, value, trigger);");
       }
     });
     codeBuffer.writeln();

@@ -24,12 +24,12 @@ import 'package:$packageName/\${path}_list_event.dart';
 
 const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {
-  Widget? createNew({Key? key, required String appId,  required String id, Map<String, dynamic>? parameters}) {
-    return ListComponent(appId: appId, componentId: id);
+  Widget? createNew({Key? key, required AppModel app,  required String id, Map<String, dynamic>? parameters}) {
+    return ListComponent(app: app, componentId: id);
   }
 
   @override
-  dynamic getModel({required String appId, required String id}) {
+  dynamic getModel({required AppModel app, required String id}) {
     return null;
   }
 }
@@ -41,7 +41,7 @@ typedef DropdownButtonChanged(String? value);
 
 class DropdownButtonComponentFactory implements ComponentDropDown {
   @override
-  dynamic getModel({required String appId, required String id}) {
+  dynamic getModel({required AppModel app, required String id}) {
     return null;
   }
 
@@ -57,11 +57,11 @@ const String _DropdownButtonSupportMethodFooter = """
 """;
 
 const String _DropdownButtonFactoryCodeMethod = """
-  Widget createNew({Key? key, required String appId, required String id, Map<String, dynamic>? parameters, String? value, DropdownButtonChanged? trigger, bool? optional}) {
+  Widget createNew({Key? key, required AppModel app, required String id, Map<String, dynamic>? parameters, String? value, DropdownButtonChanged? trigger, bool? optional}) {
 """;
 
 const String _DropdownButtonFactoryCodeComponent = """
-      return DropdownButtonComponent(appId: appId, componentId: id, value: value, trigger: trigger, optional: optional);
+      return DropdownButtonComponent(app: app, componentId: id, value: value, trigger: trigger, optional: optional);
 """;
 
 const String _DropdownButtonFactoryCodeFooter = """
@@ -73,7 +73,7 @@ const String _DropdownButtonFactoryCodeFooter = """
 
 const String _ListComponentCodeHeader = """
 class ListComponent extends StatelessWidget with HasFab {
-  final String appId;
+  final AppModel app;
   final String? componentId;
   Widget? widget;
 
@@ -86,7 +86,7 @@ class ListComponent extends StatelessWidget with HasFab {
     return null;
   }
 
-  ListComponent({required this.appId, this.componentId}) {
+  ListComponent({required this.app, this.componentId}) {
     initWidget();
   }
 
@@ -98,13 +98,13 @@ const String _DropdownButtonComponentCodeHeader = """
 typedef Changed(String? value);
 
 class DropdownButtonComponent extends StatelessWidget {
-  final String appId;
+  final AppModel app;
   final String? componentId;
   final String? value;
   final Changed? trigger;
   final bool? optional;
 
-  DropdownButtonComponent({required this.appId, this.componentId, this.value, this.trigger, this.optional});
+  DropdownButtonComponent({required this.app, this.componentId, this.value, this.trigger, this.optional});
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +135,7 @@ const String _SpecificDropdownButtonComponentCode = """
           )..add(Load\${upperSpecific}List()),
         )
       ],
-      child: \${upperSpecific}DropdownButtonWidget(value: value, trigger: trigger, optional: optional),
+      child: \${upperSpecific}DropdownButtonWidget(app: app, value: value, trigger: trigger, optional: optional),
     );
   }
 """;
@@ -223,7 +223,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
               firstLowerCase(ms.id) +
               "s') widget = " +
               firstUpperCase(ms.id) +
-              "ListWidget();");
+              "ListWidget(app: app);");
         }
       });
       codeBuffer.writeln(spaces(2) + "}");
@@ -232,7 +232,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
-      var appIdVar = ms.getIsAppModel() ? "appId: appId" : "";
+      var appIdVar = ms.getIsAppModel() ? "appId: app.documentID!" : "";
       if (ms.generate.generateInternalComponent) {
         if (list)
           codeBuffer.writeln(process(_SpecificListComponentCode,

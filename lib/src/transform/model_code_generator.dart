@@ -67,8 +67,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
       if (field.isEnum()) {
-        codeBuffer.writeln(
-            field.getEnumName() + " to" + field.getEnumName() + "(int? index) {");
+        codeBuffer.writeln(field.getEnumName() +
+            " to" +
+            field.getEnumName() +
+            "(int? index) {");
         codeBuffer.writeln(spaces(2) + "switch (index) {");
         int index = 0;
         if (field.enumValues != null) {
@@ -262,13 +264,14 @@ class ModelCodeGenerator extends DataCodeGenerator {
   String _fromEntity() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(spaces(2) +
-        "static " +
+        "static Future<" +
         modelSpecifications.modelClassName() +
-        "? fromEntity(");
+        "?> fromEntity(");
     if (modelSpecifications.fields[0].fieldName == "documentID") {
       codeBuffer.write("String documentID, ");
     }
-    codeBuffer.writeln(modelSpecifications.entityClassName() + "? entity) {");
+    codeBuffer
+        .writeln(modelSpecifications.entityClassName() + "? entity) async {");
     codeBuffer.writeln(spaces(4) + "if (entity == null) return null;");
     codeBuffer.writeln(spaces(4) + "var counter = 0;");
     codeBuffer.writeln(
@@ -300,8 +303,11 @@ class ModelCodeGenerator extends DataCodeGenerator {
                     field.getEnumName() +
                     "(value)))");
               } else {
-                codeBuffer.write(
-                    "to" + field.getEnumName() + "(entity." + field.fieldName + ")");
+                codeBuffer.write("to" +
+                    field.getEnumName() +
+                    "(entity." +
+                    field.fieldName +
+                    ")");
               }
             } else if (!field.isNativeType()) {
               if (field.isArray()) {
@@ -309,19 +315,22 @@ class ModelCodeGenerator extends DataCodeGenerator {
                 codeBuffer.writeln(spaces(12) +
                     "entity." +
                     field.fieldName +
-                    " == null ? null :");
-                codeBuffer.writeln(spaces(12) + "entity." + field.fieldName);
+                    " == null ? null : List<" +
+                    field.fieldType +
+                    "Model>.from(await Future.wait(entity. " +
+                    field.fieldName);
                 codeBuffer.writeln(spaces(12) + "!.map((item) {");
-                codeBuffer.writeln(spaces(14) + "counter++; ");
+                codeBuffer.writeln(spaces(12) + "counter++;");
                 codeBuffer.writeln(spaces(14) +
                     "return " +
                     field.fieldType +
-                    "Model.fromEntity(counter.toString(), item)!;");
+                    "Model.fromEntity(counter.toString(), item);");
                 codeBuffer.writeln(spaces(12) + "})");
-                codeBuffer.write(spaces(12) + ".toList()");
+                codeBuffer.write(spaces(12) + ".toList()))");
               } else {
                 codeBuffer.writeln();
                 codeBuffer.write(spaces(12) +
+                    "await " +
                     field.fieldType +
                     "Model.fromEntity(entity." +
                     field.fieldName +
@@ -417,8 +426,11 @@ class ModelCodeGenerator extends DataCodeGenerator {
                   field.getEnumName() +
                   "(value)))");
             } else {
-              codeBuffer.write(
-                  "to" + field.getEnumName() + "(entity." + field.fieldName + ")");
+              codeBuffer.write("to" +
+                  field.getEnumName() +
+                  "(entity." +
+                  field.fieldName +
+                  ")");
             }
           } else if (field.isAssociation()) {
             codeBuffer.write(field.fieldName + "Holder");

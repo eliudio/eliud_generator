@@ -4,6 +4,7 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName) => """
+import 'package:eliud_core/model/app_model.dart';
 import 'package:eliud_core/package/packages.dart';
 
 import 'package:flutter/material.dart';
@@ -27,11 +28,12 @@ const String _code = """
 typedef \${id}Changed(String? value);
 
 class \${id}DropdownButtonWidget extends StatefulWidget {
+  final AppModel app;
   final String? value;
   final \${id}Changed? trigger;
   final bool? optional;
 
-  \${id}DropdownButtonWidget({ this.value, this.trigger, this.optional, Key? key }): super(key: key);
+  \${id}DropdownButtonWidget({ required this.app, this.value, this.trigger, this.optional, Key? key }): super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -63,7 +65,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
     var accessState = AccessBloc.getState(context);
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
       if (state is \${id}ListLoading) {
-        return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
+        return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
       } else if (state is \${id}ListLoaded) {
         String? valueChosen;
         if (state.values!.indexWhere((v) => (v!.documentID == widget.value)) >= 0)
@@ -106,7 +108,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                       items: items,
                       value: valueChosen,
                       hint: Text('Select a \${lid}'),
-                      onChanged: !accessState.memberIsOwner(AccessBloc.currentAppId(context)) ? null : _onChange,
+                      onChanged: !accessState.memberIsOwner(widget.app.documentID!) ? null : _onChange,
                     );
         if (\${withImages}) {
           return Container(height:48, child: Center(child: button));
@@ -114,7 +116,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
           return Center(child: button);
         }
       } else {
-        return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
+        return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
       }
     });
   }
@@ -175,6 +177,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
 */
 
     childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model value) {");
+    childCodeBuffer.writeln("var app = widget.app;");
     childCodeBuffer.writeln("var widgets = <Widget>[];");
     String? title = modelSpecifications.listFields.title;
     if (title != null) {

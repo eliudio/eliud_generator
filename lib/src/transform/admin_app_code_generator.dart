@@ -40,7 +40,7 @@ class AdminApp extends AdminAppInstallerBase {
 const String _headerAdminMenuDef = """
 class AdminMenu extends AdminAppMenuInstallerBase {
 
-  Future<MenuDefModel> menu(String appId) async {
+  Future<MenuDefModel> menu(AppModel app) async {
     var menuItems = <MenuItemModel>[];
 """;
 
@@ -51,7 +51,7 @@ const String _menuItemDef = """
         text: "\${id}s",
         description: "\${id}s",
         icon: IconModel(codePoint: 0xe88a, fontFamily: "MaterialIcons"),
-        action: GotoPage(appId, pageID: "\${pkgName}_\${lowid}s_page"))
+        action: GotoPage(app, pageID: "\${pkgName}_\${lowid}s_page"))
     );
 
 """;
@@ -60,11 +60,11 @@ const String _footerAdminMenuDef = """
     MenuDefModel menu = MenuDefModel(
       admin: true,
       documentID: "\${pkgName}_admin_menu",
-      appId: appId,
+      appId: app.documentID,
       name: "\${pkgName}",
       menuItems: menuItems
     );
-    await menuDefRepository(appId: appId)!.add(menu);
+    await menuDefRepository(appId: app.documentID!)!.add(menu);
     return menu;
   }
 }

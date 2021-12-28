@@ -38,7 +38,7 @@ import '\${importprefix}_form.dart';
 
 String _onTap = """
                       final removedItem = await Navigator.of(context).push(
-                        pageRouteBuilder(AccessBloc.currentApp(context), page: BlocProvider.value(
+                        pageRouteBuilder(widget.app, page: BlocProvider.value(
                               value: BlocProvider.of<\${id}ListBloc>(context),
                               child: getForm(value, FormAction.UpdateAction))));
                       if (removedItem != null) {
@@ -91,7 +91,7 @@ class ListCodeGenerator extends CodeGenerator {
         _formVariations = _formVariations + spaces(6) + "if (widget.form == \"" +
             modelSpecifications.id + element.name + "Form\") return " +
             modelSpecifications.id + element.name +
-            "Form(value: value, formAction: action);\n";
+            "Form(app:widget.app, value: value, formAction: action);\n";
       });
     }
     _formVariations = _formVariations + spaces(6) + "return null;";
@@ -107,12 +107,14 @@ class ListCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(mainClass());
 
     codeBuffer.writeln("class " + modelSpecifications.id + "ListItem extends StatelessWidget {");
+    codeBuffer.writeln(spaces(2) + "final AppModel app;");
     codeBuffer.writeln(spaces(2) + "final DismissDirectionCallback onDismissed;");
     codeBuffer.writeln(spaces(2) + "final GestureTapCallback onTap;");
     codeBuffer.writeln(spaces(2) + "final " + modelSpecifications.modelClassName() + " value;");
     codeBuffer.writeln();
     codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListItem({");
     codeBuffer.writeln(spaces(4) + "Key? key,");
+    codeBuffer.writeln(spaces(4) + "required this.app,");
     codeBuffer.writeln(spaces(4) + "required this.onDismissed,");
     codeBuffer.writeln(spaces(4) + "required this.onTap,");
     codeBuffer.writeln(spaces(4) + "required this.value,");
@@ -154,6 +156,7 @@ String _listBody = """
 typedef \${id}WidgetProvider(\${id}Model? value);
 
 class \${id}ListWidget extends StatefulWidget with HasFab {
+  AppModel app;
   BackgroundModel? listBackground;
   \${id}WidgetProvider? widgetProvider;
   bool? readOnly;
@@ -161,7 +164,7 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
   \${id}ListWidgetState? state;
   bool? isEmbedded;
 
-  \${id}ListWidget({ Key? key, this.readOnly, this.form, this.widgetProvider, this.isEmbedded, this.listBackground }): super(key: key);
+  \${id}ListWidget({ Key? key, required this.app, this.readOnly, this.form, this.widgetProvider, this.isEmbedded, this.listBackground }): super(key: key);
 
   @override
   \${id}ListWidgetState createState() {
@@ -181,14 +184,14 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
 class \${id}ListWidgetState extends State<\${id}ListWidget> {
   @override
   Widget? fab(BuildContext aContext, AccessState accessState) {
-    return !accessState.memberIsOwner(AccessBloc.currentAppId(context)) \${allowAddItemsCondition}
+    return !accessState.memberIsOwner(widget.app.documentID!) \${allowAddItemsCondition}
       ? null
-      : StyleRegistry.registry().styleWithContext(context).adminListStyle().floatingActionButton(context, 'PageFloatBtnTag', Icon(Icons.add),
+      : StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().floatingActionButton(widget.app, context, 'PageFloatBtnTag', Icon(Icons.add),
       onPressed: () {
         Navigator.of(context).push(
-          pageRouteBuilder(AccessBloc.currentApp(context), page: BlocProvider.value(
+          pageRouteBuilder(widget.app, page: BlocProvider.value(
               value: BlocProvider.of<\${id}ListBloc>(context),
-              child: \${id}Form(
+              child: \${id}Form(app:widget.app,
                   value: null,
                   formAction: FormAction.AddAction)
           )),
@@ -204,20 +207,20 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
       if (accessState is AccessDetermined) {
         return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
           if (state is \${id}ListLoading) {
-            return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
+            return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
           } else if (state is \${id}ListLoaded) {
             final values = state.values;
             if ((widget.isEmbedded != null) && widget.isEmbedded!) {
               var children = <Widget>[];
               children.add(theList(context, values, accessState));
               children.add(
-                  StyleRegistry.registry().styleWithContext(context).adminFormStyle().button(
+                  StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().button(widget.app,
                       context, label: 'Add',
                       onPressed: () {
                         Navigator.of(context).push(
-                                  pageRouteBuilder(accessState.currentApp, page: BlocProvider.value(
+                                  pageRouteBuilder(widget.app, page: BlocProvider.value(
                                       value: BlocProvider.of<\${id}ListBloc>(context),
-                                      child: \${id}Form(
+                                      child: \${id}Form(app:widget.app,
                                           value: null,
                                           formAction: FormAction.AddAction)
                                   )),
@@ -234,20 +237,20 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
               return theList(context, values, accessState);
             }
           } else {
-            return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
+            return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
           }
         });
       } else {
-        return StyleRegistry.registry().styleWithContext(context).adminListStyle().progressIndicator(context);
+        return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
       }
     });
   }
   
   Widget theList(BuildContext context, values, AccessState accessState) {
     return Container(
-      decoration: widget.listBackground == null ? StyleRegistry.registry().styleWithContext(context).adminListStyle().boxDecorator(context, accessState.getMember()) : BoxDecorationHelper.boxDecoration(accessState.getMember(), widget.listBackground),
+      decoration: widget.listBackground == null ? StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().boxDecorator(widget.app, context, accessState.getMember()) : BoxDecorationHelper.boxDecoration(accessState.getMember(), widget.listBackground),
       child: ListView.separated(
-        separatorBuilder: (context, index) => StyleRegistry.registry().styleWithContext(context).adminListStyle().divider(context),
+        separatorBuilder: (context, index) => StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().divider(widget.app, context),
         shrinkWrap: true,
         physics: ScrollPhysics(),
         itemCount: values.length,
@@ -256,7 +259,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
           
           if (widget.widgetProvider != null) return widget.widgetProvider!(value);
 
-          return \${id}ListItem(
+          return \${id}ListItem(app: widget.app,
             value: value,
 //            app: accessState.app,
             onDismissed: (direction) {
@@ -279,7 +282,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
   
   Widget? getForm(value, action) {
     if (widget.form == null) {
-      return \${id}Form(value: value, formAction: action);
+      return \${id}Form(app:widget.app, value: value, formAction: action);
     } else {
 \${_formVariations}
     }
