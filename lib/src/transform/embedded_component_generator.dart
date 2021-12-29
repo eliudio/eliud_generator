@@ -25,7 +25,7 @@ import '../\${path}_repository.dart';
 """;
 
 const String _InMemoryRepositoryMethod = """
-static Widget \${lid}sList(BuildContext context, AppModel app, List<\${id}Model> values, \${id}ListChanged trigger) {
+static Widget \${lid}sList(AppModel app, BuildContext context, List<\${id}Model> values, \${id}ListChanged trigger) {
   \${id}InMemoryRepository inMemoryRepository = \${id}InMemoryRepository(trigger, values,);
   return MultiBlocProvider(
     providers: [
