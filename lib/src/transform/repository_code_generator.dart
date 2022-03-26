@@ -9,11 +9,12 @@ const String _code = """
 import 'dart:async';
 import 'package:eliud_core/tools/query/query_tools.dart';
 import 'package:eliud_core/tools/common_tools.dart';
+import 'package:eliud_core/tools/repository_base.dart';
 
 typedef \${id}ModelTrigger(List<\${id}Model?> list);
 typedef \${id}Changed(\${id}Model? value);
 
-abstract class \${id}Repository {
+abstract class \${id}Repository extends RepositoryBase<\${id}Model> {
   Future<\${id}Model> add(\${id}Model value);
   Future<void> delete(\${id}Model value);
   Future<\${id}Model?> get(String? id, { Function(Exception)? onError });
