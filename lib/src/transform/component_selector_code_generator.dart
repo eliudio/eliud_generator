@@ -4,17 +4,21 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 const String _code = """
+import 'dart:math';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
 import 'package:eliud_core/model/app_model.dart';
 import 'package:eliud_core/style/frontend/has_button.dart';
 import 'package:eliud_core/style/frontend/has_divider.dart';
 import 'package:eliud_core/style/frontend/has_list_tile.dart';
 import 'package:eliud_core/style/frontend/has_progress_indicator.dart';
+import 'package:eliud_core/style/frontend/has_tabs.dart';
 import 'package:eliud_core/style/frontend/has_text.dart';
 import 'package:eliud_core/tools/component/component_spec.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eliud_core/style/style_registry.dart';
+import 'package:eliud_core/tools/query/query_tools.dart';
+import 'package:eliud_core/tools/query/query_tools.dart';
 
 import 'abstract_repository_singleton.dart';
 import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';
@@ -25,16 +29,18 @@ import '\${path}_model.dart';
 
 class \${id}ComponentSelector extends ComponentSelector {
   @override
-  Widget createSelectWidget(BuildContext context, AppModel app, double height,
+  Widget createSelectWidget(BuildContext context, AppModel app, int privilegeLevel, double height,
       SelectComponent selected, editorConstructor) {
     var appId = app.documentID!;
     return BlocProvider<\${id}ListBloc>(
           create: (context) => \${id}ListBloc(
-            \${lid}Repository:
-                \${lid}Repository(appId: appId)!,
+          eliudQuery: getComponentSelectorQuery(0, app.documentID!),
+          \${lid}Repository:
+              \${lid}Repository(appId: appId)!,
           )..add(Load\${id}List()),
       child: Select\${id}Widget(app: app,
           height: height,
+          containerPrivilege: privilegeLevel,
           selected: selected,
           editorConstructor: editorConstructor),
     );
@@ -45,11 +51,13 @@ class Select\${id}Widget extends StatefulWidget {
   final AppModel app;
   final double height;
   final SelectComponent selected;
+  final int containerPrivilege;
   final ComponentEditorConstructor editorConstructor;
 
   const Select\${id}Widget(
       {Key? key,
       required this.app,
+      required this.containerPrivilege,
       required this.height,
       required this.selected,
       required this.editorConstructor})
@@ -61,7 +69,40 @@ class Select\${id}Widget extends StatefulWidget {
   }
 }
 
-class _Select\${id}WidgetState extends State<Select\${id}Widget> {
+class _Select\${id}WidgetState extends State<Select\${id}Widget> with TickerProviderStateMixin {
+  TabController? _privilegeTabController;
+  final List<String> _privilegeItems = ['No', 'L1', 'L2', 'Owner'];
+  final int _initialPrivilege = 0;
+  int _currentPrivilege = 0;
+
+  @override
+  void initState() {
+    var _privilegeASize = _privilegeItems.length;
+    _privilegeTabController =
+        TabController(vsync: this, length: _privilegeASize);
+    _privilegeTabController!.addListener(_handlePrivilegeTabSelection);
+    _privilegeTabController!.index = _initialPrivilege;
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (_privilegeTabController != null) {
+      _privilegeTabController!.dispose();
+    }
+    super.dispose();
+  }
+
+  void _handlePrivilegeTabSelection() {
+    if ((_privilegeTabController != null) &&
+        (_privilegeTabController!.indexIsChanging)) {
+        _currentPrivilege = _privilegeTabController!.index;
+        BlocProvider.of<\${id}ListBloc>(context).add(
+            \${id}ChangeQuery(newQuery: getComponentSelectorQuery(_currentPrivilege, widget.app.documentID!)));
+    }
+  }
+
   Widget theList(BuildContext context, List<\${id}Model?> values) {
     var app = widget.app; 
     return ListView.builder(
@@ -108,16 +149,24 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> {
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(
         builder: (context, state) {
       var children = <Widget>[];
+      var newPrivilegeItems = <Widget>[];
+      int i = 0;
+      for (var privilegeItem in _privilegeItems) {
+        newPrivilegeItems.add(Wrap(children: [(i <= widget.containerPrivilege) ? Icon(Icons.check) : Icon(Icons.close), Container(width: 2), text(widget.app, context, privilegeItem)]));
+        i++;
+      }
+      children.add(tabBar2(widget.app, context,
+          items: newPrivilegeItems, tabController: _privilegeTabController!));
       if ((state is \${id}ListLoaded) && (state.values != null)) {
         children.add(Container(
-            height: widget.height - 45,
+            height: max(30, widget.height - 101),
             child: theList(
               context,
               state.values!,
             )));
       } else {
         children.add(Container(
-            height: widget.height - 45,
+            height: max(30, widget.height - 101),
             ));
       }
       children.add(Column(children: [

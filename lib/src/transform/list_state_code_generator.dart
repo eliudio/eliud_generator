@@ -24,6 +24,13 @@ class \${id}ListLoaded extends \${id}ListState {
 
   @override
   String toString() => '\${id}ListLoaded { values: \$values }';
+
+  @override
+  bool operator ==(Object other) => 
+          other is \${id}ListLoaded &&
+              runtimeType == other.runtimeType &&
+              ListEquality().equals(values, other.values) &&
+              mightHaveMore == other.mightHaveMore;
 }
 
 class \${id}NotLoaded extends \${id}ListState {}
@@ -36,6 +43,8 @@ class ListStateCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
+
+    headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
     headerBuffer.write(importString(modelSpecifications.packageName,
         "model/" + modelSpecifications.modelFileName()));

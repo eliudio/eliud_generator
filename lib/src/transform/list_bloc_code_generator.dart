@@ -20,7 +20,7 @@ String _code = """
 class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   final \${id}Repository _\${lid}Repository;
   StreamSubscription? _\${lid}sListSubscription;
-  final EliudQuery? eliudQuery;
+  EliudQuery? eliudQuery;
   int pages = 1;
   final bool? paged;
   final String? orderBy;
@@ -92,6 +92,13 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
     if (event is NewPage) {
       pages = pages + 1; // it doesn't matter so much if we increase pages beyond the end
       yield* _mapLoad\${id}ListWithDetailsToState();
+    } else if (event is \${id}ChangeQuery) {
+      eliudQuery = event.newQuery;
+      if ((detailed == null) || (!detailed!)) {
+        yield* _mapLoad\${id}ListToState();
+      } else {
+        yield* _mapLoad\${id}ListWithDetailsToState();
+      }
     } else if (event is Add\${id}List) {
       yield* _mapAdd\${id}ListToState(event);
     } else if (event is Update\${id}List) {

@@ -63,6 +63,18 @@ class \${id}ListUpdated extends \${id}ListEvent {
   @override
   String toString() => '\${id}ListUpdated{ value: \$value, mightHaveMore: \$mightHaveMore }';
 }
+
+class \${id}ChangeQuery extends \${id}ListEvent {
+  final EliudQuery newQuery;
+
+  const \${id}ChangeQuery({ required this.newQuery });
+
+  @override
+  List<Object?> get props => [ newQuery ];
+
+  @override
+  String toString() => '\${id}ChangeQuery{ value: \$newQuery }';
+}
 """;
 
 class ListEventCodeGenerator extends CodeGenerator {
@@ -72,6 +84,7 @@ class ListEventCodeGenerator extends CodeGenerator {
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
+    headerBuffer.writeln("import 'package:eliud_core/tools/query/query_tools.dart';");
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
     headerBuffer.write(importString(modelSpecifications.packageName,
         "model/" + modelSpecifications.modelFileName()));
