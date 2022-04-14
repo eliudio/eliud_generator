@@ -14,6 +14,7 @@ import 'package:flutter/widgets.dart';
 import 'package:eliud_core/style/style_registry.dart';
 import 'package:eliud_core/core/blocs/access/state/access_state.dart';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
+import 'package:eliud_core/style/frontend/has_text.dart';
 
 """;
 
@@ -107,13 +108,13 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                       isExpanded: \${withImages},
                       items: items,
                       value: valueChosen,
-                      hint: Text('Select a \${lid}'),
+                      hint: text(widget.app, context, 'Select a \${lid}'),
                       onChanged: !accessState.memberIsOwner(widget.app.documentID!) ? null : _onChange,
                     );
         if (\${withImages}) {
-          return Container(height:48, child: Center(child: button));
+          return Container(height:48, child: button);
         } else {
-          return Center(child: button);
+          return button;
         }
       } else {
         return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
