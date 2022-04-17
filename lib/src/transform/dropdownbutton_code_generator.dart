@@ -15,26 +15,35 @@ import 'package:eliud_core/style/style_registry.dart';
 import 'package:eliud_core/core/blocs/access/state/access_state.dart';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
 import 'package:eliud_core/style/frontend/has_text.dart';
+import 'package:eliud_core/tools/query/query_tools.dart';
+
+import 'package:eliud_core/style/frontend/has_button.dart';
+import 'package:eliud_core/tools/component/update_component.dart';
 
 """;
 
 String _specificImports(String packageName) => """
 import 'package:$packageName/model/\${path}_list_bloc.dart';
 import 'package:$packageName/model/\${path}_list_state.dart';
+import 'package:$packageName/model/\${path}_list_event.dart';
 import 'package:$packageName/model/\${path}_model.dart';
+import 'package:eliud_core/style/frontend/has_button.dart';
+import 'package:eliud_core/tools/component/update_component.dart';
 
 """;
 
 const String _code = """
-typedef \${id}Changed(String? value);
+
+typedef \${id}Changed(String? value, int? privilegeLevel,);
 
 class \${id}DropdownButtonWidget extends StatefulWidget {
   final AppModel app;
-  final String? value;
+  int? privilegeLevel;
+  String? value;
   final \${id}Changed? trigger;
   final bool? optional;
 
-  \${id}DropdownButtonWidget({ required this.app, this.value, this.trigger, this.optional, Key? key }): super(key: key);
+  \${id}DropdownButtonWidget({ required this.app, this.privilegeLevel, this.value, this.trigger, this.optional, Key? key }): super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -68,11 +77,13 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
       if (state is \${id}ListLoading) {
         return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
       } else if (state is \${id}ListLoaded) {
-        String? valueChosen;
-        if (state.values!.indexWhere((v) => (v!.documentID == widget.value)) >= 0)
-          valueChosen = widget.value;
-        else
-          if (widget.optional != null && widget.optional!) valueChosen = null;
+        int? privilegeChosen = widget.privilegeLevel;
+        if ((widget.value != null) && (privilegeChosen == null)) {
+          if (state.values != null) {
+            var selectedValue = state.values!.firstWhere((v) => (v!.documentID == widget.value), orElse: () => null);
+            privilegeChosen = \${privilegeChosenCode};
+          }
+        }
           
         final values = state.values;
         final items = <DropdownMenuItem<String>>[];
@@ -102,28 +113,92 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                 )));
           });
         }
-        DropdownButton button = 
-                    DropdownButton<String>(
+        return ListView(
+            physics: ScrollPhysics(),
+            shrinkWrap: true,
+            children: [
+          DropdownButton<int>(
+            isDense: false,
+            isExpanded: false,
+            items: [
+              DropdownMenuItem<int>(
+                value: 0,
+                child: text(widget.app, context, 'No privilege Required'),
+              ),
+              DropdownMenuItem<int>(
+                value: 1,
+                child: text(widget.app, context, 'Level 1 privilege required'),
+              ),
+              DropdownMenuItem<int>(
+                value: 2,
+                child: text(widget.app, context, 'Level 2 privilege required'),
+              ),
+              DropdownMenuItem<int>(
+                value: 3,
+                child: text(widget.app, context, 'Must be owner'),
+              ),
+            ],
+            value: privilegeChosen,
+            hint: text(widget.app, context, 'Select a privilege'),
+            onChanged: _onPrivilegeLevelChange,
+          ),
+          Row(children: [(\${withImages})
+            ? Container(
+                height: 48, 
+                child: DropdownButton<String>(
                       isDense: false,
                       isExpanded: \${withImages},
                       items: items,
-                      value: valueChosen,
+                      value: widget.value,
                       hint: text(widget.app, context, 'Select a \${lid}'),
-                      onChanged: !accessState.memberIsOwner(widget.app.documentID!) ? null : _onChange,
-                    );
-        if (\${withImages}) {
-          return Container(height:48, child: button);
-        } else {
-          return button;
-        }
+                      onChanged: _onValueChange,
+                    )
+                ) 
+            : DropdownButton<String>(
+                isDense: false,
+                isExpanded: \${withImages},
+                items: items,
+                value: widget.value,
+                hint: text(widget.app, context, 'Select a \${lid}'),
+                onChanged: _onValueChange,
+              ),
+          if (widget.value != null) Spacer(),
+          if (widget.value != null) 
+            Align(alignment: Alignment.topRight, child: button(
+              widget.app,
+              context,
+              icon: Icon(
+                Icons.edit,
+              ),
+              label: 'Update',
+              onPressed: () {
+                updateComponent(context, widget.app, '\${lid}s', widget.value, (newValue) {
+                  setState(() {
+                    widget.value = widget.value;
+                  });
+                });
+              },
+            ))
+          ])
+        ]);
       } else {
         return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
       }
     });
   }
 
-  void _onChange(String? value) {
-    widget.trigger!(value);
+  void _onValueChange(String? value) {
+    widget.trigger!(value, null);
+  }
+
+  void _onPrivilegeLevelChange(int? value) {
+    BlocProvider.of<\${id}ListBloc>(context).add(\${id}ChangeQuery(
+       newQuery: EliudQuery(theConditions: [
+         EliudQueryCondition('conditions.privilegeLevelRequired', isEqualTo: value ?? 0),
+         EliudQueryCondition('appId', isEqualTo: widget.app.documentID!),]
+       ),
+     ));
+     widget.trigger!(null, value);
   }
 }
 """;
@@ -138,14 +213,26 @@ const _imageString = """
 """;
 
 class DropdownButtonCodeGenerator extends CodeGenerator {
-  DropdownButtonCodeGenerator ({required ModelSpecification modelSpecifications})
+  DropdownButtonCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
 
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln(process(_imports(modelSpecifications.packageName)));
-    headerBuffer.writeln(process(_specificImports(modelSpecifications.packageName), parameters: <String, String> { '\${path}': camelcaseToUnderscore(modelSpecifications.id) }));
+    headerBuffer.writeln(process(_imports(modelSpecifications.packageName),
+        parameters: <String, String>{
+          '\${path}': camelcaseToUnderscore(modelSpecifications.id),
+          '\${id}': modelSpecifications.id,
+          '\${lid}': firstLowerCase(modelSpecifications.id),
+        }
+    ));
+    headerBuffer.writeln(process(
+        _specificImports(modelSpecifications.packageName),
+        parameters: <String, String>{
+          '\${path}': camelcaseToUnderscore(modelSpecifications.id),
+          '\${id}': modelSpecifications.id,
+          '\${lid}': firstLowerCase(modelSpecifications.id),
+        }));
     return headerBuffer.toString();
   }
 
@@ -154,30 +241,8 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     StringBuffer childCodeBuffer = StringBuffer();
 
-/*
-    childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model pm) {");
-    childCodeBuffer.writeln("var widgets = <Widget>[];");
-    childCodeBuffer.write("if (pm." + modelSpecifications.listFields.title + " != null) ");
-    childCodeBuffer.write("widgets.add(");
-    if (modelSpecifications.listFields.imageTitle) {
-      childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.title }));
-    } else {
-      childCodeBuffer.write("new Text(pm." + modelSpecifications.listFields.title + ")");
-    }
-    childCodeBuffer.writeln(");");
-    childCodeBuffer.write("if (pm." + modelSpecifications.listFields.subTitle + " != null) ");
-    childCodeBuffer.write("widgets.add(");
-    if (modelSpecifications.listFields.imageSubTitle) {
-      childCodeBuffer.write(process(_imageString, parameters: <String, String> { '\${fieldName}': modelSpecifications.listFields.subTitle }));
-    } else {
-      childCodeBuffer.write("new Text(pm."  + modelSpecifications.listFields.subTitle + ")");
-    }
-    childCodeBuffer.writeln(");");
-    childCodeBuffer.writeln("return widgets;");
-    childCodeBuffer.writeln("}");
-*/
-
-    childCodeBuffer.writeln("List<Widget> widgets(" + modelSpecifications.id + "Model value) {");
+    childCodeBuffer.writeln(
+        "List<Widget> widgets(" + modelSpecifications.id + "Model value) {");
     childCodeBuffer.writeln("var app = widget.app;");
     childCodeBuffer.writeln("var widgets = <Widget>[];");
     String? title = modelSpecifications.listFields.title;
@@ -191,13 +256,20 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     childCodeBuffer.writeln("return widgets;");
     childCodeBuffer.writeln("}");
 
-    codeBuffer.writeln(process(_code,
-        parameters: <String, String> {
-          '\${id}': modelSpecifications.id,
-          '\${lid}': firstLowerCase(modelSpecifications.id),
-          '\${childCode}' : childCodeBuffer.toString(),
-          "\${withImages}": modelSpecifications.listFields.hasImage().toString()
-        }));
+    var privilegeChosenCode;
+    if (modelSpecifications.fields.where((element) => element.fieldName == 'conditions').isNotEmpty) {
+      privilegeChosenCode = 'selectedValue != null && selectedValue.conditions != null && selectedValue.conditions!.privilegeLevelRequired != null ? selectedValue.conditions!.privilegeLevelRequired!.index : 0';
+    } else {
+      privilegeChosenCode = '0';
+    }
+
+    codeBuffer.writeln(process(_code, parameters: <String, String>{
+      '\${id}': modelSpecifications.id,
+      '\${lid}': firstLowerCase(modelSpecifications.id),
+      '\${childCode}': childCodeBuffer.toString(),
+      "\${withImages}": modelSpecifications.listFields.hasImage().toString(),
+      "\${privilegeChosenCode}" : privilegeChosenCode,
+    }));
     return codeBuffer.toString();
   }
 

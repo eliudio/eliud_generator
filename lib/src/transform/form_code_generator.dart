@@ -617,7 +617,7 @@ class RealFormCodeGenerator extends CodeGenerator {
               firstLowerCase(field.fieldType) +
               "s\", value: _" +
               firstLowerCase(field.fieldName) +
-              ", trigger: " + "_on" + firstUpperCase(field.fieldName) + "Selected" +
+              ", trigger: (value, privilegeLevel) => _on" + firstUpperCase(field.fieldName) + "Selected(value)" +
               ", optional: $optionalValue),");
           codeBuffer.writeln(_fieldEnd());
           break;
