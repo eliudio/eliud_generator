@@ -38,6 +38,7 @@ class View {
 
 class ModelSpecification extends Specification {
   final String packageName;
+  final String packageFriendlyName;
   final List<Field> fields;
   final List<Group>? groups;
   final GenerateSpecification generate;
@@ -105,6 +106,7 @@ class ModelSpecification extends Specification {
       {required String id,
         required this.generate,
         required this.packageName,
+        required this.packageFriendlyName,
         required this.fields,
         required this.groups,
         required this.listFields,
@@ -118,10 +120,11 @@ class ModelSpecification extends Specification {
         required this.whereJs,
         required this.depends,
         required this.memberIdentifier})
-      : super(id: id);
+      : super(id: id, );
 
   ModelSpecification copyWith(
       {String? id,
+        String ? friendlyName,
       GenerateSpecification? generate,
       List<Field>? fields,
       List<Group>? groups,
@@ -140,6 +143,7 @@ class ModelSpecification extends Specification {
       id: id ?? this.id,
       generate: generate ?? this.generate,
       packageName: packageName,
+      packageFriendlyName: packageFriendlyName,
       fields: fields ?? this.fields,
       groups: groups ?? this.groups,
       listFields: listFields ?? this.listFields,
@@ -207,6 +211,7 @@ class ModelSpecification extends Specification {
       id: json["id"] as String,
       generate: GenerateSpecification.fromJson(json["generate"] as Map<String, Object> ),
       packageName: json["packageName"] as String,
+      packageFriendlyName: json["packageFriendlyName"] as String,
       fields: theItems,
       groups: theGroups,
       listFields: theListFields,

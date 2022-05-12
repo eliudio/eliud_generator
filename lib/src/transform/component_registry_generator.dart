@@ -29,6 +29,8 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
   @override
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
     var pkgName = sharedPackageName(modelSpecificationPlus);
+    var pkgFriendlyName = sharedPackageFriendlyName(modelSpecificationPlus);
+    
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(header());
 
@@ -87,7 +89,7 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     });
 
     register.writeln(
-        spaces(4) + "Registry.registry()!.addComponentSpec('$pkgName', [");
+        spaces(4) + "Registry.registry()!.addComponentSpec('$pkgName', '$pkgFriendlyName', [");
     modelSpecificationPlus.forEach((spec) {
       var id = spec.modelSpecification.id;
       if (spec.modelSpecification.generate.isExtension) {

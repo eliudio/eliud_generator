@@ -22,6 +22,7 @@ import 'package:eliud_core/tools/router_builders.dart';
 import 'package:eliud_core/tools/etc.dart';
 import 'package:eliud_core/tools/enums.dart';
 import 'package:eliud_core/eliud.dart';
+import 'package:eliud_core/style/frontend/has_text.dart';
 
 import 'package:$packageName/model/\${importprefix}_list_event.dart';
 import 'package:$packageName/model/\${importprefix}_list_state.dart';

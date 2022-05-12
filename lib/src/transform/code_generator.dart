@@ -69,6 +69,7 @@ String base_imports(String packageName, {bool? repo, bool? model, required bool 
  * In theory all modelSpecifications must share the same package name. This is unexpected and unhandled if this is not the case.
  */
 String sharedPackageName(List<ModelSpecificationPlus> modelSpecificationPlus) => modelSpecificationPlus[0].modelSpecification.packageName;
+String sharedPackageFriendlyName(List<ModelSpecificationPlus> modelSpecificationPlus) => modelSpecificationPlus[0].modelSpecification.packageFriendlyName;
 
 List<String> mergeAllDepends(List<ModelSpecificationPlus> modelSpecificationPlus) {
   List<String> depends = [];
