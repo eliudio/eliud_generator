@@ -65,7 +65,7 @@ class \${id}ListUpdated extends \${id}ListEvent {
 }
 
 class \${id}ChangeQuery extends \${id}ListEvent {
-  final EliudQuery newQuery;
+  final EliudQuery? newQuery;
 
   const \${id}ChangeQuery({ required this.newQuery });
 
