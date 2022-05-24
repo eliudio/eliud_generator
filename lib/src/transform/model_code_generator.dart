@@ -9,6 +9,7 @@ String _imports(String packageName, List<String>? depends) =>
     """
 import 'package:eliud_core/tools/common_tools.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eliud_core/core/base/model_base.dart';
 
 """ +
     base_imports(packageName,
@@ -104,7 +105,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         }
         codeBuffer.write(spaces(2));
         codeBuffer
-            .writeln(field.dartModelType() + "? " + field.fieldName + ";");
+            .writeln(field.dartModelType() + (field.isRequired ?? false ? ' ' : "? ") + field.fieldName + ";");
       }
     });
     return codeBuffer.toString();
@@ -340,7 +341,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
               if (field.fieldName == "documentID") {
                 codeBuffer.write(field.fieldName);
               } else {
-                codeBuffer.write("entity." + field.fieldName);
+                codeBuffer.write("entity." + field.fieldName + (field.isRequired ?? false ? " ?? ''" : ''));
               }
             }
             codeBuffer.writeln(", ");
@@ -473,7 +474,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
               if (field.fieldName == "documentID") {
                 codeBuffer.write(field.fieldName);
               } else {
-                codeBuffer.write("entity." + field.fieldName);
+                codeBuffer.write("entity." + field.fieldName + (field.isRequired ?? false ? " ?? ''" : ''));
               }
             }
           }
@@ -494,7 +495,29 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(_enumMethods());
 
     String className = modelSpecifications.modelClassName();
-    codeBuffer.writeln("class $className {");
+    List<String> implements = [];
+
+    for (var field in modelSpecifications.fields) {
+      if (field.fieldName == 'documentID') {
+        implements.add('ModelBase');
+      }
+      if (field.fieldName == 'appId') {
+        implements.add('WithAppId');
+      }
+    }
+    codeBuffer.write("class $className");
+    if (implements.length > 0) {
+      codeBuffer.write(" implements ");
+      int i = 0;
+      for (var implement in implements) {
+        codeBuffer.write(implement);
+        if (i <= implements.length- 2) {
+          codeBuffer.write(", ");
+        }
+        i++;
+      }
+    }
+    codeBuffer.writeln(" {");
 
     codeBuffer.writeln(_fieldDefinitions());
     codeBuffer.writeln(_constructor());

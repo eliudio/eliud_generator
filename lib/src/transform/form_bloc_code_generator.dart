@@ -5,14 +5,12 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 const String _evaluateNewMenuFormEvent = """
-      if (event is InitialiseNew\${id}FormEvent) {
+      on <InitialiseNew\${id}FormEvent> ((event, emit) {
         \${id}FormLoaded loaded = \${id}FormLoaded(value: \${id}Model(
               \${newModelValue}
         ));
-        yield loaded;
-        return;
-
-      }
+        emit(loaded);
+      });
 
 """;
 
@@ -34,7 +32,8 @@ const String _isDocumentIDValid = """
 
 """;
 
-String _imports(String packageName, List<String>? depends) => """
+String _imports(String packageName, List<String>? depends) =>
+    """
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
@@ -48,7 +47,9 @@ import 'package:eliud_core/model/rgb_model.dart';
 
 import 'package:eliud_core/tools/string_validator.dart';
 
-""" + base_imports(packageName, repo: true, model: true, entity: true, depends: depends);
+""" +
+    base_imports(packageName,
+        repo: true, model: true, entity: true, depends: depends);
 
 class FormBlocCodeGenerator extends CodeGenerator {
   FormBlocCodeGenerator({required ModelSpecification modelSpecifications})
@@ -58,38 +59,61 @@ class FormBlocCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_FORM_BLOC);
-    headerBuffer.writeln(_imports(modelSpecifications.packageName, modelSpecifications.depends));
+    headerBuffer.writeln(
+        _imports(modelSpecifications.packageName, modelSpecifications.depends));
 
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.formEventFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.formStateFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/" + modelSpecifications.formEventFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/" + modelSpecifications.formStateFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/" + modelSpecifications.repositoryFileName()));
     headerBuffer.writeln();
 
     return headerBuffer.toString();
   }
 
-  String _yield(int amountOfSpaces, Field field) {
+  String _emit(int amountOfSpaces, Field field) {
     StringBuffer codeBuffer = StringBuffer();
     if (field.fieldName == "documentID") {
       if (modelSpecifications.generate.generateFirestoreRepository) {
-        codeBuffer.writeln(spaces(amountOfSpaces) + "if (formAction == FormAction.AddAction) {");
+        codeBuffer.writeln(spaces(amountOfSpaces) +
+            "if (formAction == FormAction.AddAction) {");
         codeBuffer.writeln(spaces(amountOfSpaces + 2) +
-            "yield* _isDocumentIDValid(event.value, newValue).asStream();");
+            "emit(await _isDocumentIDValid(event.value, newValue!));");
         codeBuffer.writeln(spaces(amountOfSpaces) + "} else {");
-        codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
+        codeBuffer.writeln(spaces(amountOfSpaces + 2) +
+            "emit(Submittable" +
+            modelSpecifications.id +
+            "Form(value: newValue));");
         codeBuffer.writeln(spaces(amountOfSpaces) + "}");
       } else {
-        codeBuffer.writeln(spaces(amountOfSpaces) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
+        codeBuffer.writeln(spaces(amountOfSpaces) +
+            "emit(Submittable" +
+            modelSpecifications.id +
+            "Form(value: newValue));");
       }
     } else if (field.fieldValidation != null) {
-      codeBuffer.writeln(spaces(amountOfSpaces) + "if (!_is" + firstUpperCase(field.fieldName) + "Valid(event.value)) {");
-      String errorClassName = firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError(message: \"Invalid value\", value: newValue);";
-      codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield " + errorClassName + "");
+      codeBuffer.writeln(spaces(amountOfSpaces) +
+          "if (!_is" +
+          firstUpperCase(field.fieldName) +
+          "Valid(event.value)) {");
+      String errorClassName = firstUpperCase(field.fieldName) +
+          modelSpecifications.id +
+          "FormError(message: \"Invalid value\", value: newValue)";
+      codeBuffer.writeln(
+          spaces(amountOfSpaces + 2) + "emit(" + errorClassName + ");");
       codeBuffer.writeln(spaces(amountOfSpaces) + "} else {");
-      codeBuffer.writeln(spaces(amountOfSpaces + 2) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
+      codeBuffer.writeln(spaces(amountOfSpaces + 2) +
+          "emit(Submittable" +
+          modelSpecifications.id +
+          "Form(value: newValue));");
       codeBuffer.writeln(spaces(amountOfSpaces) + "}");
     } else {
-      codeBuffer.writeln(spaces(amountOfSpaces) + "yield Submittable" + modelSpecifications.id + "Form(value: newValue);");
+      codeBuffer.writeln(spaces(amountOfSpaces) +
+          "emit(Submittable" +
+          modelSpecifications.id +
+          "Form(value: newValue));");
     }
     return codeBuffer.toString();
   }
@@ -97,10 +121,17 @@ class FormBlocCodeGenerator extends CodeGenerator {
   String _mapEventToState() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "Stream<" + modelSpecifications.formStateClassName() + "> mapEventToState(" + modelSpecifications.formEventClassName() + " event) async* {");
+    codeBuffer.writeln(spaces(2) +
+        "Stream<" +
+        modelSpecifications.formStateClassName() +
+        "> mapEventToState(" +
+        modelSpecifications.formEventClassName() +
+        " event) async* {");
     codeBuffer.writeln(spaces(4) + "final currentState = state;");
-    codeBuffer.writeln(spaces(4) + "if (currentState is " + modelSpecifications.id + "FormUninitialized) {");
-
+    codeBuffer.writeln(spaces(4) +
+        "if (currentState is " +
+        modelSpecifications.id +
+        "FormUninitialized) {");
 
     StringBuffer newModelBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
@@ -129,105 +160,115 @@ class FormBlocCodeGenerator extends CodeGenerator {
       }
     });
 
-    codeBuffer.writeln(process(_evaluateNewMenuFormEvent, parameters: <String, String> {
-      '\${id}': modelSpecifications.id,
-      '\${newModelValue}': newModelBuffer.toString()
-    }));
+    codeBuffer.writeln(process(_evaluateNewMenuFormEvent,
+        parameters: <String, String>{
+          '\${id}': modelSpecifications.id,
+          '\${newModelValue}': newModelBuffer.toString()
+        }));
 
-    codeBuffer.writeln(spaces(6) + "if (event is Initialise" + modelSpecifications.id + "FormEvent) {");
+    codeBuffer.writeln(spaces(6) +
+        "if (event is Initialise" +
+        modelSpecifications.id +
+        "FormEvent) {");
     if (withRepository())
-      codeBuffer.writeln(spaces(8) + "// Need to re-retrieve the document from the repository so that I get all associated types");
-    codeBuffer.write(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: ");
+      codeBuffer.writeln(spaces(8) +
+          "// Need to re-retrieve the document from the repository so that I get all associated types");
+    codeBuffer.write(spaces(8) +
+        modelSpecifications.id +
+        "FormLoaded loaded = " +
+        modelSpecifications.id +
+        "FormLoaded(value: ");
     if (withRepository())
-      codeBuffer.writeln("await " + firstLowerCase(modelSpecifications.id) + "Repository(appId: appId)!.get(event.value!.documentID));");
+      codeBuffer.writeln("await " +
+          firstLowerCase(modelSpecifications.id) +
+          "Repository(appId: appId)!.get(event.value!.documentID));");
     else
       codeBuffer.writeln("event.value);");
-    codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
-    codeBuffer.writeln(spaces(8) + "return;");
-    codeBuffer.writeln(spaces(6) + "} else if (event is Initialise" + modelSpecifications.id + "FormNoLoadEvent) {");
-    codeBuffer.writeln(spaces(8) + modelSpecifications.id + "FormLoaded loaded = " + modelSpecifications.id + "FormLoaded(value: event.value);");
-    codeBuffer.writeln(spaces(8) + "yield " + "loaded;");
-    codeBuffer.writeln(spaces(8) + "return;");
+    codeBuffer.writeln(spaces(8) + "emit(" + "loaded);");
+    codeBuffer.writeln(spaces(6) +
+        "} else if (event is Initialise" +
+        modelSpecifications.id +
+        "FormNoLoadEvent) {");
+    codeBuffer.writeln(spaces(8) +
+        modelSpecifications.id +
+        "FormLoaded loaded = " +
+        modelSpecifications.id +
+        "FormLoaded(value: event.value);");
+    codeBuffer.writeln(spaces(8) + "emit(" + "loaded);");
     codeBuffer.writeln(spaces(6) + "}");
 
-    codeBuffer.writeln(spaces(4) + "} else if (currentState is " + modelSpecifications.id + "FormInitialized) {");
-    codeBuffer.writeln(spaces(6) + modelSpecifications.modelClassName() + "? newValue = null;");
+    codeBuffer.writeln(spaces(4) +
+        "} else if (currentState is " +
+        modelSpecifications.id +
+        "FormInitialized) {");
+    codeBuffer.writeln(spaces(6) +
+        modelSpecifications.modelClassName() +
+        "? newValue = null;");
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (!field.isHidden()) {
-          String className = "Changed" + modelSpecifications.id +
+          String className = "Changed" +
+              modelSpecifications.id +
               firstUpperCase(field.fieldName);
-          codeBuffer.writeln(spaces(6) + "if (event is " + className + ") {");
+          codeBuffer.writeln(
+              spaces(6) + "on <" + className + "> ((event, emit) async {");
           if (field.isInt()) {
             codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
-            codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": int.parse(event.value!));");
-            codeBuffer.writeln(_yield(10, field));
+            codeBuffer.writeln(spaces(10) +
+                "newValue = currentState.value!.copyWith(" +
+                field.fieldName +
+                ": int.parse(event.value!));");
+            codeBuffer.writeln(_emit(10, field));
             codeBuffer.writeln(spaces(8) + "} else {");
-            codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": 0);");
+            codeBuffer.writeln(spaces(10) +
+                "newValue = currentState.value!.copyWith(" +
+                field.fieldName +
+                ": 0);");
             String errorClassName = firstUpperCase(field.fieldName) +
                 modelSpecifications.id +
-                "FormError(message: \"Value should be a number\", value: newValue);";
-            codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
+                "FormError(message: \"Value should be a number\", value: newValue)";
+            codeBuffer.writeln(spaces(10) + "emit(" + errorClassName + ");");
             codeBuffer.writeln(spaces(8) + "}");
           } else if (field.isDouble()) {
             codeBuffer.writeln(spaces(8) + "if (isDouble(event.value!)) {");
-            codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": double.parse(event.value!));");
-            codeBuffer.writeln(_yield(10, field));
+            codeBuffer.writeln(spaces(10) +
+                "newValue = currentState.value!.copyWith(" +
+                field.fieldName +
+                ": double.parse(event.value!));");
+            codeBuffer.writeln(_emit(10, field));
             codeBuffer.writeln(spaces(8) + "} else {");
-            codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": 0.0);");
+            codeBuffer.writeln(spaces(10) +
+                "newValue = currentState.value!.copyWith(" +
+                field.fieldName +
+                ": 0.0);");
             String errorClassName = firstUpperCase(field.fieldName) +
                 modelSpecifications.id +
-                "FormError(message: \"Value should be a number or decimal number\", value: newValue);";
-            codeBuffer.writeln(spaces(10) + "yield " + errorClassName + "");
+                "FormError(message: \"Value should be a number or decimal number\", value: newValue)";
+            codeBuffer.writeln(spaces(10) + "emit(" + errorClassName + ");");
             codeBuffer.writeln(spaces(8) + "}");
           } else if (field.isAssociation()) {
             codeBuffer.writeln(spaces(8) + "if (event.value != null)");
-            codeBuffer.writeln(
-                spaces(10) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": await " +
-                    firstLowerCase(field.fieldType) +
-                    "Repository(appId: appId)!.get(event.value));");
-            codeBuffer.writeln(spaces(8) + "else");
-            codeBuffer.writeln(
-                spaces(10) + "newValue = new " + modelSpecifications.id +
-                    "Model(");
-            modelSpecifications.fields.forEach((otherField) {
-              if (otherField.arrayType != ArrayType.CollectionArrayType) {
-                if (otherField != field) {
-                  codeBuffer.writeln(
-                      spaces(33) + otherField.fieldName +
-                          ": currentState.value!." +
-                          otherField.fieldName + ",");
-                } else {
-                  codeBuffer.writeln(
-                      spaces(33) + otherField.fieldName + ": null,");
-                }
-              }
-            });
-            codeBuffer.writeln(spaces(10) + ");");
-
-            codeBuffer.writeln(_yield(8, field));
+            codeBuffer.writeln(spaces(10) +
+                "newValue = currentState.value!.copyWith(" +
+                field.fieldName +
+                ": await " +
+                firstLowerCase(field.fieldType) +
+                "Repository(appId: appId)!.get(event.value));");
+            codeBuffer.writeln(_emit(8, field));
           } else if (field.isServerTimestamp()) {
-            codeBuffer.writeln(
-                spaces(8) + "newValue = currentState.value!.copyWith(" +
-                    field.fieldName + ": dateTimeFromTimestampString(event.value!));");
-            codeBuffer.writeln(_yield(8, field));
+            codeBuffer.writeln(spaces(8) +
+                "newValue = currentState.value!.copyWith(" +
+                field.fieldName +
+                ": dateTimeFromTimestampString(event.value!));");
+            codeBuffer.writeln(_emit(8, field));
           } else {
-          codeBuffer.writeln(
-              spaces(8) + "newValue = currentState.value!.copyWith(" +
-                  field.fieldName + ": event.value);");
-          codeBuffer.writeln(_yield(8, field));
+            codeBuffer.writeln(spaces(8) +
+                "newValue = currentState.value!.copyWith(" +
+                field.fieldName +
+                ": event.value);");
+            codeBuffer.writeln(_emit(8, field));
           }
-          codeBuffer.writeln(spaces(8) + "return;");
-          codeBuffer.writeln(spaces(6) + "}");
+          codeBuffer.writeln(spaces(6) + "});");
         }
       }
     });
@@ -242,9 +283,12 @@ class FormBlocCodeGenerator extends CodeGenerator {
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.fieldValidation != null) {
-          codeBuffer.writeln(
-              spaces(2) + "bool _is" + firstUpperCase(field.fieldName) +
-                  "Valid(" + field.dartModelType() + "? value) {");
+          codeBuffer.writeln(spaces(2) +
+              "bool _is" +
+              firstUpperCase(field.fieldName) +
+              "Valid(" +
+              field.dartModelType() +
+              "? value) {");
           codeBuffer.writeln(field.fieldValidation);
           codeBuffer.writeln(spaces(2) + "}");
         }
@@ -265,16 +309,30 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
   String _constructor() {
     if (withRepository()) {
-      return spaces(2) + modelSpecifications.id + "FormBloc(this.appId, { this.formAction }): super(" + modelSpecifications.id + "FormUninitialized());";
+      return spaces(2) +
+          modelSpecifications.id +
+          "FormBloc(this.appId, { this.formAction }): super(" +
+          modelSpecifications.id +
+          "FormUninitialized());";
     } else {
-      return spaces(2) + modelSpecifications.id + "FormBloc(this.appId, ): super(" + modelSpecifications.id + "FormUninitialized());";
+      return spaces(2) +
+          modelSpecifications.id +
+          "FormBloc(this.appId, ): super(" +
+          modelSpecifications.id +
+          "FormUninitialized());";
     }
   }
 
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("class " + modelSpecifications.id + "FormBloc extends Bloc<" + modelSpecifications.formEventClassName() + ", " + modelSpecifications.formStateClassName() + "> {");
+    codeBuffer.writeln("class " +
+        modelSpecifications.id +
+        "FormBloc extends Bloc<" +
+        modelSpecifications.formEventClassName() +
+        ", " +
+        modelSpecifications.formStateClassName() +
+        "> {");
 
     codeBuffer.writeln(_memberData());
     codeBuffer.writeln(_constructor());
@@ -282,11 +340,11 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(_validations());
 
     if (modelSpecifications.generate.generateFirestoreRepository) {
-      codeBuffer.writeln(
-          process(_isDocumentIDValid, parameters: <String, String>{
-            '\${id}': modelSpecifications.id,
-            '\${lid}': firstLowerCase(modelSpecifications.id)
-          }));
+      codeBuffer
+          .writeln(process(_isDocumentIDValid, parameters: <String, String>{
+        '\${id}': modelSpecifications.id,
+        '\${lid}': firstLowerCase(modelSpecifications.id)
+      }));
     }
 
     codeBuffer.writeln("}");

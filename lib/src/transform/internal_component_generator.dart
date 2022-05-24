@@ -121,7 +121,7 @@ const String _SpecificListComponentCode = """
           create: (context) => \${upperSpecific}ListBloc(
             eliudQuery: EliudQuery(theConditions: [
               EliudQueryCondition('conditions.privilegeLevelRequired', isEqualTo: privilegeLevel ?? 0),
-              EliudQueryCondition('appId', isEqualTo: app.documentID!),]
+              EliudQueryCondition('appId', isEqualTo: app.documentID),]
             ),
             \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar})!,
           )..add(Load\${upperSpecific}List()),
@@ -140,7 +140,7 @@ const String _SpecificDropdownButtonComponentCode = """
           create: (context) => \${upperSpecific}ListBloc(
             eliudQuery: EliudQuery(theConditions: [
               EliudQueryCondition('conditions.privilegeLevelRequired', isEqualTo: privilegeLevel ?? 0),
-              EliudQueryCondition('appId', isEqualTo: app.documentID!),]
+              EliudQueryCondition('appId', isEqualTo: app.documentID),]
             ),
             \${lowerSpecific}Repository: \${lowerSpecific}Repository(\${appIdVar})!,
           )..add(Load\${upperSpecific}List()),
@@ -243,7 +243,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
-      var appIdVar = ms.getIsAppModel() ? "appId: app.documentID!" : "";
+      var appIdVar = ms.getIsAppModel() ? "appId: app.documentID" : "";
       if (ms.generate.generateInternalComponent) {
         if (list)
           codeBuffer.writeln(process(_SpecificListComponentCode,

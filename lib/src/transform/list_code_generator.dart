@@ -185,7 +185,7 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
 class \${id}ListWidgetState extends State<\${id}ListWidget> {
   @override
   Widget? fab(BuildContext aContext, AccessState accessState) {
-    return !accessState.memberIsOwner(widget.app.documentID!) \${allowAddItemsCondition}
+    return !accessState.memberIsOwner(widget.app.documentID) \${allowAddItemsCondition}
       ? null
       : StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().floatingActionButton(widget.app, context, 'PageFloatBtnTag', Icon(Icons.add),
       onPressed: () {

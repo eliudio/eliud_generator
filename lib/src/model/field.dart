@@ -38,7 +38,8 @@ class Field {
   final String? bespokeEntityMapping; // fromMap mapping
   final String? bespokeEntityToDocument; // toDocuemnt mapping
 
-  final bool? optional; // is optional?
+  final bool? optional; // is optional in the gui?
+  final bool? isRequired; // is 'dart' required ?
   final String? conditional; // field is visible in form when this condition is true
 
   const Field({required this.fieldName,
@@ -60,7 +61,8 @@ class Field {
     required this.bespokeEntityMapping,
     required this.bespokeEntityToDocument,
     required this.optional,
-    required this.conditional});
+    required this.conditional,
+    required this.isRequired});
 
 
 /*
@@ -176,6 +178,7 @@ class Field {
     bool association = json["association"] as bool ?? false;
     bool hidden = json["hidden"] as bool ?? false;
     bool optional = json["optional"] as bool ?? false;
+    bool isRequired = json["required"] as bool ?? false;
     List<String>? myList;
     Iterable? i = json["enumValues"] as Iterable;
 
@@ -205,6 +208,7 @@ class Field {
       bespokeEntityMapping: json["bespokeEntityMapping"] as String,
       bespokeEntityToDocument: json["bespokeEntityToDocument"] as String,
       optional: optional,
+      isRequired: isRequired,
       conditional: json["conditional"] as String,
     );
     return field;

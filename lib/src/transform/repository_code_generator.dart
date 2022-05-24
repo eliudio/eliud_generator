@@ -9,7 +9,7 @@ const String _code = """
 import 'dart:async';
 import 'package:eliud_core/tools/query/query_tools.dart';
 import 'package:eliud_core/tools/common_tools.dart';
-import 'package:eliud_core/tools/repository_base.dart';
+import 'package:eliud_core/core/base/repository_base.dart';
 
 typedef \${id}ModelTrigger(List<\${id}Model?> list);
 typedef \${id}Changed(\${id}Model? value);

@@ -58,7 +58,7 @@ class \${className}Form extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var accessState = AccessBloc.getState(context);
-    var appId = app.documentID!;
+    var appId = app.documentID;
     if (formAction == FormAction.ShowData) {
       return BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(appId,
@@ -158,7 +158,7 @@ const String _readOnlyMethodMember = """
 
 const String _readOnlyMethod = """
   bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner(widget.app.documentID!));
+    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner(widget.app.documentID));
   }
   
 """;
@@ -626,7 +626,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           int i = 0;
           if (field.enumValues != null) {
             field.enumValues!.forEach((enumField) {
-              var onChanged = "!accessState.memberIsOwner(widget.app.documentID!) ? null : (dynamic val) => " +
+              var onChanged = "!accessState.memberIsOwner(widget.app.documentID) ? null : (dynamic val) => " +
                   "setSelection" + firstUpperCase(field.fieldName) + "(val)";
               codeBuffer.writeln(_fieldStart(field));
               codeBuffer.writeln(spaces(18) +
@@ -651,8 +651,6 @@ class RealFormCodeGenerator extends CodeGenerator {
               "Changed)");
           codeBuffer.writeln(spaces(16) + ")");
           codeBuffer.writeln(_fieldEnd());
-          break;
-
           break;
         case FormTypeField.Unsupported:
           break;

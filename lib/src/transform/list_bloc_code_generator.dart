@@ -31,9 +31,47 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   \${id}ListBloc({this.paged, this.orderBy, this.descending, this.detailed, this.eliudQuery, required \${id}Repository \${lid}Repository, this.\${lid}Limit = 5})
       : assert(\${lid}Repository != null),
         _\${lid}Repository = \${lid}Repository,
-        super(\${id}ListLoading());
+        super(\${id}ListLoading()) {
+    on <Load\${id}List> ((event, emit) {
+      if ((detailed == null) || (!detailed!)) {
+        _mapLoad\${id}ListToState();
+      } else {
+        _mapLoad\${id}ListWithDetailsToState();
+      }
+    });
+    
+    on <NewPage> ((event, emit) {
+      pages = pages + 1; // it doesn't matter so much if we increase pages beyond the end
+      _mapLoad\${id}ListWithDetailsToState();
+    });
+    
+    on <\${id}ChangeQuery> ((event, emit) {
+      eliudQuery = event.newQuery;
+      if ((detailed == null) || (!detailed!)) {
+        _mapLoad\${id}ListToState();
+      } else {
+        _mapLoad\${id}ListWithDetailsToState();
+      }
+    });
+      
+    on <Add\${id}List> ((event, emit) async {
+      await _mapAdd\${id}ListToState(event);
+    });
+    
+    on <Update\${id}List> ((event, emit) async {
+      await _mapUpdate\${id}ListToState(event);
+    });
+    
+    on <Delete\${id}List> ((event, emit) async {
+      await _mapDelete\${id}ListToState(event);
+    });
+    
+    on <\${id}ListUpdated> ((event, emit) {
+      emit(_map\${id}ListUpdatedToState(event));
+    });
+  }
 
-  Stream<\${id}ListState> _mapLoad\${id}ListToState() async* {
+  Future<void> _mapLoad\${id}ListToState() async {
     int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values!.length : 0;
     _\${lid}sListSubscription?.cancel();
     _\${lid}sListSubscription = _\${lid}Repository.listen(
@@ -45,7 +83,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
     );
   }
 
-  Stream<\${id}ListState> _mapLoad\${id}ListWithDetailsToState() async* {
+  Future<void> _mapLoad\${id}ListWithDetailsToState() async {
     int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values!.length : 0;
     _\${lid}sListSubscription?.cancel();
     _\${lid}sListSubscription = _\${lid}Repository.listenWithDetails(
@@ -57,58 +95,29 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
     );
   }
 
-  Stream<\${id}ListState> _mapAdd\${id}ListToState(Add\${id}List event) async* {
+  Future<void> _mapAdd\${id}ListToState(Add\${id}List event) async {
     var value = event.value;
-    if (value != null) 
-      _\${lid}Repository.add(value);
-  }
-
-  Stream<\${id}ListState> _mapUpdate\${id}ListToState(Update\${id}List event) async* {
-    var value = event.value;
-    if (value != null) 
-      _\${lid}Repository.update(value);
-  }
-
-  Stream<\${id}ListState> _mapDelete\${id}ListToState(Delete\${id}List event) async* {
-    var value = event.value;
-    if (value != null) 
-      _\${lid}Repository.delete(value);
-  }
-
-  Stream<\${id}ListState> _map\${id}ListUpdatedToState(
-      \${id}ListUpdated event) async* {
-    yield \${id}ListLoaded(values: event.value, mightHaveMore: event.mightHaveMore);
-  }
-
-  @override
-  Stream<\${id}ListState> mapEventToState(\${id}ListEvent event) async* {
-    if (event is Load\${id}List) {
-      if ((detailed == null) || (!detailed!)) {
-        yield* _mapLoad\${id}ListToState();
-      } else {
-        yield* _mapLoad\${id}ListWithDetailsToState();
-      }
-    }
-    if (event is NewPage) {
-      pages = pages + 1; // it doesn't matter so much if we increase pages beyond the end
-      yield* _mapLoad\${id}ListWithDetailsToState();
-    } else if (event is \${id}ChangeQuery) {
-      eliudQuery = event.newQuery;
-      if ((detailed == null) || (!detailed!)) {
-        yield* _mapLoad\${id}ListToState();
-      } else {
-        yield* _mapLoad\${id}ListWithDetailsToState();
-      }
-    } else if (event is Add\${id}List) {
-      yield* _mapAdd\${id}ListToState(event);
-    } else if (event is Update\${id}List) {
-      yield* _mapUpdate\${id}ListToState(event);
-    } else if (event is Delete\${id}List) {
-      yield* _mapDelete\${id}ListToState(event);
-    } else if (event is \${id}ListUpdated) {
-      yield* _map\${id}ListUpdatedToState(event);
+    if (value != null) {
+      await _\${lid}Repository.add(value);
     }
   }
+
+  Future<void> _mapUpdate\${id}ListToState(Update\${id}List event) async {
+    var value = event.value;
+    if (value != null) {
+      await _\${lid}Repository.update(value);
+    }
+  }
+
+  Future<void> _mapDelete\${id}ListToState(Delete\${id}List event) async {
+    var value = event.value;
+    if (value != null) {
+      await _\${lid}Repository.delete(value);
+    }
+  }
+
+  \${id}ListLoaded _map\${id}ListUpdatedToState(
+      \${id}ListUpdated event) => \${id}ListLoaded(values: event.value, mightHaveMore: event.mightHaveMore);
 
   @override
   Future<void> close() {

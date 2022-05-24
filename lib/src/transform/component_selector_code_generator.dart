@@ -31,10 +31,10 @@ class \${id}ComponentSelector extends ComponentSelector {
   @override
   Widget createSelectWidget(BuildContext context, AppModel app, int privilegeLevel, double height,
       SelectComponent selected, editorConstructor) {
-    var appId = app.documentID!;
+    var appId = app.documentID;
     return BlocProvider<\${id}ListBloc>(
           create: (context) => \${id}ListBloc(
-          eliudQuery: getComponentSelectorQuery(0, app.documentID!),
+          eliudQuery: getComponentSelectorQuery(0, app.documentID),
           \${lid}Repository:
               \${lid}Repository(appId: appId)!,
           )..add(Load\${id}List()),
@@ -99,7 +99,7 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> with TickerProv
         (_privilegeTabController!.indexIsChanging)) {
         _currentPrivilege = _privilegeTabController!.index;
         BlocProvider.of<\${id}ListBloc>(context).add(
-            \${id}ChangeQuery(newQuery: getComponentSelectorQuery(_currentPrivilege, widget.app.documentID!)));
+            \${id}ChangeQuery(newQuery: getComponentSelectorQuery(_currentPrivilege, widget.app.documentID)));
     }
   }
 
@@ -130,7 +130,7 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> with TickerProv
                       ],
                   onSelected: (selectedValue) {
                     if (selectedValue == 1) {
-                      widget.selected(value.documentID!);
+                      widget.selected(value.documentID);
                     } else if (selectedValue == 2) {
                       widget.editorConstructor.updateComponent(widget.app, context, value, (_) {});
                     }

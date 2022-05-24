@@ -70,14 +70,14 @@ class \${id}InMemoryRepository implements \${id}Repository {
     }
 
     Future<void> delete(\${id}Model value) {
-      int index = _index(value.documentID!);
+      int index = _index(value.documentID);
       if (index >= 0) items.removeAt(index);
       trigger(items);
       return Future.value(value);
     }
 
     Future<\${id}Model> update(\${id}Model value) {
-      int index = _index(value.documentID!);
+      int index = _index(value.documentID);
       if (index >= 0) {
         items.replaceRange(index, index+1, [value]);
         trigger(items);

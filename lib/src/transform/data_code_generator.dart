@@ -16,12 +16,12 @@ abstract class DataCodeGenerator extends CodeGenerator {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.fieldName == "documentID") {
           if (!removeDocumentID) {
-            codeBuffer.write(
-                "this." + fieldName(field) + ", ");
+            codeBuffer.write((field.isRequired ?? false ? 'required this.' :
+                'this.') + fieldName(field) + ", ");
           }
         } else {
-          codeBuffer.write(
-              "this." + fieldName(field) + ", ");
+          codeBuffer.write((field.isRequired ?? false ? 'required this.' :
+          'this.') + fieldName(field) + ", ");
         }
       }
     });
