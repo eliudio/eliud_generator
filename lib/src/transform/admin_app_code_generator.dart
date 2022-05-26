@@ -84,6 +84,7 @@ const String _page = """
         appId: appId,
         documentID: "\${pkgName}_\${lowid}s_page",
         title: "\${id}s",
+        description: "\${id}s",
         drawer: _drawer,
         endDrawer: _endDrawer,
         appBar: _appBar,
