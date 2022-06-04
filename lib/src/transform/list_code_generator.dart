@@ -43,7 +43,7 @@ String _onTap = """
                               value: BlocProvider.of<\${id}ListBloc>(context),
                               child: getForm(value, FormAction.UpdateAction))));
                       if (removedItem != null) {
-                        Scaffold.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           DeleteSnackBar(
                         message: "\${id} " + value.\${displayOnDelete},
                             onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
@@ -266,7 +266,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
             onDismissed: (direction) {
               BlocProvider.of<\${id}ListBloc>(context)
                   .add(Delete\${id}List(value: value));
-              Scaffold.of(context).showSnackBar(DeleteSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(DeleteSnackBar(
                 message: "\${id} " + value.\${displayOnDelete},
                 onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
                     .add(Add\${id}List(value: value)),
