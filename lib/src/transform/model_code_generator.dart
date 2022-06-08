@@ -15,6 +15,13 @@ import 'package:eliud_core/core/base/model_base.dart';
     base_imports(packageName,
         repo: true, model: true, entity: true, depends: depends);
 
+String toJsonString() => """
+  String toJsonString({String? appId}) {
+    return toEntity(appId: appId).toJsonString();
+  }
+
+""";
+
 class ModelCodeGenerator extends DataCodeGenerator {
   ModelCodeGenerator({required ModelSpecification modelSpecifications})
       : super(modelSpecifications: modelSpecifications);
@@ -104,8 +111,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
           codeBuffer.writeln(spaces(2) + "// " + field.getRemark());
         }
         codeBuffer.write(spaces(2));
-        codeBuffer
-            .writeln(field.dartModelType() + (field.isRequired ?? false ? ' ' : "? ") + field.fieldName + ";");
+        codeBuffer.writeln(field.dartModelType() +
+            (field.isRequired ?? false ? ' ' : "? ") +
+            field.fieldName +
+            ";");
       }
     });
     return codeBuffer.toString();
@@ -341,7 +350,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
               if (field.fieldName == "documentID") {
                 codeBuffer.write(field.fieldName);
               } else {
-                codeBuffer.write("entity." + field.fieldName + (field.isRequired ?? false ? " ?? ''" : ''));
+                codeBuffer.write("entity." +
+                    field.fieldName +
+                    (field.isRequired ?? false ? " ?? ''" : ''));
               }
             }
             codeBuffer.writeln(", ");
@@ -474,7 +485,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
               if (field.fieldName == "documentID") {
                 codeBuffer.write(field.fieldName);
               } else {
-                codeBuffer.write("entity." + field.fieldName + (field.isRequired ?? false ? " ?? ''" : ''));
+                codeBuffer.write("entity." +
+                    field.fieldName +
+                    (field.isRequired ?? false ? " ?? ''" : ''));
               }
             }
           }
@@ -511,7 +524,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
       int i = 0;
       for (var implement in implements) {
         codeBuffer.write(implement);
-        if (i <= implements.length- 2) {
+        if (i <= implements.length - 2) {
           codeBuffer.write(", ");
         }
         i++;
@@ -524,6 +537,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(_copyWith());
     codeBuffer.writeln(_hashCode());
     codeBuffer.writeln(_equalsOperator());
+    codeBuffer.write(toJsonString());
     codeBuffer
         .writeln(toStringCode(false, modelSpecifications.modelClassName()));
     codeBuffer.writeln(_toEntity());
