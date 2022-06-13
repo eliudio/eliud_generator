@@ -8,6 +8,7 @@ const String _imports = """
 import '../model/internal_component.dart';
 import 'package:eliud_core/core/registry.dart';
 import 'package:eliud_core/tools/component/component_spec.dart';
+import 'abstract_repository_singleton.dart';
 
 \${import}
 
@@ -92,6 +93,7 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
         spaces(4) + "Registry.registry()!.addComponentSpec('$pkgName', '$pkgFriendlyName', [");
     modelSpecificationPlus.forEach((spec) {
       var id = spec.modelSpecification.id;
+      var lid = firstLowerCase(spec.modelSpecification.id);
       if (spec.modelSpecification.generate.isExtension) {
         register.writeln(spaces(6) +
             "ComponentSpec('" +
@@ -102,7 +104,10 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
             id +
             "ComponentSelector(), " +
             id +
-            "ComponentEditorConstructor(), ), ");
+            "ComponentEditorConstructor(), " +
+            "({String? appId}) => " + lid + "Repository(appId: appId)! ), ");
+
+
       }
     });
     register.writeln(spaces(4) + "]);");

@@ -10,16 +10,36 @@ String _imports(String packageName, List<String>? depends) =>
 import 'package:eliud_core/tools/common_tools.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eliud_core/core/base/model_base.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 """ +
     base_imports(packageName,
         repo: true, model: true, entity: true, depends: depends);
 
-String toJsonString() => """
-  String toJsonString({String? appId}) {
-    return toEntity(appId: appId).toJsonString();
-  }
 
+String _arrayImageExtract = """
+    if (\${var} != null) {
+      final List<List<int>> values = [];
+      for (var value in \${var}!) {
+        var \${var2} = value.\${var2}!;
+        var uri\${var2} = Uri.parse(\${var2});
+        final response = await http.get(uri\${var2});
+        List<int> bytes = response.bodyBytes.toList();
+        values.add(bytes);
+      }
+      document['\${var}-extract'] = values;
+    }
+""";
+
+String _imageExtract = """
+    if ((\${var} != null) && (\${var}!.\${var2} != null)) {
+      var \${var2} = \${var}!.\${var2}!;
+      var uri\${var2} = Uri.parse(\${var2});
+      final response = await http.get(uri\${var2});
+      var bytes = response.bodyBytes.toList();
+      document['\${var}-extract'] = bytes.toList();
+    }
 """;
 
 class ModelCodeGenerator extends DataCodeGenerator {
@@ -499,6 +519,36 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
+
+  String toJsonString() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) +
+        "@override");
+    codeBuffer.writeln(spaces(2) +
+        "Future<String> toRichJsonString({String? appId}) async {");
+    codeBuffer.writeln(spaces(4) + "var document = toEntity(appId: appId).toDocument();");
+    modelSpecifications.fields.forEach((field) {
+      if (field.fieldName == 'documentID') {
+        codeBuffer.writeln(spaces(4) + "document['documentID'] = documentID;");
+      }
+      if (field.extractImage != null) {
+        Map<String, String> parameters = <String, String>{
+          "\${var}": field.fieldName,
+          "\${var2}": field.extractImage!,
+        };
+        if (field.isArray()) {
+          codeBuffer.writeln(process(_arrayImageExtract, parameters: parameters));
+        } else {
+          codeBuffer.writeln(process(_imageExtract, parameters: parameters));
+        }
+      }
+    });
+    codeBuffer.writeln(spaces(4) + "return jsonEncode(document);");
+    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln();
+    return codeBuffer.toString();
+  }
+
 
   @override
   String body() {

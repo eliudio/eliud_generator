@@ -23,13 +23,13 @@ class Field {
   final String? enumName;
   final List<String>? enumValues;
   final ArrayType? arrayType;
+  final String? extractImage;
   final bool? map;
   final bool? association;
   final String? remark;
   final String? group;
   final String? defaultValue;
-  final String?
-  iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
+  final String? iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
   final bool? hidden;
   final String? bespokeFormField;
 
@@ -62,7 +62,8 @@ class Field {
     required this.bespokeEntityToDocument,
     required this.optional,
     required this.conditional,
-    required this.isRequired});
+    required this.isRequired,
+    required this.extractImage});
 
 
 /*
@@ -210,6 +211,7 @@ class Field {
       optional: optional,
       isRequired: isRequired,
       conditional: json["conditional"] as String,
+      extractImage: json["extractImage"] as String,
     );
     return field;
   }
