@@ -35,6 +35,14 @@ const String _code = """
     });
   }
 
+  Future<\${id}Entity> addEntity(String documentID, \${id}Entity value) {
+    return reference.addEntity(documentID, value);
+  }
+
+  Future<\${id}Entity> updateEntity(String documentID, \${id}Entity value) {
+    return reference.updateEntity(documentID, value);
+  }
+
   Future<void> delete(\${id}Model value){
     fullCache.remove(value.documentID);
     reference.delete(value);

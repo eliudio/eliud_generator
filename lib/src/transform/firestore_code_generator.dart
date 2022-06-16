@@ -14,6 +14,14 @@ import 'package:eliud_core/tools/firestore/firestore_tools.dart';
 import 'package:eliud_core/tools/common_tools.dart';
 
 class \${id}Firestore implements \${id}Repository {
+  Future<\${id}Entity> addEntity(String documentID, \${id}Entity value) {
+    return \${id}Collection.doc(documentID).set(value.toDocument()).then((_) => value)\${thenStatementEntity};
+  }
+
+  Future<\${id}Entity> updateEntity(String documentID, \${id}Entity value) {
+    return \${id}Collection.doc(documentID).update(value.toDocument()).then((_) => value)\${thenStatementEntity};
+  }
+
   Future<\${id}Model> add(\${id}Model value) {
     return \${id}Collection.doc(value.documentID).set(value.toEntity(\${appIdDef4}).\${copyStatement}toDocument()).then((_) => value)\${thenStatement};
   }
@@ -32,6 +40,21 @@ class \${id}Firestore implements \${id}Repository {
 
   Future<\${id}Model?> _populateDocPlus(DocumentSnapshot value) async {
     return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data()), \${appIdDef});  }
+
+  Future<\${id}Entity?> getEntity(String? id, {Function(Exception)? onError}) async {
+    try {
+      var collection = \${id}Collection.doc(id);
+      var doc = await collection.get();
+      return \${id}Entity.fromMap(doc.data());
+    } on Exception catch(e) {
+      if (onError != null) {
+        onError(e);
+      } else {
+        print("Error whilst retrieving \${id} with id \$id");
+        print("Exceptoin: \$e");
+      }
+    };
+  }
 
   Future<\${id}Model?> get(String? id, {Function(Exception)? onError}) async {
     try {
@@ -229,6 +252,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
     String copyStatement = FirestoreHelper.copyWith(modelSpecifications);
     String thenStatement = FirestoreHelper.then(modelSpecifications);
+    String thenStatementEntity = FirestoreHelper.thenEntity(modelSpecifications);
 
     Map<String, String> parameters = <String, String>{
       '\${id}': modelSpecifications.id,
@@ -241,6 +265,7 @@ class FirestoreCodeGenerator extends CodeGenerator {
       "\${appIdDef4}": appVar4,
       "\${copyStatement}": copyStatement,
       "\${thenStatement}": thenStatement,
+      "\${thenStatementEntity}": thenStatementEntity,
     };
     StringBuffer headerBuffer = StringBuffer();
 

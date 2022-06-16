@@ -21,6 +21,7 @@ import '../\${path}_list_bloc.dart';
 import '../\${path}_list.dart';
 import '../\${path}_list_event.dart';
 import '../\${path}_model.dart';
+import '../\${path}_entity.dart';
 import '../\${path}_repository.dart';
 """;
 
@@ -61,6 +62,14 @@ class \${id}InMemoryRepository implements \${id}Repository {
         i++;
       }
       return -1;
+    }
+
+    Future<\${id}Entity> addEntity(String documentID, \${id}Entity value) {
+      throw Exception('Not implemented'); 
+    }
+
+    Future<\${id}Entity> updateEntity(String documentID, \${id}Entity value) {
+      throw Exception('Not implemented'); 
     }
 
     Future<\${id}Model> add(\${id}Model value) {

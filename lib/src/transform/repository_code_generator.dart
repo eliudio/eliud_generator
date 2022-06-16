@@ -15,6 +15,8 @@ typedef \${id}ModelTrigger(List<\${id}Model?> list);
 typedef \${id}Changed(\${id}Model? value);
 
 abstract class \${id}Repository extends RepositoryBase<\${id}Model> {
+  Future<\${id}Entity> addEntity(String documentID, \${id}Entity value);
+  Future<\${id}Entity> updateEntity(String documentID, \${id}Entity value);
   Future<\${id}Model> add(\${id}Model value);
   Future<void> delete(\${id}Model value);
   Future<\${id}Model?> get(String? id, { Function(Exception)? onError });

@@ -18,6 +18,17 @@ String retrieve_code = """
     })
 """;
 
+String retrieve_code_entity = """
+.then((v) async {
+      var newValue = await getEntity(documentID);
+      if (newValue == null) {
+        return value;
+      } else {
+        return newValue;
+      }
+    })
+""";
+
 class FirestoreHelper {
   static String collectionId(ModelSpecification modelSpecification) {
     return modelSpecification.id.toLowerCase();
@@ -55,6 +66,20 @@ class FirestoreHelper {
     });
     if (hasServerTimeStamp) {
       return retrieve_code;
+    } else {
+      return '';
+    }
+  }
+
+  static String thenEntity(ModelSpecification modelSpecifications) {
+    var hasServerTimeStamp = false;
+    modelSpecifications.fields.forEach((field) {
+      if (field.isServerTimestamp()) {
+        hasServerTimeStamp = true;
+      }
+    });
+    if (hasServerTimeStamp) {
+      return retrieve_code_entity;
     } else {
       return '';
     }
