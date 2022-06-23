@@ -102,6 +102,16 @@ const String _code = """
       return newValue!;
     });
   }
+
+  @override
+  Future<\${id}Entity?> getEntity(String? id, {Function(Exception p1)? onError}) {
+    return reference.getEntity(id, onError: onError);
+  }
+
+  @override
+  \${id}Entity? fromMap(Object? o) {
+    return reference.fromMap(o);
+  }
 """;
 
 const String _deleteAll = """

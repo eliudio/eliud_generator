@@ -149,6 +149,15 @@ class \${id}InMemoryRepository implements \${id}Repository {
     throw UnimplementedError();
   }
   
+  @override
+  Future<\${id}Entity?> getEntity(String? id, {Function(Exception p1)? onError}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  \${id}Entity? fromMap(Object? o) {
+    throw UnimplementedError();
+  }
 """;
 
 const String _InMemoryRepositoryTemplateFooter = """

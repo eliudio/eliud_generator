@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eliud_core/core/base/model_base.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:eliud_core/model/app_model.dart';
 
 """ +
     base_imports(packageName,
@@ -233,10 +234,18 @@ class ModelCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) +
         modelSpecifications.entityClassName() +
-        " toEntity({String? appId}) {");
+        " toEntity({String? appId, List<ModelBase>? referencesCollector}) {");
     if (modelSpecifications.preToEntityCode != null) {
       codeBuffer.writeln(spaces(4) + modelSpecifications.getPreToEntityCode());
     }
+
+    codeBuffer.writeln(spaces(4) + "if (referencesCollector != null) {");
+    modelSpecifications.fields.forEach((field) {
+      if (field.isAssociation()) {
+        codeBuffer.writeln(spaces(6) + "if (" + field.fieldName + " != null) referencesCollector.add(" + field.fieldName + "!);");
+      }
+    });
+    codeBuffer.writeln(spaces(4) + "}");
 
     codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
@@ -265,19 +274,20 @@ class ModelCodeGenerator extends DataCodeGenerator {
               }
             } else if (field.isAssociation()) {
               codeBuffer.write("!.documentID");
+
             } else {
               if (!field.isNativeType()) {
                 if (field.isArray()) {
                   if (field.arrayType != ArrayType.CollectionArrayType) {
                     codeBuffer.writeln();
                     codeBuffer.writeln(spaces(12) +
-                        "!.map((item) => item.toEntity(appId: appId))");
+                        "!.map((item) => item.toEntity(appId: appId, referencesCollector: referencesCollector))");
                     codeBuffer.write(spaces(12) + ".toList()");
                   } else {
                     codeBuffer.write(spaces(12) + "what to do here?");
                   }
                 } else {
-                  codeBuffer.write("!.toEntity(appId: appId)");
+                  codeBuffer.write("!.toEntity(appId: appId, referencesCollector: referencesCollector)");
                 }
               }
             }
@@ -520,12 +530,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
     return codeBuffer.toString();
   }
 
-  String toJsonString() {
+/*
+  String toRichMap() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) +
         "@override");
     codeBuffer.writeln(spaces(2) +
-        "Future<String> toRichJsonString({String? appId}) async {");
+        "Future<Map<String, dynamic>> toRichMap({required String appId}) async {");
     codeBuffer.writeln(spaces(4) + "var document = toEntity(appId: appId).toDocument();");
     modelSpecifications.fields.forEach((field) {
       if (field.fieldName == 'documentID') {
@@ -543,12 +554,24 @@ class ModelCodeGenerator extends DataCodeGenerator {
         }
       }
     });
-    codeBuffer.writeln(spaces(4) + "return jsonEncode(document);");
+    codeBuffer.writeln(spaces(4) + "return document;");
     codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln();
     return codeBuffer.toString();
   }
 
+  String processRichMap() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) +
+        "@override");
+    codeBuffer.writeln(spaces(2) +
+        "Future<void> processRichMap({required AppModel app, required String ownerId, required Map<String, dynamic> document}) async {");
+    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln();
+    return codeBuffer.toString();
+  }
+
+*/
 
   @override
   String body() {
@@ -587,7 +610,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(_copyWith());
     codeBuffer.writeln(_hashCode());
     codeBuffer.writeln(_equalsOperator());
-    codeBuffer.write(toJsonString());
+/*
+    codeBuffer.write(toRichMap());
+    codeBuffer.write(processRichMap());
+*/
     codeBuffer
         .writeln(toStringCode(false, modelSpecifications.modelClassName()));
     codeBuffer.writeln(_toEntity());

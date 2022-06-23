@@ -84,6 +84,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     headerBuffer.writeln("import 'dart:convert';");
     headerBuffer.writeln("import 'abstract_repository_singleton.dart';");
     headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
+    headerBuffer.writeln("import 'package:eliud_core/core/base/entity_base.dart';");
 
     headerBuffer.writeln(base_imports(modelSpecifications.packageName, entity:true, depends: modelSpecifications.depends));
     headerBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
@@ -375,7 +376,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
 
     String className = modelSpecifications.entityClassName();
-    codeBuffer.writeln("class $className {");
+    codeBuffer.writeln("class $className implements EntityBase {");
 
     codeBuffer.writeln(_fieldDefinitions());
     codeBuffer.write(getConstructor(
