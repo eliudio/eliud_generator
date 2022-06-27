@@ -89,6 +89,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
     headerBuffer.writeln(base_imports(modelSpecifications.packageName, entity:true, depends: modelSpecifications.depends));
     headerBuffer.writeln("import 'package:eliud_core/tools/common_tools.dart';");
 
+    extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_ENTITY);
+
     return headerBuffer.toString();
   }
 
@@ -371,6 +373,18 @@ class EntityCodeGenerator extends DataCodeGenerator {
     return codeBuffer.toString();
   }
 
+  String _enrichedDocument() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(
+        spaces(2) + "Future<Map<String, Object?>> enrichedDocument(Map<String, Object?> theDocument) async {");
+    if (modelSpecifications.codeToExtractData != null) {
+      codeBuffer.writeln(modelSpecifications.codeToExtractData);
+    }
+    codeBuffer.writeln(spaces(4) + "return theDocument;");
+    codeBuffer.writeln(spaces(2) + "}");
+    return codeBuffer.toString();
+  }
+
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
@@ -395,6 +409,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
       '\${id}': modelSpecifications.id,
     }));
 
+    codeBuffer.writeln(_enrichedDocument());
     codeBuffer.writeln("}");
     codeBuffer.writeln();
     return codeBuffer.toString();

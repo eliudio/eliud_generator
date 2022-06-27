@@ -234,7 +234,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) +
         modelSpecifications.entityClassName() +
-        " toEntity({String? appId, List<ModelBase>? referencesCollector}) {");
+        " toEntity({String? appId, Set<ModelReference>? referencesCollector}) {");
     if (modelSpecifications.preToEntityCode != null) {
       codeBuffer.writeln(spaces(4) + modelSpecifications.getPreToEntityCode());
     }
@@ -242,7 +242,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(4) + "if (referencesCollector != null) {");
     modelSpecifications.fields.forEach((field) {
       if (field.isAssociation()) {
-        codeBuffer.writeln(spaces(6) + "if (" + field.fieldName + " != null) referencesCollector.add(" + field.fieldName + "!);");
+        codeBuffer.writeln(spaces(6) + "if (" + field.fieldName + " != null) referencesCollector.add(ModelReference(" + field.fieldType + "Model.packageName, " + field.fieldType + "Model.id, " + field.fieldName + "!));");
       }
     });
     codeBuffer.writeln(spaces(4) + "}");
@@ -573,6 +573,18 @@ class ModelCodeGenerator extends DataCodeGenerator {
 
 */
 
+  String _statics() {
+    StringBuffer codeBuffer = StringBuffer();
+//    modelSpecifications.packageName + ", " + modelSpecifications.id
+    codeBuffer.writeln(spaces(2) +
+        "static const String packageName = '" +
+        modelSpecifications.packageName + "';");
+    codeBuffer.writeln(spaces(2) +
+        "static const String id = '" +
+        modelSpecifications.id + "';");
+    return codeBuffer.toString();
+  }
+
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
@@ -605,6 +617,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     }
     codeBuffer.writeln(" {");
 
+    codeBuffer.writeln(_statics());
     codeBuffer.writeln(_fieldDefinitions());
     codeBuffer.writeln(_constructor());
     codeBuffer.writeln(_copyWith());

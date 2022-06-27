@@ -60,6 +60,8 @@ class ModelSpecification extends Specification {
   // depending plugins
   final List<String>? depends;
 
+  final String? codeToExtractData; // extra code to extra data, for example to extract the image. This is used to fully serialise the document, including the image
+
   bool getIsAppModel() {
     if (isAppModel == null) return false;
     return isAppModel!;
@@ -92,6 +94,7 @@ class ModelSpecification extends Specification {
 
   static String IMPORT_KEY_FORM_BLOC = "form_bloc";
   static String IMPORT_KEY_MODEL = "model";
+  static String IMPORT_KEY_ENTITY = "entity";
   static String IMPORT_KEY_FIRESTORE = "firestore";
   static String IMPORT_KEY_JS_FIRESTORE = "js_firestore";
   static String IMPORT_KEY_REPOSITORY = "repository";
@@ -119,7 +122,8 @@ class ModelSpecification extends Specification {
         required this.where,
         required this.whereJs,
         required this.depends,
-        required this.memberIdentifier})
+        required this.memberIdentifier,
+        required this.codeToExtractData})
       : super(id: id, );
 
   ModelSpecification copyWith(
@@ -138,7 +142,8 @@ class ModelSpecification extends Specification {
       List<View>? listWidgets,
       List<String>? depends,
       bool? isMemberModel,
-      String? memberIdentifier}) {
+      String? memberIdentifier,
+      String ? codeToExtractData}) {
     ModelSpecification newModelSpecification = ModelSpecification(
       id: id ?? this.id,
       generate: generate ?? this.generate,
@@ -157,6 +162,7 @@ class ModelSpecification extends Specification {
       whereJs: whereJs,
       depends: depends ?? this.depends,
       memberIdentifier: memberIdentifier ?? this.memberIdentifier,
+      codeToExtractData: codeToExtractData ?? this.codeToExtractData,
     );
     return newModelSpecification;
   }
@@ -225,6 +231,7 @@ class ModelSpecification extends Specification {
       whereJs: json["whereJs"] as String,
       depends: dependsFields != null ? List.from(dependsFields  as Iterable) : null,
       memberIdentifier: json["memberIdentifier"] as String,
+      codeToExtractData: json["codeToExtractData"] as String,
     );
     return modelSpecification;
   }

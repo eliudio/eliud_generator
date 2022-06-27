@@ -23,7 +23,6 @@ class Field {
   final String? enumName;
   final List<String>? enumValues;
   final ArrayType? arrayType;
-  final String? extractImage;
   final bool? map;
   final bool? association;
   final String? remark;
@@ -62,8 +61,7 @@ class Field {
     required this.bespokeEntityToDocument,
     required this.optional,
     required this.conditional,
-    required this.isRequired,
-    required this.extractImage});
+    required this.isRequired,});
 
 
 /*
@@ -211,7 +209,6 @@ class Field {
       optional: optional,
       isRequired: isRequired,
       conditional: json["conditional"] as String,
-      extractImage: json["extractImage"] as String,
     );
     return field;
   }
