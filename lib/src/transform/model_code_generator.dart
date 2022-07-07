@@ -234,7 +234,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) +
         modelSpecifications.entityClassName() +
-        " toEntity({String? appId, Set<ModelReference>? referencesCollector}) {");
+        " toEntity({String? appId, List<ModelReference>? referencesCollector}) {");
     if (modelSpecifications.preToEntityCode != null) {
       codeBuffer.writeln(spaces(4) + modelSpecifications.getPreToEntityCode());
     }
