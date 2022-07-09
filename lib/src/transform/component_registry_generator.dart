@@ -112,6 +112,17 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     });
     register.writeln(spaces(4) + "]);");
 
+    modelSpecificationPlus.forEach((spec) {
+      var lid = firstLowerCase(spec.modelSpecification.id);
+      if ((spec.modelSpecification.id != "App") &&
+          (spec.modelSpecification.generate.generateRepositorySingleton) &&
+          (spec.modelSpecification.generate.isAppSubCollection())) {
+        register.writeln(spaces(6) +
+            "Registry.registry()!.registerRetrieveRepository('$pkgName', '${lid}s', " +
+            "({String? appId}) => " + lid + "Repository(appId: appId)!);");
+      }
+    });
+
     codeBuffer.writeln(process(_code,
         parameters: <String, String>{'\${register}': register.toString()}));
     return codeBuffer.toString();

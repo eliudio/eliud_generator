@@ -581,7 +581,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         modelSpecifications.packageName + "';");
     codeBuffer.writeln(spaces(2) +
         "static const String id = '" +
-        modelSpecifications.id + "';");
+        firstLowerCase(modelSpecifications.id) + "s';");
     return codeBuffer.toString();
   }
 
