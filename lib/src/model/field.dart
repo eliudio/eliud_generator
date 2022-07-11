@@ -41,6 +41,8 @@ class Field {
   final bool? isRequired; // is 'dart' required ?
   final String? conditional; // field is visible in form when this condition is true
 
+  final String? refCode;  // code to use to collect references
+
   const Field({required this.fieldName,
     required this.displayName,
     required this.fieldType,
@@ -61,7 +63,8 @@ class Field {
     required this.bespokeEntityToDocument,
     required this.optional,
     required this.conditional,
-    required this.isRequired,});
+    required this.isRequired,
+    required this.refCode});
 
 
 /*
@@ -209,6 +212,7 @@ class Field {
       optional: optional,
       isRequired: isRequired,
       conditional: json["conditional"] as String,
+      refCode: json["refCode"] as String,
     );
     return field;
   }

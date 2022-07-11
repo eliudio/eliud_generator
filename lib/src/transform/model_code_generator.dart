@@ -234,18 +234,10 @@ class ModelCodeGenerator extends DataCodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(spaces(2) +
         modelSpecifications.entityClassName() +
-        " toEntity({String? appId, List<ModelReference>? referencesCollector}) {");
+        " toEntity({String? appId}) {");
     if (modelSpecifications.preToEntityCode != null) {
       codeBuffer.writeln(spaces(4) + modelSpecifications.getPreToEntityCode());
     }
-
-    codeBuffer.writeln(spaces(4) + "if (referencesCollector != null) {");
-    modelSpecifications.fields.forEach((field) {
-      if (field.isAssociation()) {
-        codeBuffer.writeln(spaces(6) + "if (" + field.fieldName + " != null) referencesCollector.add(ModelReference(" + field.fieldType + "Model.packageName, " + field.fieldType + "Model.id, " + field.fieldName + "!));");
-      }
-    });
-    codeBuffer.writeln(spaces(4) + "}");
 
     codeBuffer.writeln(
         spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
@@ -281,13 +273,13 @@ class ModelCodeGenerator extends DataCodeGenerator {
                   if (field.arrayType != ArrayType.CollectionArrayType) {
                     codeBuffer.writeln();
                     codeBuffer.writeln(spaces(12) +
-                        "!.map((item) => item.toEntity(appId: appId, referencesCollector: referencesCollector))");
+                        "!.map((item) => item.toEntity(appId: appId))");
                     codeBuffer.write(spaces(12) + ".toList()");
                   } else {
                     codeBuffer.write(spaces(12) + "what to do here?");
                   }
                 } else {
-                  codeBuffer.write("!.toEntity(appId: appId, referencesCollector: referencesCollector)");
+                  codeBuffer.write("!.toEntity(appId: appId)");
                 }
               }
             }
@@ -297,6 +289,46 @@ class ModelCodeGenerator extends DataCodeGenerator {
       }
     });
     codeBuffer.writeln(spaces(4) + ");");
+    codeBuffer.writeln(spaces(2) + "}");
+    return codeBuffer.toString();
+  }
+
+  String _collectReferences() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(spaces(2) +
+        "Future<List<ModelReference>> collectReferences({String? appId}) async {");
+    codeBuffer.writeln(spaces(4) +
+        "List<ModelReference> referencesCollector = [];");
+    modelSpecifications.fields.forEach((field) {
+      if (field.isAssociation()) {
+        codeBuffer.writeln(spaces(4) + "if (" + field.fieldName + " != null) {");
+        codeBuffer.writeln(spaces(6) + "referencesCollector.add(ModelReference(" + field.fieldType + "Model.packageName, " + field.fieldType + "Model.id, " + field.fieldName + "!));");
+        codeBuffer.writeln(spaces(4) + "}");
+
+      } else if (field.refCode != null) {
+        codeBuffer.writeln(spaces(4) + field.refCode!);
+      }
+    });
+
+    modelSpecifications.fields.forEach((field) {
+      if (field.arrayType != ArrayType.CollectionArrayType) {
+        if ((!field.isNativeType()) && (!field.isEnum()) && /*(!field.isAssociation()) && */(!field.isServerTimestamp()) && (!field.isBespoke())) {
+          if (field.isArray()) {
+            if (field.arrayType != ArrayType.CollectionArrayType) {
+              codeBuffer.writeln(spaces(4) +"if (" + field.fieldName + " != null) {");
+              codeBuffer.writeln(spaces(6) + "for (var item in " + field.fieldName + "!) {");
+              codeBuffer.writeln(spaces(8) + "referencesCollector.addAll(await item.collectReferences(appId: appId));");
+              codeBuffer.writeln(spaces(6) + "}");
+              codeBuffer.writeln(spaces(4) + "}");
+            }
+          } else {
+            codeBuffer.writeln(spaces(4) + "if (" + field.fieldName + " != null) referencesCollector.addAll(await "  + field.fieldName + "!.collectReferences(appId: appId));");
+          }
+        }
+      }
+    });
+    codeBuffer.writeln(spaces(4) +
+        "return referencesCollector;");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
@@ -629,6 +661,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
 */
     codeBuffer
         .writeln(toStringCode(false, modelSpecifications.modelClassName()));
+    codeBuffer.writeln(_collectReferences());
     codeBuffer.writeln(_toEntity());
     codeBuffer.writeln(_fromEntity());
     codeBuffer.writeln(_fromEntityPlus());
