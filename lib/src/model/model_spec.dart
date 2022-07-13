@@ -61,6 +61,7 @@ class ModelSpecification extends Specification {
   final List<String>? depends;
 
   final String? codeToExtractData; // extra code to extra data, for example to extract the image. This is used to fully serialise the document, including the image
+  final String? codeForNewAppId;   // extra code to adjust entity with new appId
 
   bool getIsAppModel() {
     if (isAppModel == null) return false;
@@ -123,7 +124,8 @@ class ModelSpecification extends Specification {
         required this.whereJs,
         required this.depends,
         required this.memberIdentifier,
-        required this.codeToExtractData})
+        required this.codeToExtractData,
+        required this.codeForNewAppId})
       : super(id: id, );
 
   ModelSpecification copyWith(
@@ -163,6 +165,7 @@ class ModelSpecification extends Specification {
       depends: depends ?? this.depends,
       memberIdentifier: memberIdentifier ?? this.memberIdentifier,
       codeToExtractData: codeToExtractData ?? this.codeToExtractData,
+      codeForNewAppId: codeForNewAppId ?? this.codeForNewAppId,
     );
     return newModelSpecification;
   }
@@ -232,6 +235,7 @@ class ModelSpecification extends Specification {
       depends: dependsFields != null ? List.from(dependsFields  as Iterable) : null,
       memberIdentifier: json["memberIdentifier"] as String,
       codeToExtractData: json["codeToExtractData"] as String,
+      codeForNewAppId: json["codeForNewAppId"] as String,
     );
     return modelSpecification;
   }

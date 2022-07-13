@@ -49,32 +49,25 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.write(
         spaces(2) + modelSpecifications.entityClassName() + " copyWith({");
     modelSpecifications.fields.forEach((field) {
-      if (field.isServerTimestamp()) {
-        codeBuffer.write(dartEntityType(field) + "? " + fieldName(field) + ", ");
-        hasServerTimeStamp = true;
-      }
+      codeBuffer.write(dartEntityType(field) + "? " + fieldName(field) + ", ");
+      hasServerTimeStamp = true;
     });
     codeBuffer.writeln("}) {");
     codeBuffer.write(spaces(4) + "return " + modelSpecifications.entityClassName() + "(");
     modelSpecifications.fields.forEach((field) {
       if (field.fieldName != "documentID") {
-        if (field.isServerTimestamp()) {
-          codeBuffer.write(fieldName(field) + " : " + fieldName(field) + ", ");
-        } else {
-          codeBuffer.write(fieldName(field) +
-              ": " +
-              fieldName(field) +
-              ", ");
-        }
+        codeBuffer.write(fieldName(field) + " : " + fieldName(field) + " ?? this." + fieldName(field) + ", ");
       }
     });
     codeBuffer.writeln(");");
     codeBuffer.write(spaces(2) + "}");
+    return codeBuffer.toString();
+/*
     if (hasServerTimeStamp) {
-      return codeBuffer.toString();
     } else {
       return "";
     }
+*/
   }
 
   @override
@@ -373,6 +366,25 @@ class EntityCodeGenerator extends DataCodeGenerator {
     return codeBuffer.toString();
   }
 
+  String _switchAppId() {
+    StringBuffer codeBuffer = StringBuffer();
+    codeBuffer.writeln(
+        spaces(2) + "@override");
+    codeBuffer.writeln(
+        spaces(2) + modelSpecifications.entityClassName() + " switchAppId({required String newAppId}) {");
+    if (modelSpecifications.fields.where((element) => element.fieldName == "appId").isNotEmpty) {
+      codeBuffer.writeln(spaces(4) + "var newEntity = copyWith(appId: newAppId);");
+    } else {
+      codeBuffer.writeln(spaces(4) + "var newEntity = copyWith();");
+    }
+    if (modelSpecifications.codeForNewAppId != null) {
+      codeBuffer.writeln(spaces(4) + modelSpecifications.codeForNewAppId!);
+    }
+    codeBuffer.writeln(spaces(4) + "return newEntity;");
+    codeBuffer.writeln(spaces(2) + "}");
+    return codeBuffer.toString();
+  }
+
   String _enrichedDocument() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(
@@ -404,6 +416,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
         .writeln(toStringCode(true, modelSpecifications.entityClassName()));
     codeBuffer.writeln(_fromMap());
     codeBuffer.writeln(_toDocument());
+    codeBuffer.writeln(_switchAppId());
 
     codeBuffer.writeln(process(_jsonMethods, parameters: <String, String>{
       '\${id}': modelSpecifications.id,
