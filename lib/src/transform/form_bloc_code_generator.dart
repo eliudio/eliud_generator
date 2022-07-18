@@ -118,21 +118,21 @@ class FormBlocCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _mapEventToState() {
+  String _constructor() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) +
-        "Stream<" +
-        modelSpecifications.formStateClassName() +
-        "> mapEventToState(" +
-        modelSpecifications.formEventClassName() +
-        " event) async* {");
-    codeBuffer.writeln(spaces(4) + "final currentState = state;");
-    codeBuffer.writeln(spaces(4) +
-        "if (currentState is " +
-        modelSpecifications.id +
-        "FormUninitialized) {");
-
+    if (withRepository()) {
+      codeBuffer.writeln(spaces(2) +
+          modelSpecifications.id +
+          "FormBloc(this.appId, { this.formAction }): super(" +
+          modelSpecifications.id +
+          "FormUninitialized()) {");
+    } else {
+      codeBuffer.writeln(spaces(2) +
+          modelSpecifications.id +
+          "FormBloc(this.appId, ): super(" +
+          modelSpecifications.id +
+          "FormUninitialized()) {");
+    }
     StringBuffer newModelBuffer = StringBuffer();
     modelSpecifications.fields.forEach((field) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
@@ -167,9 +167,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
         }));
 
     codeBuffer.writeln(spaces(6) +
-        "if (event is Initialise" +
+        "on <Initialise" +
         modelSpecifications.id +
-        "FormEvent) {");
+        "FormEvent> ((event, emit) async {");
     if (withRepository())
       codeBuffer.writeln(spaces(8) +
           "// Need to re-retrieve the document from the repository so that I get all associated types");
@@ -186,21 +186,19 @@ class FormBlocCodeGenerator extends CodeGenerator {
       codeBuffer.writeln("event.value);");
     codeBuffer.writeln(spaces(8) + "emit(" + "loaded);");
     codeBuffer.writeln(spaces(6) +
-        "} else if (event is Initialise" +
+        "});");
+    codeBuffer.writeln(spaces(6) +
+        "on <Initialise" +
         modelSpecifications.id +
-        "FormNoLoadEvent) {");
+        "FormNoLoadEvent> ((event, emit) async {");
     codeBuffer.writeln(spaces(8) +
         modelSpecifications.id +
         "FormLoaded loaded = " +
         modelSpecifications.id +
         "FormLoaded(value: event.value);");
     codeBuffer.writeln(spaces(8) + "emit(" + "loaded);");
-    codeBuffer.writeln(spaces(6) + "}");
+    codeBuffer.writeln(spaces(6) + "});");
 
-    codeBuffer.writeln(spaces(4) +
-        "} else if (currentState is " +
-        modelSpecifications.id +
-        "FormInitialized) {");
     codeBuffer.writeln(spaces(6) +
         modelSpecifications.modelClassName() +
         "? newValue = null;");
@@ -212,6 +210,12 @@ class FormBlocCodeGenerator extends CodeGenerator {
               firstUpperCase(field.fieldName);
           codeBuffer.writeln(
               spaces(6) + "on <" + className + "> ((event, emit) async {");
+          codeBuffer.writeln(spaces(6) +
+              "if (state is " +
+              modelSpecifications.id +
+              "FormInitialized) {");
+          codeBuffer.writeln(spaces(8) + "final currentState = state as " + modelSpecifications.id + "FormInitialized;");
+
           if (field.isInt()) {
             codeBuffer.writeln(spaces(8) + "if (isInt(event.value)) {");
             codeBuffer.writeln(spaces(10) +
@@ -268,12 +272,13 @@ class FormBlocCodeGenerator extends CodeGenerator {
                 ": event.value);");
             codeBuffer.writeln(_emit(8, field));
           }
+          codeBuffer.writeln(spaces(6) +
+              "}");
           codeBuffer.writeln(spaces(6) + "});");
         }
       }
     });
 
-    codeBuffer.writeln(spaces(4) + "}");
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
@@ -307,22 +312,6 @@ class FormBlocCodeGenerator extends CodeGenerator {
     return codeBuffer.toString();
   }
 
-  String _constructor() {
-    if (withRepository()) {
-      return spaces(2) +
-          modelSpecifications.id +
-          "FormBloc(this.appId, { this.formAction }): super(" +
-          modelSpecifications.id +
-          "FormUninitialized());";
-    } else {
-      return spaces(2) +
-          modelSpecifications.id +
-          "FormBloc(this.appId, ): super(" +
-          modelSpecifications.id +
-          "FormUninitialized());";
-    }
-  }
-
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
@@ -336,7 +325,6 @@ class FormBlocCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln(_memberData());
     codeBuffer.writeln(_constructor());
-    codeBuffer.writeln(_mapEventToState());
     codeBuffer.writeln(_validations());
 
     if (modelSpecifications.generate.generateFirestoreRepository) {
