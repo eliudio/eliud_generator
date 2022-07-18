@@ -62,6 +62,7 @@ class ModelSpecification extends Specification {
 
   final String? codeToExtractData; // extra code to extra data, for example to extract the image. This is used to fully serialise the document, including the image
   final String? codeForNewAppId;   // extra code to adjust entity with new appId
+  final String? codeToCollectReferences; // extra code to extract extra references, e.g. if that relationship isn't defined in the spec
 
   bool getIsAppModel() {
     if (isAppModel == null) return false;
@@ -125,7 +126,8 @@ class ModelSpecification extends Specification {
         required this.depends,
         required this.memberIdentifier,
         required this.codeToExtractData,
-        required this.codeForNewAppId})
+        required this.codeForNewAppId,
+        required this.codeToCollectReferences})
       : super(id: id, );
 
   ModelSpecification copyWith(
@@ -145,7 +147,8 @@ class ModelSpecification extends Specification {
       List<String>? depends,
       bool? isMemberModel,
       String? memberIdentifier,
-      String ? codeToExtractData}) {
+      String ? codeToExtractData,
+      String? codeToCollectReferences,}) {
     ModelSpecification newModelSpecification = ModelSpecification(
       id: id ?? this.id,
       generate: generate ?? this.generate,
@@ -166,6 +169,7 @@ class ModelSpecification extends Specification {
       memberIdentifier: memberIdentifier ?? this.memberIdentifier,
       codeToExtractData: codeToExtractData ?? this.codeToExtractData,
       codeForNewAppId: codeForNewAppId ?? this.codeForNewAppId,
+      codeToCollectReferences: codeToCollectReferences ?? this.codeToCollectReferences,
     );
     return newModelSpecification;
   }
@@ -236,6 +240,7 @@ class ModelSpecification extends Specification {
       memberIdentifier: json["memberIdentifier"] as String,
       codeToExtractData: json["codeToExtractData"] as String,
       codeForNewAppId: json["codeForNewAppId"] as String,
+      codeToCollectReferences: json["codeToCollectReferences"] as String,
     );
     return modelSpecification;
   }

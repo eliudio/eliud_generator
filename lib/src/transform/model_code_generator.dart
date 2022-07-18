@@ -299,6 +299,11 @@ class ModelCodeGenerator extends DataCodeGenerator {
         "Future<List<ModelReference>> collectReferences({String? appId}) async {");
     codeBuffer.writeln(spaces(4) +
         "List<ModelReference> referencesCollector = [];");
+
+    if (modelSpecifications.codeToCollectReferences != null) {
+      codeBuffer.writeln(modelSpecifications.codeToCollectReferences);
+    }
+
     modelSpecifications.fields.forEach((field) {
       if (field.isAssociation()) {
         codeBuffer.writeln(spaces(4) + "if (" + field.fieldName + " != null) {");
@@ -561,49 +566,6 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) + "}");
     return codeBuffer.toString();
   }
-
-/*
-  String toRichMap() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) +
-        "@override");
-    codeBuffer.writeln(spaces(2) +
-        "Future<Map<String, dynamic>> toRichMap({required String appId}) async {");
-    codeBuffer.writeln(spaces(4) + "var document = toEntity(appId: appId).toDocument();");
-    modelSpecifications.fields.forEach((field) {
-      if (field.fieldName == 'documentID') {
-        codeBuffer.writeln(spaces(4) + "document['documentID'] = documentID;");
-      }
-      if (field.extractImage != null) {
-        Map<String, String> parameters = <String, String>{
-          "\${var}": field.fieldName,
-          "\${var2}": field.extractImage!,
-        };
-        if (field.isArray()) {
-          codeBuffer.writeln(process(_arrayImageExtract, parameters: parameters));
-        } else {
-          codeBuffer.writeln(process(_imageExtract, parameters: parameters));
-        }
-      }
-    });
-    codeBuffer.writeln(spaces(4) + "return document;");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    return codeBuffer.toString();
-  }
-
-  String processRichMap() {
-    StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) +
-        "@override");
-    codeBuffer.writeln(spaces(2) +
-        "Future<void> processRichMap({required AppModel app, required String ownerId, required Map<String, dynamic> document}) async {");
-    codeBuffer.writeln(spaces(2) + "}");
-    codeBuffer.writeln();
-    return codeBuffer.toString();
-  }
-
-*/
 
   String _statics() {
     StringBuffer codeBuffer = StringBuffer();
