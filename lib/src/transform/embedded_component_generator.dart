@@ -155,7 +155,7 @@ class \${id}InMemoryRepository implements \${id}Repository {
   }
 
   @override
-  \${id}Entity? fromMap(Object? o) {
+  \${id}Entity? fromMap(Object? o, {Map<String, String>? newDocumentIds}) {
     throw UnimplementedError();
   }
 """;

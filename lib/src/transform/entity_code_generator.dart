@@ -6,9 +6,9 @@ import 'code_generator.dart';
 import 'data_code_generator.dart';
 
 const String _jsonMethods = """
-  static \${id}Entity? fromJsonString(String json) {
+  static \${id}Entity? fromJsonString(String json, {Map<String, String>? newDocumentIds}) {
     Map<String, dynamic>? generationSpecificationMap = jsonDecode(json);
-    return fromMap(generationSpecificationMap);
+    return fromMap(generationSpecificationMap, newDocumentIds: newDocumentIds);
   }
 
   String toJsonString() {
@@ -75,6 +75,8 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
+    headerBuffer.writeln("import 'package:eliud_core/tools/random.dart';");
+
     headerBuffer.writeln("import 'abstract_repository_singleton.dart';");
     headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
     headerBuffer.writeln("import 'package:eliud_core/core/base/entity_base.dart';");
@@ -118,13 +120,27 @@ class EntityCodeGenerator extends DataCodeGenerator {
     codeBuffer.writeln(spaces(2) +
         "static " +
         modelSpecifications.entityClassName() +
-        "? fromMap(Object? o) {");
+        "? fromMap(Object? o, {Map<String, String>? newDocumentIds}) {");
     bool extraLine = false;
     codeBuffer.writeln(spaces(4) + "if (o == null) return null;");
     codeBuffer.writeln(spaces(4) + "var map = o as Map<String, dynamic>;");
     codeBuffer.writeln();
     modelSpecifications.fields.forEach((field) {
-      if (field.isBespoke()) {
+      if (field.isMedium() && !field.isArray()) {
+        codeBuffer
+            .writeln(spaces(4) + "var " + fieldName(field) + "NewDocmentId = map['" + fieldName(field) + "'];");
+
+        codeBuffer
+            .writeln(spaces(4) + "if ((newDocumentIds != null) && (" + fieldName(field) + "NewDocmentId != null)) {");
+        codeBuffer
+            .writeln(spaces(6) + "var " + fieldName(field) + "OldDocmentId = " + fieldName(field) + "NewDocmentId;");
+        codeBuffer
+            .writeln(spaces(6) + "" + fieldName(field) + "NewDocmentId = newRandomKey();");
+        codeBuffer
+            .writeln(spaces(6) + "newDocumentIds[" + fieldName(field) + "OldDocmentId] = " + fieldName(field) + "NewDocmentId;");
+        codeBuffer
+            .writeln(spaces(4) + "}");
+      } else if (field.isBespoke()) {
         codeBuffer
             .writeln(spaces(4) + "var " + fieldName(field) + "FromMap;");
         codeBuffer.writeln(spaces(4) +
@@ -166,7 +182,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
                 codeBuffer.writeln(spaces(8) + ".map((dynamic item) =>");
                 codeBuffer.writeln(
                     spaces(8) + field.fieldType +
-                        "Entity.fromMap(item as Map)!)");
+                        "Entity.fromMap(item as Map, newDocumentIds: newDocumentIds)!)");
                 codeBuffer.writeln(spaces(8) + ".toList();");
               } else {
                 // the collection is maintained by it's own collection / repository
@@ -187,7 +203,7 @@ class EntityCodeGenerator extends DataCodeGenerator {
                   field.fieldType +
                   "Entity.fromMap(" +
                   fieldName(field) +
-                  "FromMap);");
+                  "FromMap, newDocumentIds: newDocumentIds);");
             }
           } else if (field.isMap()) {
             codeBuffer.writeln(
@@ -228,10 +244,15 @@ class EntityCodeGenerator extends DataCodeGenerator {
                   fieldName(field) + "'],");
             }
           } else if ((field.isAssociation()) || (field.isEnum())) {
-            if (field.isMap())
+            if (field.isMap()) {
               codeBuffer.writeln(fieldName(field) + ", ");
-            else
-              codeBuffer.writeln("map['" + fieldName(field) + "'], ");
+            } else {
+              if (field.isMedium()) {
+                codeBuffer.writeln(fieldName(field) + "NewDocmentId, ");
+              } else {
+                codeBuffer.writeln("map['" + fieldName(field) + "'], ");
+              }
+            }
           } else {
             if (!field.isNativeType()) {
               if (field.isArray()) {

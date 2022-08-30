@@ -109,8 +109,8 @@ const String _code = """
   }
 
   @override
-  \${id}Entity? fromMap(Object? o) {
-    return reference.fromMap(o);
+  \${id}Entity? fromMap(Object? o, {Map<String, String>? newDocumentIds}) {
+    return reference.fromMap(o, newDocumentIds: newDocumentIds);
   }
 """;
 

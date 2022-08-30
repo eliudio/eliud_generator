@@ -258,6 +258,10 @@ class Field {
     return (fieldType == "bespoke");
   }
 
+  bool isMedium() {
+    return (fieldType == "PlatformMedium") || (fieldType == "PublicMedium") || (fieldType == "MemberMedium");
+  }
+
   String getRemark() {
     if (remark == null) return "";
     return remark!;
