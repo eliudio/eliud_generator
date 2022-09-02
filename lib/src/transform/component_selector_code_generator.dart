@@ -132,7 +132,7 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> with TickerProv
                     if (selectedValue == 1) {
                       widget.selected(value.documentID);
                     } else if (selectedValue == 2) {
-                      widget.editorConstructor.updateComponent(widget.app, context, value, (_) {});
+                      widget.editorConstructor.updateComponent(widget.app, context, value, (_, __) {});
                     }
                   }),
               title: \${title},
@@ -175,7 +175,7 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> with TickerProv
             child: iconButton(widget.app, 
           context,
           onPressed: () {
-            widget.editorConstructor.createNewComponent(widget.app, context, (_) {});
+            widget.editorConstructor.createNewComponent(widget.app, context, (_, __) {});
           },
           icon: Icon(Icons.add),
         ))

@@ -172,7 +172,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
               ),
               label: 'Update',
               onPressed: () {
-                updateComponent(context, widget.app, '\${lid}s', widget.value, (newValue) {
+                updateComponent(context, widget.app, '\${lid}s', widget.value, (newValue, _) {
                   setState(() {
                     widget.value = widget.value;
                   });
