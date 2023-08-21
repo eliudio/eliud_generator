@@ -201,8 +201,8 @@ class ComponentSelectorCodeGenerator extends CodeGenerator {
   Map<String, String> parameters(ModelSpecification modelSpecification) => <String, String>{
     '\${id}': modelSpecifications.id,
     '\${lid}': firstLowerCase(modelSpecifications.id),
-    '\${title}': modelSpecifications.listFields.getTitle(),
-    '\${subtitle}': modelSpecifications.listFields.getSubTitle(),
+    '\${title}': modelSpecifications.listFields == null ? "" : modelSpecifications.listFields!.getTitle(),
+    '\${subtitle}': modelSpecifications.listFields == null ? "" : modelSpecifications.listFields!.getSubTitle(),
     '\${path}': camelcaseToUnderscore(modelSpecifications.id),
   };
 

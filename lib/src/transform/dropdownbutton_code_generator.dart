@@ -245,11 +245,11 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
         "List<Widget> widgets(" + modelSpecifications.id + "Model value) {");
     childCodeBuffer.writeln("var app = widget.app;");
     childCodeBuffer.writeln("var widgets = <Widget>[];");
-    String? title = modelSpecifications.listFields.title;
+    String? title = modelSpecifications.listFields == null ? null : modelSpecifications.listFields!.title;
     if (title != null) {
       childCodeBuffer.writeln("widgets.add($title);");
     }
-    String? subTitle = modelSpecifications.listFields.subTitle;
+    String? subTitle = modelSpecifications.listFields == null ? null : modelSpecifications.listFields!.subTitle;
     if (subTitle != null) {
       childCodeBuffer.writeln("widgets.add($subTitle);");
     }
@@ -267,7 +267,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
       '\${childCode}': childCodeBuffer.toString(),
-      "\${withImages}": modelSpecifications.listFields.hasImage().toString(),
+      "\${withImages}": modelSpecifications.listFields == null ? "" : modelSpecifications.listFields!.hasImage().toString(),
       "\${privilegeChosenCode}" : privilegeChosenCode,
     }));
     return codeBuffer.toString();

@@ -36,7 +36,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
           if (spec.modelSpecification.generate.isAppSubCollection()) {
             appIdVar = "appId";
           } else {
-            appIdVar = "appId, " + documentSubCollection.toLowerCase() + "Id";
+            appIdVar = "appId, " + documentSubCollection!.toLowerCase() + "Id";
           }
         } else {
           appIdVar = "";
@@ -86,7 +86,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
           if (spec.modelSpecification.generate.isAppSubCollection()) {
             param = "String? appId";
           } else {
-            param = "String? appId, String? " + spec.modelSpecification.generate.documentSubCollectionOf.toLowerCase() + "Id";
+            param = "String? appId, String? " + spec.modelSpecification.generate.documentSubCollectionOf!.toLowerCase() + "Id";
           }
           codeBuffer.writeln(spaces(2) +
               spec.modelSpecification.id +

@@ -15,23 +15,23 @@ class ModelSpecificationPlus {
 }
 
 class View {
-  final String title;
-  final String buttonLabel;
+  final String? title;
+  final String? buttonLabel;
   final String name;
   final List<String>? fields;
   final List<String>? groups;
 
   View({required this.name, this.fields, this.groups, required this.title, required this.buttonLabel});
 
-  static View fromJson(Map<String, Object> json) {
+  static View fromJson(Map<String, dynamic> json) {
     var jsonFields = json["fields"];
     var jsonGroups = json["groups"];
     return View(
       name: json["name"] as String,
       fields: jsonFields != null ? List.from(jsonFields as Iterable) : null,
       groups: jsonGroups != null ? List.from(jsonGroups as Iterable) : null,
-      title: json["title"] as String,
-      buttonLabel: json["buttonLabel"] as String,
+      title: json["title"] as String?,
+      buttonLabel: json["buttonLabel"] as String?,
     );
   }
 }
@@ -42,7 +42,7 @@ class ModelSpecification extends Specification {
   final List<Field> fields;
   final List<Group>? groups;
   final GenerateSpecification generate;
-  final ListFields listFields;
+  final ListFields? listFields;
   final String? displayOnDelete; // field to be displayed when item is deleted
   // is this a appModel, i.e is this data that's specific to the app and hence will we have seperate specific collection for it?
   final bool? isAppModel;
@@ -104,8 +104,8 @@ class ModelSpecification extends Specification {
   static String IMPORT_KEY_FORM = "form";
 
   final Map<String, String> extraImports;
-  final String where;
-  final String whereJs;
+  final String? where;
+  final String? whereJs;
 
   ModelSpecification(
       {required String id,
@@ -179,38 +179,44 @@ class ModelSpecification extends Specification {
     return 'ModelSpecificationEntity { id: $id, requiresBloc: $generate, packageName: $packageName, listFields: $listFields, displayOnDelete: $displayOnDelete, extraImports: $extraImports, isAppModel: $isAppModel, preToEntityCode: $preToEntityCode, preMapUpdateCode: $preMapUpdateCode views: $views,  where: $where, whereJs: $whereJs, depends: $depends,  memberIdentifier: $memberIdentifier }';
   }
 
-  static ModelSpecification fromJson(Map<String, Object> json) {
+  static ModelSpecification fromJson(Map<String, dynamic> json) {
+    print("fromJson Step 1");
     List<Field> theItems = (json['fields'] as List<dynamic>)
-        .map((dynamic item) => Field.fromJson(item as Map<String, Object>))
+        .map((dynamic item) => Field.fromJson(item as Map<String, dynamic>))
         .toList();
 
+    print("fromJson Step 2");
     List<Group>? theGroups;
     var jsonGroups = json['groups'];
     if (jsonGroups != null) {
       theGroups = (jsonGroups as List<dynamic>)
-          .map((dynamic item) => Group.fromJson(item as Map<String, Object>))
+          .map((dynamic item) => Group.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
+    print("fromJson Step 3");
     List<View>? theViews;
     var jsonViews = json['alternativeViews'];
     if (jsonViews != null) {
       theViews = (jsonViews as List<dynamic>)
-          .map((dynamic item) => View.fromJson(item as Map<String, Object>))
+          .map((dynamic item) => View.fromJson(item as Map<String, dynamic>))
           .toList();
     }
 
+    print("fromJson Step 4");
     var myIsAppModel = json['isAppModel'];
     bool bIsAppModel = false;
     if (myIsAppModel != null) {
       bIsAppModel = myIsAppModel as bool;
     }
 
-    var theListFields;
+    print("fromJson Step 5");
+    ListFields? theListFields;
     var jsonListFields = json['listFields'];
     if (jsonListFields != null)
-      theListFields = ListFields.fromJson(jsonListFields as Map<String, Object>);
+      theListFields = ListFields.fromJson(jsonListFields as Map<String, dynamic>);
 
+    print("fromJson Step 6");
     Map<String, String> extraImports = Map();
     if (json['extraImports'] != null) {
       (json['extraImports'] as Map).forEach((k, v) {
@@ -220,33 +226,45 @@ class ModelSpecification extends Specification {
 
     var dependsFields = json["depends"];
 
+    print("fromJson Step 7");
+
+    id: json["id"] as String;
+    print("fromJson Step 7 b");
+    packageName: json["packageName"] as String;
+    print("fromJson Step 7 c");
+    packageFriendlyName: json["packageFriendlyName"] as String;
+    print("fromJson Step 7 j");
+
     var modelSpecification = ModelSpecification(
       id: json["id"] as String,
-      generate: GenerateSpecification.fromJson(json["generate"] as Map<String, Object> ),
+      generate: GenerateSpecification.fromJson(json["generate"] as Map<String, dynamic> ),
       packageName: json["packageName"] as String,
       packageFriendlyName: json["packageFriendlyName"] as String,
       fields: theItems,
       groups: theGroups,
       listFields: theListFields,
-      displayOnDelete: json["displayOnDelete"] as String,
+      displayOnDelete: json["displayOnDelete"] as String?,
       extraImports: extraImports,
       isAppModel: bIsAppModel,
-      preToEntityCode: json["preToEntityCode"] as String,
-      preMapUpdateCode: json["preMapUpdateCode"] as String,
+      preToEntityCode: json["preToEntityCode"] as String?,
+      preMapUpdateCode: json["preMapUpdateCode"] as String?,
       views: theViews,
-      where: json["where"] as String,
-      whereJs: json["whereJs"] as String,
+      where: json["where"] as String?,
+      whereJs: json["whereJs"] as String?,
       depends: dependsFields != null ? List.from(dependsFields  as Iterable) : null,
-      memberIdentifier: json["memberIdentifier"] as String,
-      codeToExtractData: json["codeToExtractData"] as String,
-      codeForNewAppId: json["codeForNewAppId"] as String,
-      codeToCollectReferences: json["codeToCollectReferences"] as String,
+      memberIdentifier: json["memberIdentifier"] as String?,
+      codeToExtractData: json["codeToExtractData"] as String?,
+      codeForNewAppId: json["codeForNewAppId"] as String?,
+      codeToCollectReferences: json["codeToCollectReferences"] as String?,
     );
+    print("fromJson Step 8");
     return modelSpecification;
   }
 
   static ModelSpecification fromJsonString(String json) {
-    Map<String, Object> modelSpecificationMap = jsonDecode(json);
+    print("fromJsonString 1");
+    Map<String, dynamic> modelSpecificationMap = jsonDecode(json);
+    print("fromJsonString 2");
     return fromJson(modelSpecificationMap);
   }
 

@@ -14,8 +14,11 @@ class ModelCodeBuilder extends CodeBuilder {
 
   @override
   CodeGenerator? generator(String specifications) {
+    print("ModelCodeBuilder 1a");
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
+    print("ModelCodeBuilder 2a");
     ModelCodeGenerator modelCodeGenerator = ModelCodeGenerator(modelSpecifications: modelSpecification);
+    print("ModelCodeBuilder 3");
     return modelCodeGenerator;
   }
 }

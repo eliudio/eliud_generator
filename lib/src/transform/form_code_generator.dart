@@ -875,7 +875,7 @@ class FormCodeGenerator extends CodeGenerator {
           ModelSpecification newModelSpec = modelSpecifications.copyWith(
               fields: fields, groups: groups);
           codeBuffer.writeln(RealFormCodeGenerator(
-            modelSpecifications.id + view.name,
+            modelSpecifications.id + view.name ?? "noname",
             modelSpecifications: newModelSpec,
             title: view.title,
             buttonLabel: view.buttonLabel,

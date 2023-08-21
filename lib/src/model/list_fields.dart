@@ -13,17 +13,17 @@ class ListFields {
     return 'ListFields { title: $title, subTitle: $subTitle, imageTitle: $imageTitle, imageSubTitle: $imageSubTitle }';
   }
 
-  static ListFields fromJson(Map<String, Object> json) {
+  static ListFields fromJson(Map<String, dynamic> json) {
     return ListFields(
-      title: json["title"] as String,
-      subTitle: json["subTitle"] as String,
-      imageTitle: json["imageTitle"] as bool ?? false,
-      imageSubTitle: json["imageSubTitle"] as bool ?? false,
+      title: json["title"] as String?,
+      subTitle: json["subTitle"] as String?,
+      imageTitle: json["imageTitle"] as bool? ?? false,
+      imageSubTitle: json["imageSubTitle"] as bool? ?? false,
     );
   }
 
   static ListFields fromJsonString(String json) {
-    Map<String, Object> generationSpecificationMap = jsonDecode(json);
+    Map<String, dynamic> generationSpecificationMap = jsonDecode(json);
     return fromJson(generationSpecificationMap);
   }
 

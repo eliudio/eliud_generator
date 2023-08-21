@@ -12,11 +12,11 @@ class Group {
     return 'Field { group: $group, description: $description, conditional: $conditional }';
   }
 
-  static Group fromJson(Map<String, Object> json) {
+  static Group fromJson(Map<String, dynamic> json) {
     return Group(
-      group: json["group"] as String,
-      description: json["description"] as String,
-      conditional: json["conditional"] as String,
+      group: json["group"] as String?,
+      description: json["description"] as String?,
+      conditional: json["conditional"] as String?,
     );
   }
 

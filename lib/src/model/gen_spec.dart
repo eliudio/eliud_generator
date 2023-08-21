@@ -15,9 +15,9 @@ class GenerateSpecification {
   final bool generateInternalComponent; // generate an administrative component
   final bool generateEmbeddedComponent; // is this an embedded internal component?
   final bool isExtension;               // is this an extension, is this a component that can be added to a page
-  final String documentSubCollectionOf;   // is this a subcollection and if so of which doc?
+  final String? documentSubCollectionOf;   // is this a subcollection and if so of which doc?
 
-  bool isAppSubCollection() => documentSubCollectionOf != null && documentSubCollectionOf.toLowerCase() == "app";
+  bool isAppSubCollection() => documentSubCollectionOf != null && documentSubCollectionOf!.toLowerCase() == "app";
 
   GenerateSpecification({ required this.generateComponent, required this.generateRepository, required this.generateCache, required this.hasPersistentRepository,
     required this.generateFirestoreRepository, required this.generateRepositorySingleton, required this.generateModel, required this.generateEntity,
@@ -25,8 +25,8 @@ class GenerateSpecification {
     required this.generateEmbeddedComponent, required this.isExtension, required this.documentSubCollectionOf
   });
 
-  Map<String, Object> toJson() {
-    return <String, Object>{
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
       "generateComponent": generateComponent,
       "generateRepository": generateRepository,
       "generateCache": generateCache,
@@ -46,42 +46,42 @@ class GenerateSpecification {
   }
 
   String toJsonString() {
-    Map<String, Object> jsonMap = toJson();
+    Map<String, dynamic> jsonMap = toJson();
     JsonEncoder encoder = new JsonEncoder.withIndent('  ');
     return encoder.convert(jsonMap);
   }
 
   @override
   List<Object> get props => [generateComponent, generateRepository, generateCache, generateFirestoreRepository, generateRepositorySingleton, hasPersistentRepository, generateModel,
-    generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension, documentSubCollectionOf];
+    generateEntity, generateForm, generateList, generateDropDownButton, generateInternalComponent, generateEmbeddedComponent, isExtension];
 
   @override
   String toString() {
     return 'GenerateSpecification { generateComponent: $generateComponent, generateRepository: $generateCache: generateCache, $generateRepository, hasPersistentRepository: $hasPersistentRepository, generateFirestoreRepository: $generateFirestoreRepository, generateRepositorySingleton: $generateRepositorySingleton, generateModel: $generateModel, generateEntity: $generateEntity, generateForm: $generateForm, generateList: $generateList, generateDropDownButton: $generateDropDownButton, generateInternalComponent: $generateInternalComponent, generateEmbeddedComponent: $generateEmbeddedComponent, isExtension:$isExtension }';
   }
 
-  static GenerateSpecification fromJson(Map<String, Object> json) {
+  static GenerateSpecification fromJson(Map<String, dynamic> json) {
     return GenerateSpecification(
-        generateComponent: json["generateComponent"] as bool ?? false,
-        generateRepository: json["generateRepository"] as bool ?? false,
-        generateCache: json["generateCache"] as bool ?? false,
-        generateFirestoreRepository: json["generateFirestoreRepository"] as bool ?? false,
-        generateRepositorySingleton: json["generateRepositorySingleton"] as bool ?? false,
-        hasPersistentRepository: json["hasPersistentRepository"] as bool ?? false,
-        generateModel: json["generateModel"] as bool ?? false,
-        generateEntity: json["generateEntity"] as bool ?? false,
-        generateForm: json["generateForm"] as bool ?? false,
-        generateList: json["generateList"] as bool ?? false,
-        generateDropDownButton: json["generateDropDownButton"] as bool ?? false,
-        generateInternalComponent: json["generateInternalComponent"] as bool ?? false,
-        generateEmbeddedComponent: json["generateEmbeddedComponent"] as bool ?? false,
-        isExtension: json["isExtension"] as bool ?? false,
-        documentSubCollectionOf: json["documentSubCollectionOf"] as String
+        generateComponent: json["generateComponent"] as bool? ?? false,
+        generateRepository: json["generateRepository"] as bool? ?? false,
+        generateCache: json["generateCache"] as bool? ?? false,
+        generateFirestoreRepository: json["generateFirestoreRepository"] as bool? ?? false,
+        generateRepositorySingleton: json["generateRepositorySingleton"] as bool? ?? false,
+        hasPersistentRepository: json["hasPersistentRepository"] as bool? ?? false,
+        generateModel: json["generateModel"] as bool? ?? false,
+        generateEntity: json["generateEntity"] as bool? ?? false,
+        generateForm: json["generateForm"] as bool? ?? false,
+        generateList: json["generateList"] as bool? ?? false,
+        generateDropDownButton: json["generateDropDownButton"] as bool? ?? false,
+        generateInternalComponent: json["generateInternalComponent"] as bool? ?? false,
+        generateEmbeddedComponent: json["generateEmbeddedComponent"] as bool? ?? false,
+        isExtension: json["isExtension"] as bool? ?? false,
+        documentSubCollectionOf: json["documentSubCollectionOf"] as String?
     );
   }
 
   static GenerateSpecification fromJsonString(String json) {
-    Map<String, Object> generationSpecificationMap = jsonDecode(json);
+    Map<String, dynamic> generationSpecificationMap = jsonDecode(json);
     return fromJson(generationSpecificationMap);
   }
 }

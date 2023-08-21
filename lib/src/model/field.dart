@@ -17,7 +17,7 @@ enum ArrayType {
 
 class Field {
   final String fieldName;
-  final String displayName;
+  final String? displayName;
   final String fieldType;
   final String? fieldValidation;
   final String? enumName;
@@ -68,7 +68,7 @@ class Field {
 
 
 /*
-  Map<String, Object> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       "fieldName": fieldName,
       "displayName": displayName,
@@ -167,53 +167,73 @@ class Field {
     return 'Field { fieldName: $fieldName, displayName: $displayName, fieldType: $fieldType, fieldValidation: $fieldValidation, arrayType: $arrayType, map: $map, association: $association, enumName: $enumName, enumValues: $enumValues, remark: $remark, group: $group, defaultValue: $defaultValue, iconName: $iconName, hidden: $hidden, bespokeFormField: $bespokeFormField, bespokeEntityMapping: $bespokeEntityMapping, bespokeEntityToDocument: $bespokeEntityToDocument, bespokeFieldType: $bespokeFieldType, optional: $optional, conditional: $conditional }';
   }
 
-  static Field fromJson(Map<String, Object> json) {
-    String arrayTypeS = json["arrayType"] as String;
+  static Field fromJson(Map<String, dynamic> json) {
+    print("field::fromJson Step 1");
+    String? arrayTypeS = json["arrayType"] as String?;
+    print("field::fromJson Step 2");
     ArrayType arrayType = ArrayType.NoArray;
+    print("field::fromJson Step 3");
     if (arrayTypeS != null) {
       if (arrayTypeS.toLowerCase() == "array")
         arrayType = ArrayType.ListArrayType;
       if (arrayTypeS.toLowerCase() == "collection")
         arrayType = ArrayType.CollectionArrayType;
     }
-    bool map = json["map"] as bool ?? false;
-    bool association = json["association"] as bool ?? false;
-    bool hidden = json["hidden"] as bool ?? false;
-    bool optional = json["optional"] as bool ?? false;
-    bool isRequired = json["required"] as bool ?? false;
+    print("field::fromJson Step 4a");
+    bool map = json["map"] as bool? ?? false;
+    print("field::fromJson Step 4b");
+    bool association = json["association"] as bool? ?? false;
+    print("field::fromJson Step 4c");
+    bool hidden = json["hidden"] as bool? ?? false;
+    print("field::fromJson Step 4d");
+    bool optional = json["optional"] as bool? ?? false;
+    print("field::fromJson Step 4e");
+    bool isRequired = json["required"] as bool? ?? false;
+    print("field::fromJson Step 4f");
     List<String>? myList;
-    Iterable? i = json["enumValues"] as Iterable;
+    print("field::fromJson Step 4g");
+    Iterable? i = json["enumValues"] as Iterable?;
 
+    print("field::fromJson Step 5");
     if (i != null) {
       myList = <String>[];
       i.forEach((val) {
         myList!.add(val);
       });
     }
+    print("field::fromJson Step 6");
+    fieldName: json["fieldName"] as String;
+    print("field::fromJson Step 6b");
+    displayName: json["displayName"] as String?;
+    print("field::fromJson Step 6c");
+    fieldType: json["fieldType"] as String;
+    print("field::fromJson Step 6d");
+
     var field = Field(
       fieldName: json["fieldName"] as String,
-      displayName: json["displayName"] as String,
+      displayName: json["displayName"] as String?,
       fieldType: json["fieldType"] as String,
-      fieldValidation: json["fieldValidation"] as String,
-      enumName: json["enumName"] as String,
+      fieldValidation: json["fieldValidation"] as String?,
+      enumName: json["enumName"] as String?,
       enumValues: myList,
       arrayType: arrayType,
       map: map,
       association: association,
-      remark: json["remark"] as String,
-      group: json["group"] as String,
-      defaultValue: json["defaultValue"] as String,
-      iconName: json["iconName"] as String,
+      remark: json["remark"] as String?,
+      group: json["group"] as String?,
+      defaultValue: json["defaultValue"] as String?,
+      iconName: json["iconName"] as String?,
       hidden: hidden,
-      bespokeFormField: json["bespokeFormField"] as String,
-      bespokeFieldType: json["bespokeFieldType"] as String,
-      bespokeEntityMapping: json["bespokeEntityMapping"] as String,
-      bespokeEntityToDocument: json["bespokeEntityToDocument"] as String,
+      bespokeFormField: json["bespokeFormField"] as String?,
+      bespokeFieldType: json["bespokeFieldType"] as String?,
+      bespokeEntityMapping: json["bespokeEntityMapping"] as String?,
+      bespokeEntityToDocument: json["bespokeEntityToDocument"] as String?,
       optional: optional,
       isRequired: isRequired,
-      conditional: json["conditional"] as String,
-      refCode: json["refCode"] as String,
+      conditional: json["conditional"] as String?,
+      refCode: json["refCode"] as String?,
     );
+    print("field::fromJson Step 7");
     return field;
   }
 
