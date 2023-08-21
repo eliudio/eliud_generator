@@ -4,7 +4,7 @@ Eliud Code Generator
 
 ## Dependency diagram
 
-![Dependency diagram](depends.jpg)
+![Dependency diagram](https://github.com/eliudio/eliud_generator/blob/main/depends.jpg)
 
 ## eliud.io
 
