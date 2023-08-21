@@ -8,7 +8,7 @@ import 'code_builder.dart';
 /// A builder which builds a repository based on a `spec` file
 class RepositoryCodeBuilder extends CodeBuilder {
   Map<String, List<String>> get buildExtensions {
-    print("BBBAAAAAAAAAA");
+    //print("BBBAAAAAAAAAA");
     return  {
       '.spec': const ['_repository.dart'],
     };
@@ -16,14 +16,14 @@ class RepositoryCodeBuilder extends CodeBuilder {
 
   @override
   CodeGenerator? generator(String specifications) {
-    print("AAAAAAAAAA 1");
+    //print("AAAAAAAAAA 1");
     ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
-    print("AAAAAAAAAA 2");
+    //print("AAAAAAAAAA 2");
     if (modelSpecification.generate.generateRepository) {
-      print("AAAAAAAAAA 3");
+      //print("AAAAAAAAAA 3");
       RepositoryCodeGenerator repositoryCodeGenerator = RepositoryCodeGenerator(
           modelSpecifications: modelSpecification);
-      print("AAAAAAAAAA 4");
+      //print("AAAAAAAAAA 4");
       return repositoryCodeGenerator;
     }
     return null;

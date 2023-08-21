@@ -180,12 +180,12 @@ class ModelSpecification extends Specification {
   }
 
   static ModelSpecification fromJson(Map<String, dynamic> json) {
-    print("fromJson Step 1");
+    //print("fromJson Step 1");
     List<Field> theItems = (json['fields'] as List<dynamic>)
         .map((dynamic item) => Field.fromJson(item as Map<String, dynamic>))
         .toList();
 
-    print("fromJson Step 2");
+    //print("fromJson Step 2");
     List<Group>? theGroups;
     var jsonGroups = json['groups'];
     if (jsonGroups != null) {
@@ -194,7 +194,7 @@ class ModelSpecification extends Specification {
           .toList();
     }
 
-    print("fromJson Step 3");
+    //print("fromJson Step 3");
     List<View>? theViews;
     var jsonViews = json['alternativeViews'];
     if (jsonViews != null) {
@@ -203,20 +203,20 @@ class ModelSpecification extends Specification {
           .toList();
     }
 
-    print("fromJson Step 4");
+    //print("fromJson Step 4");
     var myIsAppModel = json['isAppModel'];
     bool bIsAppModel = false;
     if (myIsAppModel != null) {
       bIsAppModel = myIsAppModel as bool;
     }
 
-    print("fromJson Step 5");
+    //print("fromJson Step 5");
     ListFields? theListFields;
     var jsonListFields = json['listFields'];
     if (jsonListFields != null)
       theListFields = ListFields.fromJson(jsonListFields as Map<String, dynamic>);
 
-    print("fromJson Step 6");
+    //print("fromJson Step 6");
     Map<String, String> extraImports = Map();
     if (json['extraImports'] != null) {
       (json['extraImports'] as Map).forEach((k, v) {
@@ -226,14 +226,14 @@ class ModelSpecification extends Specification {
 
     var dependsFields = json["depends"];
 
-    print("fromJson Step 7");
+    //print("fromJson Step 7");
 
     id: json["id"] as String;
-    print("fromJson Step 7 b");
+    //print("fromJson Step 7 b");
     packageName: json["packageName"] as String;
-    print("fromJson Step 7 c");
+    //print("fromJson Step 7 c");
     packageFriendlyName: json["packageFriendlyName"] as String;
-    print("fromJson Step 7 j");
+    //print("fromJson Step 7 j");
 
     var modelSpecification = ModelSpecification(
       id: json["id"] as String,
@@ -257,14 +257,14 @@ class ModelSpecification extends Specification {
       codeForNewAppId: json["codeForNewAppId"] as String?,
       codeToCollectReferences: json["codeToCollectReferences"] as String?,
     );
-    print("fromJson Step 8");
+    //print("fromJson Step 8");
     return modelSpecification;
   }
 
   static ModelSpecification fromJsonString(String json) {
-    print("fromJsonString 1");
+    //print("fromJsonString 1");
     Map<String, dynamic> modelSpecificationMap = jsonDecode(json);
-    print("fromJsonString 2");
+    //print("fromJsonString 2");
     return fromJson(modelSpecificationMap);
   }
 

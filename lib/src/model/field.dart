@@ -168,46 +168,46 @@ class Field {
   }
 
   static Field fromJson(Map<String, dynamic> json) {
-    print("field::fromJson Step 1");
+    //print("field::fromJson Step 1");
     String? arrayTypeS = json["arrayType"] as String?;
-    print("field::fromJson Step 2");
+    //print("field::fromJson Step 2");
     ArrayType arrayType = ArrayType.NoArray;
-    print("field::fromJson Step 3");
+    //print("field::fromJson Step 3");
     if (arrayTypeS != null) {
       if (arrayTypeS.toLowerCase() == "array")
         arrayType = ArrayType.ListArrayType;
       if (arrayTypeS.toLowerCase() == "collection")
         arrayType = ArrayType.CollectionArrayType;
     }
-    print("field::fromJson Step 4a");
+    //print("field::fromJson Step 4a");
     bool map = json["map"] as bool? ?? false;
-    print("field::fromJson Step 4b");
+    //print("field::fromJson Step 4b");
     bool association = json["association"] as bool? ?? false;
-    print("field::fromJson Step 4c");
+    //print("field::fromJson Step 4c");
     bool hidden = json["hidden"] as bool? ?? false;
-    print("field::fromJson Step 4d");
+    //print("field::fromJson Step 4d");
     bool optional = json["optional"] as bool? ?? false;
-    print("field::fromJson Step 4e");
+    //print("field::fromJson Step 4e");
     bool isRequired = json["required"] as bool? ?? false;
-    print("field::fromJson Step 4f");
+    //print("field::fromJson Step 4f");
     List<String>? myList;
-    print("field::fromJson Step 4g");
+    //print("field::fromJson Step 4g");
     Iterable? i = json["enumValues"] as Iterable?;
 
-    print("field::fromJson Step 5");
+    //print("field::fromJson Step 5");
     if (i != null) {
       myList = <String>[];
       i.forEach((val) {
         myList!.add(val);
       });
     }
-    print("field::fromJson Step 6");
+    //print("field::fromJson Step 6");
     fieldName: json["fieldName"] as String;
-    print("field::fromJson Step 6b");
+    //print("field::fromJson Step 6b");
     displayName: json["displayName"] as String?;
-    print("field::fromJson Step 6c");
+    //print("field::fromJson Step 6c");
     fieldType: json["fieldType"] as String;
-    print("field::fromJson Step 6d");
+    //print("field::fromJson Step 6d");
 
     var field = Field(
       fieldName: json["fieldName"] as String,
@@ -233,7 +233,7 @@ class Field {
       conditional: json["conditional"] as String?,
       refCode: json["refCode"] as String?,
     );
-    print("field::fromJson Step 7");
+    //print("field::fromJson Step 7");
     return field;
   }
 
