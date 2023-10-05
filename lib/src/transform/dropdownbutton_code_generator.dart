@@ -15,9 +15,8 @@ import 'package:eliud_core/style/style_registry.dart';
 import 'package:eliud_core/core/blocs/access/state/access_state.dart';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
 import 'package:eliud_core/style/frontend/has_text.dart';
-import 'package:eliud_core/tools/query/query_tools.dart';
-
 import 'package:eliud_core/style/frontend/has_button.dart';
+import 'package:eliud_core/tools/query/query_tools.dart';
 import 'package:eliud_core/tools/component/update_component.dart';
 
 """;
@@ -117,7 +116,8 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
             physics: ScrollPhysics(),
             shrinkWrap: true,
             children: [
-          DropdownButton<int>(
+          dropdownButton<int>(
+            widget.app, context,
             isDense: false,
             isExpanded: false,
             items: [
@@ -145,7 +145,8 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
           Row(children: [(\${withImages})
             ? Container(
                 height: 48, 
-                child: DropdownButton<String>(
+                child: dropdownButton<String>(
+                      widget.app, context,
                       isDense: false,
                       isExpanded: \${withImages},
                       items: items,
@@ -154,7 +155,8 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                       onChanged: _onValueChange,
                     )
                 ) 
-            : DropdownButton<String>(
+            : dropdownButton<String>(
+                widget.app, context,
                 isDense: false,
                 isExpanded: \${withImages},
                 items: items,
