@@ -132,13 +132,13 @@ const String _listen = """
   }
 
   @override
-  StreamSubscription<\${id}Model?> listenTo(String documentId, \${id}Changed changed) {
+  StreamSubscription<\${id}Model?> listenTo(String documentId, \${id}Changed changed, {\${id}ErrorHandler? errorHandler}) {
     return reference.listenTo(documentId, ((value) {
       if (value != null) {
         fullCache[value.documentID] = value;
       }
       changed(value);
-    }));
+    }), errorHandler: errorHandler);
   }
 """;
 

@@ -140,7 +140,7 @@ class \${id}InMemoryRepository implements \${id}Repository {
   }
   
   @override
-  StreamSubscription<\${id}Model> listenTo(String documentId, \${id}Changed changed) {
+  StreamSubscription<\${id}Model> listenTo(String documentId, \${id}Changed changed, {\${id}ErrorHandler? errorHandler}) {
     throw UnimplementedError();
   }
 
