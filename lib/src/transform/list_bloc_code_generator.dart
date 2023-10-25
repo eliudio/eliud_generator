@@ -12,12 +12,17 @@ import 'package:\${package_name}/model/\${id_import}_repository.dart';
 import 'package:\${package_name}/model/\${id_import}_list_event.dart';
 import 'package:\${package_name}/model/\${id_import}_list_state.dart';
 import 'package:eliud_core/tools/query/query_tools.dart';
+
+import '\${id_import}_model.dart';
+
+typedef List<\${id}Model?> Filter\${id}Models(List<\${id}Model?> values);
 """;
 
 String _code = """
 
 
 class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
+  final Filter\${id}Models? filter;
   final \${id}Repository _\${lid}Repository;
   StreamSubscription? _\${lid}sListSubscription;
   EliudQuery? eliudQuery;
@@ -28,7 +33,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
   final bool? detailed;
   final int \${lid}Limit;
 
-  \${id}ListBloc({this.paged, this.orderBy, this.descending, this.detailed, this.eliudQuery, required \${id}Repository \${lid}Repository, this.\${lid}Limit = 5})
+  \${id}ListBloc({this.filter, this.paged, this.orderBy, this.descending, this.detailed, this.eliudQuery, required \${id}Repository \${lid}Repository, this.\${lid}Limit = 5})
       : assert(\${lid}Repository != null),
         _\${lid}Repository = \${lid}Repository,
         super(\${id}ListLoading()) {
@@ -71,11 +76,19 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
     });
   }
 
+  List<\${id}Model?> _filter(List<\${id}Model?> original) {
+    if (filter != null) {
+      return filter!(original);
+    } else {
+      return original;
+    }
+  }
+
   Future<void> _mapLoad\${id}ListToState() async {
     int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values!.length : 0;
     _\${lid}sListSubscription?.cancel();
     _\${lid}sListSubscription = _\${lid}Repository.listen(
-          (list) => add(\${id}ListUpdated(value: list, mightHaveMore: amountNow != list.length)),
+          (list) => add(\${id}ListUpdated(value: _filter(list), mightHaveMore: amountNow != list.length)),
       orderBy: orderBy,
       descending: descending,
       eliudQuery: eliudQuery,
@@ -87,7 +100,7 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
     int amountNow =  (state is \${id}ListLoaded) ? (state as \${id}ListLoaded).values!.length : 0;
     _\${lid}sListSubscription?.cancel();
     _\${lid}sListSubscription = _\${lid}Repository.listenWithDetails(
-            (list) => add(\${id}ListUpdated(value: list, mightHaveMore: amountNow != list.length)),
+            (list) => add(\${id}ListUpdated(value: _filter(list), mightHaveMore: amountNow != list.length)),
         orderBy: orderBy,
         descending: descending,
         eliudQuery: eliudQuery,
