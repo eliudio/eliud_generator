@@ -71,7 +71,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
 
   @override
   Widget build(BuildContext context) {
-    var accessState = AccessBloc.getState(context);
+    //var accessState = AccessBloc.getState(context);
     return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
       if (state is \${id}ListLoading) {
         return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);

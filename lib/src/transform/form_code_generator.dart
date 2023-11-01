@@ -857,19 +857,15 @@ class FormCodeGenerator extends CodeGenerator {
         view.fields!.forEach((fieldName) {
           // search in the list of view.
           Field newField = modelSpecifications.fields.firstWhere((field) => field.fieldName == fieldName);
-          if (newField != null) {
-            fields.add(newField);
-          }
-        });
+          fields.add(newField);
+                });
 
         var groups = <Group>[];
         view.groups!.forEach((groupName) {
           // search in the list of view.
           Group newGroup = modelSpecifications.groups!.firstWhere((group) => group.group == groupName);
-          if (newGroup != null) {
-            groups.add(newGroup);
-          }
-        });
+          groups.add(newGroup);
+                });
 
         if (fields.length > 0) {
           ModelSpecification newModelSpec = modelSpecifications.copyWith(

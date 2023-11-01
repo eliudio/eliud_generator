@@ -171,9 +171,9 @@ class EntityCodeGenerator extends DataCodeGenerator {
                     "FromMap = map['" +
                     fieldName(field) +
                     "'];");
-                codeBuffer.writeln(spaces(4) + "var " + fieldName(field) + "List;");
+                codeBuffer.writeln(spaces(4) + "List<"  + field.fieldType + "Entity> " + fieldName(field) + "List;");
                 codeBuffer.writeln(
-                    spaces(4) + "if (" + fieldName(field) + "FromMap != null)");
+                    spaces(4) + "if (" + fieldName(field) + "FromMap != null) {");
                 codeBuffer.writeln(spaces(6) +
                     fieldName(field) +
                     "List = (map['" +
@@ -184,6 +184,13 @@ class EntityCodeGenerator extends DataCodeGenerator {
                     spaces(8) + field.fieldType +
                         "Entity.fromMap(item as Map, newDocumentIds: newDocumentIds)!)");
                 codeBuffer.writeln(spaces(8) + ".toList();");
+                codeBuffer.writeln(
+                    spaces(4) + "} else {");
+                codeBuffer.writeln(spaces(6) +
+                    fieldName(field) +
+                    "List = [];");
+                codeBuffer.writeln(
+                    spaces(4) + "}");
               } else {
                 // the collection is maintained by it's own collection / repository
               }

@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:build/build.dart';
 
-import 'package:build/build.dart';
 import 'package:eliud_generator/src/model/model_spec.dart';
-import 'package:eliud_generator/src/transform/code_generator.dart';
 import 'package:eliud_generator/src/transform/code_generator_multi.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' as p;

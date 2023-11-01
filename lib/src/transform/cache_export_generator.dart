@@ -1,9 +1,6 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
-import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'package:eliud_generator/src/transform/export_generator.dart';
 
-import 'code_generator.dart';
-import 'code_generator_multi.dart';
 
 class CacheExportGenerator extends ExportGenerator {
   CacheExportGenerator(String fileName): super(fileName: fileName, extension: 'cache');

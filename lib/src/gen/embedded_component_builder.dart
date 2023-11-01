@@ -2,7 +2,6 @@
 
 import 'package:eliud_generator/src/transform/code_generator_multi.dart';
 import 'package:eliud_generator/src/transform/embedded_component_generator.dart';
-import 'package:eliud_generator/src/transform/internal_component_generator.dart';
 
 import 'code_builder_multi.dart';
 

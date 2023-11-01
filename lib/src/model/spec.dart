@@ -1,9 +1,6 @@
-import 'dart:convert';
 
 import 'package:eliud_generator/src/tools/tool_set.dart';
-import 'package:equatable/equatable.dart';
 
-import 'field.dart';
 
 abstract class Specification {
   final String id;

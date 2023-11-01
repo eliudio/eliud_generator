@@ -2,8 +2,6 @@
 
 import 'package:eliud_generator/src/transform/abstract_repository_singleton_generator.dart';
 import 'package:eliud_generator/src/transform/code_generator_multi.dart';
-import 'package:eliud_generator/src/transform/internal_component_generator.dart';
-import 'package:eliud_generator/src/transform/repository_singleton_generator.dart';
 
 import 'code_builder_multi.dart';
 

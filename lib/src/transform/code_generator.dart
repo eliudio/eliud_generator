@@ -129,12 +129,10 @@ abstract class CodeGenerator extends CodeGeneratorBase {
   }
 
   void extraImports(StringBuffer headerBuffer, String key) {
-    if (modelSpecifications.extraImports != null) {
-      if (modelSpecifications.extraImports[key] != null) {
-        headerBuffer.writeln(modelSpecifications.extraImports[key]);
-      }
+    if (modelSpecifications.extraImports[key] != null) {
+      headerBuffer.writeln(modelSpecifications.extraImports[key]);
     }
-  }
+    }
 
   String extraImports2(String key) {
     StringBuffer headerBuffer = StringBuffer();

@@ -32,11 +32,7 @@ abstract class Abstract\${id}Component extends StatelessWidget {
   Widget _\${lid}BlockBuilder(BuildContext context) {
     return BlocBuilder<\${id}ComponentBloc, \${id}ComponentState>(builder: (context, state) {
       if (state is \${id}ComponentLoaded) {
-        if (state.value == null) {
-          return AlertWidget(app: app, title: "Error", content: 'No \${id} defined');
-        } else {
-          return yourWidget(context, state.value);
-        }
+        return yourWidget(context, state.value);
       } else if (state is \${id}ComponentPermissionDenied) {
         return Icon(
           Icons.highlight_off,

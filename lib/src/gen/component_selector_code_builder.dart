@@ -1,7 +1,6 @@
 import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/transform/code_generator.dart';
 import 'package:eliud_generator/src/transform/component_selector_code_generator.dart';
-import 'package:eliud_generator/src/transform/dropdownbutton_code_generator.dart';
 
 import 'code_builder.dart';
 
