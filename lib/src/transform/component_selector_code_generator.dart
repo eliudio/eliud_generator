@@ -30,7 +30,7 @@ import '\${path}_model.dart';
 class \${id}ComponentSelector extends ComponentSelector {
   @override
   Widget createSelectWidget(BuildContext context, AppModel app, int privilegeLevel, double height,
-      SelectComponent selected, editorConstructor) {
+      SelectComponent selected, editor) {
     var appId = app.documentID;
     return BlocProvider<\${id}ListBloc>(
           create: (context) => \${id}ListBloc(
@@ -42,7 +42,7 @@ class \${id}ComponentSelector extends ComponentSelector {
           height: height,
           containerPrivilege: privilegeLevel,
           selected: selected,
-          editorConstructor: editorConstructor),
+          editorConstructor: editor),
     );
   }
 }
@@ -64,7 +64,7 @@ class Select\${id}Widget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _Select\${id}WidgetState createState() {
+  State<Select\${id}Widget> createState() {
     return _Select\${id}WidgetState();
   }
 }
@@ -190,26 +190,31 @@ class _Select\${id}WidgetState extends State<Select\${id}Widget> with TickerProv
 """;
 
 class ComponentSelectorCodeGenerator extends CodeGenerator {
-  ComponentSelectorCodeGenerator ({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  ComponentSelectorCodeGenerator({required super.modelSpecifications});
 
   @override
   String theFileName() {
     return modelSpecifications.listFileName();
   }
 
-  Map<String, String> parameters(ModelSpecification modelSpecification) => <String, String>{
-    '\${id}': modelSpecifications.id,
-    '\${lid}': firstLowerCase(modelSpecifications.id),
-    '\${title}': modelSpecifications.listFields == null ? "" : modelSpecifications.listFields!.getTitle(),
-    '\${subtitle}': modelSpecifications.listFields == null ? "" : modelSpecifications.listFields!.getSubTitle(),
-    '\${path}': camelcaseToUnderscore(modelSpecifications.id),
-  };
+  Map<String, String> parameters(ModelSpecification modelSpecification) =>
+      <String, String>{
+        '\${id}': modelSpecifications.id,
+        '\${lid}': firstLowerCase(modelSpecifications.id),
+        '\${title}': modelSpecifications.listFields == null
+            ? ""
+            : modelSpecifications.listFields!.getTitle(),
+        '\${subtitle}': modelSpecifications.listFields == null
+            ? ""
+            : modelSpecifications.listFields!.getSubTitle(),
+        '\${path}': camelcaseToUnderscore(modelSpecifications.id),
+      };
 
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(process(_code, parameters: parameters(modelSpecifications)));
+    codeBuffer
+        .writeln(process(_code, parameters: parameters(modelSpecifications)));
     return codeBuffer.toString();
   }
 

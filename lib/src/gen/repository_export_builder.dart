@@ -1,19 +1,18 @@
-
-
 import 'package:eliud_generator/src/transform/code_generator_multi.dart';
 import 'package:eliud_generator/src/transform/repository_export_generator.dart';
 
 import 'code_builder_multi.dart';
 
 class RepositoryExportBuilder extends CodeBuilderMulti {
-  RepositoryExportGenerator repositoryExportGenerator = RepositoryExportGenerator(fileName);
+  RepositoryExportGenerator repositoryExportGenerator =
+      RepositoryExportGenerator(fileName);
 
   static const String fileName = 'model/repository_export.dart';
 
   @override
   Map<String, List<String>> get buildExtensions {
     return const {
-      r'$lib$': const [ fileName ],
+      r'$lib$': [fileName],
     };
   }
 

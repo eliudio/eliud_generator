@@ -15,13 +15,13 @@ import 'package:eliud_core/tools/has_fab.dart';
 
 """;
 
-String _componentImports(String packageName, List<String>? depends) => """
-import 'package:$packageName/\${path}_list_bloc.dart';
+String _componentImports(String packageName, List<String>? depends) =>
+    """import 'package:$packageName/\${path}_list_bloc.dart';
 import 'package:$packageName/\${path}_list.dart';
 import 'package:$packageName/\${path}_dropdown_button.dart';
 import 'package:$packageName/\${path}_list_event.dart';
 
-""" + base_imports(packageName, repo: true, model: true, entity: true, depends: depends);
+${base_imports(packageName, repo: true, model: true, entity: true, depends: depends)}""";
 
 const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {
@@ -76,8 +76,8 @@ const String _ListComponentCodeHeader = """
 class ListComponent extends StatelessWidget with HasFab {
   final AppModel app;
   final String? componentId;
-  Widget? widget;
-  int? privilegeLevel;
+  final Widget? widget;
+  final int? privilegeLevel;
 
   @override
   Widget? fab(BuildContext context){
@@ -88,9 +88,7 @@ class ListComponent extends StatelessWidget with HasFab {
     return null;
   }
 
-  ListComponent({required this.app, this.privilegeLevel, this.componentId}) {
-    initWidget();
-  }
+  ListComponent({required this.app, this.privilegeLevel, this.componentId}) : widget = getWidget(componentId, app);
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +103,7 @@ class DropdownButtonComponent extends StatelessWidget {
   final String? value;
   final Changed? trigger;
   final bool? optional;
-  int? privilegeLevel;
+  final int? privilegeLevel;
 
   DropdownButtonComponent({required this.app, this.componentId, this.privilegeLevel, this.value, this.trigger, this.optional});
 
@@ -164,36 +162,37 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(header());
     codeBuffer.writeln(process(_imports));
 
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(process(_componentImports(ms.packageName, ms.depends),
+        codeBuffer.writeln(process(
+            _componentImports(ms.packageName, ms.depends),
             parameters: <String, String>{"\${path}": spec.path}));
       }
-    });
+    }
 
     codeBuffer.writeln(process(_ListFactoryCode));
 
     codeBuffer.writeln(process(_DropdownButtonFactoryCodeHeader));
     codeBuffer.writeln(process(_DropdownButtonSupportMethod));
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
         codeBuffer.writeln(
-            spaces(4) + "if (id == \"" + firstLowerCase(ms.id) + "s\") return true;");
+            "${spaces(4)}if (id == \"${firstLowerCase(ms.id)}s\") return true;");
       }
-    });
+    }
     codeBuffer.writeln(process(_DropdownButtonSupportMethodFooter));
 
     codeBuffer.writeln(process(_DropdownButtonFactoryCodeMethod));
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(
-            spaces(4) + "if (id == \"" + firstLowerCase(ms.id) + "s\")");
+        codeBuffer
+            .writeln("${spaces(4)}if (id == \"${firstLowerCase(ms.id)}s\")");
         codeBuffer.writeln(_DropdownButtonFactoryCodeComponent);
       }
-    });
+    }
     codeBuffer.writeln(process(_DropdownButtonFactoryCodeFooter));
 
     codeBuffer.writeln(_code(modelSpecificationPlus, true));
@@ -204,40 +203,35 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
 
   String _code(modelSpecificationPlus, list) {
     StringBuffer codeBuffer = StringBuffer();
-    if (list)
+    if (list) {
       codeBuffer.writeln(process(_ListComponentCodeHeader));
-    else
+    } else {
       codeBuffer.writeln(process(_DropdownButtonComponentCodeHeader));
+    }
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
-        codeBuffer.writeln(spaces(4) +
-            "if (componentId == '" +
-            firstLowerCase(ms.id) +
-            "s') return _" +
-            firstLowerCase(ms.id) +
-            "Build(context);");
+        codeBuffer.writeln(
+            "${spaces(4)}if (componentId == '${firstLowerCase(ms.id)}s') { return _${firstLowerCase(ms.id)}Build(context);}");
       }
     });
-    codeBuffer.writeln(spaces(4) +
-        "return Text('Component with componentId == \$componentId not found');");
-    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln(
+        "${spaces(4)}return Text('Component with componentId == \$componentId not found');");
+    codeBuffer.writeln("${spaces(2)}}");
     codeBuffer.writeln();
 
     if (list) {
-      codeBuffer.writeln(spaces(2) + "void initWidget() {");
+      codeBuffer.writeln(
+          "${spaces(2)}static Widget getWidget(String? componentId, AppModel app) {");
       modelSpecificationPlus.forEach((spec) {
         ModelSpecification ms = spec.modelSpecification;
         if (ms.generate.generateInternalComponent) {
-          codeBuffer.writeln(spaces(4) +
-              "if (componentId == '" +
-              firstLowerCase(ms.id) +
-              "s') widget = " +
-              firstUpperCase(ms.id) +
-              "ListWidget(app: app);");
+          codeBuffer.writeln(
+              "${spaces(4)}if (componentId == '${firstLowerCase(ms.id)}s') { return ${firstUpperCase(ms.id)}ListWidget(app: app);}");
         }
       });
-      codeBuffer.writeln(spaces(2) + "}");
+      codeBuffer.writeln("${spaces(2)}return Container();");
+      codeBuffer.writeln("${spaces(2)}}");
     }
 
     codeBuffer.writeln();
@@ -245,20 +239,21 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
       ModelSpecification ms = spec.modelSpecification;
       var appIdVar = ms.getIsAppModel() ? "appId: app.documentID" : "";
       if (ms.generate.generateInternalComponent) {
-        if (list)
-          codeBuffer.writeln(process(_SpecificListComponentCode,
-              parameters: <String, String>{
-                "\${lowerSpecific}": firstLowerCase(ms.id),
-                "\${upperSpecific}": ms.id,
-                "\${appIdVar}" : appIdVar,
-              }));
-        else
+        if (list) {
+          codeBuffer.writeln(
+              process(_SpecificListComponentCode, parameters: <String, String>{
+            "\${lowerSpecific}": firstLowerCase(ms.id),
+            "\${upperSpecific}": ms.id,
+            "\${appIdVar}": appIdVar,
+          }));
+        } else {
           codeBuffer.writeln(process(_SpecificDropdownButtonComponentCode,
               parameters: <String, String>{
                 "\${lowerSpecific}": firstLowerCase(ms.id),
                 "\${upperSpecific}": ms.id,
-                "\${appIdVar}" : appIdVar,
+                "\${appIdVar}": appIdVar,
               }));
+        }
       }
     });
     codeBuffer.writeln(process(_SpecificCodeFooter));

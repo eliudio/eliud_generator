@@ -6,18 +6,20 @@ import 'code_builder.dart';
 
 /// A builder which builds a firestore repository based on a `spec` file
 class FirestoreCodeBuilder extends CodeBuilder {
+  @override
   Map<String, List<String>> get buildExtensions {
-    return  {
+    return {
       '.spec': const ['_firestore.dart'],
     };
   }
 
   @override
   CodeGenerator? generator(String specifications) {
-    ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
+    ModelSpecification modelSpecification =
+        ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateFirestoreRepository) {
-      FirestoreCodeGenerator firestoreCodeGenerator = FirestoreCodeGenerator(
-          modelSpecifications: modelSpecification);
+      FirestoreCodeGenerator firestoreCodeGenerator =
+          FirestoreCodeGenerator(modelSpecifications: modelSpecification);
       return firestoreCodeGenerator;
     }
     return null;

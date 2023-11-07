@@ -1,4 +1,3 @@
-
 enum FormTypeField {
   EntryField,
   CheckBox,
@@ -27,7 +26,8 @@ class Field {
   final String? remark;
   final String? group;
   final String? defaultValue;
-  final String? iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
+  final String?
+      iconName; // to be found in Icons..., e.g. specify "adjust" for Icons.adjust
   final bool? hidden;
   final String? bespokeFormField;
 
@@ -38,33 +38,34 @@ class Field {
 
   final bool? optional; // is optional in the gui?
   final bool? isRequired; // is 'dart' required ?
-  final String? conditional; // field is visible in form when this condition is true
+  final String?
+      conditional; // field is visible in form when this condition is true
 
-  final String? refCode;  // code to use to collect references
+  final String? refCode; // code to use to collect references
 
-  const Field({required this.fieldName,
-    required this.displayName,
-    required this.fieldType,
-    required this.fieldValidation,
-    this.arrayType = ArrayType.NoArray,
-    this.map = false,
-    this.association = false,
-    required this.enumName,
-    required this.enumValues,
-    required this.remark,
-    required this.group,
-    required this.defaultValue,
-    required this.iconName,
-    required this.hidden,
-    required this.bespokeFormField,
-    required this.bespokeFieldType,
-    required this.bespokeEntityMapping,
-    required this.bespokeEntityToDocument,
-    required this.optional,
-    required this.conditional,
-    required this.isRequired,
-    required this.refCode});
-
+  const Field(
+      {required this.fieldName,
+      required this.displayName,
+      required this.fieldType,
+      required this.fieldValidation,
+      this.arrayType = ArrayType.NoArray,
+      this.map = false,
+      this.association = false,
+      required this.enumName,
+      required this.enumValues,
+      required this.remark,
+      required this.group,
+      required this.defaultValue,
+      required this.iconName,
+      required this.hidden,
+      required this.bespokeFormField,
+      required this.bespokeFieldType,
+      required this.bespokeEntityMapping,
+      required this.bespokeEntityToDocument,
+      required this.optional,
+      required this.conditional,
+      required this.isRequired,
+      required this.refCode});
 
 /*
   Map<String, dynamic> toJson() {
@@ -115,6 +116,8 @@ class Field {
         conditional
       ];
 */
+
+  bool isDartRequired() => isRequired ?? false;
 
   String getDefaultValue() {
     if (defaultValue == null) return "";
@@ -173,10 +176,12 @@ class Field {
     ArrayType arrayType = ArrayType.NoArray;
     //print("field::fromJson Step 3");
     if (arrayTypeS != null) {
-      if (arrayTypeS.toLowerCase() == "array")
+      if (arrayTypeS.toLowerCase() == "array") {
         arrayType = ArrayType.ListArrayType;
-      if (arrayTypeS.toLowerCase() == "collection")
+      }
+      if (arrayTypeS.toLowerCase() == "collection") {
         arrayType = ArrayType.CollectionArrayType;
+      }
     }
     //print("field::fromJson Step 4a");
     bool map = json["map"] as bool? ?? false;
@@ -196,16 +201,19 @@ class Field {
     //print("field::fromJson Step 5");
     if (i != null) {
       myList = <String>[];
-      i.forEach((val) {
-        myList!.add(val);
-      });
+      for (var val in i) {
+        myList.add(val);
+      }
     }
     //print("field::fromJson Step 6");
-    fieldName: json["fieldName"] as String;
+    fieldName:
+    json["fieldName"] as String;
     //print("field::fromJson Step 6b");
-    displayName: json["displayName"] as String?;
+    displayName:
+    json["displayName"] as String?;
     //print("field::fromJson Step 6c");
-    fieldType: json["fieldType"] as String;
+    fieldType:
+    json["fieldType"] as String;
     //print("field::fromJson Step 6d");
 
     var field = Field(
@@ -266,7 +274,8 @@ class Field {
   }
 
   bool isServerTimestamp() {
-    return (fieldType == "ServerTimestamp") || (fieldType == "ServerTimestampUninitialized");
+    return (fieldType == "ServerTimestamp") ||
+        (fieldType == "ServerTimestampUninitialized");
   }
 
   bool isServerTimestampInitialized() {
@@ -278,7 +287,9 @@ class Field {
   }
 
   bool isMedium() {
-    return (fieldType == "PlatformMedium") || (fieldType == "PublicMedium") || (fieldType == "MemberMedium");
+    return (fieldType == "PlatformMedium") ||
+        (fieldType == "PublicMedium") ||
+        (fieldType == "MemberMedium");
   }
 
   String getRemark() {
@@ -291,12 +302,12 @@ class Field {
       return getBespokeFieldType();
     } else {
       if (arrayType != ArrayType.NoArray) {
-        if (isNativeType()) return "List<" + fieldType + ">";
-        return "List<" + fieldType + suffix + ">";
+        if (isNativeType()) return "List<$fieldType>";
+        return "List<$fieldType$suffix>";
       } else {
         if (isMap()) {
-          if (isNativeType()) return "Map<String, " + fieldType + ">";
-          return "Map<String, " + fieldType + suffix + ">";
+          if (isNativeType()) return "Map<String, $fieldType>";
+          return "Map<String, $fieldType$suffix>";
         } else {
           if (isNativeType()) return fieldType;
           return fieldType + suffix;
@@ -323,10 +334,10 @@ class Field {
     if (isServerTimestamp()) {
       return "DateTime";
     } else if (isEnum()) {
-      if (isArray())
-        return "List<" + getEnumName() + ">";
-      else if (isMap())
-        return "Map<String, " + getEnumName() + ">";
+      if (isArray()) {
+        return "List<${getEnumName()}>";
+      } else if (isMap())
+        return "Map<String, ${getEnumName()}>";
       else
         return getEnumName();
     } else {
@@ -338,9 +349,9 @@ class Field {
     if (isServerTimestamp()) {
       return "Object";
     } else if (isEnum()) {
-      if (isArray())
+      if (isArray()) {
         return "List<int>";
-      else if (isMap()) {
+      } else if (isMap()) {
         return "Map<String, int>";
       } else {
         return "int";

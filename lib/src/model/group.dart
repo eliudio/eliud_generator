@@ -1,10 +1,14 @@
-
 class Group {
   final String? group;
   final String? description;
-  final String? conditional; // group is visible in form when this condition is true
+  final String?
+      conditional; // group is visible in form when this condition is true
 
-  const Group({required this.group, required this.description, required this.conditional,});
+  const Group({
+    required this.group,
+    required this.description,
+    required this.conditional,
+  });
 
   @override
   String toString() {

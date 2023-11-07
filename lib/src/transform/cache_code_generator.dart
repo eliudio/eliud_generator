@@ -1,23 +1,22 @@
 import 'package:eliud_generator/src/model/field.dart';
-import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-String _imports(String packageName, List<String>? depends) => """
-import 'dart:async';
+String _imports(String packageName, List<String>? depends) =>
+    """import 'dart:async';
 import 'package:eliud_core/tools/query/query_tools.dart';
 import 'package:eliud_core/tools/common_tools.dart';
 import 'package:$packageName/model/\${filename}_model.dart';
 import 'package:$packageName/model/\${filename}_repository.dart';
 
-""" + base_imports(packageName, repo: true, model: true, entity: true, cache:true, depends: depends);
+${base_imports(packageName, repo: true, model: true, entity: true, cache: true, depends: depends)}""";
 
 const String _header = """
 class \${id}Cache implements \${id}Repository {
 """;
 
-const String _footer= """
+const String _footer = """
 }
 """;
 
@@ -27,6 +26,9 @@ const String _code = """
 
   \${id}Cache(this.reference);
 
+  /**
+   * Add a \${id}Model to the repository, cached
+   */
   Future<\${id}Model> add(\${id}Model value) {
     return reference.add(value).then((newValue) {
       fullCache[value.documentID] = newValue;
@@ -34,20 +36,32 @@ const String _code = """
     });
   }
 
+  /**
+   * Add a \${id}Entity to the repository, cached
+   */
   Future<\${id}Entity> addEntity(String documentID, \${id}Entity value) {
     return reference.addEntity(documentID, value);
   }
 
+  /**
+   * Update a \${id}Entity in the repository, cached
+   */
   Future<\${id}Entity> updateEntity(String documentID, \${id}Entity value) {
     return reference.updateEntity(documentID, value);
   }
 
+  /**
+   * Delete a \${id}Model from the repository, cached
+   */
   Future<void> delete(\${id}Model value){
     fullCache.remove(value.documentID);
     reference.delete(value);
     return Future.value();
   }
 
+  /**
+   * Retrieve a \${id}Model with it's id, cached
+   */
   Future<\${id}Model?> get(String? id, {Function(Exception)? onError}) async {
     var value = fullCache[id];
     if (value != null) return refreshRelations(value);
@@ -56,6 +70,9 @@ const String _code = """
     return value;
   }
 
+  /**
+   * Update a \${id}Model
+   */
   Future<\${id}Model> update(\${id}Model value) {
     return reference.update(value).then((newValue) {
       fullCache[value.documentID] = newValue;
@@ -63,6 +80,9 @@ const String _code = """
     });
   }
 
+  /**
+   * Retrieve list of List<\${id}Model?> 
+   */
   @override
   Stream<List<\${id}Model?>> values({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
     return reference.values(orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
@@ -193,20 +213,22 @@ const String _collectionCode = """
  * forget to submit. At this point, all devices connected will have their cache flushed.
  */
 class CacheCodeGenerator extends CodeGenerator {
-  CacheCodeGenerator({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  CacheCodeGenerator({required super.modelSpecifications});
 
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln(process(_imports(modelSpecifications.packageName, modelSpecifications.depends), parameters: <String, String> { '\${filename}': camelcaseToUnderscore(modelSpecifications.id) }));
+    headerBuffer.writeln(process(
+        _imports(modelSpecifications.packageName, modelSpecifications.depends),
+        parameters: <String, String>{
+          '\${filename}': camelcaseToUnderscore(modelSpecifications.id)
+        }));
     return headerBuffer.toString();
   }
 
   @override
   String body() {
-
-    var parameters = <String, String> {
+    var parameters = <String, String>{
       '\${id}': modelSpecifications.id,
     };
     StringBuffer codeBuffer = StringBuffer();
@@ -226,9 +248,10 @@ class CacheCodeGenerator extends CodeGenerator {
      * However, if the page has been cached, then the related image will be part of that cache.
      * Hence this needs to be "refreshed".
      */
-    codeBuffer.writeln(process(_refreshRelationsHeader, parameters: parameters));
+    codeBuffer
+        .writeln(process(_refreshRelationsHeader, parameters: parameters));
     StringBuffer assignParametersBuffer = StringBuffer();
-    modelSpecifications.fields.forEach((field) {
+    for (var field in modelSpecifications.fields) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (field.isAssociation()) {
           String appVar;
@@ -247,21 +270,19 @@ class CacheCodeGenerator extends CodeGenerator {
             appVar = '';
           }
 
-          codeBuffer.writeln(process(_refreshRelationsModel,
-              parameters: <String, String>{
-                '\${fieldName}': field.fieldName,
-                '\${fieldType}': field.fieldType,
-                '\${lfieldType}': firstLowerCase(field.fieldType),
-                '\${appIdVar}': appVar
-              }));
+          codeBuffer.writeln(
+              process(_refreshRelationsModel, parameters: <String, String>{
+            '\${fieldName}': field.fieldName,
+            '\${fieldType}': field.fieldType,
+            '\${lfieldType}': firstLowerCase(field.fieldType),
+            '\${appIdVar}': appVar
+          }));
           assignParametersBuffer.writeln(process(_refreshRelationsAssignField,
-              parameters: <String, String>{
-                '\${fieldName}': field.fieldName
-              }));
+              parameters: <String, String>{'\${fieldName}': field.fieldName}));
         }
       }
-    });
-    modelSpecifications.fields.forEach((field) {
+    }
+    for (var field in modelSpecifications.fields) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
         if (!field.isEnum()) {
           if (!field.isNativeType()) {
@@ -272,16 +293,16 @@ class CacheCodeGenerator extends CodeGenerator {
                     '\${fieldType}': field.fieldType,
                     '\${lfieldType}': firstLowerCase(field.fieldType)
                   }));
-              assignParametersBuffer.writeln(
-                  process(_refreshRelationsAssignField,
-                      parameters: <String, String>{
-                        '\${fieldName}': field.fieldName
-                      }));
+              assignParametersBuffer.writeln(process(
+                  _refreshRelationsAssignField,
+                  parameters: <String, String>{
+                    '\${fieldName}': field.fieldName
+                  }));
             }
           }
         }
       }
-    });
+    }
 
     codeBuffer.writeln(process(_refreshRelationsFooter,
         parameters: <String, String>{

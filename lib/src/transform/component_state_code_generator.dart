@@ -1,4 +1,3 @@
-import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
@@ -40,14 +39,14 @@ class \${id}ComponentLoaded extends \${id}ComponentState {
 """;
 
 class ComponentStateCodeGenerator extends CodeGenerator {
-  ComponentStateCodeGenerator({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  ComponentStateCodeGenerator({required super.modelSpecifications});
 
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.modelFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.modelFileName()}"));
     headerBuffer.writeln();
     return headerBuffer.toString();
   }
@@ -55,11 +54,10 @@ class ComponentStateCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(process(_code,
-        parameters: <String, String> {
-          '\${id}': modelSpecifications.id,
-          '\${lid}': firstLowerCase(modelSpecifications.id),
-        }));
+    codeBuffer.writeln(process(_code, parameters: <String, String>{
+      '\${id}': modelSpecifications.id,
+      '\${lid}': firstLowerCase(modelSpecifications.id),
+    }));
 
     return codeBuffer.toString();
   }

@@ -39,12 +39,12 @@ class FirestoreHelper {
     var hasServerTimeStamp = false;
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write("copyWith(");
-    modelSpecifications.fields.forEach((field) {
+    for (var field in modelSpecifications.fields) {
       if (field.isServerTimestampInitialized()) {
-        codeBuffer.write(field.fieldName + " : FieldValue.serverTimestamp(), ");
+        codeBuffer.write("${field.fieldName} : FieldValue.serverTimestamp(), ");
         hasServerTimeStamp = true;
       }
-    });
+    }
     codeBuffer.write(").");
     if (hasServerTimeStamp) {
       return codeBuffer.toString();
@@ -56,11 +56,11 @@ class FirestoreHelper {
   // When a document gets a new server timestamp with the copy with statement, then we need to make sure that the document that is being returned is the correct document.
   static String then(ModelSpecification modelSpecifications) {
     var hasServerTimeStamp = false;
-    modelSpecifications.fields.forEach((field) {
+    for (var field in modelSpecifications.fields) {
       if (field.isServerTimestamp()) {
         hasServerTimeStamp = true;
       }
-    });
+    }
     if (hasServerTimeStamp) {
       return retrieve_code;
     } else {
@@ -70,11 +70,11 @@ class FirestoreHelper {
 
   static String thenEntity(ModelSpecification modelSpecifications) {
     var hasServerTimeStamp = false;
-    modelSpecifications.fields.forEach((field) {
+    for (var field in modelSpecifications.fields) {
       if (field.isServerTimestamp()) {
         hasServerTimeStamp = true;
       }
-    });
+    }
     if (hasServerTimeStamp) {
       return retrieve_code_entity;
     } else {
@@ -82,12 +82,18 @@ class FirestoreHelper {
     }
   }
 
-  static String commonImports(String extraImports, ModelSpecification modelSpecifications, String importSufix) {
+  static String commonImports(String extraImports,
+      ModelSpecification modelSpecifications, String importSufix) {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
+    headerBuffer.writeln(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.repositoryFileName()}"));
     headerBuffer.writeln(extraImports);
-  
-    headerBuffer.writeln(base_imports(modelSpecifications.packageName, repo: true, model: true, entity: true, depends: modelSpecifications.depends));
+
+    headerBuffer.writeln(base_imports(modelSpecifications.packageName,
+        repo: true,
+        model: true,
+        entity: true,
+        depends: modelSpecifications.depends));
 
     headerBuffer.writeln();
 

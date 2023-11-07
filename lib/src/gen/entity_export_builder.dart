@@ -1,5 +1,3 @@
-
-
 import 'package:eliud_generator/src/transform/code_generator_multi.dart';
 import 'package:eliud_generator/src/transform/entity_export_generator.dart';
 
@@ -13,7 +11,7 @@ class EntityExportBuilder extends CodeBuilderMulti {
   @override
   Map<String, List<String>> get buildExtensions {
     return const {
-      r'$lib$': const [ fileName ],
+      r'$lib$': [fileName],
     };
   }
 

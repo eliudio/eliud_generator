@@ -1,4 +1,3 @@
-import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
@@ -77,16 +76,16 @@ class \${id}ChangeQuery extends \${id}ListEvent {
 """;
 
 class ListEventCodeGenerator extends CodeGenerator {
-  ListEventCodeGenerator({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  ListEventCodeGenerator({required super.modelSpecifications});
 
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln("import 'package:eliud_core/tools/query/query_tools.dart';");
+    headerBuffer
+        .writeln("import 'package:eliud_core/tools/query/query_tools.dart';");
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
     headerBuffer.write(importString(modelSpecifications.packageName,
-        "model/" + modelSpecifications.modelFileName()));
+        "model/${modelSpecifications.modelFileName()}"));
 
     headerBuffer.writeln();
     return headerBuffer.toString();

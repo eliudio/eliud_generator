@@ -1,6 +1,6 @@
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
-const String _header= """
+const String _header = """
 /*
        _ _           _ 
       | (_)         | |
@@ -22,7 +22,7 @@ abstract class CodeGeneratorBase {
 
   String header() {
     StringBuffer headerBuffer = StringBuffer();
-    Map<String, String> parameters = Map();
+    Map<String, String> parameters = {};
     parameters['\${fileName}'] = theFileName();
     headerBuffer.writeln(process(_header, parameters: parameters));
     return headerBuffer.toString();
@@ -41,5 +41,4 @@ abstract class CodeGeneratorBase {
     if (typeName == "User") return true;
     return false;
   }
-
 }

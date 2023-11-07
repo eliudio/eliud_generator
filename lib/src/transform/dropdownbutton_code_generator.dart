@@ -1,4 +1,3 @@
-import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
@@ -37,8 +36,8 @@ typedef \${id}Changed(String? value, int? privilegeLevel,);
 
 class \${id}DropdownButtonWidget extends StatefulWidget {
   final AppModel app;
-  int? privilegeLevel;
-  String? value;
+  final int? privilegeLevel;
+  final String? value;
   final \${id}Changed? trigger;
   final bool? optional;
 
@@ -46,14 +45,15 @@ class \${id}DropdownButtonWidget extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return \${id}DropdownButtonWidgetState();
+    return \${id}DropdownButtonWidgetState(value);
   }
 }
 
 class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> {
   \${id}ListBloc? bloc;
+  String? value;
 
-  \${id}DropdownButtonWidgetState();
+  \${id}DropdownButtonWidgetState(this.value);
 
   @override
   void didChangeDependencies() {
@@ -77,14 +77,13 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
         return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
       } else if (state is \${id}ListLoaded) {
         int? privilegeChosen = widget.privilegeLevel;
-        if ((widget.value != null) && (privilegeChosen == null)) {
+        if ((value != null) && (privilegeChosen == null)) {
           if (state.values != null) {
-            var selectedValue = state.values!.firstWhere((v) => (v!.documentID == widget.value), orElse: () => null);
-            privilegeChosen = \${privilegeChosenCode};
+            \${privilegeChosenCode};
           }
         }
           
-        final values = state.values;
+//        final values = state.values;
         final items = <DropdownMenuItem<String>>[];
         if (state.values!.isNotEmpty) {
           if (widget.optional != null && widget.optional!) {
@@ -142,7 +141,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
             hint: text(widget.app, context, 'Select a privilege'),
             onChanged: _onPrivilegeLevelChange,
           ),
-          Row(children: [(\${withImages})
+          Row(children: [((\${withImages}) == true)
             ? Container(
                 height: 48, 
                 child: dropdownButton<String>(
@@ -150,7 +149,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                       isDense: false,
                       isExpanded: \${withImages},
                       items: items,
-                      value: widget.value,
+                      value: value,
                       hint: text(widget.app, context, 'Select a \${lid}'),
                       onChanged: _onValueChange,
                     )
@@ -160,12 +159,12 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                 isDense: false,
                 isExpanded: \${withImages},
                 items: items,
-                value: widget.value,
+                value: value,
                 hint: text(widget.app, context, 'Select a \${lid}'),
                 onChanged: _onValueChange,
               ),
-          if (widget.value != null) Spacer(),
-          if (widget.value != null) 
+          if (value != null) Spacer(),
+          if (value != null) 
             Align(alignment: Alignment.topRight, child: button(
               widget.app,
               context,
@@ -174,9 +173,9 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
               ),
               label: 'Update',
               onPressed: () {
-                updateComponent(context, widget.app, '\${lid}s', widget.value, (newValue, _) {
+                updateComponent(context, widget.app, '\${lid}s', value, (newValue, _) {
                   setState(() {
-                    widget.value = widget.value;
+                    value = value;
                   });
                 });
               },
@@ -215,8 +214,7 @@ const _imageString = """
 """;
 
 class DropdownButtonCodeGenerator extends CodeGenerator {
-  DropdownButtonCodeGenerator({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  DropdownButtonCodeGenerator({required super.modelSpecifications});
 
   @override
   String commonImports() {
@@ -226,8 +224,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
           '\${path}': camelcaseToUnderscore(modelSpecifications.id),
           '\${id}': modelSpecifications.id,
           '\${lid}': firstLowerCase(modelSpecifications.id),
-        }
-    ));
+        }));
     headerBuffer.writeln(process(
         _specificImports(modelSpecifications.packageName),
         parameters: <String, String>{
@@ -244,33 +241,44 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     StringBuffer childCodeBuffer = StringBuffer();
 
     childCodeBuffer.writeln(
-        "List<Widget> widgets(" + modelSpecifications.id + "Model value) {");
+        "List<Widget> widgets(${modelSpecifications.id}Model value) {");
     childCodeBuffer.writeln("var app = widget.app;");
     childCodeBuffer.writeln("var widgets = <Widget>[];");
-    String? title = modelSpecifications.listFields == null ? null : modelSpecifications.listFields!.title;
+    String? title = modelSpecifications.listFields == null
+        ? null
+        : modelSpecifications.listFields!.title;
     if (title != null) {
       childCodeBuffer.writeln("widgets.add($title);");
     }
-    String? subTitle = modelSpecifications.listFields == null ? null : modelSpecifications.listFields!.subTitle;
+    String? subTitle = modelSpecifications.listFields == null
+        ? null
+        : modelSpecifications.listFields!.subTitle;
     if (subTitle != null) {
       childCodeBuffer.writeln("widgets.add($subTitle);");
     }
     childCodeBuffer.writeln("return widgets;");
     childCodeBuffer.writeln("}");
 
-    var privilegeChosenCode;
-    if (modelSpecifications.fields.where((element) => element.fieldName == 'conditions').isNotEmpty) {
-      privilegeChosenCode = 'selectedValue != null && selectedValue.conditions != null && selectedValue.conditions!.privilegeLevelRequired != null ? selectedValue.conditions!.privilegeLevelRequired!.index : 0';
+    String privilegeChosenCode;
+    if (modelSpecifications.fields
+        .where((element) => element.fieldName == 'conditions')
+        .isNotEmpty) {
+      privilegeChosenCode = '''
+        var selectedValue = state.values!.firstWhere((v) => (v!.documentID == value), orElse: () => null);
+        privilegeChosen = selectedValue != null && selectedValue.conditions != null && selectedValue.conditions!.privilegeLevelRequired != null ? selectedValue.conditions!.privilegeLevelRequired!.index : 0;
+        ''';
     } else {
-      privilegeChosenCode = '0';
+      privilegeChosenCode = 'privilegeChosen = 0';
     }
 
     codeBuffer.writeln(process(_code, parameters: <String, String>{
       '\${id}': modelSpecifications.id,
       '\${lid}': firstLowerCase(modelSpecifications.id),
       '\${childCode}': childCodeBuffer.toString(),
-      "\${withImages}": modelSpecifications.listFields == null ? "" : modelSpecifications.listFields!.hasImage().toString(),
-      "\${privilegeChosenCode}" : privilegeChosenCode,
+      "\${withImages}": modelSpecifications.listFields == null
+          ? ""
+          : modelSpecifications.listFields!.hasImage().toString(),
+      "\${privilegeChosenCode}": privilegeChosenCode,
     }));
     return codeBuffer.toString();
   }

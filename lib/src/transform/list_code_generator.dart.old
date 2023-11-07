@@ -1,3 +1,4 @@
+import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
@@ -40,11 +41,11 @@ String _onTap = """
                       final removedItem = await Navigator.of(context).push(
                         pageRouteBuilder(widget.app, page: BlocProvider.value(
                               value: BlocProvider.of<\${id}ListBloc>(context),
-                              child: getForm(value, FormAction.updateAction))));
+                              child: getForm(value, FormAction.UpdateAction))));
                       if (removedItem != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           DeleteSnackBar(
-                        message: "\${id} \$value.\${displayOnDelete}",
+                        message: "\${id} " + value.\${displayOnDelete},
                             onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
                                 .add(Add\${id}List(value: value)),
                           ),
@@ -53,7 +54,8 @@ String _onTap = """
 """;
 
 class ListCodeGenerator extends CodeGenerator {
-  ListCodeGenerator({required super.modelSpecifications});
+  ListCodeGenerator({required ModelSpecification modelSpecifications})
+      : super(modelSpecifications: modelSpecifications);
 
   @override
   String commonImports() {
@@ -71,22 +73,11 @@ class ListCodeGenerator extends CodeGenerator {
   }
 
   String mainClass() {
-    var condition;
-    if (modelSpecifications.id != "Member") {
-      condition = "!accessState.memberIsOwner(widget.app.documentID) ? null : ";
-    } else {
-      condition = " ";
-    }
-
-/*
-    var allowAddItemsCondition = modelSpecifications.id != "Member" ? "" : "&& false";
-    var condition = "!accessState.memberIsOwner(widget.app.documentID) $allowAddItemsCondition ? null : ";
-*/
-
     Map<String, String> parameters = <String, String>{
       "\${id}": modelSpecifications.id,
       "\${displayOnDelete}": modelSpecifications.getDisplayOnDelete(),
-      "\${allowAddItemsCondition}": condition
+      "\${allowAddItemsCondition}":
+          modelSpecifications.id != "Member" ? "" : "&& false",
     };
 
     String tap;
@@ -96,17 +87,24 @@ class ListCodeGenerator extends CodeGenerator {
       tap = "";
     }
 
-    String formVariations = "";
+    String _formVariations = "";
     if (modelSpecifications.views != null) {
-      for (var element in modelSpecifications.views!) {
-        formVariations =
-            "$formVariations${spaces(6)}if (widget.form == \"${modelSpecifications.id}${element.name}Form\") { return ${modelSpecifications.id}${element.name}Form(app:widget.app, value: value, formAction: action);\n}";
-      }
+      modelSpecifications.views!.forEach((element) {
+        _formVariations = _formVariations +
+            spaces(6) +
+            "if (widget.form == \"" +
+            modelSpecifications.id +
+            element.name +
+            "Form\") { return " +
+            modelSpecifications.id +
+            element.name +
+            "Form(app:widget.app, value: value, formAction: action);}\n";
+      });
     }
-    formVariations = "$formVariations${spaces(6)}return null;";
+    _formVariations = _formVariations + spaces(6) + "return null;";
 
     parameters["\${onTap}"] = tap;
-    parameters["\${_formVariations}"] = formVariations;
+    parameters["\${_formVariations}"] = _formVariations;
     return process(_listBody, parameters: parameters);
   }
 
@@ -115,48 +113,53 @@ class ListCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(mainClass());
 
-    codeBuffer.writeln(
-        "class ${modelSpecifications.id}ListItem extends StatelessWidget {");
-    codeBuffer.writeln("${spaces(2)}final AppModel app;");
+    codeBuffer.writeln("class " +
+        modelSpecifications.id +
+        "ListItem extends StatelessWidget {");
+    codeBuffer.writeln(spaces(2) + "final AppModel app;");
     codeBuffer
-        .writeln("${spaces(2)}final DismissDirectionCallback onDismissed;");
-    codeBuffer.writeln("${spaces(2)}final GestureTapCallback onTap;");
-    codeBuffer.writeln(
-        "${spaces(2)}final ${modelSpecifications.modelClassName()} value;");
+        .writeln(spaces(2) + "final DismissDirectionCallback onDismissed;");
+    codeBuffer.writeln(spaces(2) + "final GestureTapCallback onTap;");
+    codeBuffer.writeln(spaces(2) +
+        "final " +
+        modelSpecifications.modelClassName() +
+        " value;");
     codeBuffer.writeln();
-    codeBuffer.writeln("${spaces(2)}${modelSpecifications.id}ListItem({");
-    codeBuffer.writeln("${spaces(4)}Key? key,");
-    codeBuffer.writeln("${spaces(4)}required this.app,");
-    codeBuffer.writeln("${spaces(4)}required this.onDismissed,");
-    codeBuffer.writeln("${spaces(4)}required this.onTap,");
-    codeBuffer.writeln("${spaces(4)}required this.value,");
-    codeBuffer.writeln("${spaces(2)}}) : super(key: key);");
+    codeBuffer.writeln(spaces(2) + modelSpecifications.id + "ListItem({");
+    codeBuffer.writeln(spaces(4) + "Key? key,");
+    codeBuffer.writeln(spaces(4) + "required this.app,");
+    codeBuffer.writeln(spaces(4) + "required this.onDismissed,");
+    codeBuffer.writeln(spaces(4) + "required this.onTap,");
+    codeBuffer.writeln(spaces(4) + "required this.value,");
+    codeBuffer.writeln(spaces(2) + "}) : super(key: key);");
     codeBuffer.writeln();
-    codeBuffer.writeln("${spaces(2)}@override");
-    codeBuffer.writeln("${spaces(2)}Widget build(BuildContext context) {");
-    codeBuffer.writeln("${spaces(4)}return Dismissible(");
-    codeBuffer.writeln(
-        "${spaces(6)}key: Key('__${modelSpecifications.id}_item_\${value.documentID}'),");
-    codeBuffer.writeln("${spaces(6)}onDismissed: onDismissed,");
-    codeBuffer.writeln("${spaces(6)}child: ListTile(");
-    codeBuffer.writeln("${spaces(8)}onTap: onTap,");
+    codeBuffer.writeln(spaces(2) + "@override");
+    codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
+    codeBuffer.writeln(spaces(4) + "return Dismissible(");
+    codeBuffer.writeln(spaces(6) +
+        "key: Key('__" +
+        modelSpecifications.id +
+        "_item_\${value.documentID}'),");
+    codeBuffer.writeln(spaces(6) + "onDismissed: onDismissed,");
+    codeBuffer.writeln(spaces(6) + "child: ListTile(");
+    codeBuffer.writeln(spaces(8) + "onTap: onTap,");
 
     String? title = modelSpecifications.listFields == null
         ? null
         : modelSpecifications.listFields!.title;
     if (title != null) {
-      codeBuffer.writeln("${spaces(8)}title: $title,");
+      codeBuffer.writeln(spaces(8) + "title: $title,");
     }
     String? subTitle = modelSpecifications.listFields == null
         ? null
         : modelSpecifications.listFields!.subTitle;
     if (subTitle != null) {
-      codeBuffer.writeln("${spaces(8)}subtitle: $subTitle,");
+      codeBuffer.writeln(spaces(8) + "subtitle: $subTitle,");
     }
-    codeBuffer.writeln("${spaces(6)}),");
-    codeBuffer.writeln("${spaces(4)});");
+    codeBuffer.writeln(spaces(6) + "),");
+    codeBuffer.writeln(spaces(4) + ");");
 
-    codeBuffer.writeln("${spaces(2)}}");
+    codeBuffer.writeln(spaces(2) + "}");
     codeBuffer.writeln("}");
     codeBuffer.writeln();
     return codeBuffer.toString();
@@ -178,7 +181,6 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
   final \${id}WidgetProvider? widgetProvider;
   final bool? readOnly;
   final String? form;
-  //final \${id}ListWidgetState? state;
   final bool? isEmbedded;
 
   \${id}ListWidget({ Key? key, required this.app, this.readOnly, this.form, this.widgetProvider, this.isEmbedded, this.listBackground }): super(key: key);
@@ -191,7 +193,7 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
   @override
   Widget? fab(BuildContext context) {
     if ((readOnly != null) && readOnly!) return null;
-    var state = \${id}ListWidgetState();
+    var state = createState();
     var accessState = AccessBloc.getState(context);
     return state.fab(context, accessState);
   }
@@ -199,15 +201,16 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
 
 class \${id}ListWidgetState extends State<\${id}ListWidget> {
   Widget? fab(BuildContext aContext, AccessState accessState) {
-    return  \${allowAddItemsCondition}
-      StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().floatingActionButton(widget.app, context, 'PageFloatBtnTag', Icon(Icons.add),
+    return !accessState.memberIsOwner(widget.app.documentID) \${allowAddItemsCondition}
+      ? null
+      : StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().floatingActionButton(widget.app, context, 'PageFloatBtnTag', Icon(Icons.add),
       onPressed: () {
         Navigator.of(context).push(
           pageRouteBuilder(widget.app, page: BlocProvider.value(
               value: BlocProvider.of<\${id}ListBloc>(context),
               child: \${id}Form(app:widget.app,
                   value: null,
-                  formAction: FormAction.addAction)
+                  formAction: FormAction.AddAction)
           )),
         );
       },
@@ -236,7 +239,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
                                       value: BlocProvider.of<\${id}ListBloc>(context),
                                       child: \${id}Form(app:widget.app,
                                           value: null,
-                                          formAction: FormAction.addAction)
+                                          formAction: FormAction.AddAction)
                                   )),
                                 );
                       },
@@ -271,7 +274,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         itemBuilder: (context, index) {
           final value = values[index];
           
-          if (widget.widgetProvider != null) { return widget.widgetProvider!(value);}
+          if (widget.widgetProvider != null) return widget.widgetProvider!(value);
 
           return \${id}ListItem(app: widget.app,
             value: value,
@@ -280,7 +283,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
               BlocProvider.of<\${id}ListBloc>(context)
                   .add(Delete\${id}List(value: value));
               ScaffoldMessenger.of(context).showSnackBar(DeleteSnackBar(
-                message: "\${id} \$value.\${displayOnDelete}",
+                message: "\${id} " + value.\${displayOnDelete},
                 onUndo: () => BlocProvider.of<\${id}ListBloc>(context)
                     .add(Add\${id}List(value: value)),
               ));

@@ -3,7 +3,7 @@ name: eliud_generator
 description: Eliud Code Generator
 homepage: https://eliud.io
 repository: https://github.com/eliudio/eliud_generator
-version: 1.0.11+3
+version: 1.1.3
 environment:
   sdk: '>=2.17.0 <4.0.0'
   flutter: '>=3.0.0'
@@ -17,6 +17,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.4.6
   analyzer: ^6.2.0
+  lints: ^3.0.0
 flutter:
   uses-material-design: true
 platforms:

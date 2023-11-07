@@ -5,8 +5,8 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
 
-String _imports(String packageName, List<String>? depends) => """
-import 'package:eliud_core/model/app_model.dart';
+String _imports(String packageName, List<String>? depends) =>
+    """import 'package:eliud_core/model/app_model.dart';
 import 'package:eliud_core/core/blocs/access/state/access_state.dart';
 import 'package:eliud_core/core/blocs/access/state/logged_in.dart';
 import 'package:eliud_core/core/blocs/access/access_bloc.dart';
@@ -34,7 +34,7 @@ import 'package:eliud_core/tools/bespoke_formfields.dart';
 import 'package:eliud_core/tools/enums.dart';
 import 'package:eliud_core/tools/etc.dart';
 
-""" + base_imports(packageName, repo: true, model: true, entity: true, embeddedComponent: true, depends: depends);
+${base_imports(packageName, repo: true, model: true, entity: true, embeddedComponent: true, depends: depends)}""";
 
 String _specificImports(String packageName) => """
 import 'package:$packageName/model/\${path}_list_bloc.dart';
@@ -49,17 +49,20 @@ import 'package:$packageName/model/\${path}_form_state.dart';
 const String _xyzFormString = """
 class \${className}Form extends StatelessWidget {
   final AppModel app;
-  FormAction formAction;
-  \${id}Model? value;
-  ActionModel? submitAction;
+  final FormAction formAction;
+  final \${id}Model? value;
+  final ActionModel? submitAction;
 
   \${className}Form({Key? key, required this.app, required this.formAction, required this.value, this.submitAction}) : super(key: key);
 
+  /**
+   * Build the \${className}Form
+   */
   @override
   Widget build(BuildContext context) {
-    var accessState = AccessBloc.getState(context);
+    //var accessState = AccessBloc.getState(context);
     var appId = app.documentID;
-    if (formAction == FormAction.ShowData) {
+    if (formAction == FormAction.showData) {
       return BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(appId,
                                        \${constructorParameters}
@@ -67,7 +70,7 @@ class \${className}Form extends StatelessWidget {
   
         child: My\${className}Form(app:app, submitAction: submitAction, formAction: formAction),
           );
-    } if (formAction == FormAction.ShowPreloadedData) {
+    } if (formAction == FormAction.showPreloadedData) {
       return BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(appId,
                                        \${constructorParameters}
@@ -77,11 +80,11 @@ class \${className}Form extends StatelessWidget {
           );
     } else {
       return Scaffold(
-        appBar: StyleRegistry.registry().styleWithApp(app).adminFormStyle().appBarWithString(app, context, title: formAction == FormAction.UpdateAction ? '\${updateTitle}' : '\${addTitle}'),
+        appBar: StyleRegistry.registry().styleWithApp(app).adminFormStyle().appBarWithString(app, context, title: formAction == FormAction.updateAction ? '\${updateTitle}' : '\${addTitle}'),
         body: BlocProvider<\${id}FormBloc >(
             create: (context) => \${id}FormBloc(appId,
                                        \${constructorParameters}
-                                                )..add((formAction == FormAction.UpdateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
+                                                )..add((formAction == FormAction.updateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
   
         child: My\${className}Form(app: app, submitAction: submitAction, formAction: formAction),
           ));
@@ -99,7 +102,7 @@ class My\${className}Form extends StatefulWidget {
 
   My\${className}Form({required this.app, this.formAction, this.submitAction});
 
-  _My\${className}FormState createState() => _My\${className}FormState(this.formAction);
+  State<My\${className}Form> createState() => _My\${className}FormState(this.formAction);
 }
 
 """;
@@ -150,15 +153,21 @@ const _xyzLookupChangedString = """
 """;
 
 const String _readOnlyMethodMember = """
+  /**
+   * Is the form read-only?
+   */
   bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!((accessState is LoggedIn) && (accessState.member.documentID == state.value!.documentID)));
+    return (formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData) || (!((accessState is LoggedIn) && (accessState.member.documentID == state.value!.documentID)));
   }
   
 """;
 
 const String _readOnlyMethod = """
+  /**
+   * Is the form read-only?
+   */
   bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData) || (!accessState.memberIsOwner(widget.app.documentID));
+    return (formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData) || (!accessState.memberIsOwner(widget.app.documentID));
   }
   
 """;
@@ -168,16 +177,19 @@ class RealFormCodeGenerator extends CodeGenerator {
   final String? title;
   final String? buttonLabel;
 
-  RealFormCodeGenerator(this.className, { this.title, this.buttonLabel, required ModelSpecification modelSpecifications })
-      : super(modelSpecifications: modelSpecifications);
+  RealFormCodeGenerator(this.className,
+      {this.title, this.buttonLabel, required super.modelSpecifications});
 
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
-    headerBuffer.writeln(process(_imports(modelSpecifications.packageName, modelSpecifications.depends)));
-    headerBuffer.writeln(process(_specificImports(modelSpecifications.packageName), parameters: <String, String>{
-      '\${path}': camelcaseToUnderscore(modelSpecifications.id)
-    }));
+    headerBuffer.writeln(process(_imports(
+        modelSpecifications.packageName, modelSpecifications.depends)));
+    headerBuffer.writeln(process(
+        _specificImports(modelSpecifications.packageName),
+        parameters: <String, String>{
+          '\${path}': camelcaseToUnderscore(modelSpecifications.id)
+        }));
     return headerBuffer.toString();
   }
 
@@ -192,8 +204,9 @@ class RealFormCodeGenerator extends CodeGenerator {
       "\${id}": modelSpecifications.id,
       "\${lid}": firstLowerCase(modelSpecifications.id),
       "\${constructorParameters}": constructorParameters.toString(),
-      "\${updateTitle}": title == null ? "Update " + modelSpecifications.id : title!,
-      "\${addTitle}": title == null ? "Add " + modelSpecifications.id : title!,
+      "\${updateTitle}":
+          title == null ? "Update ${modelSpecifications.id}" : title!,
+      "\${addTitle}": title == null ? "Add ${modelSpecifications.id}" : title!,
     });
   }
 
@@ -207,208 +220,174 @@ class RealFormCodeGenerator extends CodeGenerator {
 
   String _xyzFormStateMemberData() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "final FormAction? formAction;");
-    codeBuffer
-        .writeln(spaces(2) + "late " + modelSpecifications.id + "FormBloc _myFormBloc;");
+    codeBuffer.writeln("${spaces(2)}final FormAction? formAction;");
+    codeBuffer.writeln(
+        "${spaces(2)}late ${modelSpecifications.id}FormBloc _myFormBloc;");
     return codeBuffer.toString();
   }
 
   String _xyzFormStateFieldMemberData() {
     StringBuffer codeBuffer = StringBuffer();
-    modelSpecifications.fields.forEach((field) {
+    for (var field in modelSpecifications.fields) {
       if (field.bespokeFormField == null) {
-        switch (field.formFieldType()) {
-          case FormTypeField.EntryField:
-            codeBuffer.writeln(spaces(2) +
-                "final TextEditingController _" +
-                field.fieldName +
-                "Controller = TextEditingController();");
-            break;
-          case FormTypeField.CheckBox:
-            codeBuffer
-                .writeln(spaces(2) + "bool? _" + field.fieldName + "Selection;");
-            break;
-          case FormTypeField.Lookup:
-            codeBuffer.writeln(spaces(2) + "String? _" + field.fieldName + ";");
-            break;
-          case FormTypeField.Selection:
-            codeBuffer.writeln(
-                spaces(2) + "int? _" + field.fieldName + "SelectedRadioTile;");
-            break;
-          case FormTypeField.List:
-          // Support private data members for list
-            break;
-          case FormTypeField.Unsupported:
-          // Ignore
-            break;
+        if (!field.isHidden()) {
+          switch (field.formFieldType()) {
+            case FormTypeField.EntryField:
+              codeBuffer.writeln(
+                  "${spaces(2)}final TextEditingController _${field.fieldName}Controller = TextEditingController();");
+              break;
+            case FormTypeField.CheckBox:
+              codeBuffer
+                  .writeln("${spaces(2)}bool? _${field.fieldName}Selection;");
+              break;
+            case FormTypeField.Lookup:
+              codeBuffer.writeln("${spaces(2)}String? _${field.fieldName};");
+              break;
+            case FormTypeField.Selection:
+              codeBuffer.writeln(
+                  "${spaces(2)}int? _${field.fieldName}SelectedRadioTile;");
+              break;
+            case FormTypeField.List:
+              // Support private data members for list
+              break;
+            case FormTypeField.Unsupported:
+              // Ignore
+              break;
+          }
         }
       }
-    });
+    }
     codeBuffer.writeln();
     return codeBuffer.toString();
   }
 
   String _xyzFormStateConstructor() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) +
-        "_My" +
-        className +
-        "FormState(this.formAction);");
+    codeBuffer
+        .writeln("${spaces(2)}_My${className}FormState(this.formAction);");
     return codeBuffer.toString();
   }
 
   String _xyzFormStateInitState() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "void initState() {");
-    codeBuffer.writeln(spaces(4) + "super.initState();");
-    codeBuffer.writeln(spaces(4) +
-        "_myFormBloc = BlocProvider.of<" +
-        modelSpecifications.id +
-        "FormBloc>(context);");
-    modelSpecifications.fields.forEach((field) {
+    codeBuffer.writeln("${spaces(2)}@override");
+    codeBuffer.writeln("${spaces(2)}void initState() {");
+    codeBuffer.writeln("${spaces(4)}super.initState();");
+    codeBuffer.writeln(
+        "${spaces(4)}_myFormBloc = BlocProvider.of<${modelSpecifications.id}FormBloc>(context);");
+    for (var field in modelSpecifications.fields) {
       if (field.bespokeFormField == null) {
-        switch (field.formFieldType()) {
-          case FormTypeField.EntryField:
-            codeBuffer.writeln(spaces(4) +
-                "_" +
-                field.fieldName +
-                "Controller.addListener(_on" +
-                firstUpperCase(field.fieldName) +
-                "Changed);");
-            break;
-          case FormTypeField.CheckBox:
-            codeBuffer.writeln(
-                spaces(4) + "_" + field.fieldName + "Selection = false;");
-            break;
-          case FormTypeField.Lookup:
-            break;
-          case FormTypeField.Selection:
-            codeBuffer.writeln(
-                spaces(4) + "_" + field.fieldName + "SelectedRadioTile = 0;");
-            break;
-          case FormTypeField.List:
-            break;
-          case FormTypeField.Unsupported:
-          // Ignore
-            break;
+        if (!field.isHidden()) {
+          switch (field.formFieldType()) {
+            case FormTypeField.EntryField:
+              codeBuffer.writeln(
+                  "${spaces(4)}_${field.fieldName}Controller.addListener(_on${firstUpperCase(field.fieldName)}Changed);");
+              break;
+            case FormTypeField.CheckBox:
+              codeBuffer
+                  .writeln("${spaces(4)}_${field.fieldName}Selection = false;");
+              break;
+            case FormTypeField.Lookup:
+              break;
+            case FormTypeField.Selection:
+              codeBuffer.writeln(
+                  "${spaces(4)}_${field.fieldName}SelectedRadioTile = 0;");
+              break;
+            case FormTypeField.List:
+              break;
+            case FormTypeField.Unsupported:
+              // Ignore
+              break;
+          }
         }
       }
-    });
-    codeBuffer.writeln(spaces(2) + "}");
+    }
+    codeBuffer.writeln("${spaces(2)}}");
     return codeBuffer.toString();
   }
 
   String _xyzFormStateBuild() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "Widget build(BuildContext context) {");
-    codeBuffer.writeln(spaces(4) + "var accessState = AccessBloc.getState(context);");
+    codeBuffer.writeln("${spaces(2)}@override");
+    codeBuffer.writeln("${spaces(2)}Widget build(BuildContext context) {");
+    codeBuffer
+        .writeln("${spaces(4)}var accessState = AccessBloc.getState(context);");
 
     // start blocbuilder
-    codeBuffer.writeln(spaces(4) +
-        "return BlocBuilder<" +
-        modelSpecifications.id +
-        "FormBloc, " +
-        modelSpecifications.id +
-        "FormState>(builder: (context, state) {");
+    codeBuffer.writeln(
+        "${spaces(4)}return BlocBuilder<${modelSpecifications.id}FormBloc, ${modelSpecifications.id}FormState>(builder: (context, state) {");
 
     // state is ...Uninitialized
-    codeBuffer.writeln(spaces(6) +
-        "if (state is " +
-        modelSpecifications.id +
-        "FormUninitialized) return Center(");
-    codeBuffer.writeln(spaces(8) + "child: StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context),");
-    codeBuffer.writeln(spaces(6) + ");");
+    codeBuffer.writeln(
+        "${spaces(6)}if (state is ${modelSpecifications.id}FormUninitialized) return Center(");
+    codeBuffer.writeln(
+        "${spaces(8)}child: StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context),");
+    codeBuffer.writeln("${spaces(6)});");
     codeBuffer.writeln();
 
     // state is ...FormLoaded
     codeBuffer.writeln(
-        spaces(6) + "if (state is " + modelSpecifications.id + "FormLoaded) {");
-    modelSpecifications.fields.forEach((field) {
+        "${spaces(6)}if (state is ${modelSpecifications.id}FormLoaded) {");
+    for (var field in modelSpecifications.fields) {
       if (field.bespokeFormField == null) {
-        switch (field.formFieldType()) {
-          case FormTypeField.EntryField:
-            codeBuffer.writeln(
-                spaces(8) + "if (state.value!." + field.fieldName + " != null)");
-            codeBuffer.writeln(spaces(10) +
-                "_" +
-                field.fieldName +
-                "Controller.text = state.value!." +
-                field.fieldName +
-                ".toString();");
-            codeBuffer.writeln(
-                spaces(8) + "else");
-            codeBuffer.writeln(spaces(10) +
-                "_" +
-                field.fieldName +
-                "Controller.text = \"\";");
-            break;
-          case FormTypeField.CheckBox:
-            codeBuffer.writeln(
-                spaces(8) + "if (state.value!." + field.fieldName + " != null)");
-            codeBuffer.writeln(spaces(8) +
-                "_" +
-                field.fieldName +
-                "Selection = state.value!." +
-                field.fieldName +
-                ";");
-            codeBuffer.writeln(
-                spaces(8) + "else");
-            codeBuffer.writeln(spaces(8) +
-                "_" +
-                field.fieldName +
-                "Selection = false;");
-            break;
-          case FormTypeField.Lookup:
-            codeBuffer.writeln(
-                spaces(8) + "if (state.value!." + field.fieldName + " != null)");
-            codeBuffer.writeln(spaces(10) +
-                "_" +
-                field.fieldName +
-                "= state.value!." +
-                field.fieldName +
-                "!.documentID;");
-            codeBuffer.writeln(
-                spaces(8) + "else");
-            codeBuffer.writeln(spaces(10) +
-                "_" +
-                field.fieldName +
-                "= \"\";");
-            break;
-          case FormTypeField.Selection:
-            codeBuffer.writeln(
-                spaces(8) + "if (state.value!." + field.fieldName + " != null)");
-            codeBuffer.writeln(spaces(10) +
-                "_" +
-                field.fieldName +
-                "SelectedRadioTile = state.value!." +
-                field.fieldName +
-                "!.index;");
-            codeBuffer.writeln(
-                spaces(8) + "else");
-            codeBuffer.writeln(spaces(10) +
-                "_" +
-                field.fieldName +
-                "SelectedRadioTile = 0;");
-            break;
-          case FormTypeField.List:
-          // Initialise support private data members for list
-            break;
-          case FormTypeField.Unsupported:
-          // Ignore
-            break;
+        if (!field.isHidden()) {
+          switch (field.formFieldType()) {
+            case FormTypeField.EntryField:
+              if (field.isOptional()) {
+                codeBuffer.writeln(
+                    "${spaces(8)}if (state.value!.${field.fieldName} != null)");
+                codeBuffer.writeln(
+                    "${spaces(10)}_${field.fieldName}Controller.text = state.value!.${field.fieldName}.toString();");
+                codeBuffer.writeln("${spaces(8)}else");
+                codeBuffer.writeln(
+                    "${spaces(10)}_${field.fieldName}Controller.text = \"\";");
+              } else {
+                codeBuffer.writeln(
+                    "${spaces(8)}_${field.fieldName}Controller.text = state.value!.${field.fieldName}.toString();");
+              }
+              break;
+            case FormTypeField.CheckBox:
+              codeBuffer.writeln(
+                  "${spaces(8)}if (state.value!.${field.fieldName} != null)");
+              codeBuffer.writeln(
+                  "${spaces(8)}_${field.fieldName}Selection = state.value!.${field.fieldName};");
+              codeBuffer.writeln("${spaces(8)}else");
+              codeBuffer
+                  .writeln("${spaces(8)}_${field.fieldName}Selection = false;");
+              break;
+            case FormTypeField.Lookup:
+              codeBuffer.writeln(
+                  "${spaces(8)}if (state.value!.${field.fieldName} != null)");
+              codeBuffer.writeln(
+                  "${spaces(10)}_${field.fieldName}= state.value!.${field.fieldName}!.documentID;");
+              codeBuffer.writeln("${spaces(8)}else");
+              codeBuffer.writeln("${spaces(10)}_${field.fieldName}= \"\";");
+              break;
+            case FormTypeField.Selection:
+              codeBuffer.writeln(
+                  "${spaces(8)}if (state.value!.${field.fieldName} != null)");
+              codeBuffer.writeln(
+                  "${spaces(10)}_${field.fieldName}SelectedRadioTile = state.value!.${field.fieldName}!.index;");
+              codeBuffer.writeln("${spaces(8)}else");
+              codeBuffer.writeln(
+                  "${spaces(10)}_${field.fieldName}SelectedRadioTile = 0;");
+              break;
+            case FormTypeField.List:
+              // Initialise support private data members for list
+              break;
+            case FormTypeField.Unsupported:
+              // Ignore
+              break;
+          }
         }
       }
-    });
-    codeBuffer.writeln(spaces(6) + "}");
+    }
+    codeBuffer.writeln("${spaces(6)}}");
 
-    codeBuffer.writeln(spaces(6) +
-        "if (state is " +
-        modelSpecifications.id +
-        "FormInitialized) {");
+    codeBuffer.writeln(
+        "${spaces(6)}if (state is ${modelSpecifications.id}FormInitialized) {");
 
-    codeBuffer.writeln(spaces(8) + "List<Widget> children = [];");
+    codeBuffer.writeln("${spaces(8)}List<Widget> children = [];");
 
     if (modelSpecifications.groups == null) {
       codeBuffer.writeln(_fields(modelSpecifications.fields));
@@ -417,132 +396,118 @@ class RealFormCodeGenerator extends CodeGenerator {
         codeBuffer.writeln(_groupedFieldsFor(
             "General", null, modelSpecifications.unGroupedFields()));
       }
-      modelSpecifications.groups!.forEach((group) {
-        codeBuffer.writeln(_groupedFieldsFor(group.getDescription(), group.conditional,
-            modelSpecifications.fieldsForGroups(group)));
-      });
+      for (var group in modelSpecifications.groups!) {
+        codeBuffer.writeln(_groupedFieldsFor(group.getDescription(),
+            group.conditional, modelSpecifications.fieldsForGroups(group)));
+      }
     }
 
-
-    codeBuffer.writeln(spaces(8) + "if ((formAction != FormAction.ShowData) && (formAction != FormAction.ShowPreloadedData))");
-    codeBuffer.writeln(spaces(10) + "children.add(StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().button(widget.app, context, label: 'Submit',");
-    codeBuffer.writeln(spaces(18) + "onPressed: _readOnly(accessState, state) ? null : () {");
-    codeBuffer.writeln(spaces(14 + 6) +
-        "if (state is " +
-        modelSpecifications.id +
-        "FormError) {");
-    codeBuffer.writeln(spaces(14 + 8) + "return null;");
-    codeBuffer.writeln(spaces(14 + 6) + "} else {");
     codeBuffer.writeln(
-        spaces(14 + 8) + "if (formAction == FormAction.UpdateAction) {");
-    codeBuffer.writeln(spaces(14 + 10) +
-        "BlocProvider.of<" +
-        modelSpecifications.id +
-        "ListBloc>(context).add(");
-    codeBuffer.writeln(spaces(14 + 12) +
-        "Update" +
-        modelSpecifications.id +
-        "List(value: state.value!.copyWith(");
-    modelSpecifications.fields.forEach((field) {
+        "${spaces(8)}if ((formAction != FormAction.showData) && (formAction != FormAction.showPreloadedData))");
+    codeBuffer.writeln(
+        "${spaces(10)}children.add(StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().button(widget.app, context, label: 'Submit',");
+    codeBuffer.writeln(
+        "${spaces(18)}onPressed: _readOnly(accessState, state) ? null : () {");
+    codeBuffer.writeln(
+        "${spaces(14 + 6)}if (state is ${modelSpecifications.id}FormError) {");
+    codeBuffer.writeln("${spaces(14 + 8)}return null;");
+    codeBuffer.writeln("${spaces(14 + 6)}} else {");
+    codeBuffer.writeln(
+        "${spaces(14 + 8)}if (formAction == FormAction.updateAction) {");
+    codeBuffer.writeln(
+        "${spaces(14 + 10)}BlocProvider.of<${modelSpecifications.id}ListBloc>(context).add(");
+    codeBuffer.writeln(
+        "${spaces(14 + 12)}Update${modelSpecifications.id}List(value: state.value!.copyWith(");
+    for (var field in modelSpecifications.fields) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
-        codeBuffer.writeln(spaces(14 + 16) +
-            field.fieldName +
-            ": state.value!." +
-            field.fieldName +
-            ", ");
+        codeBuffer.writeln(
+            "${spaces(14 + 16)}${field.fieldName}: state.value!.${field.fieldName}, ");
       }
-    });
-    codeBuffer.writeln(spaces(14 + 10) + ")));");
-    codeBuffer.writeln(spaces(14 + 8) + "} else {");
-    codeBuffer.writeln(spaces(14 + 10) +
-        "BlocProvider.of<" +
-        modelSpecifications.id +
-        "ListBloc>(context).add(");
-    codeBuffer.writeln(spaces(14 + 12) +
-        "Add" +
-        modelSpecifications.id +
-        "List(value: " +
-        modelSpecifications.modelClassName() +
-        "(");
-    modelSpecifications.fields.forEach((field) {
+    }
+    codeBuffer.writeln("${spaces(14 + 10)})));");
+    codeBuffer.writeln("${spaces(14 + 8)}} else {");
+    codeBuffer.writeln(
+        "${spaces(14 + 10)}BlocProvider.of<${modelSpecifications.id}ListBloc>(context).add(");
+    codeBuffer.writeln(
+        "${spaces(14 + 12)}Add${modelSpecifications.id}List(value: ${modelSpecifications.modelClassName()}(");
+    for (var field in modelSpecifications.fields) {
       if (field.arrayType != ArrayType.CollectionArrayType) {
-        codeBuffer.writeln(spaces(14 + 16) +
-            field.fieldName +
-            ": state.value!." +
-            field.fieldName +
-            ", ");
+        codeBuffer.writeln(
+            "${spaces(14 + 16)}${field.fieldName}: state.value!.${field.fieldName}, ");
       }
-    });
-    codeBuffer.writeln(spaces(14 + 12) + ")));");
-    codeBuffer.writeln(spaces(14 + 8) + "}");
+    }
+    codeBuffer.writeln("${spaces(14 + 12)})));");
+    codeBuffer.writeln("${spaces(14 + 8)}}");
 
-    codeBuffer.writeln(spaces(14 + 8) + "if (widget.submitAction != null) {");
-    codeBuffer.writeln(spaces(14 + 10) + "eliudrouter.Router.navigateTo(context, widget.submitAction!);");
-    codeBuffer.writeln(spaces(14 + 8) + "} else {");
-    codeBuffer.writeln(spaces(14 + 10) + "Navigator.pop(context);");
-    codeBuffer.writeln(spaces(14 + 8) + "}");
+    codeBuffer.writeln("${spaces(14 + 8)}if (widget.submitAction != null) {");
+    codeBuffer.writeln(
+        "${spaces(14 + 10)}eliudrouter.Router.navigateTo(context, widget.submitAction!);");
+    codeBuffer.writeln("${spaces(14 + 8)}} else {");
+    codeBuffer.writeln("${spaces(14 + 10)}Navigator.pop(context);");
+    codeBuffer.writeln("${spaces(14 + 8)}}");
 
-    codeBuffer.writeln(spaces(14 + 6) + "}");
+    codeBuffer.writeln("${spaces(14 + 6)}}");
 
-    codeBuffer.writeln(spaces(18) + "},");
-    codeBuffer.writeln(spaces(16) + "));");
+    codeBuffer.writeln("${spaces(18)}},");
+    codeBuffer.writeln("${spaces(16)}));");
 
     codeBuffer.writeln();
-    codeBuffer.writeln(spaces(8) + "return StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().container(widget.app, context, Form(");
+    codeBuffer.writeln(
+        "${spaces(8)}return StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().container(widget.app, context, Form(");
 
-    codeBuffer.writeln(spaces(12) + "child: ListView(");
-    codeBuffer.writeln(spaces(14) + "padding: const EdgeInsets.all(8),");
-    codeBuffer.writeln(spaces(14) + "physics: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)) ? NeverScrollableScrollPhysics() : null,");
-    codeBuffer.writeln(spaces(14) + "shrinkWrap: ((formAction == FormAction.ShowData) || (formAction == FormAction.ShowPreloadedData)),");
-    codeBuffer.writeln(spaces(14) + "children: children as List<Widget>");
-    codeBuffer.writeln(spaces(12) + "),");
-    codeBuffer.writeln(spaces(10) + "), formAction!");
-    codeBuffer.writeln(spaces(8) + ");");
+    codeBuffer.writeln("${spaces(12)}child: ListView(");
+    codeBuffer.writeln("${spaces(14)}padding: const EdgeInsets.all(8),");
+    codeBuffer.writeln(
+        "${spaces(14)}physics: ((formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData)) ? NeverScrollableScrollPhysics() : null,");
+    codeBuffer.writeln(
+        "${spaces(14)}shrinkWrap: ((formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData)),");
+    codeBuffer.writeln("${spaces(14)}children: children as List<Widget>");
+    codeBuffer.writeln("${spaces(12)}),");
+    codeBuffer.writeln("${spaces(10)}), formAction!");
+    codeBuffer.writeln("${spaces(8)});");
 
-    codeBuffer.writeln(spaces(6) + "} else {");
-    codeBuffer.writeln(spaces(8) + "return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);");
-    codeBuffer.writeln(spaces(6) + "}");
+    codeBuffer.writeln("${spaces(6)}} else {");
+    codeBuffer.writeln(
+        "${spaces(8)}return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);");
+    codeBuffer.writeln("${spaces(6)}}");
     // close blocbuilder
-    codeBuffer.writeln(spaces(4) + "});");
+    codeBuffer.writeln("${spaces(4)}});");
 
     // close method
-    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln("${spaces(2)}}");
     return codeBuffer.toString();
   }
 
   String _groupedFieldHeader(String groupLabel, String? condition) {
     String conditionStr = "";
-    if (condition != null) conditionStr = "if " + condition;
-    return process(_groupFieldHeaderString,
-        parameters: <String, String> {
-          "\${label}": groupLabel,
-          "\${condition}": conditionStr
-        }
-    );
+    if (condition != null) conditionStr = "if $condition";
+    return process(_groupFieldHeaderString, parameters: <String, String>{
+      "\${label}": groupLabel,
+      "\${condition}": conditionStr
+    });
   }
 
   String _groupedFieldFooter() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(8) +
-        "children.add(Container(height: 20.0));");
-    codeBuffer.writeln(spaces(8) +
-        "children.add(StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().divider(widget.app, context));");
+    codeBuffer.writeln("${spaces(8)}children.add(Container(height: 20.0));");
+    codeBuffer.writeln(
+        "${spaces(8)}children.add(StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().divider(widget.app, context));");
     return codeBuffer.toString();
   }
 
   String _fieldStart(Field field) {
     StringBuffer codeBuffer = StringBuffer();
     if (field.conditional != null) {
-      codeBuffer.writeln(
-          spaces(8) + "if (" + field.getConditional() + ") children.add(");
+      codeBuffer
+          .writeln("${spaces(8)}if (${field.getConditional()}) children.add(");
     } else {
-      codeBuffer.writeln(spaces(8) + "children.add(");
+      codeBuffer.writeln("${spaces(8)}children.add(");
     }
     return codeBuffer.toString();
   }
 
   String _fieldEnd() {
-    return spaces(10) + ");";
+    return "${spaces(10)});";
   }
 
   String _field(Field field) {
@@ -550,106 +515,103 @@ class RealFormCodeGenerator extends CodeGenerator {
     if (field.bespokeFormField == null) {
       switch (field.formFieldType()) {
         case FormTypeField.EntryField:
-
           String readOnlyCondition;
           if (field.fieldName == "documentID") {
-            if (modelSpecifications.id == "Member")
+            if (modelSpecifications.id == "Member") {
               readOnlyCondition = "true";
-            else
-              readOnlyCondition = "(formAction == FormAction.UpdateAction)";
+            } else {
+              readOnlyCondition = "(formAction == FormAction.updateAction)";
+            }
           } else {
             readOnlyCondition = "_readOnly(accessState, state)";
           }
 
-          var controllerName = "_" + field.fieldName + "Controller";
+          var controllerName = "_${field.fieldName}Controller";
 
           var iconName;
-          if (field.iconName != null)
+          if (field.iconName != null) {
             iconName = field.iconName;
-          else
+          } else {
             iconName = "text_format";
+          }
 
           var labelName;
-          if (field.displayName == null)
+          if (field.displayName == null) {
             labelName = field.fieldName;
-          else
+          } else {
             labelName = field.displayName;
+          }
 
           var hintText;
-          if (field.remark != null)
-            hintText = "'field.remark'";
+          if (field.remark != null) hintText = "'field.remark'";
 
           var keyboardType;
-          if (field.isDouble())
+          if (field.isDouble()) {
             keyboardType = "keyboardType: TextInputType.number";
-          if (field.isInt())
-            keyboardType =  "keyboardType: TextInputType.number";
-          if (field.isString())
+          }
+          if (field.isInt()) {
+            keyboardType = "keyboardType: TextInputType.number";
+          }
+          if (field.isString()) {
             keyboardType = "keyboardType: TextInputType.text";
+          }
 
-          var validator = "(_) => state is " + firstUpperCase(field.fieldName) + modelSpecifications.id + "FormError ? state.message : null";
+          var validator =
+              "(_) => state is ${firstUpperCase(field.fieldName)}${modelSpecifications.id}FormError ? state.message : null";
 
           codeBuffer.writeln(_fieldStart(field));
-          codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().textFormField(widget.app, context, labelText: '$labelName', icon: Icons.$iconName, readOnly: $readOnlyCondition, textEditingController: $controllerName, $keyboardType, validator: $validator, hintText: $hintText)");
+          codeBuffer.writeln(
+              "${spaces(18)}StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().textFormField(widget.app, context, labelText: '$labelName', icon: Icons.$iconName, readOnly: $readOnlyCondition, textEditingController: $controllerName, $keyboardType, validator: $validator, hintText: $hintText)");
           codeBuffer.writeln(_fieldEnd());
 
           break;
         case FormTypeField.CheckBox:
           var title;
-          if (field.displayName == null)
+          if (field.displayName == null) {
             title = field.fieldName;
-          else
+          } else {
             title = field.displayName;
+          }
 
-          var value = "_" + firstLowerCase(field.fieldName) + "Selection";
+          var value = "_${firstLowerCase(field.fieldName)}Selection";
 
-          var onChanged = "_readOnly(accessState, state) ? null : (dynamic val) => setSelection" + firstUpperCase(field.fieldName) + "(val)";
+          var onChanged =
+              "_readOnly(accessState, state) ? null : (dynamic val) => setSelection${firstUpperCase(field.fieldName)}(val)";
 
           codeBuffer.writeln(_fieldStart(field));
-          codeBuffer.writeln(spaces(18) + "StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().checkboxListTile(widget.app, context, '$title', $value, $onChanged)");
+          codeBuffer.writeln(
+              "${spaces(18)}StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().checkboxListTile(widget.app, context, '$title', $value, $onChanged)");
           codeBuffer.writeln(_fieldEnd());
           break;
         case FormTypeField.Lookup:
           codeBuffer.writeln(_fieldStart(field));
           bool optionalValue = field.isOptional();
-          codeBuffer.writeln(spaces(16) +
-              "DropdownButtonComponentFactory().createNew(app: widget.app, id: \"" +
-              firstLowerCase(field.fieldType) +
-              "s\", value: _" +
-              firstLowerCase(field.fieldName) +
-              ", trigger: (value, privilegeLevel) => _on" + firstUpperCase(field.fieldName) + "Selected(value)" +
-              ", optional: $optionalValue),");
+          codeBuffer.writeln(
+              "${spaces(16)}DropdownButtonComponentFactory().createNew(app: widget.app, id: \"${firstLowerCase(field.fieldType)}s\", value: _${firstLowerCase(field.fieldName)}, trigger: (value, privilegeLevel) => _on${firstUpperCase(field.fieldName)}Selected(value), optional: $optionalValue),");
           codeBuffer.writeln(_fieldEnd());
           break;
 
         case FormTypeField.Selection:
           int i = 0;
           if (field.enumValues != null) {
-            field.enumValues!.forEach((enumField) {
-              var onChanged = "!accessState.memberIsOwner(widget.app.documentID) ? null : (dynamic val) => " +
-                  "setSelection" + firstUpperCase(field.fieldName) + "(val)";
+            for (var enumField in field.enumValues!) {
+              var onChanged =
+                  "!accessState.memberIsOwner(widget.app.documentID) ? null : (dynamic val) => setSelection${firstUpperCase(field.fieldName)}(val)";
               codeBuffer.writeln(_fieldStart(field));
-              codeBuffer.writeln(spaces(18) +
-                  "StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().radioListTile(widget.app, context, $i, _" +
-                  firstLowerCase(field.fieldName) +
-                  "SelectedRadioTile, '$enumField', '$enumField', $onChanged)");
+              codeBuffer.writeln(
+                  "${spaces(18)}StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().radioListTile(widget.app, context, $i, _${firstLowerCase(field.fieldName)}SelectedRadioTile, '$enumField', '$enumField', $onChanged)");
               codeBuffer.writeln(_fieldEnd());
-            });
+            }
           }
           break;
         case FormTypeField.List:
           codeBuffer.writeln(_fieldStart(field));
-          codeBuffer.writeln(spaces(16) + "new Container(");
-          codeBuffer.writeln(spaces(20) + "height: (fullScreenHeight(context) / 2.5), ");
-          codeBuffer.writeln(spaces(20) +
-              "child: " +
-              firstLowerCase(field.fieldType) +
-              "sList(widget.app, context, state.value!." +
-              field.fieldName +
-              ", _on" +
-              firstUpperCase(field.fieldName) +
-              "Changed)");
-          codeBuffer.writeln(spaces(16) + ")");
+          codeBuffer.writeln("${spaces(16)}new Container(");
+          codeBuffer.writeln(
+              "${spaces(20)}height: (fullScreenHeight(context) / 2.5), ");
+          codeBuffer.writeln(
+              "${spaces(20)}child: ${firstLowerCase(field.fieldType)}sList(widget.app, context, state.value!.${field.fieldName}, _on${firstUpperCase(field.fieldName)}Changed)");
+          codeBuffer.writeln("${spaces(16)})");
           codeBuffer.writeln(_fieldEnd());
           break;
         case FormTypeField.Unsupported:
@@ -658,27 +620,22 @@ class RealFormCodeGenerator extends CodeGenerator {
     } else {
       if (field.getBespokeFormField().contains("(")) {
         codeBuffer.writeln(_fieldStart(field));
-        codeBuffer.writeln(spaces(16) + field.getBespokeFormField() + "");
+        codeBuffer.writeln("${spaces(16)}${field.getBespokeFormField()}");
         codeBuffer.writeln(_fieldEnd());
       } else {
         codeBuffer.writeln(_fieldStart(field));
-        codeBuffer.writeln(spaces(16) +
-            field.getBespokeFormField() +
-            "(widget.app, " +
-            "state.value!." +
-            field.fieldName +
-            ", _on" +
-            firstUpperCase(field.fieldName) +
-            "Changed)");
+        codeBuffer.writeln(
+            "${spaces(16)}${field.getBespokeFormField()}(widget.app, state.value!.${field.fieldName}, _on${firstUpperCase(field.fieldName)}Changed)");
         codeBuffer.writeln(_fieldEnd());
       }
     }
     return codeBuffer.toString();
   }
 
-  String _groupedFieldsFor(String groupLabel, String? condition, List<Field> fields) {
+  String _groupedFieldsFor(
+      String groupLabel, String? condition, List<Field> fields) {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(_groupedFieldHeader(groupLabel, condition ));
+    codeBuffer.writeln(_groupedFieldHeader(groupLabel, condition));
     codeBuffer.writeln(_fields(fields));
     codeBuffer.writeln(_groupedFieldFooter());
     return codeBuffer.toString();
@@ -686,19 +643,16 @@ class RealFormCodeGenerator extends CodeGenerator {
 
   String _fields(List<Field> fields) {
     StringBuffer codeBuffer = StringBuffer();
-    fields.forEach((field) {
+    for (var field in fields) {
       if (!field.isHidden()) codeBuffer.writeln(_field(field));
-    });
+    }
     return codeBuffer.toString();
   }
 
   String _xyzFormState() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln("class _My" +
-        className +
-        "FormState extends State<My" +
-        className +
-        "Form> {");
+    codeBuffer.writeln(
+        "class _My${className}FormState extends State<My${className}Form> {");
     codeBuffer.writeln(_xyzFormStateMemberData());
     codeBuffer.writeln(_xyzFormStateFieldMemberData());
     codeBuffer.writeln(_xyzFormStateConstructor());
@@ -713,30 +667,24 @@ class RealFormCodeGenerator extends CodeGenerator {
   }
 
   String _readOnly() {
-    if (modelSpecifications.id == "Member")
+    if (modelSpecifications.id == "Member") {
       return process(_readOnlyMethodMember, parameters: <String, String>{
         "\${id}": modelSpecifications.id,
       });
-    else
+    } else {
       return process(_readOnlyMethod, parameters: <String, String>{
         "\${id}": modelSpecifications.id,
       });
+    }
   }
 
   String _xyzOnChanged(Field field) {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) +
-        "void _on" +
-        firstUpperCase(field.fieldName) +
-        "Changed() {");
-    codeBuffer.writeln(spaces(4) +
-        "_myFormBloc.add(Changed" +
-        modelSpecifications.id +
-        firstUpperCase(field.fieldName) +
-        "(value: _" +
-        firstLowerCase(field.fieldName) +
-        "Controller.text));");
-    codeBuffer.writeln(spaces(2) + "}");
+    codeBuffer.writeln(
+        "${spaces(2)}void _on${firstUpperCase(field.fieldName)}Changed() {");
+    codeBuffer.writeln(
+        "${spaces(4)}_myFormBloc.add(Changed${modelSpecifications.id}${firstUpperCase(field.fieldName)}(value: _${firstLowerCase(field.fieldName)}Controller.text));");
+    codeBuffer.writeln("${spaces(2)}}");
     codeBuffer.writeln();
     return codeBuffer.toString();
   }
@@ -780,48 +728,51 @@ class RealFormCodeGenerator extends CodeGenerator {
 
   String _xyzChangeds() {
     StringBuffer codeBuffer = StringBuffer();
-    modelSpecifications.fields.forEach((field) {
-      if (field.bespokeFormField == null) {
-        switch (field.formFieldType()) {
-          case FormTypeField.List:
-            codeBuffer.writeln(_otherChanged(field));
-            break;
-          case FormTypeField.EntryField:
-            codeBuffer.writeln(_xyzOnChanged(field));
-            break;
-          case FormTypeField.CheckBox:
-            codeBuffer.writeln(_xyzSetBooleanSelection(field));
-            break;
-          case FormTypeField.Lookup:
-            codeBuffer.writeln(_xyzLookupChanged(field));
-            break;
-          case FormTypeField.Selection:
-            codeBuffer.writeln(_xyzSetEnumSelection(field));
-            break;
-          case FormTypeField.Unsupported:
-            break;
+    for (var field in modelSpecifications.fields) {
+      if (!field.isHidden()) {
+        if (field.bespokeFormField == null) {
+          switch (field.formFieldType()) {
+            case FormTypeField.List:
+              codeBuffer.writeln(_otherChanged(field));
+              break;
+            case FormTypeField.EntryField:
+              codeBuffer.writeln(_xyzOnChanged(field));
+              break;
+            case FormTypeField.CheckBox:
+              codeBuffer.writeln(_xyzSetBooleanSelection(field));
+              break;
+            case FormTypeField.Lookup:
+              codeBuffer.writeln(_xyzLookupChanged(field));
+              break;
+            case FormTypeField.Selection:
+              codeBuffer.writeln(_xyzSetEnumSelection(field));
+              break;
+            case FormTypeField.Unsupported:
+              break;
+          }
+        } else {
+          codeBuffer.writeln(_otherChanged(field));
         }
-      } else {
-        codeBuffer.writeln(_otherChanged(field));
       }
-    });
+    }
     return codeBuffer.toString();
   }
 
   String _dispose() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(spaces(2) + "@override");
-    codeBuffer.writeln(spaces(2) + "void dispose() {");
-    modelSpecifications.fields.forEach((field) {
+    codeBuffer.writeln("${spaces(2)}@override");
+    codeBuffer.writeln("${spaces(2)}void dispose() {");
+    for (var field in modelSpecifications.fields) {
       if (field.bespokeFormField == null) {
-        if (field.formFieldType() == FormTypeField.EntryField) {
-          codeBuffer.writeln(
-              spaces(4) + "_" + field.fieldName + "Controller.dispose();");
+        if (!field.isHidden()) if (field.formFieldType() ==
+            FormTypeField.EntryField) {
+          codeBuffer
+              .writeln("${spaces(4)}_${field.fieldName}Controller.dispose();");
         }
       }
-    });
-    codeBuffer.writeln(spaces(4) + "super.dispose();");
-    codeBuffer.writeln(spaces(2) + "}");
+    }
+    codeBuffer.writeln("${spaces(4)}super.dispose();");
+    codeBuffer.writeln("${spaces(2)}}");
     return codeBuffer.toString();
   }
 
@@ -843,33 +794,35 @@ class RealFormCodeGenerator extends CodeGenerator {
 class FormCodeGenerator extends CodeGenerator {
   final RealFormCodeGenerator realFormCodeGenerator;
 
-  FormCodeGenerator({required ModelSpecification modelSpecifications})
-      : realFormCodeGenerator = RealFormCodeGenerator(modelSpecifications.id, modelSpecifications: modelSpecifications),
-        super(modelSpecifications: modelSpecifications);
+  FormCodeGenerator({required super.modelSpecifications})
+      : realFormCodeGenerator = RealFormCodeGenerator(modelSpecifications.id,
+            modelSpecifications: modelSpecifications);
 
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(realFormCodeGenerator.body());
     if (modelSpecifications.views != null) {
-      modelSpecifications.views!.forEach((view) {
+      for (var view in modelSpecifications.views!) {
         var fields = <Field>[];
-        view.fields!.forEach((fieldName) {
+        for (var fieldName in view.fields!) {
           // search in the list of view.
-          Field newField = modelSpecifications.fields.firstWhere((field) => field.fieldName == fieldName);
+          Field newField = modelSpecifications.fields
+              .firstWhere((field) => field.fieldName == fieldName);
           fields.add(newField);
-                });
+        }
 
         var groups = <Group>[];
-        view.groups!.forEach((groupName) {
+        for (var groupName in view.groups!) {
           // search in the list of view.
-          Group newGroup = modelSpecifications.groups!.firstWhere((group) => group.group == groupName);
+          Group newGroup = modelSpecifications.groups!
+              .firstWhere((group) => group.group == groupName);
           groups.add(newGroup);
-                });
+        }
 
-        if (fields.length > 0) {
-          ModelSpecification newModelSpec = modelSpecifications.copyWith(
-              fields: fields, groups: groups);
+        if (fields.isNotEmpty) {
+          ModelSpecification newModelSpec =
+              modelSpecifications.copyWith(fields: fields, groups: groups);
           codeBuffer.writeln(RealFormCodeGenerator(
             modelSpecifications.id + view.name ?? "noname",
             modelSpecifications: newModelSpec,
@@ -877,9 +830,9 @@ class FormCodeGenerator extends CodeGenerator {
             buttonLabel: view.buttonLabel,
           ).body());
         } else {
-          print("view " + view.name + " has no fields matching the specifications");
+          print("view ${view.name} has no fields matching the specifications");
         }
-      });
+      }
     }
     return codeBuffer.toString();
   }

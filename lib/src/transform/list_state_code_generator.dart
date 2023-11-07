@@ -1,4 +1,3 @@
-import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
@@ -31,23 +30,26 @@ class \${id}ListLoaded extends \${id}ListState {
               runtimeType == other.runtimeType &&
               ListEquality().equals(values, other.values) &&
               mightHaveMore == other.mightHaveMore;
+
+  @override
+  int get hashCode => values.hashCode ^ mightHaveMore.hashCode;
 }
 
 class \${id}NotLoaded extends \${id}ListState {}
 """;
 
 class ListStateCodeGenerator extends CodeGenerator {
-  ListStateCodeGenerator({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  ListStateCodeGenerator({required super.modelSpecifications});
 
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
 
-    headerBuffer.writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
+    headerBuffer
+        .writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
     headerBuffer.write(importString(modelSpecifications.packageName,
-        "model/" + modelSpecifications.modelFileName()));
+        "model/${modelSpecifications.modelFileName()}"));
     headerBuffer.writeln();
     return headerBuffer.toString();
   }

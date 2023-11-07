@@ -12,7 +12,7 @@ class AdminAppBuilder extends CodeBuilderMulti {
   @override
   Map<String, List<String>> get buildExtensions {
     return const {
-      r'$lib$': const [ fileName ],
+      r'$lib$': [fileName],
     };
   }
 

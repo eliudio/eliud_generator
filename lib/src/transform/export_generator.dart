@@ -5,7 +5,7 @@ import 'code_generator_multi.dart';
 abstract class ExportGenerator extends CodeGeneratorMulti {
   String extension;
 
-  ExportGenerator({required String fileName, required this.extension}): super(fileName: fileName);
+  ExportGenerator({required super.fileName, required this.extension});
 
   bool shouldGenerate(ModelSpecification spec);
 
@@ -13,13 +13,12 @@ abstract class ExportGenerator extends CodeGeneratorMulti {
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.write(header());
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       String path = spec.path;
       if (shouldGenerate(spec.modelSpecification)) {
-        codeBuffer.writeln("export '../" + path + "_" + extension + ".dart';");
+        codeBuffer.writeln("export '../${path}_$extension.dart';");
       }
-    });
+    }
     return codeBuffer.toString();
-
   }
 }

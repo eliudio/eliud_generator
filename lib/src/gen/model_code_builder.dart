@@ -6,8 +6,9 @@ import 'code_builder.dart';
 
 /// A builder which builds a model based on a `spec` file
 class ModelCodeBuilder extends CodeBuilder {
+  @override
   Map<String, List<String>> get buildExtensions {
-    return  {
+    return {
       '.spec': const ['_model.dart'],
     };
   }
@@ -15,9 +16,11 @@ class ModelCodeBuilder extends CodeBuilder {
   @override
   CodeGenerator? generator(String specifications) {
     //print("ModelCodeBuilder 1a");
-    ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
+    ModelSpecification modelSpecification =
+        ModelSpecification.fromJsonString(specifications);
     //print("ModelCodeBuilder 2a");
-    ModelCodeGenerator modelCodeGenerator = ModelCodeGenerator(modelSpecifications: modelSpecification);
+    ModelCodeGenerator modelCodeGenerator =
+        ModelCodeGenerator(modelSpecifications: modelSpecification);
     //print("ModelCodeBuilder 3");
     return modelCodeGenerator;
   }

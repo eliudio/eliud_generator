@@ -6,18 +6,20 @@ import 'code_builder.dart';
 
 /// A builder which builds an state class based on a `spec` file
 class ListStateCodeBuilder extends CodeBuilder {
+  @override
   Map<String, List<String>> get buildExtensions {
-    return  {
+    return {
       '.spec': const ['_list_state.dart'],
     };
   }
 
   @override
   CodeGenerator? generator(String specifications) {
-    ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
+    ModelSpecification modelSpecification =
+        ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateList) {
-      ListStateCodeGenerator stateCodeGenerator = ListStateCodeGenerator(
-          modelSpecifications: modelSpecification);
+      ListStateCodeGenerator stateCodeGenerator =
+          ListStateCodeGenerator(modelSpecifications: modelSpecification);
       return stateCodeGenerator;
     }
     return null;

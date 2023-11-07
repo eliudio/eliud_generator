@@ -6,18 +6,20 @@ import 'code_builder.dart';
 
 /// A builder which builds an dropdown class based on a `spec` file
 class DropdownButtonCodeBuilder extends CodeBuilder {
+  @override
   Map<String, List<String>> get buildExtensions {
-    return  {
+    return {
       '.spec': const ['_dropdown_button.dart'],
     };
   }
 
   @override
   CodeGenerator? generator(String specifications) {
-    ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
+    ModelSpecification modelSpecification =
+        ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateDropDownButton) {
-      DropdownButtonCodeGenerator dropdownButtonCodeGenerator = DropdownButtonCodeGenerator(
-          modelSpecifications: modelSpecification);
+      DropdownButtonCodeGenerator dropdownButtonCodeGenerator =
+          DropdownButtonCodeGenerator(modelSpecifications: modelSpecification);
       return dropdownButtonCodeGenerator;
     }
     return null;

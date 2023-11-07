@@ -5,6 +5,7 @@ import 'package:eliud_generator/src/transform/code_generator.dart';
 abstract class CodeBuilder extends Builder {
   CodeGenerator? generator(String specifications);
 
+  @override
   Future<void> build(BuildStep buildStep) async {
     //print("1");
     String extension = buildExtensions[".spec"]!.first;
@@ -15,8 +16,9 @@ abstract class CodeBuilder extends Builder {
     //print("4");
     CodeGenerator? codeGenerator = generator(jsonString);
     //print("5");
-    if (codeGenerator != null)
+    if (codeGenerator != null) {
       await buildStep.writeAsString(output, codeGenerator.getCode());
+    }
     //print("6");
   }
 }

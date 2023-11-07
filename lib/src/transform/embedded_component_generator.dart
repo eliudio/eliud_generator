@@ -82,7 +82,7 @@ class \${id}InMemoryRepository implements \${id}Repository {
       int index = _index(value.documentID);
       if (index >= 0) items.removeAt(index);
       trigger(items);
-      return Future.value(value);
+      return Future.value();
     }
 
     Future<\${id}Model> update(\${id}Model value) {
@@ -166,7 +166,7 @@ const String _InMemoryRepositoryTemplateFooter = """
 """;
 
 class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
-  EmbeddedComponentCodeGenerator (String fileName): super(fileName: fileName);
+  EmbeddedComponentCodeGenerator(String fileName) : super(fileName: fileName);
 
   @override
   String getCode(List<ModelSpecificationPlus> modelSpecificationPlus) {
@@ -174,47 +174,59 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln(header());
     codeBuffer.writeln(process(_imports));
 
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        codeBuffer.writeln(process(_specificImports, parameters: <String, String> { '\${path}': spec.path }));
+        codeBuffer.writeln(process(_specificImports,
+            parameters: <String, String>{'\${path}': spec.path}));
       }
-    });
+    }
 
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        codeBuffer.writeln("typedef " + ms.id + "ListChanged(List<" + ms.id + "Model> values);");
+        codeBuffer.writeln(
+            "typedef ${ms.id}ListChanged(List<${ms.id}Model> values);");
       }
-    });
+    }
     codeBuffer.writeln();
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        codeBuffer.writeln(firstLowerCase(ms.id) + "sList(app, context, value, trigger) => EmbeddedComponentFactory." + firstLowerCase(ms.id) + "sList(app, context, value, trigger);");
+        codeBuffer.writeln(
+            "${firstLowerCase(ms.id)}sList(app, context, value, trigger) => EmbeddedComponentFactory.${firstLowerCase(ms.id)}sList(app, context, value, trigger);");
       }
-    });
+    }
     codeBuffer.writeln();
     codeBuffer.writeln("class EmbeddedComponentFactory {");
     codeBuffer.writeln();
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        codeBuffer.writeln(process(_InMemoryRepositoryMethod, parameters: <String, String> { "\${id}": ms.id,  "\${lid}": firstLowerCase(ms.id)}));
+        codeBuffer.writeln(process(_InMemoryRepositoryMethod,
+            parameters: <String, String>{
+              "\${id}": ms.id,
+              "\${lid}": firstLowerCase(ms.id)
+            }));
       }
-    });
+    }
     codeBuffer.writeln();
     codeBuffer.writeln("}");
     codeBuffer.writeln();
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateEmbeddedComponent) {
-        Map<String, String> parameters = <String, String> { '\${id}': ms.id,  '\${triggerSignature}': ms.id + "ListChanged"};
+        Map<String, String> parameters = <String, String>{
+          '\${id}': ms.id,
+          '\${triggerSignature}': "${ms.id}ListChanged"
+        };
 
-        codeBuffer.writeln(process(_InMemoryRepositoryTemplate, parameters: parameters));
-        codeBuffer.writeln(process(_InMemoryRepositoryTemplateFooter, parameters: parameters));
+        codeBuffer.writeln(
+            process(_InMemoryRepositoryTemplate, parameters: parameters));
+        codeBuffer.writeln(
+            process(_InMemoryRepositoryTemplateFooter, parameters: parameters));
       }
-    });
+    }
     return codeBuffer.toString();
   }
 }

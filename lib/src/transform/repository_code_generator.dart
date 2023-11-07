@@ -12,7 +12,7 @@ import 'package:eliud_core/core/base/repository_base.dart';
 
 typedef \${id}ModelTrigger(List<\${id}Model?> list);
 typedef \${id}Changed(\${id}Model? value);
-typedef \${id}ErrorHandler(o, e);
+typedef \${id}ErrorHandler = Function(dynamic o, dynamic e);
 
 abstract class \${id}Repository extends RepositoryBase<\${id}Model, \${id}Entity> {
   Future<\${id}Entity> addEntity(String documentID, \${id}Entity value);
@@ -52,8 +52,7 @@ const String _codeWithArgNoAppID = """
 """;
 
 class RepositoryCodeGenerator extends CodeGenerator {
-  RepositoryCodeGenerator({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  RepositoryCodeGenerator({required super.modelSpecifications});
 
 /*
   @override
@@ -66,8 +65,12 @@ class RepositoryCodeGenerator extends CodeGenerator {
   }
 
 */
+  @override
   String commonImports() {
-    return FirestoreHelper.commonImports(extraImports2(ModelSpecification.IMPORT_KEY_REPOSITORY), modelSpecifications, "repository");
+    return FirestoreHelper.commonImports(
+        extraImports2(ModelSpecification.IMPORT_KEY_REPOSITORY),
+        modelSpecifications,
+        "repository");
   }
 
   @override

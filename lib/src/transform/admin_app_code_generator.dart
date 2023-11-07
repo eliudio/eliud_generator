@@ -5,7 +5,6 @@ import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
 String _imports(String packageName, List<String> depends) => """
-
 import 'package:eliud_core/tools/admin_app_base.dart';
 import '../tools/bespoke_models.dart';
 import 'package:eliud_core/tools/common_tools.dart';
@@ -19,7 +18,7 @@ import 'package:eliud_core/model/drawer_model.dart';
 import 'package:eliud_core/model/menu_item_model.dart';
 import 'package:eliud_core/model/home_menu_model.dart';
 
-""" + base_imports(packageName, repo: true, model: true, entity: true, depends: depends);
+${base_imports(packageName, repo: true, model: true, entity: true, depends: depends)}""";
 
 const String _header = """
 class AdminApp extends AdminAppInstallerBase {
@@ -32,6 +31,9 @@ class AdminApp extends AdminAppInstallerBase {
   final RgbModel selectedMenuItemColor;
   final RgbModel backgroundColor;
   
+  /**
+   * Construct the AdminApp
+   */
   AdminApp(this.appId, this._drawer, this._endDrawer, this._appBar, this._homeMenu, this.menuItemColor, this.selectedMenuItemColor, this.backgroundColor);
 
 """;
@@ -40,6 +42,9 @@ class AdminApp extends AdminAppInstallerBase {
 const String _headerAdminMenuDef = """
 class AdminMenu extends AdminAppMenuInstallerBase {
 
+  /**
+   * Construct the admin menu
+   */
   Future<MenuDefModel> menu(AppModel app) async {
     var menuItems = <MenuItemModel>[];
 """;
@@ -70,16 +75,18 @@ const String _footerAdminMenuDef = """
 }
 """;
 
-
 // Page
 const String _page = """
+  /**
+   * Retrieve the admin pages
+   */
   PageModel _\${lid}sPages() {
     List<BodyComponentModel> components = [];
     components.add(BodyComponentModel(
       documentID: "internalWidget-\${lid}s", componentName: "\${pkgName}_internalWidgets", componentId: "\${lid}s"));
     PageModel page = PageModel(
         conditions: StorageConditionsModel(
-          privilegeLevelRequired: PrivilegeLevelRequiredSimple.OwnerPrivilegeRequiredSimple,
+          privilegeLevelRequired: PrivilegeLevelRequiredSimple.ownerPrivilegeRequiredSimple,
         ),
         appId: appId,
         documentID: "\${pkgName}_\${lowid}s_page",
@@ -90,7 +97,7 @@ const String _page = """
         appBar: _appBar,
         homeMenu: _homeMenu,
         bodyComponents: components,
-        layout: PageLayout.OnlyTheFirstComponent
+        layout: PageLayout.onlyTheFirstComponent
     );
     return page;
   }
@@ -114,6 +121,9 @@ const String _setupAdminPagesFooter = """
     ;
   }
 
+  /**
+   * Run the admin, i.e setup all admin pages
+   */
   @override
   Future<void> run() async {
     return _setupAdminPages();
@@ -125,8 +135,11 @@ const String _setupAdminPagesFooter = """
 const String _headerRun = """
 class AdminAppWiper extends AdminAppWiperBase {
 
+  /**
+   * Delete all admin pages
+   */
   @override
-  Future<void> deleteAll(String appId) async {
+  Future<void> deleteAll(String appID) async {
 """;
 
 const String _footerOther = """
@@ -159,12 +172,15 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
     StringBuffer codeBuffer = StringBuffer();
     var pkgName = sharedPackageName(modelSpecificationPlus);
     codeBuffer.write(header());
-    codeBuffer.writeln(process(_imports(sharedPackageName(modelSpecificationPlus), mergeAllDepends(modelSpecificationPlus))));
+    codeBuffer.writeln(process(_imports(
+        sharedPackageName(modelSpecificationPlus),
+        mergeAllDepends(modelSpecificationPlus))));
     codeBuffer.writeln(process(_header));
 
     // Pages
-    modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
+    for (var spec in modelSpecificationPlus) {
+      if ((spec.modelSpecification.generate.generateList) &&
+          (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
         codeBuffer.writeln(process(_page, parameters: <String, String>{
           '\${id}': spec.modelSpecification.id,
           '\${lid}': firstLowerCase(spec.modelSpecification.id),
@@ -172,68 +188,74 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
           '\${pkgName}': pkgName,
         }));
       }
-    });
+    }
 
     // _setupAdminPages
     codeBuffer.writeln(process(_setupAdminPagesHeader));
     bool first = true;
-    modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
-        if (first)
-          codeBuffer.writeln(process(_setupAdminPagesFirstPage, parameters: <String, String>{
+    for (var spec in modelSpecificationPlus) {
+      if ((spec.modelSpecification.generate.generateList) &&
+          (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
+        if (first) {
+          codeBuffer.writeln(
+              process(_setupAdminPagesFirstPage, parameters: <String, String>{
             '\${id}': spec.modelSpecification.id,
             '\${lid}': firstLowerCase(spec.modelSpecification.id),
             '\${lowid}': allLowerCase(spec.modelSpecification.id)
           }));
-        else
-          codeBuffer.writeln(process(_setupAdminPagesOtherPages, parameters: <String, String>{
+        } else {
+          codeBuffer.writeln(
+              process(_setupAdminPagesOtherPages, parameters: <String, String>{
             '\${id}': spec.modelSpecification.id,
             '\${lid}': firstLowerCase(spec.modelSpecification.id),
             '\${lowid}': allLowerCase(spec.modelSpecification.id)
           }));
+        }
         first = false;
       }
-    });
+    }
     codeBuffer.writeln(process(_setupAdminPagesFooter));
 
     codeBuffer.writeln(process(_footer));
 
-
-
-
     // MenuDef
     codeBuffer.writeln(process(_headerAdminMenuDef));
-    modelSpecificationPlus.forEach((spec) {
-      if ((spec.modelSpecification.generate.generateList) && (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
+    for (var spec in modelSpecificationPlus) {
+      if ((spec.modelSpecification.generate.generateList) &&
+          (!spec.modelSpecification.generate.generateEmbeddedComponent)) {
         codeBuffer.writeln(process(_menuItemDef, parameters: <String, String>{
           '\${id}': spec.modelSpecification.id,
           '\${lowid}': allLowerCase(spec.modelSpecification.id),
           '\${pkgName}': pkgName,
         }));
       }
-    });
-    codeBuffer.writeln(process(_footerAdminMenuDef, parameters: <String, String>{
+    }
+    codeBuffer
+        .writeln(process(_footerAdminMenuDef, parameters: <String, String>{
       '\${pkgName}': pkgName,
     }));
 
-
-
-
     codeBuffer.write(process(_headerRun));
 
-    modelSpecificationPlus.forEach((spec) {
+    for (var spec in modelSpecificationPlus) {
       if (spec.modelSpecification.generate.hasPersistentRepository) {
-        Map<String, String> parameters = <String, String>{ '\${lid}': firstLowerCase(spec.modelSpecification.id) };
-        if ((spec.modelSpecification.id != "Member") && (spec.modelSpecification.id != "App") && (spec.modelSpecification.generate.documentSubCollectionOf == null)) {
+        Map<String, String> parameters = <String, String>{
+          '\${lid}': firstLowerCase(spec.modelSpecification.id)
+        };
+        if ((spec.modelSpecification.id != "Member") &&
+            (spec.modelSpecification.id != "App") &&
+            (spec.modelSpecification.generate.documentSubCollectionOf ==
+                null)) {
           if (spec.modelSpecification.getIsAppModel()) {
             codeBuffer.write(process(_footerOther, parameters: parameters));
           } else {
-            codeBuffer.write(process(_footerOtherNoApp, parameters: parameters));
+            codeBuffer
+                .write(process(_footerOtherNoApp, parameters: parameters));
           }
         }
       }
-    });
-    Map<String, String> parameters = <String, String>{ '\${lid}': 'app' };
+    }
+    Map<String, String> parameters = <String, String>{'\${lid}': 'app'};
     codeBuffer.write(process(_footerApp, parameters: parameters));
     codeBuffer.writeln(process(_footerRun));
 

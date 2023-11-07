@@ -1,4 +1,3 @@
-import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
@@ -36,8 +35,7 @@ class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentStat
 """;
 
 class ComponentBlocCodeGenerator extends CodeGenerator {
-  ComponentBlocCodeGenerator({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  ComponentBlocCodeGenerator({required super.modelSpecifications});
 
   @override
   String commonImports() {
@@ -45,10 +43,14 @@ class ComponentBlocCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'dart:async';");
     headerBuffer.writeln("import 'package:bloc/bloc.dart';");
     headerBuffer.writeln();
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.modelFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentEventFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentStateFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.modelFileName()}"));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.componentEventFileName()}"));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.componentStateFileName()}"));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.repositoryFileName()}"));
     headerBuffer.writeln("import 'package:flutter/services.dart';");
     headerBuffer.writeln();
     if (uniqueAssociationTypes.isNotEmpty) headerBuffer.writeln();
@@ -59,11 +61,10 @@ class ComponentBlocCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(process(_code,
-        parameters: <String, String> {
-          '\${id}': modelSpecifications.id,
-          '\${lid}': firstLowerCase(modelSpecifications.id),
-        }));
+    codeBuffer.writeln(process(_code, parameters: <String, String>{
+      '\${id}': modelSpecifications.id,
+      '\${lid}': firstLowerCase(modelSpecifications.id),
+    }));
 
     return codeBuffer.toString();
   }

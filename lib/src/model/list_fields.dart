@@ -6,7 +6,11 @@ class ListFields {
   final bool? imageTitle;
   final bool? imageSubTitle;
 
-  ListFields({ required this.title, required this.subTitle, this.imageTitle = false, this.imageSubTitle = false});
+  ListFields(
+      {required this.title,
+      required this.subTitle,
+      this.imageTitle = false,
+      this.imageSubTitle = false});
 
   @override
   String toString() {

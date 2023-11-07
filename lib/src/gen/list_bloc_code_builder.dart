@@ -6,18 +6,20 @@ import 'code_builder.dart';
 
 /// A builder which builds a bloc based on a `spec` file
 class ListBlocCodeBuilder extends CodeBuilder {
+  @override
   Map<String, List<String>> get buildExtensions {
-    return  {
+    return {
       '.spec': const ['_list_bloc.dart'],
     };
   }
 
   @override
   CodeGenerator? generator(String specifications) {
-    ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
+    ModelSpecification modelSpecification =
+        ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateList) {
-      ListBlocCodeGenerator repositoryCodeGenerator = ListBlocCodeGenerator(
-          modelSpecifications: modelSpecification);
+      ListBlocCodeGenerator repositoryCodeGenerator =
+          ListBlocCodeGenerator(modelSpecifications: modelSpecification);
       return repositoryCodeGenerator;
     }
     return null;

@@ -6,16 +6,19 @@ import 'code_builder.dart';
 
 /// A builder which builds a model based on a `spec` file
 class EntityCodeBuilder extends CodeBuilder {
+  @override
   Map<String, List<String>> get buildExtensions {
-    return  {
+    return {
       '.spec': const ['_entity.dart'],
     };
   }
 
   @override
   CodeGenerator? generator(String specifications) {
-    ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
-    EntityCodeGenerator entityCodeGenerator = EntityCodeGenerator(modelSpecifications: modelSpecification);
+    ModelSpecification modelSpecification =
+        ModelSpecification.fromJsonString(specifications);
+    EntityCodeGenerator entityCodeGenerator =
+        EntityCodeGenerator(modelSpecifications: modelSpecification);
     return entityCodeGenerator;
   }
 }

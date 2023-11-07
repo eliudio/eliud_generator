@@ -1,5 +1,3 @@
-
-
 import 'package:eliud_generator/src/transform/cache_export_generator.dart';
 import 'package:eliud_generator/src/transform/code_generator_multi.dart';
 
@@ -13,7 +11,7 @@ class CacheExportBuilder extends CodeBuilderMulti {
   @override
   Map<String, List<String>> get buildExtensions {
     return const {
-      r'$lib$': const [ fileName ],
+      r'$lib$': [fileName],
     };
   }
 

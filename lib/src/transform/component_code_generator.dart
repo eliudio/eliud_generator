@@ -1,4 +1,3 @@
-import 'package:eliud_generator/src/model/model_spec.dart';
 import 'package:eliud_generator/src/tools/tool_set.dart';
 
 import 'code_generator.dart';
@@ -54,20 +53,23 @@ abstract class Abstract\${id}Component extends StatelessWidget {
 """;
 
 class ComponentCodeGenerator extends CodeGenerator {
-  ComponentCodeGenerator ({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  ComponentCodeGenerator({required super.modelSpecifications});
 
   @override
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
 
-
     headerBuffer.writeln();
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentBlocFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentEventFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.modelFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.repositoryFileName()));
-    headerBuffer.write(importString(modelSpecifications.packageName, "model/" + modelSpecifications.componentStateFileName()));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.componentBlocFileName()}"));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.componentEventFileName()}"));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.modelFileName()}"));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.repositoryFileName()}"));
+    headerBuffer.write(importString(modelSpecifications.packageName,
+        "model/${modelSpecifications.componentStateFileName()}"));
 
     headerBuffer.writeln();
     return headerBuffer.toString();
@@ -76,11 +78,10 @@ class ComponentCodeGenerator extends CodeGenerator {
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(process(_code,
-        parameters: <String, String> {
-          '\${id}': modelSpecifications.id,
-          '\${lid}': firstLowerCase(modelSpecifications.id),
-        }));
+    codeBuffer.writeln(process(_code, parameters: <String, String>{
+      '\${id}': modelSpecifications.id,
+      '\${lid}': firstLowerCase(modelSpecifications.id),
+    }));
     return codeBuffer.toString();
   }
 

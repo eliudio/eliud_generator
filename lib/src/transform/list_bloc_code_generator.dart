@@ -142,27 +142,29 @@ class \${id}ListBloc extends Bloc<\${id}ListEvent, \${id}ListState> {
 """;
 
 class ListBlocCodeGenerator extends CodeGenerator {
-  ListBlocCodeGenerator({required ModelSpecification modelSpecifications})
-      : super(modelSpecifications: modelSpecifications);
+  ListBlocCodeGenerator({required super.modelSpecifications});
 
-  Map<String, String> parameters(ModelSpecification modelSpecification) => <String, String>{
-    '\${id}': modelSpecifications.id,
-    '\${lid}': firstLowerCase(modelSpecifications.id),
-    "\${id_import}": camelcaseToUnderscore(modelSpecifications.id),
-    "\${package_name}": modelSpecifications.packageName
-  };
+  Map<String, String> parameters(ModelSpecification modelSpecification) =>
+      <String, String>{
+        '\${id}': modelSpecifications.id,
+        '\${lid}': firstLowerCase(modelSpecifications.id),
+        "\${id_import}": camelcaseToUnderscore(modelSpecifications.id),
+        "\${package_name}": modelSpecifications.packageName
+      };
 
   @override
   String commonImports() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(process(_imports, parameters: parameters(modelSpecifications)));
+    codeBuffer.writeln(
+        process(_imports, parameters: parameters(modelSpecifications)));
     return codeBuffer.toString();
   }
 
   @override
   String body() {
     StringBuffer codeBuffer = StringBuffer();
-    codeBuffer.writeln(process(_code, parameters: parameters(modelSpecifications)));
+    codeBuffer
+        .writeln(process(_code, parameters: parameters(modelSpecifications)));
     return codeBuffer.toString();
   }
 

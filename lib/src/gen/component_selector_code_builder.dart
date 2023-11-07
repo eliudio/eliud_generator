@@ -6,18 +6,21 @@ import 'code_builder.dart';
 
 /// A builder which builds a selector class based on a `spec` file
 class ComponentSelectorCodeBuilder extends CodeBuilder {
+  @override
   Map<String, List<String>> get buildExtensions {
-    return  {
+    return {
       '.spec': const ['_component_selector.dart'],
     };
   }
 
   @override
   CodeGenerator? generator(String specifications) {
-    ModelSpecification modelSpecification = ModelSpecification.fromJsonString(specifications);
+    ModelSpecification modelSpecification =
+        ModelSpecification.fromJsonString(specifications);
     if (modelSpecification.generate.generateComponent) {
-      ComponentSelectorCodeGenerator componentSelectorCodeGenerator = ComponentSelectorCodeGenerator(
-          modelSpecifications: modelSpecification);
+      ComponentSelectorCodeGenerator componentSelectorCodeGenerator =
+          ComponentSelectorCodeGenerator(
+              modelSpecifications: modelSpecification);
       return componentSelectorCodeGenerator;
     }
     return null;
