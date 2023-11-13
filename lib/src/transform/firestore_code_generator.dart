@@ -11,28 +11,49 @@ import 'package:eliud_core/tools/query/query_tools.dart';
 import 'package:eliud_core/tools/firestore/firestore_tools.dart';
 import 'package:eliud_core/tools/common_tools.dart';
 
+/* 
+ * \${id}Firestore is the firestore implementation of \${id}Repository
+ */
 class \${id}Firestore implements \${id}Repository {
+  /* 
+   * transform a map into an entity
+   */
   @override
   \${id}Entity? fromMap(Object? o, {Map<String, String>? newDocumentIds}) {
     return \${id}Entity.fromMap(o, newDocumentIds: newDocumentIds);
   }
 
+  /* 
+   * add an entity to the repository
+   */
   Future<\${id}Entity> addEntity(String documentID, \${id}Entity value) {
     return \${lid}Collection.doc(documentID).set(value.toDocument()).then((_) => value)\${thenStatementEntity};
   }
 
+  /* 
+   * Update an entity
+   */
   Future<\${id}Entity> updateEntity(String documentID, \${id}Entity value) {
     return \${lid}Collection.doc(documentID).update(value.toDocument()).then((_) => value)\${thenStatementEntity};
   }
 
+  /* 
+   * Add a model to the repository
+   */
   Future<\${id}Model> add(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID).set(value.toEntity(\${appIdDef4}).\${copyStatement}toDocument()).then((_) => value)\${thenStatement};
   }
 
+  /* 
+   * Delete a model
+   */
   Future<void> delete(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID).delete();
   }
 
+  /* 
+   * Update a model
+   */
   Future<\${id}Model> update(\${id}Model value) {
     return \${lid}Collection.doc(value.documentID).update(value.toEntity(\${appIdDef4}).\${copyStatement}toDocument()).then((_) => value)\${thenStatement};
   }
@@ -44,6 +65,9 @@ class \${id}Firestore implements \${id}Repository {
   Future<\${id}Model?> _populateDocPlus(DocumentSnapshot value) async {
     return \${id}Model.fromEntityPlus(value.id, \${id}Entity.fromMap(value.data()), \${appIdDef});  }
 
+  /* 
+   * Retrieve an entity from the repository with id
+   */
   Future<\${id}Entity?> getEntity(String? id, {Function(Exception)? onError}) async {
     try {
       var collection = \${lid}Collection.doc(id);
@@ -59,6 +83,9 @@ class \${id}Firestore implements \${id}Repository {
     };
   }
 
+  /* 
+   * Retrieve an model from the repository with id
+   */
   Future<\${id}Model?> get(String? id, {Function(Exception)? onError}) async {
     try {
       var collection = \${lid}Collection.doc(id);
@@ -74,6 +101,9 @@ class \${id}Firestore implements \${id}Repository {
     };
   }
 
+  /* 
+   * Listen to the repository using a query. Retrieve models
+   */
   StreamSubscription<List<\${id}Model?>> listen(\${id}ModelTrigger trigger, {String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery}) {
     Stream<List<\${id}Model?>> stream;
     stream = getQuery(\${collection}, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots()
@@ -88,6 +118,9 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
+  /* 
+   * Listen to the repository using a query. Retrieve models and linked models
+   */
   StreamSubscription<List<\${id}Model?>> listenWithDetails(\${id}ModelTrigger trigger, {String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery}) {
     Stream<List<\${id}Model?>> stream;
     stream = getQuery(\${collection}, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots()
@@ -102,6 +135,9 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
+  /* 
+   * Listen to 1 document in the repository
+   */
   @override
   StreamSubscription<\${id}Model?> listenTo(String documentId, \${id}Changed changed, {\${id}ErrorHandler? errorHandler}) {
     var stream = \${lid}Collection.doc(documentId)
@@ -120,6 +156,9 @@ class \${id}Firestore implements \${id}Repository {
     return theStream;
   }
 
+  /* 
+   * Retrieve values/models from the repository
+   */
   Stream<List<\${id}Model?>> values({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
     DocumentSnapshot? lastDoc;
     Stream<List<\${id}Model?>> _values = getQuery(\${lid}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots().asyncMap((snapshot) {
@@ -132,6 +171,9 @@ class \${id}Firestore implements \${id}Repository {
     return _values;
   }
 
+  /* 
+   * Retrieve values/models, including linked models, from the repository
+   */
   Stream<List<\${id}Model?>> valuesWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
     DocumentSnapshot? lastDoc;
     Stream<List<\${id}Model?>> _values = getQuery(\${lid}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?, limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.snapshots().asyncMap((snapshot) {
@@ -144,6 +186,9 @@ class \${id}Firestore implements \${id}Repository {
     return _values;
   }
 
+  /* 
+   * Retrieve values/models from the repository
+   */
   Future<List<\${id}Model?>> valuesList({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) async {
     DocumentSnapshot? lastDoc;
     List<\${id}Model?> _values = await getQuery(\${lid}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.get().then((value) {
@@ -157,6 +202,9 @@ class \${id}Firestore implements \${id}Repository {
     return _values;
   }
 
+  /* 
+   * Retrieve values/models, including linked models, from the repository
+   */
   Future<List<\${id}Model?>> valuesListWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) async {
     DocumentSnapshot? lastDoc;
     List<\${id}Model?> _values = await getQuery(\${lid}Collection, orderBy: orderBy,  descending: descending,  startAfter: startAfter as DocumentSnapshot?,  limit: limit, privilegeLevel: privilegeLevel, eliudQuery: \${eliudQuery}, \${appIdDef3})!.get().then((value) {
@@ -170,8 +218,14 @@ class \${id}Firestore implements \${id}Repository {
     return _values;
   }
 
+  /* 
+   * Flush the repository
+   */
   void flush() {}
 
+  /* 
+   * Delete all entries in the repository
+   */
   Future<void> deleteAll() {
     return \${lid}Collection.get().then((snapshot) {
       for (DocumentSnapshot ds in snapshot.docs){
@@ -180,14 +234,23 @@ class \${id}Firestore implements \${id}Repository {
     });
   }
 
+  /* 
+   * Retrieve the subcollection of this repository
+   */
   dynamic getSubCollection(String documentId, String name) {
     return \${lid}Collection.doc(documentId).collection(name);
   }
 
+  /* 
+   * Retrieve a timestamp
+   */
   String? timeStampToString(dynamic timeStamp) {
     return firestoreTimeStampToString(timeStamp);
   } 
 
+  /* 
+   * change 1 a fieldvalue for 1 document  
+   */
   Future<\${id}Model?> changeValue(String documentId, String fieldName, num changeByThisValue) {
     var change = FieldValue.increment(changeByThisValue);
     return \${lid}Collection.doc(documentId).update({fieldName: change}).then((v) => get(documentId));

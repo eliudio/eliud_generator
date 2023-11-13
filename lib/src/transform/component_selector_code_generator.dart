@@ -27,7 +27,14 @@ import '\${path}_list_event.dart';
 import '\${path}_list_state.dart';
 import '\${path}_model.dart';
 
+/* 
+ * \${id}ComponentSelector is a component selector for \${id}, allowing to select a \${id} component
+ */
 class \${id}ComponentSelector extends ComponentSelector {
+
+  /* 
+   * createSelectWidget creates the widget
+   */
   @override
   Widget createSelectWidget(BuildContext context, AppModel app, int privilegeLevel, double height,
       SelectComponent selected, editor) {
@@ -38,7 +45,7 @@ class \${id}ComponentSelector extends ComponentSelector {
           \${lid}Repository:
               \${lid}Repository(appId: appId)!,
           )..add(Load\${id}List()),
-      child: Select\${id}Widget(app: app,
+      child: _Select\${id}Widget(app: app,
           height: height,
           containerPrivilege: privilegeLevel,
           selected: selected,
@@ -47,14 +54,17 @@ class \${id}ComponentSelector extends ComponentSelector {
   }
 }
 
-class Select\${id}Widget extends StatefulWidget {
+/* 
+ * _Select\${id}Widget 
+ */
+class _Select\${id}Widget extends StatefulWidget {
   final AppModel app;
   final double height;
   final SelectComponent selected;
   final int containerPrivilege;
   final ComponentEditorConstructor editorConstructor;
 
-  const Select\${id}Widget(
+  const _Select\${id}Widget(
       {Key? key,
       required this.app,
       required this.containerPrivilege,
@@ -64,12 +74,12 @@ class Select\${id}Widget extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<Select\${id}Widget> createState() {
+  State<_Select\${id}Widget> createState() {
     return _Select\${id}WidgetState();
   }
 }
 
-class _Select\${id}WidgetState extends State<Select\${id}Widget> with TickerProviderStateMixin {
+class _Select\${id}WidgetState extends State<_Select\${id}Widget> with TickerProviderStateMixin {
   TabController? _privilegeTabController;
   final List<String> _privilegeItems = ['No', 'L1', 'L2', 'Owner'];
   final int _initialPrivilege = 0;

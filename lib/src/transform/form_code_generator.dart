@@ -20,7 +20,7 @@ import 'package:eliud_core/tools/common_tools.dart';
 import 'package:eliud_core/style/style_registry.dart';
 import 'package:eliud_core/style/admin/admin_form_style.dart';
 
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 
 import 'package:intl/intl.dart';
 
@@ -68,7 +68,7 @@ class \${className}Form extends StatelessWidget {
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormEvent(value: value)),
   
-        child: My\${className}Form(app:app, submitAction: submitAction, formAction: formAction),
+        child: _My\${className}Form(app:app, submitAction: submitAction, formAction: formAction),
           );
     } if (formAction == FormAction.showPreloadedData) {
       return BlocProvider<\${id}FormBloc >(
@@ -76,7 +76,7 @@ class \${className}Form extends StatelessWidget {
                                        \${constructorParameters}
                                                 )..add(Initialise\${id}FormNoLoadEvent(value: value)),
   
-        child: My\${className}Form(app:app, submitAction: submitAction, formAction: formAction),
+        child: _My\${className}Form(app:app, submitAction: submitAction, formAction: formAction),
           );
     } else {
       return Scaffold(
@@ -86,7 +86,7 @@ class \${className}Form extends StatelessWidget {
                                        \${constructorParameters}
                                                 )..add((formAction == FormAction.updateAction ? Initialise\${id}FormEvent(value: value) : InitialiseNew\${id}FormEvent())),
   
-        child: My\${className}Form(app: app, submitAction: submitAction, formAction: formAction),
+        child: _My\${className}Form(app: app, submitAction: submitAction, formAction: formAction),
           ));
     }
   }
@@ -95,14 +95,14 @@ class \${className}Form extends StatelessWidget {
 """;
 
 const String _myXyzFormString = """
-class My\${className}Form extends StatefulWidget {
+class _My\${className}Form extends StatefulWidget {
   final AppModel app;
   final FormAction? formAction;
   final ActionModel? submitAction;
 
-  My\${className}Form({required this.app, this.formAction, this.submitAction});
+  _My\${className}Form({required this.app, this.formAction, this.submitAction});
 
-  State<My\${className}Form> createState() => _My\${className}FormState(this.formAction);
+  State<_My\${className}Form> createState() => _My\${className}FormState(this.formAction);
 }
 
 """;
@@ -652,7 +652,7 @@ class RealFormCodeGenerator extends CodeGenerator {
   String _xyzFormState() {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln(
-        "class _My${className}FormState extends State<My${className}Form> {");
+        "class _My${className}FormState extends State<_My${className}Form> {");
     codeBuffer.writeln(_xyzFormStateMemberData());
     codeBuffer.writeln(_xyzFormStateFieldMemberData());
     codeBuffer.writeln(_xyzFormStateConstructor());

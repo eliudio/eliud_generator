@@ -15,8 +15,14 @@ import 'abstract_repository_singleton.dart';
 """;
 
 const String _code = """
+/* 
+ * Component registry contains a list of components
+ */
 class ComponentRegistry {
 
+  /* 
+   * Initialise the component registry
+   */
   void init() {
 \${register}
   }

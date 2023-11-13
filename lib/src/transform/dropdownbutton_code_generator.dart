@@ -34,6 +34,9 @@ const String _code = """
 
 typedef \${id}Changed(String? value, int? privilegeLevel,);
 
+/* 
+ * \${id}DropdownButtonWidget is the drop down widget to allow to select an instance of \${id}
+ */
 class \${id}DropdownButtonWidget extends StatefulWidget {
   final AppModel app;
   final int? privilegeLevel;
@@ -41,19 +44,25 @@ class \${id}DropdownButtonWidget extends StatefulWidget {
   final \${id}Changed? trigger;
   final bool? optional;
 
+  /* 
+   * construct a \${id}DropdownButtonWidget
+   */
   \${id}DropdownButtonWidget({ required this.app, this.privilegeLevel, this.value, this.trigger, this.optional, Key? key }): super(key: key);
 
+  /* 
+   * create state of \${id}DropdownButtonWidget
+   */
   @override
   State<StatefulWidget> createState() {
-    return \${id}DropdownButtonWidgetState(value);
+    return _\${id}DropdownButtonWidgetState(value);
   }
 }
 
-class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> {
+class _\${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> {
   \${id}ListBloc? bloc;
   String? value;
 
-  \${id}DropdownButtonWidgetState(this.value);
+  _\${id}DropdownButtonWidgetState(this.value);
 
   @override
   void didChangeDependencies() {
@@ -106,7 +115,7 @@ class \${id}DropdownButtonWidgetState extends State<\${id}DropdownButtonWidget> 
                   height: 100.0,
                   child: new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: widgets(element),
+                    children: _widgets(element),
                   ),
                 )));
           });
@@ -241,7 +250,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     StringBuffer childCodeBuffer = StringBuffer();
 
     childCodeBuffer.writeln(
-        "List<Widget> widgets(${modelSpecifications.id}Model value) {");
+        "List<Widget> _widgets(${modelSpecifications.id}Model value) {");
     childCodeBuffer.writeln("var app = widget.app;");
     childCodeBuffer.writeln("var widgets = <Widget>[];");
     String? title = modelSpecifications.listFields == null

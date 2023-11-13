@@ -26,6 +26,9 @@ import '../\${path}_repository.dart';
 """;
 
 const String _InMemoryRepositoryMethod = """
+/* 
+ * \${lid}sList function to construct a list of \${id}Model
+ */
 static Widget \${lid}sList(AppModel app, BuildContext context, List<\${id}Model> values, \${id}ListChanged trigger) {
   \${id}InMemoryRepository inMemoryRepository = \${id}InMemoryRepository(trigger, values,);
   return MultiBlocProvider(
@@ -42,11 +45,17 @@ static Widget \${lid}sList(AppModel app, BuildContext context, List<\${id}Model>
 """;
 
 const String _InMemoryRepositoryTemplate = """
+/* 
+ * \${id}InMemoryRepository is an in memory implementation of \${id}Repository
+ */
 class \${id}InMemoryRepository implements \${id}Repository {
     final List<\${id}Model> items;
     final \${triggerSignature} trigger;
     Stream<List<\${id}Model>>? theValues;
 
+    /* 
+     * Construct the \${id}InMemoryRepository
+     */
     \${id}InMemoryRepository(this.trigger, this.items) {
         List<List<\${id}Model>> myList = <List<\${id}Model>>[];
         if (items != null) myList.add(items);
@@ -64,20 +73,32 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return -1;
     }
 
+    /* 
+     * Add an entity
+     */
     Future<\${id}Entity> addEntity(String documentID, \${id}Entity value) {
       throw Exception('Not implemented'); 
     }
 
+    /* 
+     * Update an entity
+     */
     Future<\${id}Entity> updateEntity(String documentID, \${id}Entity value) {
       throw Exception('Not implemented'); 
     }
 
+    /* 
+     * Update a model
+     */
     Future<\${id}Model> add(\${id}Model value) {
         items.add(value.copyWith(documentID: newRandomKey()));
         trigger(items);
         return Future.value(value);
     }
 
+    /* 
+     * Delete a model
+     */
     Future<void> delete(\${id}Model value) {
       int index = _index(value.documentID);
       if (index >= 0) items.removeAt(index);
@@ -85,6 +106,9 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return Future.value();
     }
 
+    /* 
+     * Update a model
+     */
     Future<\${id}Model> update(\${id}Model value) {
       int index = _index(value.documentID);
       if (index >= 0) {
@@ -94,6 +118,9 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return Future.value(value);
     }
 
+    /* 
+     * Get a model
+     */
     Future<\${id}Model> get(String? id, { Function(Exception)? onError }) {
       int index = _index(id!);
       var completer = new Completer<\${id}Model>();
@@ -101,26 +128,44 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return completer.future;
     }
 
+    /* 
+     * Retrieve to a list of \${id}Model base on a query
+     */
     Stream<List<\${id}Model>> values({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
       return theValues!;
     }
     
+    /* 
+     * Retrieve to a list of \${id}Model, including linked models base on a query
+     */
     Stream<List<\${id}Model>> valuesWithDetails({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
       return theValues!;
     }
     
+    /* 
+     * Subscribe to a list of \${id}Model base on a query
+     */
     @override
     StreamSubscription<List<\${id}Model>> listen(trigger, { String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery }) {
       return theValues!.listen((theList) => trigger(theList));
     }
   
+    /* 
+     * Subscribe to a list of \${id}Model, including linked models, base on a query
+     */
     @override
     StreamSubscription<List<\${id}Model>> listenWithDetails(trigger, { String? orderBy, bool? descending, Object? startAfter, int? limit, int? privilegeLevel, EliudQuery? eliudQuery }) {
       return theValues!.listen((theList) => trigger(theList));
     }
     
+    /* 
+     * Flush the repository
+     */
     void flush() {}
 
+    /* 
+     * Retrieve the list of models
+     */
     Future<List<\${id}Model>> valuesList({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
       return Future.value(items);
     }
@@ -129,16 +174,25 @@ class \${id}InMemoryRepository implements \${id}Repository {
       return Future.value(items);
     }
 
+    /* 
+     * Retrieve a subcollection of this collection
+     */
     @override
     getSubCollection(String documentId, String name) {
       throw UnimplementedError();
     }
 
+  /* 
+   * Retrieve a timestamp
+   */
   @override
   String timeStampToString(timeStamp) {
     throw UnimplementedError();
   }
   
+  /* 
+   * Subscribe to 1 document / 1 model
+   */
   @override
   StreamSubscription<\${id}Model> listenTo(String documentId, \${id}Changed changed, {\${id}ErrorHandler? errorHandler}) {
     throw UnimplementedError();

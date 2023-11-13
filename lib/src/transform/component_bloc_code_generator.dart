@@ -16,6 +16,9 @@ class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentStat
     });
   }
 
+  /*
+   * Construct \${id}ComponentBloc
+   */
   \${id}ComponentBloc({ this.\${lid}Repository }): super(\${id}ComponentUninitialized()) {
     on <Fetch\${id}Component> ((event, emit) {
       _mapLoad\${id}ComponentUpdateToState(event.id!);
@@ -25,6 +28,9 @@ class \${id}ComponentBloc extends Bloc<\${id}ComponentEvent, \${id}ComponentStat
     });
   }
 
+  /*
+   * Close the \${id}ComponentBloc
+   */
   @override
   Future<void> close() {
     _\${lid}Subscription?.cancel();
