@@ -5,8 +5,8 @@ import 'code_generator.dart';
 
 String _imports(String packageName, List<String>? depends) =>
     """import 'dart:async';
-import 'package:eliud_core/tools/query/query_tools.dart';
-import 'package:eliud_core/tools/common_tools.dart';
+import 'package:eliud_core_model/tools/query/query_tools.dart';
+import 'package:eliud_core_model/tools/common_tools.dart';
 import 'package:$packageName/model/\${filename}_model.dart';
 import 'package:$packageName/model/\${filename}_repository.dart';
 

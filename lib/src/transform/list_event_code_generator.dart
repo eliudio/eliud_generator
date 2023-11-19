@@ -82,7 +82,7 @@ class ListEventCodeGenerator extends CodeGenerator {
   String commonImports() {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer
-        .writeln("import 'package:eliud_core/tools/query/query_tools.dart';");
+        .writeln("import 'package:eliud_core_model/tools/query/query_tools.dart';");
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
     headerBuffer.write(importString(modelSpecifications.packageName,
         "model/${modelSpecifications.modelFileName()}"));

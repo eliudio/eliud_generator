@@ -3,32 +3,29 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName) => """
-import 'package:eliud_core/core/blocs/access/access_bloc.dart';
-import 'package:eliud_core/core/blocs/access/state/access_state.dart';
-import 'package:eliud_core/core/blocs/access/state/access_determined.dart';
-import 'package:eliud_core/style/style_registry.dart';
-import 'package:eliud_core/tools/has_fab.dart';
+import 'package:eliud_core_model/apis/apis.dart';
+import 'package:eliud_core_model/tools/route_builders/route_builders.dart';
+import 'package:eliud_core_model/style/style_registry.dart';
+import 'package:eliud_core_model/tools/etc/has_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:eliud_core/tools/screen_size.dart';
-import 'package:eliud_core/model/background_model.dart';
-import 'package:eliud_core/tools/delete_snackbar.dart';
-import 'package:eliud_core/tools/router_builders.dart';
-import 'package:eliud_core/tools/etc.dart';
-import 'package:eliud_core/tools/enums.dart';
-import 'package:eliud_core/eliud.dart';
-import 'package:eliud_core/style/frontend/has_text.dart';
+import 'package:eliud_core_model/tools/etc/screen_size.dart';
+import 'package:eliud_core_model/model/background_model.dart';
+import 'package:eliud_core_model/tools/etc/delete_snackbar.dart';
+import 'package:eliud_core_model/tools/etc/etc.dart';
+import 'package:eliud_core_model/tools/etc/enums.dart';
+import 'package:eliud_core_model/style/frontend/has_text.dart';
 
 import 'package:$packageName/model/\${importprefix}_list_event.dart';
 import 'package:$packageName/model/\${importprefix}_list_state.dart';
 import 'package:$packageName/model/\${importprefix}_list_bloc.dart';
 import 'package:$packageName/model/\${importprefix}_model.dart';
 
-import 'package:eliud_core/model/app_model.dart';
+import 'package:eliud_core_model/model/app_model.dart';
 
 """;
 
@@ -73,7 +70,8 @@ class ListCodeGenerator extends CodeGenerator {
   String mainClass() {
     var condition;
     if (modelSpecifications.id != "Member") {
-      condition = "!accessState.memberIsOwner(widget.app.documentID) ? null : ";
+      condition = "!Apis.apis().getCoreApi().memberIsOwner(context, widget.app.documentID) ? null : ";
+
     } else {
       condition = " ";
     }
@@ -192,13 +190,12 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
   Widget? fab(BuildContext context) {
     if ((readOnly != null) && readOnly!) return null;
     var state = \${id}ListWidgetState();
-    var accessState = AccessBloc.getState(context);
-    return state.fab(context, accessState);
+    return state.fab(context,);
   }
 }
 
 class \${id}ListWidgetState extends State<\${id}ListWidget> {
-  Widget? fab(BuildContext aContext, AccessState accessState) {
+  Widget? fab(BuildContext aContext) {
     return  \${allowAddItemsCondition}
       StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().floatingActionButton(widget.app, context, 'PageFloatBtnTag', Icon(Icons.add),
       onPressed: () {
@@ -216,9 +213,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccessBloc, AccessState>(
-        builder: (context, accessState) {
-      if (accessState is AccessDetermined) {
+    return Apis.apis().getCoreApi().buildWhenAccessDetermined(widget.app, (context) {
         return BlocBuilder<\${id}ListBloc, \${id}ListState>(builder: (context, state) {
           if (state is \${id}ListLoading) {
             return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
@@ -226,7 +221,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
             final values = state.values;
             if ((widget.isEmbedded != null) && widget.isEmbedded!) {
               var children = <Widget>[];
-              children.add(theList(context, values, accessState));
+              children.add(theList(context, values, ));
               children.add(
                   StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().button(widget.app,
                       context, label: 'Add',
@@ -248,21 +243,19 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
                 children: children
               );
             } else {
-              return theList(context, values, accessState);
+              return theList(context, values, );
             }
           } else {
             return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
           }
         });
-      } else {
-        return StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().progressIndicator(widget.app, context);
-      }
     });
   }
   
-  Widget theList(BuildContext context, values, AccessState accessState) {
+  Widget theList(BuildContext context, values, ) {
+    var member = Apis.apis().getCoreApi().getMember(context);
     return Container(
-      decoration: widget.listBackground == null ? StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().boxDecorator(widget.app, context, accessState.getMember()) : BoxDecorationHelper.boxDecoration(widget.app, accessState.getMember(), widget.listBackground),
+      decoration: widget.listBackground == null ? StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().boxDecorator(widget.app, context, member) : BoxDecorationHelper.boxDecoration(widget.app, member, widget.listBackground),
       child: ListView.separated(
         separatorBuilder: (context, index) => StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().divider(widget.app, context),
         shrinkWrap: true,

@@ -6,9 +6,10 @@ import 'code_generator_multi.dart';
 
 const String _imports = """
 import '../model/internal_component.dart';
-import 'package:eliud_core/core/registry.dart';
-import 'package:eliud_core/tools/component/component_spec.dart';
+import 'package:eliud_core_model/tools/component/component_spec.dart';
 import 'abstract_repository_singleton.dart';
+import 'package:eliud_core_model/tools/component/component_constructor.dart';
+import 'package:eliud_core_model/apis/apis.dart';
 
 \${import}
 
@@ -23,9 +24,7 @@ class ComponentRegistry {
   /* 
    * Initialise the component registry
    */
-  void init() {
 \${register}
-  }
 }
 
 """;
@@ -46,10 +45,6 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
       String path = spec.path;
       if (spec.modelSpecification.generate.isExtension) {
         import.writeln(
-            "import '../extensions/${camelcaseToUnderscore(spec.modelSpecification.id)}_component.dart';");
-        import.writeln(
-            "import '../editors/${camelcaseToUnderscore(spec.modelSpecification.id)}_component_editor.dart';");
-        import.writeln(
             "import '${camelcaseToUnderscore(spec.modelSpecification.id)}_component_selector.dart';");
       }
     }
@@ -60,7 +55,19 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     StringBuffer register = StringBuffer();
 
     register.write(
-        "${spaces(4)}Registry.registry()!.addInternalComponents('$pkgName', [");
+        "${spaces(2)}init(");
+    for (var spec in modelSpecificationPlus) {
+      var id = spec.modelSpecification.id;
+      var lid = firstLowerCase(spec.modelSpecification.id);
+      if (spec.modelSpecification.generate.isExtension) {
+        register.write("ComponentConstructor ${lid}ComponentConstructorDefault, ComponentEditorConstructor ${lid}ComponentEditorConstructor, ");
+      }
+    }
+    register.writeln(") {");
+
+
+    register.write(
+        "${spaces(4)}Apis.apis().getRegistryApi().addInternalComponents('$pkgName', [");
     for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
@@ -71,25 +78,25 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     register.writeln();
 
     register.writeln(
-        '${spaces(4)}Registry.registry()!.register(componentName: "${pkgName}_internalWidgets", componentConstructor: ListComponentFactory());');
+        '${spaces(4)}Apis.apis().getRegistryApi().register(componentName: "${pkgName}_internalWidgets", componentConstructor: ListComponentFactory());');
     for (var spec in modelSpecificationPlus) {
       String path = spec.path;
       if (spec.modelSpecification.generate.isExtension) {
         register.writeln(
-            "${spaces(4)}Registry.registry()!.addDropDownSupporter(\"${firstLowerCase(spec.modelSpecification.id)}s\", DropdownButtonComponentFactory());");
+            "${spaces(4)}Apis.apis().getRegistryApi().addDropDownSupporter(\"${firstLowerCase(spec.modelSpecification.id)}s\", DropdownButtonComponentFactory());");
         register.writeln(
-            "${spaces(4)}Registry.registry()!.register(componentName: \"${firstLowerCase(spec.modelSpecification.id)}s\", componentConstructor: ${spec.modelSpecification.id}ComponentConstructorDefault());");
+            "${spaces(4)}Apis.apis().getRegistryApi().register(componentName: \"${firstLowerCase(spec.modelSpecification.id)}s\", componentConstructor: ${firstLowerCase(spec.modelSpecification.id)}ComponentConstructorDefault);");
       }
     }
 
     register.writeln(
-        "${spaces(4)}Registry.registry()!.addComponentSpec('$pkgName', '$pkgFriendlyName', [");
+        "${spaces(4)}Apis.apis().getRegistryApi().addComponentSpec('$pkgName', '$pkgFriendlyName', [");
     for (var spec in modelSpecificationPlus) {
       var id = spec.modelSpecification.id;
       var lid = firstLowerCase(spec.modelSpecification.id);
       if (spec.modelSpecification.generate.isExtension) {
         register.writeln(
-            "${spaces(6)}ComponentSpec('${firstLowerCase(id)}s', ${id}ComponentConstructorDefault(), ${id}ComponentSelector(), ${id}ComponentEditorConstructor(), ({String? appId}) => ${lid}Repository(appId: appId)! ), ");
+            "${spaces(6)}ComponentSpec('${firstLowerCase(id)}s', ${lid}ComponentConstructorDefault, ${id}ComponentSelector(), ${lid}ComponentEditorConstructor, ({String? appId}) => ${lid}Repository(appId: appId)! ), ");
       }
     }
     register.writeln("${spaces(4)}]);");
@@ -100,10 +107,12 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
           (spec.modelSpecification.generate.generateRepositorySingleton) &&
           (spec.modelSpecification.generate.isAppSubCollection())) {
         register.writeln(
-            "${spaces(6)}Registry.registry()!.registerRetrieveRepository('$pkgName', '${lid}s', ({String? appId}) => ${lid}Repository(appId: appId)!);");
+            "${spaces(6)}Apis.apis().getRegistryApi().registerRetrieveRepository('$pkgName', '${lid}s', ({String? appId}) => ${lid}Repository(appId: appId)!);");
       }
     }
 
+    register.writeln(
+        "${spaces(2)}}");
     codeBuffer.writeln(process(_code,
         parameters: <String, String>{'\${register}': register.toString()}));
     return codeBuffer.toString();

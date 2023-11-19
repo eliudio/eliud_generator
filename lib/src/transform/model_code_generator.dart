@@ -6,12 +6,12 @@ import 'code_generator.dart';
 import 'data_code_generator.dart';
 
 String _imports(String packageName, List<String>? depends) =>
-    """import 'package:eliud_core/tools/common_tools.dart';
+    """import 'package:eliud_core_model/tools/common_tools.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eliud_core/core/base/model_base.dart';
+import 'package:eliud_core_model/tools/base/model_base.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:eliud_core/model/app_model.dart';
+import 'package:eliud_core_model/model/app_model.dart';
 
 ${base_imports(packageName, repo: true, model: true, entity: true, depends: depends)}""";
 
@@ -65,7 +65,7 @@ class ModelCodeGenerator extends DataCodeGenerator {
         'model/${modelSpecifications.entityFileName()}'));
 
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_MODEL);
-    headerBuffer.writeln("import 'package:eliud_core/tools/random.dart';");
+    headerBuffer.writeln("import 'package:eliud_core_model/tools/etc/random.dart';");
 
     headerBuffer.writeln();
     return headerBuffer.toString();

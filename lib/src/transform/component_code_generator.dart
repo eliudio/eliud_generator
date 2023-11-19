@@ -5,11 +5,11 @@ import 'code_generator.dart';
 String _code = """
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:eliud_core/style/style_registry.dart';
+import 'package:eliud_core_model/style/style_registry.dart';
 import 'abstract_repository_singleton.dart';
-import 'package:eliud_core/core/widgets/alert_widget.dart';
-import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';
-import 'package:eliud_core/model/app_model.dart';
+import 'package:eliud_core_model/widgets/alert_widget.dart';
+import 'package:eliud_core_model/tools/main_abstract_repository_singleton.dart';
+import 'package:eliud_core_model/model/app_model.dart';
 
 /*
  * Abstract\${id}Component is the base class to extend / implement in case you need to implement a component

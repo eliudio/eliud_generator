@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 import 'package:\${package_name}/model/\${id_import}_repository.dart';
 import 'package:\${package_name}/model/\${id_import}_list_event.dart';
 import 'package:\${package_name}/model/\${id_import}_list_state.dart';
-import 'package:eliud_core/tools/query/query_tools.dart';
+import 'package:eliud_core_model/tools/query/query_tools.dart';
 
 import '\${id_import}_model.dart';
 

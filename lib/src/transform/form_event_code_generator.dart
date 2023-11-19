@@ -18,7 +18,7 @@ class FormEventCodeGenerator extends CodeGenerator {
     headerBuffer.writeln("import 'package:equatable/equatable.dart';");
     headerBuffer.writeln("import 'package:meta/meta.dart';");
     headerBuffer
-        .writeln("import 'package:eliud_core/tools/common_tools.dart';");
+        .writeln("import 'package:eliud_core_model/tools/common_tools.dart';");
 
     headerBuffer.writeln(base_imports(modelSpecifications.packageName,
         repo: true,

@@ -7,9 +7,9 @@ import 'firestore_helper.dart';
 const String _code = """
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eliud_core/tools/query/query_tools.dart';
-import 'package:eliud_core/tools/firestore/firestore_tools.dart';
-import 'package:eliud_core/tools/common_tools.dart';
+import 'package:eliud_core_model/tools/query/query_tools.dart';
+import 'package:eliud_core_model/tools/firestore/firestore_tools.dart';
+import 'package:eliud_core_model/tools/common_tools.dart';
 
 /* 
  * \${id}Firestore is the firestore implementation of \${id}Repository
@@ -313,7 +313,6 @@ class FirestoreCodeGenerator extends CodeGenerator {
     if (modelSpecifications.getIsAppModel()) {
       appVar = appVar3 = appVar4 = "appId: appId";
       collection = "getCollection()";
-      //"appRepository()!.getSubCollection(appId, '" + modelSpecifications.id.toLowerCase() + "')";
     } else if (modelSpecifications.id == "App") {
       appVar = "appId: value.id";
       appVar3 = "";
@@ -347,28 +346,15 @@ class FirestoreCodeGenerator extends CodeGenerator {
 
     headerBuffer.writeln(process(_code, parameters: parameters));
 
-/*
-    modelSpecifications.fields.forEach((field) {
-      if (field.arrayType == ArrayType.CollectionArrayType) {
-        headerBuffer.writeln(process(_collectionCode,
-            parameters: <String, String>{
-              '\${collectionFieldType}': field.fieldType,
-              '\${lCollectionFieldType}': firstLowerCase(field.fieldType),
-              '\${id}': modelSpecifications.id,
-              '\${lid}': firstLowerCase(modelSpecifications.id),
-            }));
-      }
-    });
-
-*/
     if (modelSpecifications.generate.documentSubCollectionOf != null) {
       headerBuffer.writeln(
           process(_footerWithoutCollectionParameter, parameters: parameters));
-    } else if (modelSpecifications.getIsAppModel())
+    } else if (modelSpecifications.getIsAppModel()) {
       headerBuffer.writeln(process(_footer, parameters: parameters));
-    else
+    } else {
       headerBuffer
           .writeln(process(_footerWithoutAppID, parameters: parameters));
+    }
 
     return headerBuffer.toString();
   }
@@ -376,13 +362,5 @@ class FirestoreCodeGenerator extends CodeGenerator {
   @override
   String theFileName() {
     return modelSpecifications.firestoreFileName();
-  }
-
-  String _collectionName() {
-    return "${firstLowerCase(_id())}Collection";
-  }
-
-  String _id() {
-    return modelSpecifications.id;
   }
 }

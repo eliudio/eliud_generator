@@ -5,18 +5,18 @@ import 'code_generator.dart';
 import 'code_generator_multi.dart';
 
 String _imports(String packageName, List<String> depends) => """
-import 'package:eliud_core/tools/admin_app_base.dart';
+import 'package:eliud_core_model/tools/admin_app_base.dart';
 import '../tools/bespoke_models.dart';
-import 'package:eliud_core/tools/common_tools.dart';
-import 'package:eliud_core/tools/common_tools.dart';
+import 'package:eliud_core_model/tools/common_tools.dart';
+import 'package:eliud_core_model/tools/common_tools.dart';
 
-import 'package:eliud_core/model/menu_def_model.dart';
-import 'package:eliud_core/model/page_model.dart';
-import 'package:eliud_core/model/app_bar_model.dart';
-import 'package:eliud_core/model/body_component_model.dart';
-import 'package:eliud_core/model/drawer_model.dart';
-import 'package:eliud_core/model/menu_item_model.dart';
-import 'package:eliud_core/model/home_menu_model.dart';
+import 'package:eliud_core_model/model/menu_def_model.dart';
+import 'package:eliud_core_model/model/page_model.dart';
+import 'package:eliud_core_model/model/app_bar_model.dart';
+import 'package:eliud_core_model/model/body_component_model.dart';
+import 'package:eliud_core_model/model/drawer_model.dart';
+import 'package:eliud_core_model/model/menu_item_model.dart';
+import 'package:eliud_core_model/model/home_menu_model.dart';
 
 ${base_imports(packageName, repo: true, model: true, entity: true, depends: depends)}""";
 

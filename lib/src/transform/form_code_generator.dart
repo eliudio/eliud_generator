@@ -6,33 +6,28 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName, List<String>? depends) =>
-    """import 'package:eliud_core/model/app_model.dart';
-import 'package:eliud_core/core/blocs/access/state/access_state.dart';
-import 'package:eliud_core/core/blocs/access/state/logged_in.dart';
-import 'package:eliud_core/core/blocs/access/access_bloc.dart';
+    """import 'package:eliud_core_model/model/app_model.dart';
 import '../tools/bespoke_models.dart';
-import 'package:eliud_core/core/navigate/router.dart' as eliudrouter;
-import 'package:eliud_core/tools/screen_size.dart';
+import 'package:eliud_core_model/apis/action_api/action_model.dart';
+
+import 'package:eliud_core_model/apis/apis.dart';
+
+import 'package:eliud_core_model/tools/etc/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:eliud_core/tools/common_tools.dart';
-import 'package:eliud_core/style/style_registry.dart';
-import 'package:eliud_core/style/admin/admin_form_style.dart';
-
+import 'package:eliud_core_model/tools/common_tools.dart';
+import 'package:eliud_core_model/style/style_registry.dart';
+import 'package:eliud_core_model/style/admin/admin_form_style.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
-
 import 'package:intl/intl.dart';
-
-import 'package:eliud_core/eliud.dart';
-
-import 'package:eliud_core/model/internal_component.dart';
+import 'package:eliud_core_model/model/internal_component.dart';
 import 'package:$packageName/model/embedded_component.dart';
 import 'package:$packageName/tools/bespoke_formfields.dart';
-import 'package:eliud_core/tools/bespoke_formfields.dart';
+import 'package:eliud_core_model/tools/bespoke_formfields.dart';
 
-import 'package:eliud_core/tools/enums.dart';
-import 'package:eliud_core/tools/etc.dart';
+import 'package:eliud_core_model/tools/etc/enums.dart';
+import 'package:eliud_core_model/tools/etc/etc.dart';
 
 ${base_imports(packageName, repo: true, model: true, entity: true, embeddedComponent: true, depends: depends)}""";
 
@@ -156,8 +151,8 @@ const String _readOnlyMethodMember = """
   /**
    * Is the form read-only?
    */
-  bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData) || (!((accessState is LoggedIn) && (accessState.member.documentID == state.value!.documentID)));
+  bool _readOnly(BuildContext context, \${id}FormInitialized state) {
+    return (formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData) || (!((Apis.apis().getCoreApi().isLoggedIn(context)) && (Apis.apis().getCoreApi().currentMemberId(context) == state.value!.documentID)));
   }
   
 """;
@@ -166,8 +161,8 @@ const String _readOnlyMethod = """
   /**
    * Is the form read-only?
    */
-  bool _readOnly(AccessState accessState, \${id}FormInitialized state) {
-    return (formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData) || (!accessState.memberIsOwner(widget.app.documentID));
+  bool _readOnly(BuildContext context, \${id}FormInitialized state) {
+    return (formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData) || (!Apis.apis().getCoreApi().memberIsOwner(context, widget.app.documentID));
   }
   
 """;
@@ -310,8 +305,6 @@ class RealFormCodeGenerator extends CodeGenerator {
     StringBuffer codeBuffer = StringBuffer();
     codeBuffer.writeln("${spaces(2)}@override");
     codeBuffer.writeln("${spaces(2)}Widget build(BuildContext context) {");
-    codeBuffer
-        .writeln("${spaces(4)}var accessState = AccessBloc.getState(context);");
 
     // start blocbuilder
     codeBuffer.writeln(
@@ -407,7 +400,7 @@ class RealFormCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(
         "${spaces(10)}children.add(StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().button(widget.app, context, label: 'Submit',");
     codeBuffer.writeln(
-        "${spaces(18)}onPressed: _readOnly(accessState, state) ? null : () {");
+        "${spaces(18)}onPressed: _readOnly(context, state) ? null : () {");
     codeBuffer.writeln(
         "${spaces(14 + 6)}if (state is ${modelSpecifications.id}FormError) {");
     codeBuffer.writeln("${spaces(14 + 8)}return null;");
@@ -441,7 +434,7 @@ class RealFormCodeGenerator extends CodeGenerator {
 
     codeBuffer.writeln("${spaces(14 + 8)}if (widget.submitAction != null) {");
     codeBuffer.writeln(
-        "${spaces(14 + 10)}eliudrouter.Router.navigateTo(context, widget.submitAction!);");
+        "${spaces(14 + 10)}Apis.apis().getRouterApi().navigateTo(context, widget.submitAction!);");
     codeBuffer.writeln("${spaces(14 + 8)}} else {");
     codeBuffer.writeln("${spaces(14 + 10)}Navigator.pop(context);");
     codeBuffer.writeln("${spaces(14 + 8)}}");
@@ -523,7 +516,7 @@ class RealFormCodeGenerator extends CodeGenerator {
               readOnlyCondition = "(formAction == FormAction.updateAction)";
             }
           } else {
-            readOnlyCondition = "_readOnly(accessState, state)";
+            readOnlyCondition = "_readOnly(context, state)";
           }
 
           var controllerName = "_${field.fieldName}Controller";
@@ -576,7 +569,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           var value = "_${firstLowerCase(field.fieldName)}Selection";
 
           var onChanged =
-              "_readOnly(accessState, state) ? null : (dynamic val) => setSelection${firstUpperCase(field.fieldName)}(val)";
+              "_readOnly(context, state) ? null : (dynamic val) => setSelection${firstUpperCase(field.fieldName)}(val)";
 
           codeBuffer.writeln(_fieldStart(field));
           codeBuffer.writeln(
@@ -596,7 +589,7 @@ class RealFormCodeGenerator extends CodeGenerator {
           if (field.enumValues != null) {
             for (var enumField in field.enumValues!) {
               var onChanged =
-                  "!accessState.memberIsOwner(widget.app.documentID) ? null : (dynamic val) => setSelection${firstUpperCase(field.fieldName)}(val)";
+                  "!Apis.apis().getCoreApi().memberIsOwner(context, widget.app.documentID) ? null : (dynamic val) => setSelection${firstUpperCase(field.fieldName)}(val)";
               codeBuffer.writeln(_fieldStart(field));
               codeBuffer.writeln(
                   "${spaces(18)}StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().radioListTile(widget.app, context, $i, _${firstLowerCase(field.fieldName)}SelectedRadioTile, '$enumField', '$enumField', $onChanged)");

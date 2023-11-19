@@ -28,7 +28,7 @@ String base_imports(String packageName,
       }
     }
     base =
-        "${base}import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';\n";
+        "${base}import 'package:eliud_core_model/tools/main_abstract_repository_singleton.dart';\n";
     base =
         base + importString(packageName, "model/abstract_repository_singleton");
     base = base + importString(packageName, "model/repository_export");

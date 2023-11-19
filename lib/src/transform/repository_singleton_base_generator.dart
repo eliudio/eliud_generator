@@ -17,7 +17,7 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
     codeBuffer.write(header());
     codeBuffer.writeln("import 'abstract_repository_singleton.dart';");
     codeBuffer.writeln(
-        "import 'package:eliud_core/tools/main_abstract_repository_singleton.dart';");
+        "import 'package:eliud_core_model/tools/main_abstract_repository_singleton.dart';");
     codeBuffer.writeln("import 'dart:collection';");
     for (var spec in modelSpecificationPlus) {
       String path = spec.path;

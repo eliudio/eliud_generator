@@ -36,15 +36,15 @@ String _imports(String packageName, List<String>? depends) =>
     """import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:eliud_core/tools/firestore/firestore_tools.dart';
+import 'package:eliud_core_model/tools/firestore/firestore_tools.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:eliud_core/tools/enums.dart';
-import 'package:eliud_core/tools/common_tools.dart';
+import 'package:eliud_core_model/tools/etc/enums.dart';
+import 'package:eliud_core_model/tools/common_tools.dart';
 
-import 'package:eliud_core/model/rgb_model.dart';
+import 'package:eliud_core_model/model/rgb_model.dart';
 
-import 'package:eliud_core/tools/string_validator.dart';
+import 'package:eliud_core_model/tools/etc/string_validator.dart';
 
 ${base_imports(packageName, repo: true, model: true, entity: true, depends: depends)}""";
 
