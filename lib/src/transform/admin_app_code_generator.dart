@@ -7,11 +7,11 @@ import 'code_generator_multi.dart';
 String _imports(String packageName, List<String> depends) => """
 import 'package:eliud_core_model/tools/admin_app_base.dart';
 import '../tools/bespoke_models.dart';
-import 'package:eliud_core_model/tools/common_tools.dart';
-import 'package:eliud_core_model/tools/common_tools.dart';
+import 'package:eliud_core_helpers/helpers/common_tools.dart';
+import 'package:eliud_core_helpers/helpers/common_tools.dart';
 
 import 'package:eliud_core_model/model/menu_def_model.dart';
-import 'package:eliud_core_model/model/page_model.dart';
+import 'package:eliud_core_main/model/page_model.dart';
 import 'package:eliud_core_model/model/app_bar_model.dart';
 import 'package:eliud_core_model/model/body_component_model.dart';
 import 'package:eliud_core_model/model/drawer_model.dart';
@@ -213,6 +213,9 @@ class AdminAppCodeGenerator extends CodeGeneratorMulti {
         }
         first = false;
       }
+    }
+    if (first) {
+      codeBuffer.writeln("    return Future.value();");
     }
     codeBuffer.writeln(process(_setupAdminPagesFooter));
 

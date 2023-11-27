@@ -18,8 +18,10 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
       }
     }
 
-    codeBuffer.writeln("import 'package:eliud_core_model/tools/common_tools.dart';");
-    codeBuffer.writeln("import 'package:eliud_core_model/tools/member_collection_info.dart';");
+    codeBuffer.writeln(
+        "import 'package:eliud_core_helpers/helpers/common_tools.dart';");
+    codeBuffer.writeln(
+        "import 'package:eliud_core_main/tools/etc/member_collection_info.dart';");
 
     codeBuffer.writeln();
     for (var spec in modelSpecificationPlus) {

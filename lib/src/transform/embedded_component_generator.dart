@@ -4,10 +4,10 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator_multi.dart';
 
 const String _imports = """
-import 'package:eliud_core_model/tools/etc/random.dart';
-import 'package:eliud_core_model/tools/common_tools.dart';
-import 'package:eliud_core_model/tools/query/query_tools.dart';
-import 'package:eliud_core_model/model/app_model.dart';
+import 'package:eliud_core_helpers/etc/random.dart';
+import 'package:eliud_core_helpers/helpers/common_tools.dart';
+import 'package:eliud_core_helpers/query/query_tools.dart';
+import 'package:eliud_core_main/model/app_model.dart';
 
 import 'dart:async';
 

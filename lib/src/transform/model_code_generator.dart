@@ -6,12 +6,12 @@ import 'code_generator.dart';
 import 'data_code_generator.dart';
 
 String _imports(String packageName, List<String>? depends) =>
-    """import 'package:eliud_core_model/tools/common_tools.dart';
+    """import 'package:eliud_core_helpers/helpers/common_tools.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eliud_core_model/tools/base/model_base.dart';
+import 'package:eliud_core_helpers/base/model_base.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:eliud_core_model/model/app_model.dart';
+import 'package:eliud_core_main/model/app_model.dart';
 
 ${base_imports(packageName, repo: true, model: true, entity: true, depends: depends)}""";
 
@@ -65,7 +65,8 @@ class ModelCodeGenerator extends DataCodeGenerator {
         'model/${modelSpecifications.entityFileName()}'));
 
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_MODEL);
-    headerBuffer.writeln("import 'package:eliud_core_model/tools/etc/random.dart';");
+    headerBuffer
+        .writeln("import 'package:eliud_core_helpers/etc/random.dart';");
 
     headerBuffer.writeln();
     return headerBuffer.toString();
@@ -383,8 +384,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
     codeBuffer
         .writeln("${modelSpecifications.entityClassName()}? entity) async {");
     codeBuffer.writeln("${spaces(4)}if (entity == null) return null;");
-    if (needsCounterForFromEntity())
+    if (needsCounterForFromEntity()) {
       codeBuffer.writeln("${spaces(4)}var counter = 0;");
+    }
     codeBuffer
         .writeln("${spaces(4)}return ${modelSpecifications.modelClassName()}(");
     for (var field in modelSpecifications.fields) {
@@ -473,8 +475,9 @@ class ModelCodeGenerator extends DataCodeGenerator {
         codeBuffer.writeln();
       }
     }
-    if (needsCounterForFromEntityPlus())
+    if (needsCounterForFromEntityPlus()) {
       codeBuffer.writeln("${spaces(4)}var counter = 0;");
+    }
     codeBuffer
         .writeln("${spaces(4)}return ${modelSpecifications.modelClassName()}(");
     for (var field in modelSpecifications.fields) {

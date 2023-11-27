@@ -17,7 +17,7 @@ class ListStateCodeBuilder extends CodeBuilder {
   CodeGenerator? generator(String specifications) {
     ModelSpecification modelSpecification =
         ModelSpecification.fromJsonString(specifications);
-    if (modelSpecification.generate.generateList) {
+    if ((modelSpecification.generate.generateList) || (modelSpecification.generate.generateComponent)) {
       ListStateCodeGenerator stateCodeGenerator =
           ListStateCodeGenerator(modelSpecifications: modelSpecification);
       return stateCodeGenerator;

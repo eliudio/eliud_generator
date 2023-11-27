@@ -3,29 +3,29 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName) => """
-import 'package:eliud_core_model/apis/apis.dart';
-import 'package:eliud_core_model/tools/route_builders/route_builders.dart';
-import 'package:eliud_core_model/style/style_registry.dart';
-import 'package:eliud_core_model/tools/etc/has_fab.dart';
+import 'package:eliud_core_main/apis/apis.dart';
+import 'package:eliud_core_main/tools/route_builders/route_builders.dart';
+import 'package:eliud_core_main/apis/style/style_registry.dart';
+import 'package:eliud_core_helpers/tools/has_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:eliud_core_model/tools/etc/screen_size.dart';
-import 'package:eliud_core_model/model/background_model.dart';
-import 'package:eliud_core_model/tools/etc/delete_snackbar.dart';
-import 'package:eliud_core_model/tools/etc/etc.dart';
-import 'package:eliud_core_model/tools/etc/enums.dart';
-import 'package:eliud_core_model/style/frontend/has_text.dart';
+import 'package:eliud_core_helpers/etc/screen_size.dart';
+import 'package:eliud_core_main/model/background_model.dart';
+import 'package:eliud_core_helpers/tools/delete_snackbar.dart';
+import 'package:eliud_core_main/tools/etc/etc.dart';
+import 'package:eliud_core_helpers/etc/enums.dart';
+import 'package:eliud_core_main/apis/style/frontend/has_text.dart';
 
 import 'package:$packageName/model/\${importprefix}_list_event.dart';
 import 'package:$packageName/model/\${importprefix}_list_state.dart';
 import 'package:$packageName/model/\${importprefix}_list_bloc.dart';
 import 'package:$packageName/model/\${importprefix}_model.dart';
 
-import 'package:eliud_core_model/model/app_model.dart';
+import 'package:eliud_core_main/model/app_model.dart';
 
 """;
 
@@ -68,10 +68,10 @@ class ListCodeGenerator extends CodeGenerator {
   }
 
   String mainClass() {
-    var condition;
+    String condition;
     if (modelSpecifications.id != "Member") {
-      condition = "!Apis.apis().getCoreApi().memberIsOwner(context, widget.app.documentID) ? null : ";
-
+      condition =
+          "!Apis.apis().getCoreApi().memberIsOwner(context, widget.app.documentID) ? null : ";
     } else {
       condition = " ";
     }

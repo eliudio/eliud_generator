@@ -36,15 +36,15 @@ String _imports(String packageName, List<String>? depends) =>
     """import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:eliud_core_model/tools/firestore/firestore_tools.dart';
+import 'package:eliud_core_helpers/firestore/firestore_tools.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:eliud_core_model/tools/etc/enums.dart';
-import 'package:eliud_core_model/tools/common_tools.dart';
+import 'package:eliud_core_helpers/etc/enums.dart';
+import 'package:eliud_core_helpers/helpers/common_tools.dart';
 
-import 'package:eliud_core_model/model/rgb_model.dart';
+import 'package:eliud_core_main/model/rgb_model.dart';
 
-import 'package:eliud_core_model/tools/etc/string_validator.dart';
+import 'package:eliud_core_helpers/helpers/string_validator.dart';
 
 ${base_imports(packageName, repo: true, model: true, entity: true, depends: depends)}""";
 
@@ -264,7 +264,9 @@ class FormBlocCodeGenerator extends CodeGenerator {
     codeBuffer.writeln(_constructor());
     codeBuffer.writeln(_validations());
 
-    List<Field> fields = modelSpecifications.fields.where((Field element) => element.fieldName == "documentID").toList();
+    List<Field> fields = modelSpecifications.fields
+        .where((Field element) => element.fieldName == "documentID")
+        .toList();
     if (!((fields.isNotEmpty) && (fields[0].isHidden()))) {
       if (modelSpecifications.generate.generateFirestoreRepository) {
         codeBuffer

@@ -6,28 +6,28 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName, List<String>? depends) =>
-    """import 'package:eliud_core_model/model/app_model.dart';
+    """import 'package:eliud_core_main/model/app_model.dart';
 import '../tools/bespoke_models.dart';
-import 'package:eliud_core_model/apis/action_api/action_model.dart';
+import 'package:eliud_core_main/apis/action_api/action_model.dart';
 
-import 'package:eliud_core_model/apis/apis.dart';
+import 'package:eliud_core_main/apis/apis.dart';
 
-import 'package:eliud_core_model/tools/etc/screen_size.dart';
+import 'package:eliud_core_helpers/etc/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:eliud_core_model/tools/common_tools.dart';
-import 'package:eliud_core_model/style/style_registry.dart';
-import 'package:eliud_core_model/style/admin/admin_form_style.dart';
+import 'package:eliud_core_helpers/helpers/common_tools.dart';
+import 'package:eliud_core_main/apis/style/style_registry.dart';
+import 'package:eliud_core_main/apis/style/admin/admin_form_style.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-import 'package:eliud_core_model/model/internal_component.dart';
+import 'package:eliud_core_main/model/internal_component.dart';
 import 'package:$packageName/model/embedded_component.dart';
 import 'package:$packageName/tools/bespoke_formfields.dart';
-import 'package:eliud_core_model/tools/bespoke_formfields.dart';
+import 'package:eliud_core_main/tools/bespoke_formfields.dart';
 
-import 'package:eliud_core_model/tools/etc/enums.dart';
-import 'package:eliud_core_model/tools/etc/etc.dart';
+import 'package:eliud_core_helpers/etc/enums.dart';
+import 'package:eliud_core_main/tools/etc/etc.dart';
 
 ${base_imports(packageName, repo: true, model: true, entity: true, embeddedComponent: true, depends: depends)}""";
 

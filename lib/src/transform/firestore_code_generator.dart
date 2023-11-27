@@ -7,9 +7,9 @@ import 'firestore_helper.dart';
 const String _code = """
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eliud_core_model/tools/query/query_tools.dart';
-import 'package:eliud_core_model/tools/firestore/firestore_tools.dart';
-import 'package:eliud_core_model/tools/common_tools.dart';
+import 'package:eliud_core_helpers/query/query_tools.dart';
+import 'package:eliud_core_helpers/firestore/firestore_tools.dart';
+import 'package:eliud_core_helpers/helpers/common_tools.dart';
 
 /* 
  * \${id}Firestore is the firestore implementation of \${id}Repository

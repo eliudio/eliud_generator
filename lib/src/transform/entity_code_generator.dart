@@ -78,18 +78,19 @@ class EntityCodeGenerator extends DataCodeGenerator {
     StringBuffer headerBuffer = StringBuffer();
     headerBuffer.writeln("import 'dart:collection';");
     headerBuffer.writeln("import 'dart:convert';");
-    headerBuffer.writeln("import 'package:eliud_core_model/tools/etc/random.dart';");
+    headerBuffer
+        .writeln("import 'package:eliud_core_helpers/etc/random.dart';");
 
     headerBuffer.writeln("import 'abstract_repository_singleton.dart';");
     headerBuffer
         .writeln("import 'package:cloud_firestore/cloud_firestore.dart';");
     headerBuffer
-        .writeln("import 'package:eliud_core_model/tools/base/entity_base.dart';");
+        .writeln("import 'package:eliud_core_helpers/base/entity_base.dart';");
 
     headerBuffer.writeln(base_imports(modelSpecifications.packageName,
         entity: true, depends: modelSpecifications.depends));
-    headerBuffer
-        .writeln("import 'package:eliud_core_model/tools/common_tools.dart';");
+    headerBuffer.writeln(
+        "import 'package:eliud_core_helpers/helpers/common_tools.dart';");
 
     extraImports(headerBuffer, ModelSpecification.IMPORT_KEY_ENTITY);
 

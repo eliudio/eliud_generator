@@ -6,9 +6,9 @@ import 'firestore_helper.dart';
 
 const String _code = """
 import 'dart:async';
-import 'package:eliud_core_model/tools/query/query_tools.dart';
-import 'package:eliud_core_model/tools/common_tools.dart';
-import 'package:eliud_core_model/tools/base/repository_base.dart';
+import 'package:eliud_core_helpers/query/query_tools.dart';
+import 'package:eliud_core_helpers/helpers/common_tools.dart';
+import 'package:eliud_core_helpers/repository/repository_base.dart';
 
 typedef \${id}ModelTrigger(List<\${id}Model?> list);
 typedef \${id}Changed(\${id}Model? value);

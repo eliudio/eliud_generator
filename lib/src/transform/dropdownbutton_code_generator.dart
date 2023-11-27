@@ -3,18 +3,18 @@ import 'package:eliud_generator/src/tools/tool_set.dart';
 import 'code_generator.dart';
 
 String _imports(String packageName) => """
-import 'package:eliud_core_model/model/app_model.dart';
+import 'package:eliud_core_main/model/app_model.dart';
 //import 'package:eliud_core_model/package/packages.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:eliud_core_model/style/style_registry.dart';
-import 'package:eliud_core_model/style/frontend/has_text.dart';
-import 'package:eliud_core_model/style/frontend/has_button.dart';
-import 'package:eliud_core_model/tools/query/query_tools.dart';
-import 'package:eliud_core_model/tools/component/update_component.dart';
+import 'package:eliud_core_main/apis/style/style_registry.dart';
+import 'package:eliud_core_main/apis/style/frontend/has_text.dart';
+import 'package:eliud_core_main/apis/style/frontend/has_button.dart';
+import 'package:eliud_core_helpers/query/query_tools.dart';
+import 'package:eliud_core_main/tools/component/update_component.dart';
 
 """;
 
@@ -23,8 +23,8 @@ import 'package:$packageName/model/\${path}_list_bloc.dart';
 import 'package:$packageName/model/\${path}_list_state.dart';
 import 'package:$packageName/model/\${path}_list_event.dart';
 import 'package:$packageName/model/\${path}_model.dart';
-import 'package:eliud_core_model/style/frontend/has_button.dart';
-//import 'package:eliud_core_model/tools/component/update_component.dart';
+import 'package:eliud_core_main/apis/style/frontend/has_button.dart';
+//import 'package:eliud_core_main/tools/component/update_component.dart';
 
 """;
 

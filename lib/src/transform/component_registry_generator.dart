@@ -6,10 +6,10 @@ import 'code_generator_multi.dart';
 
 const String _imports = """
 import '../model/internal_component.dart';
-import 'package:eliud_core_model/tools/component/component_spec.dart';
+import 'package:eliud_core_main/apis/registryapi/component/component_spec.dart';
 import 'abstract_repository_singleton.dart';
-import 'package:eliud_core_model/tools/component/component_constructor.dart';
-import 'package:eliud_core_model/apis/apis.dart';
+import 'package:eliud_core_main/apis/registryapi/component/component_constructor.dart';
+import 'package:eliud_core_main/apis/apis.dart';
 
 \${import}
 
@@ -54,17 +54,16 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
         parameters: <String, String>{'\${import}': import.toString()}));
     StringBuffer register = StringBuffer();
 
-    register.write(
-        "${spaces(2)}init(");
+    register.write("${spaces(2)}init(");
     for (var spec in modelSpecificationPlus) {
       var id = spec.modelSpecification.id;
       var lid = firstLowerCase(spec.modelSpecification.id);
       if (spec.modelSpecification.generate.isExtension) {
-        register.write("ComponentConstructor ${lid}ComponentConstructorDefault, ComponentEditorConstructor ${lid}ComponentEditorConstructor, ");
+        register.write(
+            "ComponentConstructor ${lid}ComponentConstructorDefault, ComponentEditorConstructor ${lid}ComponentEditorConstructor, ");
       }
     }
     register.writeln(") {");
-
 
     register.write(
         "${spaces(4)}Apis.apis().getRegistryApi().addInternalComponents('$pkgName', [");
@@ -111,8 +110,7 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
       }
     }
 
-    register.writeln(
-        "${spaces(2)}}");
+    register.writeln("${spaces(2)}}");
     codeBuffer.writeln(process(_code,
         parameters: <String, String>{'\${register}': register.toString()}));
     return codeBuffer.toString();
