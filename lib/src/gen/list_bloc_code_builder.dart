@@ -17,7 +17,9 @@ class ListBlocCodeBuilder extends CodeBuilder {
   CodeGenerator? generator(String specifications) {
     ModelSpecification modelSpecification =
         ModelSpecification.fromJsonString(specifications);
-    if ((modelSpecification.generate.generateList) || (modelSpecification.generate.generateComponent)) {
+    if ((modelSpecification.generate.generateList) ||
+        (modelSpecification.generate.generateDropDownButton) ||
+        (modelSpecification.generate.generateComponent)) {
       ListBlocCodeGenerator repositoryCodeGenerator =
           ListBlocCodeGenerator(modelSpecifications: modelSpecification);
       return repositoryCodeGenerator;

@@ -76,8 +76,10 @@ class ComponentRegistryGenerator extends CodeGeneratorMulti {
     register.writeln("]);");
     register.writeln();
 
+/*
     register.writeln(
         '${spaces(4)}Apis.apis().getRegistryApi().register(componentName: "${pkgName}_internalWidgets", componentConstructor: ListComponentFactory());');
+*/
     for (var spec in modelSpecificationPlus) {
       String path = spec.path;
       if (spec.modelSpecification.generate.isExtension) {

@@ -16,13 +16,13 @@ import 'package:eliud_core_helpers/tools/has_fab.dart';
 
 String _componentImports(String packageName, List<String>? depends) =>
     """import 'package:$packageName/\${path}_list_bloc.dart';
-import 'package:$packageName/\${path}_list.dart';
+//import 'package:$packageName/\${path}_list.dart';
 import 'package:$packageName/\${path}_dropdown_button.dart';
 import 'package:$packageName/\${path}_list_event.dart';
 
 ${base_imports(packageName, repo: true, model: true, entity: true, depends: depends)}""";
 
-const String _ListFactoryCode = """
+/*const String _ListFactoryCode = """
 class ListComponentFactory implements ComponentConstructor {
   Widget? createNew({Key? key, required AppModel app,  required String id, int? privilegeLevel, Map<String, dynamic>? parameters}) {
     return ListComponent(app: app, componentId: id);
@@ -34,7 +34,7 @@ class ListComponentFactory implements ComponentConstructor {
   }
 }
 
-""";
+""";*/
 
 const String _DropdownButtonFactoryCodeHeader = """
 typedef DropdownButtonChanged(String? value, int? privilegeLevel);
@@ -71,7 +71,7 @@ const String _DropdownButtonFactoryCodeFooter = """
 
 """;
 
-const String _ListComponentCodeHeader = """
+/*const String _ListComponentCodeHeader = """
 class ListComponent extends StatelessWidget with HasFab {
   final AppModel app;
   final String? componentId;
@@ -92,7 +92,7 @@ class ListComponent extends StatelessWidget with HasFab {
   @override
   Widget build(BuildContext context) {
 """;
-
+*/
 const String _DropdownButtonComponentCodeHeader = """
 typedef Changed(String? value, int? privilegeLevel);
 
@@ -170,7 +170,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
       }
     }
 
-    codeBuffer.writeln(process(_ListFactoryCode));
+//    codeBuffer.writeln(process(_ListFactoryCode));
 
     codeBuffer.writeln(process(_DropdownButtonFactoryCodeHeader));
     codeBuffer.writeln(process(_DropdownButtonSupportMethod));
@@ -194,19 +194,19 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     }
     codeBuffer.writeln(process(_DropdownButtonFactoryCodeFooter));
 
-    codeBuffer.writeln(_code(modelSpecificationPlus, true));
-    codeBuffer.writeln(_code(modelSpecificationPlus, false));
+//    codeBuffer.writeln(_code(modelSpecificationPlus, true));
+    codeBuffer.writeln(_code(modelSpecificationPlus /*, false*/));
 
     return codeBuffer.toString();
   }
 
-  String _code(modelSpecificationPlus, list) {
+  String _code(modelSpecificationPlus /*, list*/) {
     StringBuffer codeBuffer = StringBuffer();
-    if (list) {
-      codeBuffer.writeln(process(_ListComponentCodeHeader));
-    } else {
-      codeBuffer.writeln(process(_DropdownButtonComponentCodeHeader));
-    }
+//    if (list) {
+//      codeBuffer.writeln(process(_ListComponentCodeHeader));
+//    } else {
+    codeBuffer.writeln(process(_DropdownButtonComponentCodeHeader));
+//    }
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       if (ms.generate.generateInternalComponent) {
@@ -219,6 +219,7 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln("${spaces(2)}}");
     codeBuffer.writeln();
 
+/*
     if (list) {
       codeBuffer.writeln(
           "${spaces(2)}static Widget getWidget(String? componentId, AppModel app) {");
@@ -232,12 +233,14 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
       codeBuffer.writeln("${spaces(2)}return Container();");
       codeBuffer.writeln("${spaces(2)}}");
     }
+*/
 
     codeBuffer.writeln();
     modelSpecificationPlus.forEach((spec) {
       ModelSpecification ms = spec.modelSpecification;
       var appIdVar = ms.getIsAppModel() ? "appId: app.documentID" : "";
       if (ms.generate.generateInternalComponent) {
+/*
         if (list) {
           codeBuffer.writeln(
               process(_SpecificListComponentCode, parameters: <String, String>{
@@ -246,13 +249,16 @@ class InternalComponentCodeGenerator extends CodeGeneratorMulti {
             "\${appIdVar}": appIdVar,
           }));
         } else {
-          codeBuffer.writeln(process(_SpecificDropdownButtonComponentCode,
-              parameters: <String, String>{
-                "\${lowerSpecific}": firstLowerCase(ms.id),
-                "\${upperSpecific}": ms.id,
-                "\${appIdVar}": appIdVar,
-              }));
+*/
+        codeBuffer.writeln(process(_SpecificDropdownButtonComponentCode,
+            parameters: <String, String>{
+              "\${lowerSpecific}": firstLowerCase(ms.id),
+              "\${upperSpecific}": ms.id,
+              "\${appIdVar}": appIdVar,
+            }));
+/*
         }
+*/
       }
     });
     codeBuffer.writeln(process(_SpecificCodeFooter));

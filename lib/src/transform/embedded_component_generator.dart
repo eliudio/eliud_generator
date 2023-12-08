@@ -15,10 +15,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 """;
 
-const String _specificImports = """
-import '../\${path}_list_bloc.dart';
+const String _specificImportsList = """
 import '../\${path}_list.dart';
+import '../\${path}_list_bloc.dart';
 import '../\${path}_list_event.dart';
+""";
+
+const String _specificImports = """
 import '../\${path}_model.dart';
 import '../\${path}_entity.dart';
 import '../\${path}_repository.dart';
@@ -229,7 +232,15 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
 
     for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
+      if (ms.generate.generateList) {
+        codeBuffer.writeln(process(_specificImportsList,
+            parameters: <String, String>{'\${path}': spec.path}));
+      }
       if (ms.generate.generateEmbeddedComponent) {
+        codeBuffer.writeln(process(_specificImports,
+            parameters: <String, String>{'\${path}': spec.path}));
+      }
+      if ((ms.generate.generateEmbeddedComponent) || (ms.generate.generateList)) {
         codeBuffer.writeln(process(_specificImports,
             parameters: <String, String>{'\${path}': spec.path}));
       }
@@ -245,7 +256,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
-      if (ms.generate.generateEmbeddedComponent) {
+      if ((ms.generate.generateList) && (ms.generate.generateEmbeddedComponent)){
         codeBuffer.writeln(
             "${firstLowerCase(ms.id)}sList(app, context, value, trigger) => EmbeddedComponentFactory.${firstLowerCase(ms.id)}sList(app, context, value, trigger);");
       }
@@ -255,7 +266,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
-      if (ms.generate.generateEmbeddedComponent) {
+      if ((ms.generate.generateList) && (ms.generate.generateEmbeddedComponent)){
         codeBuffer.writeln(process(_InMemoryRepositoryMethod,
             parameters: <String, String>{
               "\${id}": ms.id,
@@ -265,6 +276,7 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     }
     codeBuffer.writeln();
     codeBuffer.writeln("}");
+
     codeBuffer.writeln();
     for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;

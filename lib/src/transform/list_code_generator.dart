@@ -105,7 +105,10 @@ class ListCodeGenerator extends CodeGenerator {
 
     parameters["\${onTap}"] = tap;
     parameters["\${_formVariations}"] = formVariations;
-    return process(_listBody, parameters: parameters);
+    return process(_listBody, parameters: parameters) +
+        (modelSpecifications.generate.generateForm
+            ? _listBodyEndWithForm
+            : _listBodyEndWithoutForm);
   }
 
   @override
@@ -188,14 +191,19 @@ class \${id}ListWidget extends StatefulWidget with HasFab {
 
   @override
   Widget? fab(BuildContext context) {
+    return null;
+/*
     if ((readOnly != null) && readOnly!) return null;
     var state = \${id}ListWidgetState();
     return state.fab(context,);
+*/
   }
 }
 
 class \${id}ListWidgetState extends State<\${id}ListWidget> {
+/*
   Widget? fab(BuildContext aContext) {
+    return null;
     return  \${allowAddItemsCondition}
       StyleRegistry.registry().styleWithApp(widget.app).adminListStyle().floatingActionButton(widget.app, context, 'PageFloatBtnTag', Icon(Icons.add),
       onPressed: () {
@@ -210,6 +218,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
       },
     );
   }
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -222,6 +231,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
             if ((widget.isEmbedded != null) && widget.isEmbedded!) {
               var children = <Widget>[];
               children.add(theList(context, values, ));
+/*
               children.add(
                   StyleRegistry.registry().styleWithApp(widget.app).adminFormStyle().button(widget.app,
                       context, label: 'Add',
@@ -236,6 +246,7 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
                                 );
                       },
                     ));
+*/
               return ListView(
                 padding: const EdgeInsets.all(8),
                 physics: ScrollPhysics(),
@@ -285,8 +296,10 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
         }
       ));
   }
-  
-  
+
+""";
+
+String _listBodyEndWithForm = """
   Widget? getForm(value, action) {
     if (widget.form == null) {
       return \${id}Form(app:widget.app, value: value, formAction: action);
@@ -294,8 +307,10 @@ class \${id}ListWidgetState extends State<\${id}ListWidget> {
 \${_formVariations}
     }
   }
-  
-  
+}
+
+""";
+String _listBodyEndWithoutForm = """
 }
 
 """;
