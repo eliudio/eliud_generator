@@ -20,15 +20,19 @@ const String _footer = """
 }
 """;
 
+const String _deleteAll = """
+  Future<void> deleteAll() {
+    return reference.deleteAll();
+  }
+""";
+
 const String _code = """
   final \${id}Repository reference;
   final Map<String?, \${id}Model?> fullCache = Map();
 
   \${id}Cache(this.reference);
 
-  /**
-   * Add a \${id}Model to the repository, cached
-   */
+  /// Add a \${id}Model to the repository, cached
   Future<\${id}Model> add(\${id}Model value) {
     return reference.add(value).then((newValue) {
       fullCache[value.documentID] = newValue;
@@ -36,32 +40,24 @@ const String _code = """
     });
   }
 
-  /**
-   * Add a \${id}Entity to the repository, cached
-   */
+  /// Add a \${id}Entity to the repository, cached
   Future<\${id}Entity> addEntity(String documentID, \${id}Entity value) {
     return reference.addEntity(documentID, value);
   }
 
-  /**
-   * Update a \${id}Entity in the repository, cached
-   */
+  /// Update a \${id}Entity in the repository, cached
   Future<\${id}Entity> updateEntity(String documentID, \${id}Entity value) {
     return reference.updateEntity(documentID, value);
   }
 
-  /**
-   * Delete a \${id}Model from the repository, cached
-   */
+  /// Delete a \${id}Model from the repository, cached
   Future<void> delete(\${id}Model value){
     fullCache.remove(value.documentID);
     reference.delete(value);
     return Future.value();
   }
 
-  /**
-   * Retrieve a \${id}Model with it's id, cached
-   */
+  /// Retrieve a \${id}Model with it's id, cached
   Future<\${id}Model?> get(String? id, {Function(Exception)? onError}) async {
     var value = fullCache[id];
     if (value != null) return refreshRelations(value);
@@ -70,9 +66,7 @@ const String _code = """
     return value;
   }
 
-  /**
-   * Update a \${id}Model
-   */
+  /// Update a \${id}Model
   Future<\${id}Model> update(\${id}Model value) {
     return reference.update(value).then((newValue) {
       fullCache[value.documentID] = newValue;
@@ -80,9 +74,7 @@ const String _code = """
     });
   }
 
-  /**
-   * Retrieve list of List<\${id}Model?> 
-   */
+  /// Retrieve list of List<\${id}Model?> 
   @override
   Stream<List<\${id}Model?>> values({String? orderBy, bool? descending, Object? startAfter, int? limit, SetLastDoc? setLastDoc, int? privilegeLevel, EliudQuery? eliudQuery }) {
     return reference.values(orderBy: orderBy, descending: descending, startAfter: startAfter, limit: limit, setLastDoc: setLastDoc, privilegeLevel: privilegeLevel, eliudQuery: eliudQuery);
@@ -130,12 +122,6 @@ const String _code = """
   @override
   \${id}Entity? fromMap(Object? o, {Map<String, String>? newDocumentIds}) {
     return reference.fromMap(o, newDocumentIds: newDocumentIds);
-  }
-""";
-
-const String _deleteAll = """
-  Future<void> deleteAll() {
-    return reference.deleteAll();
   }
 """;
 

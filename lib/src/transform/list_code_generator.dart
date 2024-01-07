@@ -145,15 +145,11 @@ class ListCodeGenerator extends CodeGenerator {
     String? title = modelSpecifications.listFields == null
         ? null
         : modelSpecifications.listFields!.title;
-    if (title != null) {
-      codeBuffer.writeln("${spaces(8)}title: $title,");
-    }
+    codeBuffer.writeln("${spaces(8)}title: $title,");
     String? subTitle = modelSpecifications.listFields == null
         ? null
         : modelSpecifications.listFields!.subTitle;
-    if (subTitle != null) {
-      codeBuffer.writeln("${spaces(8)}subtitle: $subTitle,");
-    }
+    codeBuffer.writeln("${spaces(8)}subtitle: $subTitle,");
     codeBuffer.writeln("${spaces(6)}),");
     codeBuffer.writeln("${spaces(4)});");
 

@@ -240,7 +240,8 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
         codeBuffer.writeln(process(_specificImports,
             parameters: <String, String>{'\${path}': spec.path}));
       }
-      if ((ms.generate.generateEmbeddedComponent) || (ms.generate.generateList)) {
+      if ((ms.generate.generateEmbeddedComponent) ||
+          (ms.generate.generateList)) {
         codeBuffer.writeln(process(_specificImports,
             parameters: <String, String>{'\${path}': spec.path}));
       }
@@ -256,7 +257,8 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
-      if ((ms.generate.generateList) && (ms.generate.generateEmbeddedComponent)){
+      if ((ms.generate.generateList) &&
+          (ms.generate.generateEmbeddedComponent)) {
         codeBuffer.writeln(
             "${firstLowerCase(ms.id)}sList(app, context, value, trigger) => EmbeddedComponentFactory.${firstLowerCase(ms.id)}sList(app, context, value, trigger);");
       }
@@ -266,7 +268,8 @@ class EmbeddedComponentCodeGenerator extends CodeGeneratorMulti {
     codeBuffer.writeln();
     for (var spec in modelSpecificationPlus) {
       ModelSpecification ms = spec.modelSpecification;
-      if ((ms.generate.generateList) && (ms.generate.generateEmbeddedComponent)){
+      if ((ms.generate.generateList) &&
+          (ms.generate.generateEmbeddedComponent)) {
         codeBuffer.writeln(process(_InMemoryRepositoryMethod,
             parameters: <String, String>{
               "\${id}": ms.id,

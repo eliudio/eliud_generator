@@ -254,9 +254,7 @@ class DropdownButtonCodeGenerator extends CodeGenerator {
     String? title = modelSpecifications.listFields == null
         ? null
         : modelSpecifications.listFields!.title;
-    if (title != null) {
-      childCodeBuffer.writeln("widgets.add($title);");
-    }
+    childCodeBuffer.writeln("widgets.add($title);");
     String? subTitle = modelSpecifications.listFields == null
         ? null
         : modelSpecifications.listFields!.subTitle;

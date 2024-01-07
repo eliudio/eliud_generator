@@ -50,9 +50,7 @@ class \${className}Form extends StatelessWidget {
 
   \${className}Form({Key? key, required this.app, required this.formAction, required this.value, this.submitAction}) : super(key: key);
 
-  /**
-   * Build the \${className}Form
-   */
+  /// Build the \${className}Form
   @override
   Widget build(BuildContext context) {
     //var accessState = AccessBloc.getState(context);
@@ -148,9 +146,7 @@ const _xyzLookupChangedString = """
 """;
 
 const String _readOnlyMethodMember = """
-  /**
-   * Is the form read-only?
-   */
+  /// Is the form read-only?
   bool _readOnly(BuildContext context, \${id}FormInitialized state) {
     return (formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData) || (!((Apis.apis().getCoreApi().isLoggedIn(context)) && (Apis.apis().getCoreApi().currentMemberId(context) == state.value!.documentID)));
   }
@@ -158,9 +154,7 @@ const String _readOnlyMethodMember = """
 """;
 
 const String _readOnlyMethod = """
-  /**
-   * Is the form read-only?
-   */
+  /// Is the form read-only?
   bool _readOnly(BuildContext context, \${id}FormInitialized state) {
     return (formAction == FormAction.showData) || (formAction == FormAction.showPreloadedData) || (!Apis.apis().getCoreApi().memberIsOwner(context, widget.app.documentID));
   }
