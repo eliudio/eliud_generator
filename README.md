@@ -9,9 +9,9 @@ This package is part of eliud technology. More information, see https://eliud.io
 
 <!-- toc -->
 
+- [Introduction](#introduction)
 - [Appendix A. Dependencies](#appendix-a-dependencies)
   * [The dependency diagram](#the-dependency-diagram)
-  * [Links](#links-)
 
 <!-- tocstop -->
 
