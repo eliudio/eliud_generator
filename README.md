@@ -1,18 +1,36 @@
 # eliud_generator
 
-Eliud Code Generator
+Eliud geneator package. 
+This package is part of eliud technology. More information, see https://eliud.io
 
-## Dependency diagram
+---
+
+## Table of contents
+
+<!-- toc -->
+
+- [Appendix A. Dependencies](#appendix-a-dependencies)
+  * [The dependency diagram](#the-dependency-diagram)
+  * [Links](#links-)
+
+<!-- tocstop -->
+
+---
+
+## Introduction
+
+Eliud geneator package. 
+
+---
+
+## Appendix A. Dependencies
+
+### The dependency diagram
 
 ![Dependency diagram](https://github.com/eliudio/eliud_generator/raw/main/depends.jpg)
 
-### links
-|Package                                                                    |Description                                         |
-|---------------------------------------------------------------------------|----------------------------------------------------|
-|[eliud_generator](https://pub.dev/packages/eliud_generator)                | This package                                       |
+<!-- dependencies -->
 
-## eliud.io
+<!-- dependenciesstop -->
 
-This package / app is part of the eliud.io project
-
-More information, see https://eliud.io
+---
