@@ -25,6 +25,7 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
 
     codeBuffer.writeln();
     for (var spec in modelSpecificationPlus) {
+      List<ModelSpecificationPlus>? parents = getParantChain(modelSpecificationPlus, spec);
       if ((spec.modelSpecification.id != "App") &&
           (spec.modelSpecification.generate.generateRepositorySingleton)) {
         var documentSubCollection =
@@ -35,17 +36,34 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
           if (spec.modelSpecification.generate.isAppSubCollection()) {
             appIdVar = "appId";
           } else {
-            appIdVar = "appId, ${documentSubCollection!.toLowerCase()}Id";
+            String parameters = "";
+            if (parents != null) {
+              for (var parent in parents) {
+                parameters = "${firstLowerCase(
+                    parent.modelSpecification.id)}Id, $parameters";
+              }
+            }
+            appIdVar = "appId, " + parameters;
           }
         } else {
           appIdVar = "";
         }
         var appParams = "{ String? appId }";
         // if this is a subcollection but not subcollection from app...
+        String parametersUse = "";
         if ((documentSubCollection != null) &&
             (!spec.modelSpecification.generate.isAppSubCollection())) {
           appParams =
-              "{ String? appId,  String? ${documentSubCollection.toLowerCase()}Id}";
+              "{ String? appId, ";
+          String parameters = "";
+          if (parents != null) {
+            for (var parent in parents) {
+              parameters = "String? ${firstLowerCase(
+                  parent.modelSpecification.id)}Id, $parameters";
+            }
+          }
+//          appParams = appParams + ",  String? ${documentSubCollection.toLowerCase()}Id}";
+          appParams = appParams + parameters + "}";
         } else {
           appParams = "{ String? appId }";
         }
@@ -79,7 +97,16 @@ class AbstractRepositorySingletonCodeGenerator extends CodeGeneratorMulti {
             param = "String? appId";
           } else {
             param =
-                "String? appId, String? ${spec.modelSpecification.generate.documentSubCollectionOf!.toLowerCase()}Id";
+                "String? appId, ";
+            List<ModelSpecificationPlus>? parents = getParantChain(modelSpecificationPlus, spec);
+            String parameters = "";
+            if (parents != null) {
+              for (var parent in parents) {
+                parameters = "String? ${firstLowerCase(
+                    parent.modelSpecification.id)}Id, $parameters";
+              }
+            }
+            param = param + parameters;
           }
           codeBuffer.writeln(
               "${spaces(2)}${spec.modelSpecification.id}Repository? ${firstLowerCase(spec.modelSpecification.id)}Repository($param);");

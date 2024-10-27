@@ -77,15 +77,63 @@ abstract class RepositorySingletonCodeBaseGenerator extends CodeGeneratorMulti {
           if ((documentSubCollectionOf != null) &&
               (!spec.modelSpecification.generate.isAppSubCollection())) {
             var lowerCase = documentSubCollectionOf.toLowerCase();
+
             var id = "${lowerCase}Id";
-            codeBuffer.writeln("(String? appId, String? $id) {");
+            codeBuffer.write("(String? appId, ");
+
+            List<ModelSpecificationPlus>? parents = getParantChain(modelSpecificationPlus, spec);
+            String parameters = "";
+            if (parents != null) {
+              for (var parent in parents) {
+                parameters = "String? ${firstLowerCase(
+                    parent.modelSpecification.id)}Id, $parameters";
+              }
+            }
+            codeBuffer.write(parameters);
+            codeBuffer.writeln(") {");
+
+            String keyLine = "var key = appId == null ";
+            if (parents != null) {
+              parameters = "";
+              for (var parent in parents) {
+                parameters = "|| ${firstLowerCase(
+                    parent.modelSpecification.id)}Id == null $parameters";
+              }
+              keyLine = keyLine + parameters;
+            }
+            keyLine = keyLine + " ? appId : appId";
+            if (parents != null) {
+              parameters = "";
+              for (var parent in parents) {
+                parameters = " + '-' + ${firstLowerCase(
+                    parent.modelSpecification.id)}Id $parameters";
+              }
+              keyLine = keyLine + parameters ;
+            }
+
             codeBuffer.writeln(
-                "${spaces(6)}var key = appId == null || $id == null ? null : appId + '-' + $id;");
+                "${spaces(6)}" + keyLine + ";");
+//            || $id == null ? null : appId + '-' + $id;");
             codeBuffer.write(
                 "${spaces(6)}if ((key != null) && (_${firstLowerCase(spec.modelSpecification.id)}Repository[key] == null)) { _${firstLowerCase(spec.modelSpecification.id)}Repository[key] = ");
 
             var parameter =
-                "() => ${lowerCase}Repository(appId)!.getSubCollection($id!, '${FirestoreHelper.collectionId(spec.modelSpecification)}'), appId!";
+                "() => ${lowerCase}Repository(appId";
+
+            if (parents != null) {
+              var otherParameters = "";
+
+              if (parents != null && parents.length > 1) {
+                for (var i = 1; i < parents.length; i++) {
+                  var parent = parents[i];
+                  otherParameters = ", ${firstLowerCase(
+                      parent.modelSpecification.id)}Id $otherParameters";
+                }
+              }
+              parameter = parameter + otherParameters;
+            }
+
+            parameter= parameter + ")!.getSubCollection($id!, '${FirestoreHelper.collectionId(spec.modelSpecification)}'), appId!";
             if (spec.modelSpecification.generate.generateCache) {
               codeBuffer.writeln(
                   "${spec.modelSpecification.id}Cache(${spec.modelSpecification.id}${prefix}Firestore($parameter));}");
